@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete TV Show - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-delete.html">Delete TV Show</a>
+        </div>
+
+        <div class="card">
+            <h2>🗑️ Delete TV Show</h2>
+            
+            <div class="alert alert-danger">
+                <strong>⚠️ Warning:</strong> This action cannot be undone. Deleting a TV show will also remove all associated seasons and episodes.
+            </div>
+
+            <div class="form-group">
+                <label for="tvshowSearch">Search TV Show to Delete</label>
+                <input type="text" id="tvshowSearch" placeholder="Type to search TV shows..." onkeyup="filterTVShows()">
+            </div>
+
+            <div class="table-container">
+                <table id="tvshowTable">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Genre</th>
+                            <th>Seasons</th>
+                            <th>Episodes</th>
+                            <th>Rating</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" name="tvshowSelect" value="1" onchange="updateDeleteButton()"></td>
+                            <td>1</td>
+                            <td>Breaking Bad</td>
+                            <td>Crime Drama</td>
+                            <td>5</td>
+                            <td>62</td>
+                            <td>⭐ 9.5</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="tvshowSelect" value="2" onchange="updateDeleteButton()"></td>
+                            <td>2</td>
+                            <td>Game of Thrones</td>
+                            <td>Fantasy</td>
+                            <td>8</td>
+                            <td>73</td>
+                            <td>⭐ 9.3</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="tvshowSelect" value="3" onchange="updateDeleteButton()"></td>
+                            <td>3</td>
+                            <td>Stranger Things</td>
+                            <td>Sci-Fi Horror</td>
+                            <td>4</td>
+                            <td>42</td>
+                            <td>⭐ 8.7</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label>
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <strong>Select All TV Shows</strong>
+                </label>
+            </div>
+
+            <div id="selectedShowsInfo" style="margin-top: 20px; display: none;">
+                <div class="alert alert-warning">
+                    <strong>Selected TV Shows:</strong> <span id="selectedCount">0</span>
+                    <div id="selectedList"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button id="deleteButton" class="btn btn-danger" onclick="confirmDelete()" disabled>🗑️ Delete Selected Shows</button>
+                <a href="tv-shows.html" class="btn btn-primary">🔙 Back to TV Shows</a>
+            </div>
+        </div>
+
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>🚨 Confirm Deletion</h2>
+                <p>Are you sure you want to delete the selected TV show(s)?</p>
+                <p><strong>This will also delete all seasons and episodes!</strong></p>
+                <div id="modalShowList"></div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-danger" onclick="executeDelete()">Yes, Delete</button>
+                    <button class="btn btn-primary" onclick="closeModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterTVShows() {
+            const searchValue = document.getElementById('tvshowSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#tvshowTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('input[name="tvshowSelect"]');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateDeleteButton();
+        }
+
+        function updateDeleteButton() {
+            const checkboxes = document.querySelectorAll('input[name="tvshowSelect"]:checked');
+            const deleteButton = document.getElementById('deleteButton');
+            const selectedShowsInfo = document.getElementById('selectedShowsInfo');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectedList = document.getElementById('selectedList');
+            
+            if (checkboxes.length > 0) {
+                deleteButton.disabled = false;
+                selectedShowsInfo.style.display = 'block';
+                selectedCount.textContent = checkboxes.length;
+                
+                let showNames = [];
+                checkboxes.forEach(cb => {
+                    const row = cb.closest('tr');
+                    showNames.push(row.cells[2].textContent);
+                });
+                
+                selectedList.innerHTML = '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                    showNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            } else {
+                deleteButton.disabled = true;
+                selectedShowsInfo.style.display = 'none';
+            }
+        }
+
+        function confirmDelete() {
+            const checkboxes = document.querySelectorAll('input[name="tvshowSelect"]:checked');
+            if (checkboxes.length === 0) return;
+            
+            let showNames = [];
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                showNames.push(row.cells[2].textContent);
+            });
+            
+            document.getElementById('modalShowList').innerHTML = 
+                '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                showNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function executeDelete() {
+            const checkboxes = document.querySelectorAll('input[name="tvshowSelect"]:checked');
+            
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                row.style.opacity = '0.5';
+                row.cells[7].innerHTML = '<span style="color: red;">❌ Deleting...</span>';
+            });
+            
+            setTimeout(() => {
+                checkboxes.forEach(cb => cb.closest('tr').remove());
+                closeModal();
+                alert('Selected TV shows deleted successfully!');
+                updateDeleteButton();
+            }, 2000);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) closeModal();
+        }
+    </script>
+</body>
+</html>

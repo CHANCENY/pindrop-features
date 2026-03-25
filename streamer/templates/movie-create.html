@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Movie - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="movies.html">Movies</a>
+            <span class="separator">›</span>
+            <a href="movie-create.html">Create Movie</a>
+        </div>
+
+        <div class="card">
+            <h2>➕ Create New Movie</h2>
+            
+            <form id="movieCreateForm">
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="title">Movie Title *</label>
+                        <input type="text" id="title" name="title" required placeholder="Enter movie title">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="genre">Genre *</label>
+                        <select id="genre" name="genre" required>
+                            <option value="">Select Genre</option>
+                            <option value="action">Action</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="drama">Drama</option>
+                            <option value="horror">Horror</option>
+                            <option value="sci-fi">Sci-Fi</option>
+                            <option value="romance">Romance</option>
+                            <option value="thriller">Thriller</option>
+                            <option value="animation">Animation</option>
+                            <option value="documentary">Documentary</option>
+                            <option value="crime">Crime</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="releaseYear">Release Year *</label>
+                        <input type="number" id="releaseYear" name="releaseYear" required min="1900" max="2030" placeholder="2024">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="duration">Duration (minutes) *</label>
+                        <input type="number" id="duration" name="duration" required min="1" placeholder="120">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rating">Rating (0-10)</label>
+                        <input type="number" id="rating" name="rating" min="0" max="10" step="0.1" placeholder="8.5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="director">Director</label>
+                        <input type="text" id="director" name="director" placeholder="Enter director name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Enter movie description"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="cast">Cast (comma separated)</label>
+                    <input type="text" id="cast" name="cast" placeholder="Actor 1, Actor 2, Actor 3">
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="videoFile">Video File *</label>
+                        <input type="file" id="videoFile" name="videoFile" accept="video/*" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="thumbnail">Thumbnail Image</label>
+                        <input type="file" id="thumbnail" name="thumbnail" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags (comma separated)</label>
+                    <input type="text" id="tags" name="tags" placeholder="action, adventure, blockbuster">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="featured" name="featured">
+                        Featured Movie
+                    </label>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <button type="submit" class="btn btn-success">💾 Create Movie</button>
+                    <a href="movies.html" class="btn btn-danger">❌ Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>📊 Upload Progress</h3>
+            <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+                <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+            <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to upload</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('movieCreateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            // Simulate upload progress
+            let progress = 0;
+            progressText.textContent = 'Uploading...';
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressText.textContent = `Uploading... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = 'Upload complete! Redirecting...';
+                    
+                    setTimeout(() => {
+                        alert('Movie created successfully!');
+                        window.location.href = 'movies.html';
+                    }, 1000);
+                }
+            }, 200);
+        });
+    </script>
+</body>
+</html>

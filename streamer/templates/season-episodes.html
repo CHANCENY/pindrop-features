@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Season Episodes - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-seasons.html">Seasons</a>
+            <span class="separator">›</span>
+            <a href="season-episodes.html">Episodes</a>
+        </div>
+
+        <div class="card">
+            <h2>📺 Season Episodes Management</h2>
+            
+            <div class="alert alert-info">
+                <strong>ℹ️ Currently Viewing:</strong> <span id="currentShow">Breaking Bad</span> - <span id="currentSeason">Season 1</span>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <a href="episode-create.html" class="btn btn-primary">➕ Add New Episode</a>
+                <a href="episode-edit.html" class="btn btn-warning">✏️ Edit Episode</a>
+                <a href="episode-delete.html" class="btn btn-danger">🗑️ Delete Episode</a>
+                <a href="tvshow-seasons.html" class="btn btn-primary">🔙 Back to Seasons</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Episode #</th>
+                            <th>Title</th>
+                            <th>Duration</th>
+                            <th>Air Date</th>
+                            <th>Rating</th>
+                            <th>Director</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Pilot</td>
+                            <td>58 min</td>
+                            <td>Jan 20, 2008</td>
+                            <td>⭐ 9.0</td>
+                            <td>Vince Gilligan</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                            <td>
+                                <a href="episode-edit.html?episode=1" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="episode-delete.html?episode=1" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Cat's in the Bag...</td>
+                            <td>48 min</td>
+                            <td>Jan 27, 2008</td>
+                            <td>⭐ 8.7</td>
+                            <td>Adam Bernstein</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                            <td>
+                                <a href="episode-edit.html?episode=2" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="episode-delete.html?episode=2" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>...And the Bag's in the River</td>
+                            <td>47 min</td>
+                            <td>Feb 10, 2008</td>
+                            <td>⭐ 8.8</td>
+                            <td>Adam Bernstein</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                            <td>
+                                <a href="episode-edit.html?episode=3" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="episode-delete.html?episode=3" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Cancer Man</td>
+                            <td>48 min</td>
+                            <td>Feb 17, 2008</td>
+                            <td>⭐ 8.5</td>
+                            <td>Jim McKay</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                            <td>
+                                <a href="episode-edit.html?episode=4" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="episode-delete.html?episode=4" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Gray Matter</td>
+                            <td>48 min</td>
+                            <td>Feb 24, 2008</td>
+                            <td>⭐ 8.6</td>
+                            <td>Tricia Brock</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                            <td>
+                                <a href="episode-edit.html?episode=5" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="episode-delete.html?episode=5" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Crazy Handful of Nothin'</td>
+                            <td>48 min</td>
+                            <td>Mar 2, 2008</td>
+                            <td>⭐ 9.0</td>
+                            <td>Bronwen Hughes</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                            <td>
+                                <a href="episode-edit.html?episode=6" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="episode-delete.html?episode=6" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>A-No-Rough-Stuff-Type-Deal</td>
+                            <td>47 min</td>
+                            <td>Mar 9, 2008</td>
+                            <td>⭐ 8.8</td>
+                            <td>Terry McDonough</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                            <td>
+                                <a href="episode-edit.html?episode=7" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="episode-delete.html?episode=7" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item">
+                <h3>📊 Episode Statistics</h3>
+                <p><strong>Total Episodes:</strong> 7</p>
+                <p><strong>Total Duration:</strong> 344 min</p>
+                <p><strong>Average Duration:</strong> 49.1 min</p>
+                <p><strong>Average Rating:</strong> 8.77</p>
+                <p><strong>Highest Rated:</strong> Pilot (9.0)</p>
+            </div>
+            <div class="grid-item">
+                <h3>🎬 Directors</h3>
+                <p>Vince Gilligan: 1 episode</p>
+                <p>Adam Bernstein: 2 episodes</p>
+                <p>Jim McKay: 1 episode</p>
+                <p>Tricia Brock: 1 episode</p>
+                <p>Bronwen Hughes: 1 episode</p>
+                <p>Terry McDonough: 1 episode</p>
+            </div>
+            <div class="grid-item">
+                <h3>📅 Release Schedule</h3>
+                <p><strong>Start Date:</strong> Jan 20, 2008</p>
+                <p><strong>End Date:</strong> Mar 9, 2008</p>
+                <p><strong>Duration:</strong> 7 weeks</p>
+                <p><strong>Frequency:</strong> Weekly</p>
+                <p><strong>Day:</strong> Sunday</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🎯 Quick Actions</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="episode-create.html?season=1" class="btn btn-success">➕ Add Episode</a>
+                <a href="season-edit.html?season=1" class="btn btn-warning">✏️ Edit Season</a>
+                <a href="tvshow-edit.html?id=1" class="btn btn-primary">📺 Edit TV Show</a>
+                <a href="playlists.html" class="btn btn-primary">📋 Add to Playlist</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get season and TV show info from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const seasonId = urlParams.get('season') || '1';
+        
+        // Update current season and show info based on ID
+        const seasonInfo = {
+            '1': { show: 'Breaking Bad', season: 'Season 1' },
+            '2': { show: 'Breaking Bad', season: 'Season 2' },
+            '3': { show: 'Breaking Bad', season: 'Season 3' },
+            '4': { show: 'Breaking Bad', season: 'Season 4' },
+            '5': { show: 'Breaking Bad', season: 'Season 5' },
+            '6': { show: 'Game of Thrones', season: 'Season 1' },
+            '7': { show: 'Stranger Things', season: 'Season 4' }
+        };
+        
+        const info = seasonInfo[seasonId] || { show: 'Unknown Show', season: 'Unknown Season' };
+        document.getElementById('currentShow').textContent = info.show;
+        document.getElementById('currentSeason').textContent = info.season;
+    </script>
+</body>
+</html>

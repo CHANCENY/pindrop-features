@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Cutting - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="playlists.html">Playlists</a>
+            <span class="separator">›</span>
+            <a href="movie-cutting.html">Movie Cutting</a>
+        </div>
+
+        <div class="card">
+            <h2>✂️ Movie Cutting Tool</h2>
+            
+            <div class="alert alert-info">
+                <strong>ℹ️ Info:</strong> Cut and trim movies to create custom playlists. Select start and end points to extract specific scenes or create highlight reels.
+            </div>
+
+            <div class="form-group">
+                <label for="movieSelect">Select Movie to Cut *</label>
+                <select id="movieSelect" onchange="loadMovieDetails()">
+                    <option value="">Choose a movie...</option>
+                    <option value="1">Inception (2010) - 148 min</option>
+                    <option value="2">The Dark Knight (2008) - 152 min</option>
+                    <option value="3">Interstellar (2014) - 169 min</option>
+                    <option value="4">The Matrix (1999) - 136 min</option>
+                    <option value="5">Pulp Fiction (1994) - 154 min</option>
+                </select>
+            </div>
+
+            <div id="movieDetails" style="display: none;">
+                <div class="video-player">
+                    <video id="moviePreview" controls style="width: 100%; max-height: 400px;">
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="startTime">Start Time (HH:MM:SS)</label>
+                        <input type="text" id="startTime" placeholder="00:00:00" onchange="updateCutPreview()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endTime">End Time (HH:MM:SS)</label>
+                        <input type="text" id="endTime" placeholder="00:00:00" onchange="updateCutPreview()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cutTitle">Cut Title</label>
+                    <input type="text" id="cutTitle" placeholder="Enter a title for this cut">
+                </div>
+
+                <div class="form-group">
+                    <label for="cutDescription">Description</label>
+                    <textarea id="cutDescription" rows="3" placeholder="Describe what this cut contains"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Quick Cut Options:</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-primary" onclick="setCutTime(0, 300)">First 5 min</button>
+                        <button type="button" class="btn btn-primary" onclick="setCutTime(600, 900)">10-15 min</button>
+                        <button type="button" class="btn btn-primary" onclick="setCutTime(-300, 0)">Last 5 min</button>
+                        <button type="button" class="btn btn-primary" onclick="setCutTime(0, 600)">First 10 min</button>
+                        <button type="button" class="btn btn-warning" onclick="previewCut()">👁️ Preview Cut</button>
+                    </div>
+                </div>
+
+                <div id="cutPreview" style="display: none;" class="card">
+                    <h3>👁️ Cut Preview</h3>
+                    <p><strong>Duration:</strong> <span id="cutDuration">0:00</span></p>
+                    <p><strong>Start:</strong> <span id="cutStartPreview">00:00:00</span></p>
+                    <p><strong>End:</strong> <span id="cutEndPreview">00:00:00</span></p>
+                </div>
+
+                <div style="margin-top: 20px; text-align: center;">
+                    <button type="button" class="btn btn-success" onclick="addToPlaylist()">➕ Add to Playlist</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCut()">💾 Save Cut</button>
+                    <button type="button" class="btn btn-warning" onclick="resetCut()">🔄 Reset</button>
+                    <a href="playlists.html" class="btn btn-danger">❌ Cancel</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📝 Cutting Queue</h3>
+            <div id="cuttingQueue">
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>Inception - Dream Sequence</strong>
+                        <p>00:45:00 - 01:15:00 (30 min)</p>
+                    </div>
+                    <div class="playlist-item-actions">
+                        <span style="color: green;">✅ Ready</span>
+                        <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Remove</button>
+                    </div>
+                </div>
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>The Matrix - Lobby Scene</strong>
+                        <p>01:05:00 - 01:15:00 (10 min)</p>
+                    </div>
+                    <div class="playlist-item-actions">
+                        <span style="color: blue;">🔄 Processing</span>
+                        <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Remove</button>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 15px; text-align: center;">
+                <button class="btn btn-success" onclick="processAllCuts()">🔄 Process All Cuts</button>
+                <button class="btn btn-warning" onclick="clearQueue()">🗑️ Clear Queue</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>⚙️ Cutting Settings</h3>
+            <div class="grid">
+                <div class="form-group">
+                    <label for="outputQuality">Output Quality</label>
+                    <select id="outputQuality">
+                        <option value="high">High (1080p)</option>
+                        <option value="medium">Medium (720p)</option>
+                        <option value="low">Low (480p)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="outputFormat">Output Format</label>
+                    <select id="outputFormat">
+                        <option value="mp4">MP4</option>
+                        <option value="avi">AVI</option>
+                        <option value="mov">MOV</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="fadeTransitions">
+                    Add Fade Transitions
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="autoEnhance">
+                    Auto-Enhance Audio/Video
+                </label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📊 Cutting Progress</h3>
+            <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+                <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+            <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to cut</p>
+        </div>
+    </div>
+
+    <script>
+        let currentMovie = null;
+        let cutQueue = [];
+
+        function loadMovieDetails() {
+            const select = document.getElementById('movieSelect');
+            const detailsDiv = document.getElementById('movieDetails');
+            
+            if (select.value) {
+                detailsDiv.style.display = 'block';
+                currentMovie = select.options[select.selectedIndex].text;
+                // In a real application, you would load the actual video file here
+                document.getElementById('moviePreview').src = '#'; // Placeholder
+            } else {
+                detailsDiv.style.display = 'none';
+                currentMovie = null;
+            }
+        }
+
+        function setCutTime(startMin, endMin) {
+            const movieSelect = document.getElementById('movieSelect');
+            if (!movieSelect.value) {
+                alert('Please select a movie first');
+                return;
+            }
+
+            // Get movie duration from select option (simplified)
+            const optionText = movieSelect.options[movieSelect.selectedIndex].text;
+            const duration = parseInt(optionText.match(/(\d+) min/)[1]);
+            
+            let startTime, endTime;
+            
+            if (startMin === -300) {
+                // Last 5 minutes
+                startTime = duration - 5;
+                endTime = duration;
+            } else if (endMin === 0) {
+                // From start to specified time
+                startTime = startMin;
+                endTime = duration;
+            } else {
+                startTime = startMin;
+                endTime = endMin;
+            }
+            
+            document.getElementById('startTime').value = formatTime(startTime * 60);
+            document.getElementById('endTime').value = formatTime(endTime * 60);
+            updateCutPreview();
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function parseTime(timeStr) {
+            const parts = timeStr.split(':');
+            return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+        }
+
+        function updateCutPreview() {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            if (startTime && endTime) {
+                const startSec = parseTime(startTime);
+                const endSec = parseTime(endTime);
+                const duration = endSec - startSec;
+                
+                if (duration > 0) {
+                    document.getElementById('cutPreview').style.display = 'block';
+                    document.getElementById('cutDuration').textContent = formatTime(duration);
+                    document.getElementById('cutStartPreview').textContent = startTime;
+                    document.getElementById('cutEndPreview').textContent = endTime;
+                } else {
+                    alert('End time must be after start time');
+                }
+            }
+        }
+
+        function previewCut() {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            if (!startTime || !endTime) {
+                alert('Please set both start and end times');
+                return;
+            }
+            
+            updateCutPreview();
+            alert('Cut preview ready! Check the preview section below.');
+        }
+
+        function addToPlaylist() {
+            const cutTitle = document.getElementById('cutTitle').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            if (!cutTitle || !startTime || !endTime) {
+                alert('Please fill in all cut details');
+                return;
+            }
+            
+            // Add to queue
+            const cutItem = {
+                title: cutTitle,
+                movie: currentMovie,
+                start: startTime,
+                end: endTime,
+                status: 'ready'
+            };
+            
+            cutQueue.push(cutItem);
+            updateQueueDisplay();
+            alert('Cut added to queue!');
+        }
+
+        function updateQueueDisplay() {
+            // This would update the queue display in a real application
+            console.log('Queue updated:', cutQueue);
+        }
+
+        function saveCut() {
+            addToPlaylist();
+            alert('Cut saved successfully!');
+        }
+
+        function resetCut() {
+            document.getElementById('startTime').value = '';
+            document.getElementById('endTime').value = '';
+            document.getElementById('cutTitle').value = '';
+            document.getElementById('cutDescription').value = '';
+            document.getElementById('cutPreview').style.display = 'none';
+        }
+
+        function processAllCuts() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            let progress = 0;
+            progressText.textContent = 'Processing cuts...';
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressText.textContent = `Processing cuts... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = 'All cuts processed successfully!';
+                    setTimeout(() => {
+                        alert('All cuts processed successfully!');
+                        progressBar.style.width = '0%';
+                        progressText.textContent = 'Ready to cut';
+                    }, 2000);
+                }
+            }, 300);
+        }
+
+        function clearQueue() {
+            if (confirm('Are you sure you want to clear the cutting queue?')) {
+                cutQueue = [];
+                updateQueueDisplay();
+                alert('Queue cleared!');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+{% extends "templates/front.base.html.twig" %}
+
+{% block hero %}
+
+    <!-- Playlist Hero Section -->
+    <section class="playlist-hero">
+        <div class="playlist-hero-background">
+            <div class="playlist-mosaic">
+                {% if playlist.images %}
+                    {% for image in playlist.images %}
+                        <img src="{{ image }}" alt="Movie {{ loop.index }}">
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="playlist-hero-overlay"></div>
+        </div>
+        <div class="playlist-hero-content">
+            <div class="playlist-info">
+                <h1 class="playlist-title">{{ playlist.detail.title }}</h1>
+                <div class="playlist-meta">
+                    <span class="playlist-item-count">{{ playlist.movies|length }} items</span>
+                    <span class="playlist-duration">{{ playlist.duration }}</span>
+                    <span class="playlist-created">Created: {{ playlist.detail.created_at|date('F j, Y') }}</span>
+                    <span class="playlist-privacy">{{ playlist.detail.is_public ? 'Public' : 'Private' }}</span>
+                </div>
+                <p class="playlist-description">{{ playlist.detail.description }}</p>
+                <div class="playlist-actions">
+                    <a href="{{ url('streamer.dashboard.playlist.watch', {session_token: playlist.id}) }}" class="btn-primary play-playlist-btn" id="playPlaylistBtn">▶ Play Playlist</a>
+                    <a href="{{ url('streamer_frontend.front.playlist.delete', {id: playlist.id}) }}" class="btn-secondary delete-playlist-btn" id="deletePlaylistBtn">🗑️ Delete</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}
+
+
+{% block main %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Playlist Stats -->
+        <section class="playlist-stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ playlist.movies|length }}</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ playlist.movies|length }}</div>
+                    <div class="stat-label">Movies</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ playlist.duration }}</div>
+                    <div class="stat-label">Total Duration</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Playlist Items -->
+        <section class="playlist-items-section">
+            <div class="section-header">
+                <h2 class="section-title">Playlist Items</h2>
+                <div class="section-controls">
+                    <div class="sort-controls">
+                        <label>Sort by:</label>
+                        <select class="sort-select" id="sortSelect">
+                            <option value="added">Date Added</option>
+                            <option value="title">Title</option>
+                            <option value="year">Year</option>
+                            <option value="rating">Rating</option>
+                            <option value="duration">Duration</option>
+                        </select>
+                    </div>
+                    <div class="view-controls">
+                        <button class="view-btn active" data-view="grid">Grid</button>
+                        <button class="view-btn" data-view="list">List</button>
+                    </div>
+                    <button class="btn-secondary add-items-btn" id="addItemsBtn">+ Add Items</button>
+                </div>
+            </div>
+
+            <div class="playlist-items-grid">
+                {% if playlist.movies %}
+                    {% for movie in playlist.movies %}
+                        <div class="content-card">
+                            <div class="content-card-actions">
+                                <a href="{{ url('streamer.dashboard.movie.watch', {movie_id: movie.id}) }}" class="card-action-btn" title="Play">▶</a>
+                                <a href="{{ url('streamer_frontend.front.movie.detail', {movie_id: movie.id}) }}" class="card-action-btn" title="Details">ℹ</a>
+                                <button class="card-action-btn" title="Remove">🗑️</button>
+                            </div>
+                            <a href="{{ url('streamer_frontend.front.movie.detail', {movie_id: movie.id}) }}">
+                                <img src="{{ movie.thumbnail_path }}" alt="{{ movie.title }}">
+                                <div class="content-card-overlay">
+                                    <div class="content-card-title">{{ movie.title }}</div>
+                                    <div class="content-card-year">{{ movie.release_date|date('Y') }} • Movie • {{ movie.duration }}min</div>
+                                </div>
+                                <div class="content-card-rating">⭐ {{ movie.rating }}</div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-playlist-message">
+                        <p>No movies in this playlist yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="playlist-items-list" id="playlistItemsList" style="display: none;">
+                <!-- Playlist items will be dynamically added in list view -->
+            </div>
+        </section>
+
+        <!-- Related Playlists -->
+        <section class="related-playlists-section">
+            <h2 class="section-title">Related Playlists</h2>
+            <div class="playlists-grid" id="relatedPlaylists">
+                <!-- Related playlists will be dynamically added -->
+            </div>
+        </section>
+    </main>
+    
+{% endblock %}
+
+
+{% block scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Sort functionality
+            const sortSelector = document.getElementById('sortSelector');
+            const moviesGrid = document.getElementById('moviesGrid');
+            let movies = Array.from(document.querySelectorAll('.movie-card'));
+            
+            sortSelector.addEventListener('change', (e) => {
+                const sortBy = e.target.value;
+                sortMovies(sortBy);
+            });
+            
+            function sortMovies(sortBy) {
+                movies.sort((a, b) => {
+                    switch(sortBy) {
+                        case 'title':
+                            const titleA = a.querySelector('.movie-title').textContent.trim();
+                            const titleB = b.querySelector('.movie-title').textContent.trim();
+                            return titleA.localeCompare(titleB);
+                        case 'release_date':
+                            const yearA = parseInt(a.querySelector('.movie-year').textContent);
+                            const yearB = parseInt(b.querySelector('.movie-year').textContent);
+                            return yearB - yearA;
+                        case 'rating':
+                            const ratingA = parseFloat(a.querySelector('.movie-rating').textContent.replace('⭐ ', ''));
+                            const ratingB = parseFloat(b.querySelector('.movie-rating').textContent.replace('⭐ ', ''));
+                            return ratingB - ratingA;
+                        case 'position':
+                        default:
+                            return 0; // Keep original order
+                    }
+                });
+                
+                // Re-append sorted movies
+                movies.forEach(movie => moviesGrid.appendChild(movie));
+            }
+            
+            // View toggle
+            const viewBtns = document.querySelectorAll('.view-btn');
+            viewBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    viewBtns.forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    const view = e.target.dataset.view;
+                    if (view === 'list') {
+                        moviesGrid.classList.add('list-view');
+                    } else {
+                        moviesGrid.classList.remove('list-view');
+                    }
+                });
+            });
+            
+            // Delete playlist
+            const deleteBtn = document.querySelector('.delete-playlist-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    const playlistId = e.target.dataset.playlistId;
+                    if (confirm('Are you sure you want to delete this playlist?')) {
+                        fetch(`{{ url('streamer_frontend.front.playlist.delete') }}?id=${playlistId}`, {
+                            method: 'DELETE'
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = '{{ url('streamer_frontend.front.playlists') }}';
+                            } else {
+                                alert('Failed to delete playlist');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Failed to delete playlist');
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
+

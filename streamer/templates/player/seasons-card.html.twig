@@ -1,0 +1,38 @@
+<div class="season-grid">
+
+    {% for season in seasons %}
+        <div class="season-card  {% if season.id == current_season.id %} active {% endif %}">
+
+            <a href="{{ url('streamer.dashboard.shows.watch',{show_id: show.id, sid: season.id }) }}">
+                <img src="https://image.tmdb.org/t/p/w185{{ season.thumbnail_path }}"
+                     alt="{{ season.title }}">
+            </a>
+
+            <div class="season-card-body">
+                <h3>
+                    {% if season.season_number == 0 %}
+                        Specials
+                    {% else %}
+                        Season {{ season.season_number }}
+                    {% endif %}
+                </h3>
+
+                <p class="meta">
+                    {{ season.episode_count }} Episodes
+                </p>
+
+                {% if season.vote_average > 0 %}
+                    <p class="rating">⭐ {{ season.vote_average }}</p>
+                {% endif %}
+
+                <p class="air-date">
+                    {{ season.air_date|date("Y") }}
+                </p>
+            </div>
+
+        </div>
+    {% else %}
+        <p>No seasons available.</p>
+    {% endfor %}
+
+</div>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Season - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-seasons.html">Seasons</a>
+            <span class="separator">›</span>
+            <a href="season-create.html">Create Season</a>
+        </div>
+
+        <div class="card">
+            <h2>➕ Create New Season</h2>
+            
+            <div class="alert alert-info">
+                <strong>ℹ️ Creating Season For:</strong> <span id="currentShow">Breaking Bad</span>
+            </div>
+            
+            <form id="seasonCreateForm">
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="tvshowSelect">TV Show *</label>
+                        <select id="tvshowSelect" name="tvshowId" required onchange="updateShowInfo()">
+                            <option value="">Select TV Show</option>
+                            <option value="1">Breaking Bad</option>
+                            <option value="2">Game of Thrones</option>
+                            <option value="3">Stranger Things</option>
+                            <option value="4">The Office</option>
+                            <option value="5">Friends</option>
+                            <option value="6">The Mandalorian</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="seasonNumber">Season Number *</label>
+                        <input type="number" id="seasonNumber" name="seasonNumber" required min="1" placeholder="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="seasonTitle">Season Title</label>
+                    <input type="text" id="seasonTitle" name="seasonTitle" placeholder="Season 1">
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="releaseYear">Release Year *</label>
+                        <input type="number" id="releaseYear" name="releaseYear" required min="1900" max="2030" placeholder="2024">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="episodeCount">Number of Episodes *</label>
+                        <input type="number" id="episodeCount" name="episodeCount" required min="1" placeholder="10">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Season Description</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Enter season description or synopsis"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="poster">Season Poster</label>
+                    <input type="file" id="poster" name="poster" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags (comma separated)</label>
+                    <input type="text" id="tags" name="tags" placeholder="action, drama, climax, finale">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="featured" name="featured">
+                        Featured Season
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="finalSeason" name="finalSeason">
+                        Final Season
+                    </label>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <button type="submit" class="btn btn-success">💾 Create Season</button>
+                    <button type="button" class="btn btn-primary" onclick="addEpisodes()">➕ Add Episodes</button>
+                    <a href="tvshow-seasons.html" class="btn btn-danger">❌ Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>📝 Quick Episode Setup</h3>
+            <div id="episodeSetup" style="display: none;">
+                <div class="form-group">
+                    <label for="episodeTemplate">Episode Title Template</label>
+                    <input type="text" id="episodeTemplate" placeholder="Episode {number}: {title}">
+                </div>
+                <div class="form-group">
+                    <label for="episodeDuration">Average Episode Duration (minutes)</label>
+                    <input type="number" id="episodeDuration" min="1" placeholder="45">
+                </div>
+                <div class="form-group">
+                    <label for="episodeDescriptions">Generate Episode Descriptions</label>
+                    <select id="episodeDescriptions">
+                        <option value="none">No descriptions</option>
+                        <option value="template">Use template descriptions</option>
+                        <option value="custom">Custom descriptions later</option>
+                    </select>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button type="button" class="btn btn-primary" onclick="previewEpisodes()">👁️ Preview Episodes</button>
+                </div>
+            </div>
+            <p style="text-align: center; color: #666; margin-top: 10px;">You can add individual episodes after creating the season</p>
+        </div>
+
+        <div id="episodePreview" style="display: none;" class="card">
+            <h3>👁️ Episode Preview</h3>
+            <div id="previewList"></div>
+        </div>
+
+        <div class="card">
+            <h3>📊 Upload Progress</h3>
+            <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+                <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+            <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to create season</p>
+        </div>
+    </div>
+
+    <script>
+        function updateShowInfo() {
+            const select = document.getElementById('tvshowSelect');
+            const showNames = {
+                '1': 'Breaking Bad',
+                '2': 'Game of Thrones',
+                '3': 'Stranger Things',
+                '4': 'The Office',
+                '5': 'Friends',
+                '6': 'The Mandalorian'
+            };
+            document.getElementById('currentShow').textContent = showNames[select.value] || 'Select a TV Show';
+        }
+
+        function addEpisodes() {
+            const episodeSetup = document.getElementById('episodeSetup');
+            episodeSetup.style.display = episodeSetup.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function previewEpisodes() {
+            const episodeCount = document.getElementById('episodeCount').value;
+            const episodeTemplate = document.getElementById('episodeTemplate').value || 'Episode {number}';
+            const previewDiv = document.getElementById('episodePreview');
+            const previewList = document.getElementById('previewList');
+            
+            if (!episodeCount) {
+                alert('Please enter the number of episodes first');
+                return;
+            }
+            
+            let previewHTML = '<div class="table-container"><table><thead><tr><th>Episode #</th><th>Title</th><th>Duration</th></tr></thead><tbody>';
+            
+            for (let i = 1; i <= episodeCount; i++) {
+                const title = episodeTemplate.replace('{number}', i).replace('{title}', `Episode ${i}`);
+                const duration = document.getElementById('episodeDuration').value || '45';
+                previewHTML += `<tr><td>${i}</td><td>${title}</td><td>${duration} min</td></tr>`;
+            }
+            
+            previewHTML += '</tbody></table></div>';
+            previewList.innerHTML = previewHTML;
+            previewDiv.style.display = 'block';
+        }
+
+        document.getElementById('seasonCreateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            let progress = 0;
+            progressText.textContent = 'Creating season...';
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressText.textContent = `Creating season... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = 'Season created successfully! Redirecting...';
+                    
+                    setTimeout(() => {
+                        alert('Season created successfully!');
+                        window.location.href = 'tvshow-seasons.html';
+                    }, 1000);
+                }
+            }, 200);
+        });
+
+        // Auto-generate season title based on season number
+        document.getElementById('seasonNumber').addEventListener('input', function() {
+            const seasonNumber = this.value;
+            if (seasonNumber) {
+                document.getElementById('seasonTitle').value = `Season ${seasonNumber}`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Episode - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-seasons.html">Seasons</a>
+            <span class="separator">›</span>
+            <a href="season-episodes.html">Episodes</a>
+            <span class="separator">›</span>
+            <a href="episode-edit.html">Edit Episode</a>
+        </div>
+
+        <div class="card">
+            <h2>✏️ Edit Episode</h2>
+            
+            <form id="episodeEditForm">
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="episodeSelect">Episode to Edit *</label>
+                        <select id="episodeSelect" name="episodeId" required onchange="loadEpisode()">
+                            <option value="">Select Episode to Edit</option>
+                            <option value="1">Breaking Bad S1E1 - Pilot</option>
+                            <option value="2">Breaking Bad S1E2 - Cat's in the Bag...</option>
+                            <option value="3">Breaking Bad S1E3 - ...And the Bag's in the River</option>
+                            <option value="4">Breaking Bad S1E4 - Cancer Man</option>
+                            <option value="5">Breaking Bad S1E5 - Gray Matter</option>
+                            <option value="6">Breaking Bad S1E6 - Crazy Handful of Nothin'</option>
+                            <option value="7">Breaking Bad S1E7 - A-No-Rough-Stuff-Type-Deal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="editForm" style="display: none;">
+                    <h3>📝 Edit Episode Details</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editTvshowId">TV Show *</label>
+                            <select id="editTvshowId" name="tvshowId" required>
+                                <option value="">Select TV Show</option>
+                                <option value="1">Breaking Bad</option>
+                                <option value="2">Game of Thrones</option>
+                                <option value="3">Stranger Things</option>
+                                <option value="4">The Office</option>
+                                <option value="5">Friends</option>
+                                <option value="6">The Mandalorian</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSeasonId">Season *</label>
+                            <select id="editSeasonId" name="seasonId" required>
+                                <option value="">Select Season</option>
+                                <option value="1">Season 1</option>
+                                <option value="2">Season 2</option>
+                                <option value="3">Season 3</option>
+                                <option value="4">Season 4</option>
+                                <option value="5">Season 5</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editEpisodeNumber">Episode Number *</label>
+                            <input type="number" id="editEpisodeNumber" name="episodeNumber" required min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEpisodeTitle">Episode Title *</label>
+                            <input type="text" id="editEpisodeTitle" name="episodeTitle" required>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editDuration">Duration (minutes) *</label>
+                            <input type="number" id="editDuration" name="duration" required min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editAirDate">Air Date</label>
+                            <input type="date" id="editAirDate" name="airDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDescription">Episode Description</label>
+                        <textarea id="editDescription" name="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editDirector">Director</label>
+                            <input type="text" id="editDirector" name="director">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editWriter">Writer(s)</label>
+                            <input type="text" id="editWriter" name="writer">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCast">Guest Stars (comma separated)</label>
+                        <input type="text" id="editCast" name="cast">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTags">Tags (comma separated)</label>
+                        <input type="text" id="editTags" name="tags">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editRating">Rating (0-10)</label>
+                        <input type="number" id="editRating" name="rating" min="0" max="10" step="0.1">
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editFeatured" name="featured">
+                                Featured Episode
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editSeasonFinale" name="seasonFinale">
+                                Season Finale
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editSeasonPremiere" name="seasonPremiere">
+                                Season Premiere
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button type="submit" class="btn btn-success">💾 Update Episode</button>
+                        <button type="button" class="btn btn-warning" onclick="resetForm()">🔄 Reset</button>
+                        <a href="season-episodes.html" class="btn btn-danger">❌ Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const episodeData = {
+            1: { 
+                tvshowId: "1", 
+                seasonId: "1", 
+                episodeNumber: 1, 
+                episodeTitle: "Pilot", 
+                duration: 58, 
+                airDate: "2008-01-20",
+                description: "High school chemistry teacher Walter White is diagnosed with lung cancer and turns to making methamphetamine to secure his family's future.",
+                director: "Vince Gilligan",
+                writer: "Vince Gilligan",
+                cast: "None",
+                tags: "pilot, introduction, cancer, meth",
+                rating: 9.0,
+                featured: true,
+                seasonFinale: false,
+                seasonPremiere: true
+            },
+            2: { 
+                tvshowId: "1", 
+                seasonId: "1", 
+                episodeNumber: 2, 
+                episodeTitle: "Cat's in the Bag...", 
+                duration: 48, 
+                airDate: "2008-01-27",
+                description: "Walter and Jesse must deal with the aftermath of their first drug deal and decide what to do with Krazy-8 and their dead partner.",
+                director: "Adam Bernstein",
+                writer: "Vince Gilligan",
+                cast: "None",
+                tags: "consequences, cleanup, decision",
+                rating: 8.7,
+                featured: false,
+                seasonFinale: false,
+                seasonPremiere: false
+            },
+            3: { 
+                tvshowId: "1", 
+                seasonId: "1", 
+                episodeNumber: 3, 
+                episodeTitle: "...And the Bag's in the River", 
+                duration: 47, 
+                airDate: "2008-02-10",
+                description: "Walter struggles with the moral dilemma of whether to kill Krazy-8, while Jesse deals with the aftermath of the drug deal.",
+                director: "Adam Bernstein",
+                writer: "Vince Gilligan",
+                cast: "None",
+                tags: "moral dilemma, struggle, aftermath",
+                rating: 8.8,
+                featured: false,
+                seasonFinale: false,
+                seasonPremiere: false
+            },
+            4: { 
+                tvshowId: "1", 
+                seasonId: "1", 
+                episodeNumber: 4, 
+                episodeTitle: "Cancer Man", 
+                duration: 48, 
+                airDate: "2008-02-17",
+                description: "Walter finally tells his family about his cancer, while Jesse tries to reconnect with his family and meets his new landlord.",
+                director: "Jim McKay",
+                writer: "Vince Gilligan",
+                cast: "None",
+                tags: "family, cancer, truth, reunion",
+                rating: 8.5,
+                featured: false,
+                seasonFinale: false,
+                seasonPremiere: false
+            },
+            5: { 
+                tvshowId: "1", 
+                seasonId: "1", 
+                episodeNumber: 5, 
+                episodeTitle: "Gray Matter", 
+                duration: 48, 
+                airDate: "2008-02-24",
+                description: "Walter attends a birthday party for an old friend and considers an offer to return to his former company.",
+                director: "Tricia Brock",
+                writer: "Patty Lin",
+                cast: "None",
+                tags: "past, regret, opportunity, birthday",
+                rating: 8.6,
+                featured: false,
+                seasonFinale: false,
+                seasonPremiere: false
+            },
+            6: { 
+                tvshowId: "1", 
+                seasonId: "1", 
+                episodeNumber: 6, 
+                episodeTitle: "Crazy Handful of Nothin'", 
+                duration: 48, 
+                airDate: "2008-03-02",
+                description: "Walter and Jesse hire a lawyer to help them with their drug operation, and Walter adopts a new persona: Heisenberg.",
+                director: "Bronwen Hughes",
+                writer: "George Mastras",
+                cast: "None",
+                tags: "heisenberg, lawyer, persona, transformation",
+                rating: 9.0,
+                featured: true,
+                seasonFinale: false,
+                seasonPremiere: false
+            },
+            7: { 
+                tvshowId: "1", 
+                seasonId: "1", 
+                episodeNumber: 7, 
+                episodeTitle: "A-No-Rough-Stuff-Type-Deal", 
+                duration: 47, 
+                airDate: "2008-03-09",
+                description: "Walter and Jesse face their first major drug deal with a dangerous distributor, leading to unexpected consequences.",
+                director: "Terry McDonough",
+                writer: "Vince Gilligan",
+                cast: "None",
+                tags: "deal, danger, consequences, finale",
+                rating: 8.8,
+                featured: false,
+                seasonFinale: true,
+                seasonPremiere: false
+            }
+        };
+
+        function loadEpisode() {
+            const select = document.getElementById('episodeSelect');
+            const episodeId = select.value;
+            
+            if (!episodeId) {
+                document.getElementById('editForm').style.display = 'none';
+                return;
+            }
+
+            const episode = episodeData[episodeId];
+            if (!episode) return;
+
+            document.getElementById('editTvshowId').value = episode.tvshowId;
+            document.getElementById('editSeasonId').value = episode.seasonId;
+            document.getElementById('editEpisodeNumber').value = episode.episodeNumber;
+            document.getElementById('editEpisodeTitle').value = episode.episodeTitle;
+            document.getElementById('editDuration').value = episode.duration;
+            document.getElementById('editAirDate').value = episode.airDate;
+            document.getElementById('editDescription').value = episode.description;
+            document.getElementById('editDirector').value = episode.director;
+            document.getElementById('editWriter').value = episode.writer;
+            document.getElementById('editCast').value = episode.cast;
+            document.getElementById('editTags').value = episode.tags;
+            document.getElementById('editRating').value = episode.rating;
+            document.getElementById('editFeatured').checked = episode.featured;
+            document.getElementById('editSeasonFinale').checked = episode.seasonFinale;
+            document.getElementById('editSeasonPremiere').checked = episode.seasonPremiere;
+
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('episodeEditForm').reset();
+            document.getElementById('episodeSelect').value = '';
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        // Handle special episode checkboxes
+        document.getElementById('editSeasonFinale').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('editSeasonPremiere').checked = false;
+            }
+        });
+
+        document.getElementById('editSeasonPremiere').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('editSeasonFinale').checked = false;
+            }
+        });
+
+        document.getElementById('episodeEditForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Episode updated successfully!');
+            window.location.href = 'season-episodes.html';
+        });
+    </script>
+</body>
+</html>

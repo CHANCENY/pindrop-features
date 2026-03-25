@@ -1,0 +1,6 @@
+autocomplete.movie.search:
+  handler: Simp\Pindrop\Modules\streamer\src\Autocomplete\MovieAutoComplete::matchMovies
+autocomplete.show.search:
+  handler: Simp\Pindrop\Modules\streamer\src\Autocomplete\MovieAutoComplete::matchShows
+autocomplete.movie.search.local:
+  handler: Simp\Pindrop\Modules\streamer\src\Autocomplete\MovieAutoComplete::matchLocalMovies

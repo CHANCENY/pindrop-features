@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Movie - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="movies.html">Movies</a>
+            <span class="separator">›</span>
+            <a href="movie-edit.html">Edit Movie</a>
+        </div>
+
+        <div class="card">
+            <h2>✏️ Edit Movie</h2>
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ Note:</strong> Select a movie to edit from the list below or search for a specific movie.
+            </div>
+
+            <div class="form-group">
+                <label for="movieSearch">Search Movie</label>
+                <input type="text" id="movieSearch" placeholder="Type to search movies..." onkeyup="filterMovies()">
+            </div>
+
+            <div class="table-container">
+                <table id="movieTable">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Genre</th>
+                            <th>Release Year</th>
+                            <th>Duration</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="radio" name="movieSelect" value="1" onchange="loadMovie(1)"></td>
+                            <td>1</td>
+                            <td>Inception</td>
+                            <td>Sci-Fi</td>
+                            <td>2010</td>
+                            <td>148 min</td>
+                            <td>⭐ 8.8</td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="movieSelect" value="2" onchange="loadMovie(2)"></td>
+                            <td>2</td>
+                            <td>The Dark Knight</td>
+                            <td>Action</td>
+                            <td>2008</td>
+                            <td>152 min</td>
+                            <td>⭐ 9.0</td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="movieSelect" value="3" onchange="loadMovie(3)"></td>
+                            <td>3</td>
+                            <td>Interstellar</td>
+                            <td>Sci-Fi</td>
+                            <td>2014</td>
+                            <td>169 min</td>
+                            <td>⭐ 8.6</td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="movieSelect" value="4" onchange="loadMovie(4)"></td>
+                            <td>4</td>
+                            <td>The Matrix</td>
+                            <td>Action</td>
+                            <td>1999</td>
+                            <td>136 min</td>
+                            <td>⭐ 8.7</td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="movieSelect" value="5" onchange="loadMovie(5)"></td>
+                            <td>5</td>
+                            <td>Pulp Fiction</td>
+                            <td>Crime</td>
+                            <td>1994</td>
+                            <td>154 min</td>
+                            <td>⭐ 8.9</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="editForm" style="display: none; margin-top: 30px;">
+                <h3>📝 Edit Movie Details</h3>
+                <form id="movieEditForm">
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editTitle">Movie Title *</label>
+                            <input type="text" id="editTitle" name="title" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editGenre">Genre *</label>
+                            <select id="editGenre" name="genre" required>
+                                <option value="">Select Genre</option>
+                                <option value="action">Action</option>
+                                <option value="comedy">Comedy</option>
+                                <option value="drama">Drama</option>
+                                <option value="horror">Horror</option>
+                                <option value="sci-fi">Sci-Fi</option>
+                                <option value="romance">Romance</option>
+                                <option value="thriller">Thriller</option>
+                                <option value="animation">Animation</option>
+                                <option value="documentary">Documentary</option>
+                                <option value="crime">Crime</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editReleaseYear">Release Year *</label>
+                            <input type="number" id="editReleaseYear" name="releaseYear" required min="1900" max="2030">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editDuration">Duration (minutes) *</label>
+                            <input type="number" id="editDuration" name="duration" required min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editRating">Rating (0-10)</label>
+                            <input type="number" id="editRating" name="rating" min="0" max="10" step="0.1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editDirector">Director</label>
+                            <input type="text" id="editDirector" name="director">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDescription">Description</label>
+                        <textarea id="editDescription" name="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCast">Cast (comma separated)</label>
+                        <input type="text" id="editCast" name="cast">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTags">Tags (comma separated)</label>
+                        <input type="text" id="editTags" name="tags">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="editFeatured" name="featured">
+                            Featured Movie
+                        </label>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button type="submit" class="btn btn-success">💾 Update Movie</button>
+                        <button type="button" class="btn btn-warning" onclick="resetForm()">🔄 Reset</button>
+                        <a href="movies.html" class="btn btn-danger">❌ Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const movieData = {
+            1: { title: "Inception", genre: "sci-fi", releaseYear: 2010, duration: 148, rating: 8.8, director: "Christopher Nolan", description: "A thief who steals corporate secrets through dream-sharing technology.", cast: "Leonardo DiCaprio, Marion Cotillard, Tom Hardy", tags: "sci-fi, thriller, dream", featured: true },
+            2: { title: "The Dark Knight", genre: "action", releaseYear: 2008, duration: 152, rating: 9.0, director: "Christopher Nolan", description: "Batman faces the Joker in a battle for Gotham's soul.", cast: "Christian Bale, Heath Ledger, Aaron Eckhart", tags: "action, superhero, crime", featured: true },
+            3: { title: "Interstellar", genre: "sci-fi", releaseYear: 2014, duration: 169, rating: 8.6, director: "Christopher Nolan", description: "A team of explorers travel through a wormhole in space.", cast: "Matthew McConaughey, Anne Hathaway, Jessica Chastain", tags: "sci-fi, space, drama", featured: false },
+            4: { title: "The Matrix", genre: "action", releaseYear: 1999, duration: 136, rating: 8.7, director: "The Wachowskis", description: "A computer hacker learns about the true nature of reality.", cast: "Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss", tags: "action, sci-fi, cyberpunk", featured: true },
+            5: { title: "Pulp Fiction", genre: "crime", releaseYear: 1994, duration: 154, rating: 8.9, director: "Quentin Tarantino", description: "Interconnected stories of Los Angeles criminals.", cast: "John Travolta, Uma Thurman, Samuel L. Jackson", tags: "crime, drama, thriller", featured: false }
+        };
+
+        function filterMovies() {
+            const searchValue = document.getElementById('movieSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#movieTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function loadMovie(movieId) {
+            const movie = movieData[movieId];
+            if (!movie) return;
+
+            document.getElementById('editTitle').value = movie.title;
+            document.getElementById('editGenre').value = movie.genre;
+            document.getElementById('editReleaseYear').value = movie.releaseYear;
+            document.getElementById('editDuration').value = movie.duration;
+            document.getElementById('editRating').value = movie.rating;
+            document.getElementById('editDirector').value = movie.director;
+            document.getElementById('editDescription').value = movie.description;
+            document.getElementById('editCast').value = movie.cast;
+            document.getElementById('editTags').value = movie.tags;
+            document.getElementById('editFeatured').checked = movie.featured;
+
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('movieEditForm').reset();
+            document.querySelectorAll('input[name="movieSelect"]').forEach(radio => radio.checked = false);
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        document.getElementById('movieEditForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Movie updated successfully!');
+            window.location.href = 'movies.html';
+        });
+    </script>
+</body>
+</html>

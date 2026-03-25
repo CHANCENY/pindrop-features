@@ -1,0 +1,124 @@
+{% extends "templates/front.base.html.twig" %}
+
+{% block hero %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <h1 class="page-title">My Playlists</h1>
+            <p class="page-subtitle">Create and manage your custom playlists</p>
+            <button class="btn-primary create-playlist-btn" id="createPlaylistBtn">+ Create New Playlist</button>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Playlists Grid -->
+        <div class="playlists-grid">
+            {% if playlists %}
+                {% for playlist in playlists %}
+                    <div class="playlist-card">
+                        <div class="playlist-header">
+                            <div class="playlist-title">{{ playlist.title }}</div>
+                            <div class="playlist-count">{{ playlist.item_count }} items</div>
+                        </div>
+                        <div class="playlist-description">{{ playlist.description }}</div>
+                        <div class="playlist-preview">
+                            {% if playlist.items %}
+                                {% for item in playlist.items|slice(0, 3) %}
+                                    {% if item.movie %}
+                                        <img src="{{ item.movie.thumbnail_path }}" alt="{{ item.movie.title }}">
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="playlist-actions">
+                            <a href="{{ url('streamer.dashboard.playlist.watch', {session_token: playlist.id}) }}" class="btn-primary">▶ Play</a>
+                            <a href="{{ url('streamer_frontend.front.playlist.detail', {id: playlist.id}) }}" class="btn-secondary">Details</a>
+                            <a href="{{ url('streamer_frontend.front.playlist.delete', {id: playlist.id}) }}" class="btn-secondary delete-playlist-btn" data-playlist-id="{{ playlist.id }}">🗑️ Delete</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-playlists">
+                    <div class="empty-state">
+                        <h2>No Playlists Yet</h2>
+                        <p>Create your first playlist to start organizing your favorite movies and shows.</p>
+                        <button class="btn-primary create-playlist-btn">+ Create Your First Playlist</button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Create Playlist Modal -->
+    <div class="playlist-modal" id="createPlaylistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Playlist</h3>
+                <button class="close-btn" id="closeCreatePlaylistModal">&times;</button>
+            </div>
+            <form id="createPlaylistForm" method="POST">
+                <div class="form-group">
+                    <label for="playlistName">Playlist Name</label>
+                    <input type="text" id="playlistName" name="name" required placeholder="Enter playlist name">
+                </div>
+                <div class="form-group">
+                    <label for="playlistDescription">Description</label>
+                    <textarea id="playlistDescription" name="description" placeholder="Enter playlist description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isPublic" name="is_public">
+                        <span class="checkmark"></span>
+                        Make playlist public
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="playlistPublic">Public</label>
+                    <input type="checkbox" id="playlistPublic" name="public">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelCreatePlaylist">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Playlist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Create Playlist Modal
+            const createPlaylistBtn = document.getElementById('createPlaylistBtn');
+            const createPlaylistModal = document.getElementById('createPlaylistModal');
+            const closeCreatePlaylistModal = document.getElementById('closeCreatePlaylistModal');
+            const cancelCreatePlaylist = document.getElementById('cancelCreatePlaylist');
+
+            createPlaylistBtn.addEventListener('click', () => {
+                createPlaylistModal.style.display = 'block';
+            });
+
+            closeCreatePlaylistModal.addEventListener('click', () => {
+                createPlaylistModal.style.display = 'none';
+            });
+
+            cancelCreatePlaylist.addEventListener('click', () => {
+                createPlaylistModal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === createPlaylistModal) {
+                    createPlaylistModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+{% endblock %}

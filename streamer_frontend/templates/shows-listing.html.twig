@@ -1,0 +1,123 @@
+{% extends "templates/front.base.html.twig" %}
+
+{% block hero %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <h1 class="page-title">TV Shows</h1>
+            <p class="page-subtitle">Discover amazing TV series from every genre</p>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block main %}
+
+<!-- Filters Section -->
+<section class="filters-section">
+    <form class="filters-container">
+        <div class="filter-group">
+            <label class="filter-label">Search</label>
+            <input type="text" class="filter-input" name="search" placeholder="Search shows..." value="{{ filters.search ?? '' }}">
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Genre</label>
+            <select class="filter-select" name="genre">
+                <option value="">All Genres</option>
+                {% for genre in availableGenres %}
+                <option value="{{ genre }}" {{ filters.genre == genre ? 'selected' : '' }}>{{ genre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Year</label>
+            <select class="filter-select" name="year">
+                <option value="">All Years</option>
+                {% for year in availableYears %}
+                <option value="{{ year }}" {{ filters.year == year ? 'selected' : '' }}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Rating</label>
+            <select class="filter-select" name="rating">
+                <option value="">All Ratings</option>
+                <option value="9" {{ filters.rating == '9' ? 'selected' : '' }}>9+ Stars</option>
+                <option value="8" {{ filters.rating == '8' ? 'selected' : '' }}>8+ Stars</option>
+                <option value="7" {{ filters.rating == '7' ? 'selected' : '' }}>7+ Stars</option>
+                <option value="6" {{ filters.rating == '6' ? 'selected' : '' }}>6+ Stars</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Sort By</label>
+            <select class="filter-select" name="sort">
+                <option value="start_year_desc" {{ filters.sort == 'start_year_desc' ? 'selected' : '' }}>Newest First</option>
+                <option value="start_year_asc" {{ filters.sort == 'start_year_asc' ? 'selected' : '' }}>Oldest First</option>
+                <option value="rating_desc" {{ filters.sort == 'rating_desc' ? 'selected' : '' }}>Highest Rated</option>
+                <option value="title_asc" {{ filters.sort == 'title_asc' ? 'selected' : '' }}>Title A-Z</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <button type="submit" class="btn-secondary filter-btn">Apply Filters</button>
+        </div>
+    </form>
+</section>
+
+<!-- Shows Grid -->
+<main class="main-content">
+    {% if shows is empty %}
+    <div class="no-results">
+        <h3>No shows found</h3>
+        <p>Try adjusting your filters or search terms</p>
+    </div>
+    {% else %}
+    <div class="tv-shows-grid">
+        {% for show in shows %}
+        <div class="content-card">
+            <div class="content-card-actions">
+                <a href="{{ url('streamer.dashboard.shows.watch', {show_id: show.id}) }}" class="card-action-btn" title="Play First Episode">▶</a>
+                <a href="#" class="card-action-btn" title="Add to Playlist">+</a>
+            </div>
+            <a href="{{ url('streamer_frontend.front.show.detail', {show_id: show.id}) }}">
+                <img src="{{ show.thumbnail_path }}" alt="{{ show.title }}">
+                <div class="content-card-overlay">
+                    <div class="content-card-title">{{ show.title }}</div>
+                    <div class="content-card-year">{{ show.start_year }} • {{ show.season_count }} Seasons</div>
+                    {% if show.genres %}
+                        <div class="content-card-genres">
+                            {% for genre in show.genres|slice(0, 3) %}
+                                {% set genreName = genre.name ?? genre %}
+                                <span class="genre-tag">{{ genreName }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="content-card-rating">⭐ {{ show.rating }}</div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Load More Button -->
+    {% if hasNext %}
+    <div class="load-more-container">
+        {% set loadMoreUrl = '?page=' ~ (currentPage + 1) %}
+        {% if filters.search %}{% set loadMoreUrl = loadMoreUrl ~ '&search=' ~ filters.search %}{% endif %}
+        {% if filters.genre %}{% set loadMoreUrl = loadMoreUrl ~ '&genre=' ~ filters.genre %}{% endif %}
+        {% if filters.year %}{% set loadMoreUrl = loadMoreUrl ~ '&year=' ~ filters.year %}{% endif %}
+        {% if filters.rating %}{% set loadMoreUrl = loadMoreUrl ~ '&rating=' ~ filters.rating %}{% endif %}
+        {% if filters.sort %}{% set loadMoreUrl = loadMoreUrl ~ '&sort=' ~ filters.sort %}{% endif %}
+        <a href="{{ loadMoreUrl }}" class="btn-primary load-more-btn">Load More Shows</a>
+        <p class="load-more-info">Showing {{ shows|length }} of {{ total }} shows</p>
+    </div>
+    {% else %}
+    <div class="load-more-container">
+        <p class="load-more-info">Showing all {{ shows|length }} shows</p>
+    </div>
+    {% endif %}
+    
+</main>
+
+{% endblock %}

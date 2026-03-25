@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Episode - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-seasons.html">Seasons</a>
+            <span class="separator">›</span>
+            <a href="season-episodes.html">Episodes</a>
+            <span class="separator">›</span>
+            <a href="episode-delete.html">Delete Episode</a>
+        </div>
+
+        <div class="card">
+            <h2>🗑️ Delete Episode</h2>
+            
+            <div class="alert alert-danger">
+                <strong>⚠️ Warning:</strong> This action cannot be undone. Once an episode is deleted, it will be permanently removed from the system.
+            </div>
+
+            <div class="form-group">
+                <label for="episodeSearch">Search Episode to Delete</label>
+                <input type="text" id="episodeSearch" placeholder="Type to search episodes..." onkeyup="filterEpisodes()">
+            </div>
+
+            <div class="table-container">
+                <table id="episodeTable">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>TV Show</th>
+                            <th>Season</th>
+                            <th>Episode #</th>
+                            <th>Title</th>
+                            <th>Duration</th>
+                            <th>Rating</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" name="episodeSelect" value="1" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>Pilot</td>
+                            <td>58 min</td>
+                            <td>⭐ 9.0</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="episodeSelect" value="2" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>Cat's in the Bag...</td>
+                            <td>48 min</td>
+                            <td>⭐ 8.7</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="episodeSelect" value="3" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>1</td>
+                            <td>3</td>
+                            <td>...And the Bag's in the River</td>
+                            <td>47 min</td>
+                            <td>⭐ 8.8</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="episodeSelect" value="4" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>1</td>
+                            <td>4</td>
+                            <td>Cancer Man</td>
+                            <td>48 min</td>
+                            <td>⭐ 8.5</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="episodeSelect" value="5" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>1</td>
+                            <td>5</td>
+                            <td>Gray Matter</td>
+                            <td>48 min</td>
+                            <td>⭐ 8.6</td>
+                            <td><span style="color: green;">✅ Available</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="episodeSelect" value="6" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>1</td>
+                            <td>6</td>
+                            <td>Crazy Handful of Nothin'</td>
+                            <td>48 min</td>
+                            <td>⭐ 9.0</td>
+                            <td><span style="color: red;">❌ In Playlist</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="episodeSelect" value="7" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>1</td>
+                            <td>7</td>
+                            <td>A-No-Rough-Stuff-Type-Deal</td>
+                            <td>47 min</td>
+                            <td>⭐ 8.8</td>
+                            <td><span style="color: red;">❌ In Playlist</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label>
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <strong>Select All Episodes</strong>
+                </label>
+            </div>
+
+            <div id="selectedEpisodesInfo" style="margin-top: 20px; display: none;">
+                <div class="alert alert-warning">
+                    <strong>Selected Episodes:</strong> <span id="selectedCount">0</span>
+                    <div id="selectedList"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button id="deleteButton" class="btn btn-danger" onclick="confirmDelete()" disabled>🗑️ Delete Selected Episodes</button>
+                <a href="season-episodes.html" class="btn btn-primary">🔙 Back to Episodes</a>
+            </div>
+        </div>
+
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>🚨 Confirm Deletion</h2>
+                <p>Are you sure you want to delete the selected episode(s)?</p>
+                <p><strong>This action cannot be undone!</strong></p>
+                <div id="modalEpisodeList"></div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-danger" onclick="executeDelete()">Yes, Delete</button>
+                    <button class="btn btn-primary" onclick="closeModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterEpisodes() {
+            const searchValue = document.getElementById('episodeSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#episodeTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('input[name="episodeSelect"]');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateDeleteButton();
+        }
+
+        function updateDeleteButton() {
+            const checkboxes = document.querySelectorAll('input[name="episodeSelect"]:checked');
+            const deleteButton = document.getElementById('deleteButton');
+            const selectedEpisodesInfo = document.getElementById('selectedEpisodesInfo');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectedList = document.getElementById('selectedList');
+            
+            if (checkboxes.length > 0) {
+                deleteButton.disabled = false;
+                selectedEpisodesInfo.style.display = 'block';
+                selectedCount.textContent = checkboxes.length;
+                
+                let episodeNames = [];
+                checkboxes.forEach(cb => {
+                    const row = cb.closest('tr');
+                    const showName = row.cells[1].textContent;
+                    const seasonNumber = row.cells[2].textContent;
+                    const episodeNumber = row.cells[3].textContent;
+                    const episodeTitle = row.cells[4].textContent;
+                    const status = row.cells[7].textContent;
+                    episodeNames.push(`${showName} S${seasonNumber}E${episodeNumber} - ${episodeTitle} ${status.includes('In Playlist') ? '(⚠️ In Playlist)' : ''}`);
+                });
+                
+                selectedList.innerHTML = '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                    episodeNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            } else {
+                deleteButton.disabled = true;
+                selectedEpisodesInfo.style.display = 'none';
+            }
+        }
+
+        function confirmDelete() {
+            const checkboxes = document.querySelectorAll('input[name="episodeSelect"]:checked');
+            if (checkboxes.length === 0) return;
+            
+            let episodeNames = [];
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                const showName = row.cells[1].textContent;
+                const seasonNumber = row.cells[2].textContent;
+                const episodeNumber = row.cells[3].textContent;
+                const episodeTitle = row.cells[4].textContent;
+                const status = row.cells[7].textContent;
+                episodeNames.push(`${showName} S${seasonNumber}E${episodeNumber} - ${episodeTitle} ${status.includes('In Playlist') ? '(⚠️ In Playlist)' : ''}`);
+            });
+            
+            document.getElementById('modalEpisodeList').innerHTML = 
+                '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                episodeNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function executeDelete() {
+            const checkboxes = document.querySelectorAll('input[name="episodeSelect"]:checked');
+            
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                row.style.opacity = '0.5';
+                row.cells[7].innerHTML = '<span style="color: red;">❌ Deleting...</span>';
+            });
+            
+            setTimeout(() => {
+                checkboxes.forEach(cb => cb.closest('tr').remove());
+                closeModal();
+                alert('Selected episodes deleted successfully!');
+                updateDeleteButton();
+            }, 2000);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) closeModal();
+        }
+    </script>
+</body>
+</html>

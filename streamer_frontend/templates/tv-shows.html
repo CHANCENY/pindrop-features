@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Shows - CineStream</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-text">CineStream</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="movies.html" class="nav-link">Movies</a></li>
+                    <li><a href="tv-shows.html" class="nav-link active">TV Shows</a></li>
+                    <li><a href="playlists.html" class="nav-link">Playlists</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search TV shows...">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <button class="menu-toggle">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <h1 class="page-title">TV Shows</h1>
+            <p class="page-subtitle">Binge-watch your favorite series and discover new ones</p>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+        <div class="filters-container">
+            <div class="filter-group">
+                <label class="filter-label">Genre</label>
+                <select class="filter-select" id="genreFilter">
+                    <option value="">All Genres</option>
+                    <option value="drama">Drama</option>
+                    <option value="comedy">Comedy</option>
+                    <option value="action">Action</option>
+                    <option value="sci-fi">Sci-Fi</option>
+                    <option value="thriller">Thriller</option>
+                    <option value="reality">Reality</option>
+                    <option value="documentary">Documentary</option>
+                    <option value="animation">Animation</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Year</label>
+                <select class="filter-select" id="yearFilter">
+                    <option value="">All Years</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Sort By</label>
+                <select class="filter-select" id="sortByFilter">
+                    <option value="popular">Most Popular</option>
+                    <option value="newest">Newest First</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="title">Title A-Z</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- TV Shows Grid -->
+    <main class="main-content">
+        <div class="tv-shows-grid">
+            <!-- Tech Titans -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=7" class="card-action-btn" title="Play First Episode">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="tv-show-detail.html?id=7">
+                    <img src="https://picsum.photos/seed/tech-titans/300/450.jpg" alt="Tech Titans">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Tech Titans</div>
+                        <div class="content-card-year">2 Seasons • Ongoing</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.7</div>
+                </a>
+            </div>
+
+            <!-- Mystic Chronicles -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=8" class="card-action-btn" title="Play First Episode">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="tv-show-detail.html?id=8">
+                    <img src="https://picsum.photos/seed/mystic-chronicles/300/450.jpg" alt="Mystic Chronicles">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Mystic Chronicles</div>
+                        <div class="content-card-year">3 Seasons • Ongoing</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.1</div>
+                </a>
+            </div>
+
+            <!-- Code Breakers -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=10" class="card-action-btn" title="Play First Episode">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="tv-show-detail.html?id=10">
+                    <img src="https://picsum.photos/seed/code-breakers/300/450.jpg" alt="Code Breakers">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Code Breakers</div>
+                        <div class="content-card-year">2 Seasons • Completed</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.3</div>
+                </a>
+            </div>
+
+            <!-- Urban Legends -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=9" class="card-action-btn" title="Play First Episode">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="tv-show-detail.html?id=9">
+                    <img src="https://picsum.photos/seed/urban-legends/300/450.jpg" alt="Urban Legends">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Urban Legends</div>
+                        <div class="content-card-year">1 Season • Ongoing</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 7.9</div>
+                </a>
+            </div>
+
+            <!-- Silicon Valley Dreams -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=11" class="card-action-btn" title="Play First Episode">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="tv-show-detail.html?id=11">
+                    <img src="https://picsum.photos/seed/silicon-valley-dreams/300/450.jpg" alt="Silicon Valley Dreams">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Silicon Valley Dreams</div>
+                        <div class="content-card-year">4 Seasons • Completed</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.4</div>
+                </a>
+            </div>
+
+            <!-- Dark Web -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=12" class="card-action-btn" title="Play First Episode">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="tv-show-detail.html?id=12">
+                    <img src="https://picsum.photos/seed/dark-web/300/450.jpg" alt="Dark Web">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Dark Web</div>
+                        <div class="content-card-year">2 Seasons • Ongoing</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 7.6</div>
+                </a>
+            </div>
+
+            <!-- Future Tech -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=13" class="card-action-btn" title="Play First Episode">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="tv-show-detail.html?id=13">
+                    <img src="https://picsum.photos/seed/future-tech/300/450.jpg" alt="Future Tech">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Future Tech</div>
+                        <div class="content-card-year">1 Season • Ongoing</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.0</div>
+                </a>
+            </div>
+
+            <!-- Cyber Detectives -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=14" class="card-action-btn" title="Play First Episode">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="tv-show-detail.html?id=14">
+                    <img src="https://picsum.photos/seed/cyber-detectives/300/450.jpg" alt="Cyber Detectives">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Cyber Detectives</div>
+                        <div class="content-card-year">3 Seasons • Completed</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 7.8</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Load More Button -->
+        <div class="load-more-container">
+            <button class="btn-primary load-more-btn" id="loadMoreBtn">Load More Shows</button>
+        </div>
+    </main>
+
+    </body>
+</html>

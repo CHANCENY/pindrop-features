@@ -1,0 +1,6 @@
+name: "Streamer Plugin"
+description: "Provides TMDB movies and tv shows"
+version: "1.0.0"
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"

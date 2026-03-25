@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Season - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-seasons.html">Seasons</a>
+            <span class="separator">›</span>
+            <a href="season-delete.html">Delete Season</a>
+        </div>
+
+        <div class="card">
+            <h2>🗑️ Delete Season</h2>
+            
+            <div class="alert alert-danger">
+                <strong>⚠️ Warning:</strong> This action cannot be undone. Deleting a season will also remove all associated episodes.
+            </div>
+
+            <div class="form-group">
+                <label for="seasonSearch">Search Season to Delete</label>
+                <input type="text" id="seasonSearch" placeholder="Type to search seasons..." onkeyup="filterSeasons()">
+            </div>
+
+            <div class="table-container">
+                <table id="seasonTable">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>TV Show</th>
+                            <th>Season</th>
+                            <th>Title</th>
+                            <th>Episodes</th>
+                            <th>Release Year</th>
+                            <th>Rating</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" name="seasonSelect" value="1" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>1</td>
+                            <td>Season 1</td>
+                            <td>7</td>
+                            <td>2008</td>
+                            <td>⭐ 8.9</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="seasonSelect" value="2" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>2</td>
+                            <td>Season 2</td>
+                            <td>13</td>
+                            <td>2009</td>
+                            <td>⭐ 9.0</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="seasonSelect" value="3" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>3</td>
+                            <td>Season 3</td>
+                            <td>13</td>
+                            <td>2010</td>
+                            <td>⭐ 9.1</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="seasonSelect" value="4" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>4</td>
+                            <td>Season 4</td>
+                            <td>13</td>
+                            <td>2011</td>
+                            <td>⭐ 9.2</td>
+                            <td><span style="color: red;">❌ In Playlist</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="seasonSelect" value="5" onchange="updateDeleteButton()"></td>
+                            <td>Breaking Bad</td>
+                            <td>5</td>
+                            <td>Season 5</td>
+                            <td>16</td>
+                            <td>2012-2013</td>
+                            <td>⭐ 9.5</td>
+                            <td><span style="color: red;">❌ In Playlist</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="seasonSelect" value="6" onchange="updateDeleteButton()"></td>
+                            <td>Game of Thrones</td>
+                            <td>1</td>
+                            <td>Season 1</td>
+                            <td>10</td>
+                            <td>2011</td>
+                            <td>⭐ 9.0</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="seasonSelect" value="7" onchange="updateDeleteButton()"></td>
+                            <td>Stranger Things</td>
+                            <td>4</td>
+                            <td>Season 4</td>
+                            <td>9</td>
+                            <td>2022</td>
+                            <td>⭐ 8.8</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label>
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <strong>Select All Seasons</strong>
+                </label>
+            </div>
+
+            <div id="selectedSeasonsInfo" style="margin-top: 20px; display: none;">
+                <div class="alert alert-warning">
+                    <strong>Selected Seasons:</strong> <span id="selectedCount">0</span>
+                    <div id="selectedList"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button id="deleteButton" class="btn btn-danger" onclick="confirmDelete()" disabled>🗑️ Delete Selected Seasons</button>
+                <a href="tvshow-seasons.html" class="btn btn-primary">🔙 Back to Seasons</a>
+            </div>
+        </div>
+
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>🚨 Confirm Deletion</h2>
+                <p>Are you sure you want to delete the selected season(s)?</p>
+                <p><strong>This will also delete all episodes in these seasons!</strong></p>
+                <div id="modalSeasonList"></div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-danger" onclick="executeDelete()">Yes, Delete</button>
+                    <button class="btn btn-primary" onclick="closeModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterSeasons() {
+            const searchValue = document.getElementById('seasonSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#seasonTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('input[name="seasonSelect"]');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateDeleteButton();
+        }
+
+        function updateDeleteButton() {
+            const checkboxes = document.querySelectorAll('input[name="seasonSelect"]:checked');
+            const deleteButton = document.getElementById('deleteButton');
+            const selectedSeasonsInfo = document.getElementById('selectedSeasonsInfo');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectedList = document.getElementById('selectedList');
+            
+            if (checkboxes.length > 0) {
+                deleteButton.disabled = false;
+                selectedSeasonsInfo.style.display = 'block';
+                selectedCount.textContent = checkboxes.length;
+                
+                let seasonNames = [];
+                checkboxes.forEach(cb => {
+                    const row = cb.closest('tr');
+                    const showName = row.cells[1].textContent;
+                    const seasonNumber = row.cells[2].textContent;
+                    const status = row.cells[7].textContent;
+                    seasonNames.push(`${showName} - ${seasonNumber} ${status.includes('In Playlist') ? '(⚠️ In Playlist)' : ''}`);
+                });
+                
+                selectedList.innerHTML = '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                    seasonNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            } else {
+                deleteButton.disabled = true;
+                selectedSeasonsInfo.style.display = 'none';
+            }
+        }
+
+        function confirmDelete() {
+            const checkboxes = document.querySelectorAll('input[name="seasonSelect"]:checked');
+            if (checkboxes.length === 0) return;
+            
+            let seasonNames = [];
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                const showName = row.cells[1].textContent;
+                const seasonNumber = row.cells[2].textContent;
+                const status = row.cells[7].textContent;
+                seasonNames.push(`${showName} - ${seasonNumber} ${status.includes('In Playlist') ? '(⚠️ In Playlist)' : ''}`);
+            });
+            
+            document.getElementById('modalSeasonList').innerHTML = 
+                '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                seasonNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function executeDelete() {
+            const checkboxes = document.querySelectorAll('input[name="seasonSelect"]:checked');
+            
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                row.style.opacity = '0.5';
+                row.cells[7].innerHTML = '<span style="color: red;">❌ Deleting...</span>';
+            });
+            
+            setTimeout(() => {
+                checkboxes.forEach(cb => cb.closest('tr').remove());
+                closeModal();
+                alert('Selected seasons deleted successfully!');
+                updateDeleteButton();
+            }, 2000);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) closeModal();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlists - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="playlists.html">Playlists</a>
+        </div>
+
+        <div class="card">
+            <h2>📋 Movie Playlists Management</h2>
+            <div style="margin-bottom: 20px;">
+                <a href="playlist-create.html" class="btn btn-primary">➕ Create New Playlist</a>
+                <a href="playlist-edit.html" class="btn btn-warning">✏️ Edit Playlist</a>
+                <a href="playlist-delete.html" class="btn btn-danger">🗑️ Delete Playlist</a>
+                <a href="movie-cutting.html" class="btn btn-success">✂️ Movie Cutting</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Playlist Name</th>
+                            <th>Type</th>
+                            <th>Movies</th>
+                            <th>Total Duration</th>
+                            <th>Created</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Action Marathon</td>
+                            <td>Manual</td>
+                            <td>8</td>
+                            <td>18h 24min</td>
+                            <td>Jan 15, 2024</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                            <td>
+                                <a href="playlist-edit.html?id=1" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="playlist-delete.html?id=1" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Sci-Fi Classics</td>
+                            <td>Manual</td>
+                            <td>6</td>
+                            <td>14h 12min</td>
+                            <td>Jan 20, 2024</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                            <td>
+                                <a href="playlist-edit.html?id=2" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="playlist-delete.html?id=2" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Best of 2023</td>
+                            <td>Auto</td>
+                            <td>10</td>
+                            <td>22h 45min</td>
+                            <td>Dec 31, 2023</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                            <td>
+                                <a href="playlist-edit.html?id=3" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="playlist-delete.html?id=3" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Comedy Night</td>
+                            <td>Manual</td>
+                            <td>5</td>
+                            <td>9h 30min</td>
+                            <td>Feb 5, 2024</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                            <td>
+                                <a href="playlist-edit.html?id=4" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="playlist-delete.html?id=4" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Horror Collection</td>
+                            <td>Manual</td>
+                            <td>7</td>
+                            <td>15h 18min</td>
+                            <td>Feb 10, 2024</td>
+                            <td><span style="color: blue;">🔄 Processing</span></td>
+                            <td>
+                                <a href="playlist-edit.html?id=5" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="playlist-delete.html?id=5" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Weekend Binge</td>
+                            <td>Cut</td>
+                            <td>3</td>
+                            <td>4h 30min</td>
+                            <td>Feb 12, 2024</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                            <td>
+                                <a href="playlist-edit.html?id=6" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="playlist-delete.html?id=6" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <p>Showing 1-6 of 12 playlists</p>
+                <div>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">← Previous</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">1</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">2</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">Next →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item">
+                <h3>📊 Playlist Statistics</h3>
+                <p><strong>Total Playlists:</strong> 12</p>
+                <p><strong>Manual Playlists:</strong> 8</p>
+                <p><strong>Auto Playlists:</strong> 2</p>
+                <p><strong>Cut Playlists:</strong> 2</p>
+                <p><strong>Total Movies:</strong> 84</p>
+            </div>
+            <div class="grid-item">
+                <h3>🎯 Popular Genres</h3>
+                <p>🔥 Action: 4 playlists</p>
+                <p>🔥 Comedy: 3 playlists</p>
+                <p>🔥 Sci-Fi: 2 playlists</p>
+                <p>🔥 Horror: 2 playlists</p>
+                <p>🔥 Drama: 1 playlist</p>
+            </div>
+            <div class="grid-item">
+                <h3>⏱️ Duration Stats</h3>
+                <p><strong>Total Duration:</strong> 84h 39min</p>
+                <p><strong>Average Duration:</strong> 14h 6min</p>
+                <p><strong>Longest:</strong> 22h 45min</p>
+                <p><strong>Shortest:</strong> 4h 30min</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🎬 Quick Actions</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="playlist-create.html" class="btn btn-primary">➕ Create Playlist</a>
+                <a href="movie-cutting.html" class="btn btn-success">✂️ Cut Movies</a>
+                <a href="playlist-create.html?type=auto" class="btn btn-warning">🤖 Auto Playlist</a>
+                <a href="movies.html" class="btn btn-primary">🎬 Browse Movies</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📈 Recent Activity</h3>
+            <div class="playlist-item">
+                <div class="playlist-item-info">
+                    <strong>Weekend Binge</strong> - Created 2 days ago
+                    <p>3 movies, 4h 30min duration</p>
+                </div>
+                <div class="playlist-item-actions">
+                    <span style="color: green;">✅ Completed</span>
+                </div>
+            </div>
+            <div class="playlist-item">
+                <div class="playlist-item-info">
+                    <strong>Horror Collection</strong> - Processing
+                    <p>7 movies, 15h 18min duration</p>
+                </div>
+                <div class="playlist-item-actions">
+                    <span style="color: blue;">🔄 Processing</span>
+                </div>
+            </div>
+            <div class="playlist-item">
+                <div class="playlist-item-info">
+                    <strong>Comedy Night</strong> - Created 1 week ago
+                    <p>5 movies, 9h 30min duration</p>
+                </div>
+                <div class="playlist-item-actions">
+                    <span style="color: green;">✅ Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

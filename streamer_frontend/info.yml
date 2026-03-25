@@ -1,0 +1,6 @@
+name: "Streamer Frontend Plugin"
+description: "Provides streamer frontend services, templates and routing"
+version: "1.0.0"
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"

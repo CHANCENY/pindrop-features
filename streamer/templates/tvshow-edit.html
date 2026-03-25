@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit TV Show - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-edit.html">Edit TV Show</a>
+        </div>
+
+        <div class="card">
+            <h2>✏️ Edit TV Show</h2>
+            
+            <form id="tvshowEditForm">
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="tvshowSelect">TV Show to Edit *</label>
+                        <select id="tvshowSelect" name="tvshowId" required onchange="loadTVShow()">
+                            <option value="">Select TV Show to Edit</option>
+                            <option value="1">Breaking Bad</option>
+                            <option value="2">Game of Thrones</option>
+                            <option value="3">Stranger Things</option>
+                            <option value="4">The Office</option>
+                            <option value="5">Friends</option>
+                            <option value="6">The Mandalorian</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="editForm" style="display: none;">
+                    <h3>📝 Edit TV Show Details</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editTitle">TV Show Title *</label>
+                            <input type="text" id="editTitle" name="title" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editGenre">Genre *</label>
+                            <select id="editGenre" name="genre" required>
+                                <option value="">Select Genre</option>
+                                <option value="drama">Drama</option>
+                                <option value="comedy">Comedy</option>
+                                <option value="action">Action</option>
+                                <option value="sci-fi">Sci-Fi</option>
+                                <option value="horror">Horror</option>
+                                <option value="thriller">Thriller</option>
+                                <option value="romance">Romance</option>
+                                <option value="fantasy">Fantasy</option>
+                                <option value="documentary">Documentary</option>
+                                <option value="reality">Reality TV</option>
+                                <option value="animation">Animation</option>
+                                <option value="crime">Crime</option>
+                                <option value="mystery">Mystery</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editStartYear">Start Year *</label>
+                            <input type="number" id="editStartYear" name="startYear" required min="1900" max="2030">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEndYear">End Year</label>
+                            <input type="number" id="editEndYear" name="endYear" min="1900" max="2030">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editRating">Rating (0-10)</label>
+                            <input type="number" id="editRating" name="rating" min="0" max="10" step="0.1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editStatus">Status *</label>
+                            <select id="editStatus" name="status" required>
+                                <option value="">Select Status</option>
+                                <option value="ongoing">🔄 Ongoing</option>
+                                <option value="completed">✅ Completed</option>
+                                <option value="cancelled">❌ Cancelled</option>
+                                <option value="hiatus">⏸️ On Hiatus</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDescription">Description</label>
+                        <textarea id="editDescription" name="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editCreator">Creator(s)</label>
+                            <input type="text" id="editCreator" name="creator">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editNetwork">Network/Platform</label>
+                            <input type="text" id="editNetwork" name="network">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCast">Main Cast (comma separated)</label>
+                        <input type="text" id="editCast" name="cast">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTags">Tags (comma separated)</label>
+                        <input type="text" id="editTags" name="tags">
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editFeatured" name="featured">
+                                Featured TV Show
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editAdultContent" name="adultContent">
+                                Contains Adult Content
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button type="submit" class="btn btn-success">💾 Update TV Show</button>
+                        <button type="button" class="btn btn-warning" onclick="resetForm()">🔄 Reset</button>
+                        <a href="tv-shows.html" class="btn btn-danger">❌ Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const tvshowData = {
+            1: { 
+                title: "Breaking Bad", 
+                genre: "crime", 
+                startYear: 2008, 
+                endYear: 2013, 
+                rating: 9.5, 
+                status: "completed",
+                description: "A high school chemistry teacher turned methamphetamine cook partners with a former student to secure his family's future.",
+                creator: "Vince Gilligan",
+                network: "AMC",
+                cast: "Bryan Cranston, Aaron Paul, Anna Gunn",
+                tags: "crime, drama, thriller, award-winning",
+                featured: true,
+                adultContent: true
+            },
+            2: { 
+                title: "Game of Thrones", 
+                genre: "fantasy", 
+                startYear: 2011, 
+                endYear: 2019, 
+                rating: 9.3, 
+                status: "completed",
+                description: "Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns.",
+                creator: "David Benioff, D.B. Weiss",
+                network: "HBO",
+                cast: "Emilia Clarke, Peter Dinklage, Kit Harington",
+                tags: "fantasy, drama, action, epic",
+                featured: true,
+                adultContent: true
+            },
+            3: { 
+                title: "Stranger Things", 
+                genre: "sci-fi", 
+                startYear: 2016, 
+                endYear: null, 
+                rating: 8.7, 
+                status: "ongoing",
+                description: "When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces.",
+                creator: "Duffer Brothers",
+                network: "Netflix",
+                cast: "Millie Bobby Brown, Finn Wolfhard, David Harbour",
+                tags: "sci-fi, horror, mystery, 80s",
+                featured: true,
+                adultContent: false
+            },
+            4: { 
+                title: "The Office", 
+                genre: "comedy", 
+                startYear: 2005, 
+                endYear: 2013, 
+                rating: 8.9, 
+                status: "completed",
+                description: "A mockumentary sitcom that depicts the everyday work lives of office employees in Scranton, Pennsylvania.",
+                creator: "Greg Daniels",
+                network: "NBC",
+                cast: "Steve Carell, Rainn Wilson, John Krasinski",
+                tags: "comedy, mockumentary, workplace",
+                featured: false,
+                adultContent: false
+            },
+            5: { 
+                title: "Friends", 
+                genre: "comedy", 
+                startYear: 1994, 
+                endYear: 2004, 
+                rating: 8.9, 
+                status: "completed",
+                description: "Follows the personal and professional lives of six twenty to thirty-something-year-old friends living in Manhattan.",
+                creator: "David Crane, Marta Kauffman",
+                network: "NBC",
+                cast: "Jennifer Aniston, Courteney Cox, Lisa Kudrow",
+                tags: "comedy, sitcom, friends, romance",
+                featured: true,
+                adultContent: false
+            },
+            6: { 
+                title: "The Mandalorian", 
+                genre: "sci-fi", 
+                startYear: 2019, 
+                endYear: null, 
+                rating: 8.7, 
+                status: "ongoing",
+                description: "The travels of a lone bounty hunter in the outer reaches of the galaxy, far from the authority of the New Republic.",
+                creator: "Jon Favreau",
+                network: "Disney+",
+                cast: "Pedro Pascal, Carl Weathers, Gina Carano",
+                tags: "sci-fi, star wars, action, adventure",
+                featured: true,
+                adultContent: false
+            }
+        };
+
+        function loadTVShow() {
+            const select = document.getElementById('tvshowSelect');
+            const tvshowId = select.value;
+            
+            if (!tvshowId) {
+                document.getElementById('editForm').style.display = 'none';
+                return;
+            }
+
+            const tvshow = tvshowData[tvshowId];
+            if (!tvshow) return;
+
+            document.getElementById('editTitle').value = tvshow.title;
+            document.getElementById('editGenre').value = tvshow.genre;
+            document.getElementById('editStartYear').value = tvshow.startYear;
+            document.getElementById('editEndYear').value = tvshow.endYear || '';
+            document.getElementById('editRating').value = tvshow.rating;
+            document.getElementById('editStatus').value = tvshow.status;
+            document.getElementById('editDescription').value = tvshow.description;
+            document.getElementById('editCreator').value = tvshow.creator;
+            document.getElementById('editNetwork').value = tvshow.network;
+            document.getElementById('editCast').value = tvshow.cast;
+            document.getElementById('editTags').value = tvshow.tags;
+            document.getElementById('editFeatured').checked = tvshow.featured;
+            document.getElementById('editAdultContent').checked = tvshow.adultContent;
+
+            // Handle end year field based on status
+            const endYearField = document.getElementById('editEndYear');
+            if (tvshow.status === 'ongoing') {
+                endYearField.disabled = true;
+                endYearField.placeholder = 'Present (ongoing)';
+            } else {
+                endYearField.disabled = false;
+                endYearField.placeholder = 'Enter end year';
+            }
+
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('tvshowEditForm').reset();
+            document.getElementById('tvshowSelect').value = '';
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        // Handle status change for end year field
+        document.getElementById('editStatus').addEventListener('change', function() {
+            const endYearField = document.getElementById('editEndYear');
+            if (this.value === 'ongoing') {
+                endYearField.value = '';
+                endYearField.disabled = true;
+                endYearField.placeholder = 'Present (ongoing)';
+            } else {
+                endYearField.disabled = false;
+                endYearField.placeholder = 'Enter end year';
+            }
+        });
+
+        document.getElementById('tvshowEditForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('TV show updated successfully!');
+            window.location.href = 'tv-shows.html';
+        });
+    </script>
+</body>
+</html>

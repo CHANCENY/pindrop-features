@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Season - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-seasons.html">Seasons</a>
+            <span class="separator">›</span>
+            <a href="season-edit.html">Edit Season</a>
+        </div>
+
+        <div class="card">
+            <h2>✏️ Edit Season</h2>
+            
+            <form id="seasonEditForm">
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="seasonSelect">Season to Edit *</label>
+                        <select id="seasonSelect" name="seasonId" required onchange="loadSeason()">
+                            <option value="">Select Season to Edit</option>
+                            <option value="1">Breaking Bad - Season 1</option>
+                            <option value="2">Breaking Bad - Season 2</option>
+                            <option value="3">Breaking Bad - Season 3</option>
+                            <option value="4">Breaking Bad - Season 4</option>
+                            <option value="5">Breaking Bad - Season 5</option>
+                            <option value="6">Game of Thrones - Season 1</option>
+                            <option value="7">Stranger Things - Season 4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="editForm" style="display: none;">
+                    <h3>📝 Edit Season Details</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editTvshowId">TV Show *</label>
+                            <select id="editTvshowId" name="tvshowId" required>
+                                <option value="">Select TV Show</option>
+                                <option value="1">Breaking Bad</option>
+                                <option value="2">Game of Thrones</option>
+                                <option value="3">Stranger Things</option>
+                                <option value="4">The Office</option>
+                                <option value="5">Friends</option>
+                                <option value="6">The Mandalorian</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSeasonNumber">Season Number *</label>
+                            <input type="number" id="editSeasonNumber" name="seasonNumber" required min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editSeasonTitle">Season Title</label>
+                        <input type="text" id="editSeasonTitle" name="seasonTitle">
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="editReleaseYear">Release Year *</label>
+                            <input type="text" id="editReleaseYear" name="releaseYear" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEpisodeCount">Number of Episodes *</label>
+                            <input type="number" id="editEpisodeCount" name="episodeCount" required min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDescription">Season Description</label>
+                        <textarea id="editDescription" name="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTags">Tags (comma separated)</label>
+                        <input type="text" id="editTags" name="tags">
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editFeatured" name="featured">
+                                Featured Season
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editFinalSeason" name="finalSeason">
+                                Final Season
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button type="submit" class="btn btn-success">💾 Update Season</button>
+                        <button type="button" class="btn btn-warning" onclick="resetForm()">🔄 Reset</button>
+                        <a href="tvshow-seasons.html" class="btn btn-danger">❌ Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const seasonData = {
+            1: { 
+                tvshowId: "1", 
+                seasonNumber: 1, 
+                seasonTitle: "Season 1", 
+                releaseYear: "2008", 
+                episodeCount: 7, 
+                description: "Walter White, a high school chemistry teacher, is diagnosed with lung cancer and turns to making methamphetamine to secure his family's future.",
+                tags: "introduction, cancer, meth, beginning",
+                featured: false,
+                finalSeason: false
+            },
+            2: { 
+                tvshowId: "1", 
+                seasonNumber: 2, 
+                seasonTitle: "Season 2", 
+                releaseYear: "2009", 
+                episodeCount: 13, 
+                description: "Walter and Jesse expand their operation while dealing with the consequences of their actions and new dangerous partnerships.",
+                tags: "expansion, consequences, partnership",
+                featured: false,
+                finalSeason: false
+            },
+            3: { 
+                tvshowId: "1", 
+                seasonNumber: 3, 
+                seasonTitle: "Season 3", 
+                releaseYear: "2010", 
+                episodeCount: 13, 
+                description: "Walter battles with Gus Fring as he tries to maintain control over his drug empire and family life.",
+                tags: "conflict, gus fring, empire",
+                featured: false,
+                finalSeason: false
+            },
+            4: { 
+                tvshowId: "1", 
+                seasonNumber: 4, 
+                seasonTitle: "Season 4", 
+                releaseYear: "2011", 
+                episodeCount: 13, 
+                description: "The intense rivalry between Walter and Gus reaches its climax in a season of strategic moves and deadly consequences.",
+                tags: "rivalry, climax, strategy",
+                featured: true,
+                finalSeason: false
+            },
+            5: { 
+                tvshowId: "1", 
+                seasonNumber: 5, 
+                seasonTitle: "Season 5", 
+                releaseYear: "2012-2013", 
+                episodeCount: 16, 
+                description: "The final chapter of Walter White's transformation into Heisenberg, as he faces the ultimate consequences of his choices.",
+                tags: "finale, heisenberg, consequences",
+                featured: true,
+                finalSeason: true
+            },
+            6: { 
+                tvshowId: "2", 
+                seasonNumber: 1, 
+                seasonTitle: "Season 1", 
+                releaseYear: "2011", 
+                episodeCount: 10, 
+                description: "The Seven Kingdoms are at war, while the Night Watch watches the lands beyond the Wall.",
+                tags: "war, kingdoms, night watch",
+                featured: true,
+                finalSeason: false
+            },
+            7: { 
+                tvshowId: "3", 
+                seasonNumber: 4, 
+                seasonTitle: "Season 4", 
+                releaseYear: "2022", 
+                episodeCount: 9, 
+                description: "Vecna's curse plagues Hawkins as the gang faces their most dangerous supernatural threat yet.",
+                tags: "vecna, supernatural, hawkins",
+                featured: true,
+                finalSeason: false
+            }
+        };
+
+        function loadSeason() {
+            const select = document.getElementById('seasonSelect');
+            const seasonId = select.value;
+            
+            if (!seasonId) {
+                document.getElementById('editForm').style.display = 'none';
+                return;
+            }
+
+            const season = seasonData[seasonId];
+            if (!season) return;
+
+            document.getElementById('editTvshowId').value = season.tvshowId;
+            document.getElementById('editSeasonNumber').value = season.seasonNumber;
+            document.getElementById('editSeasonTitle').value = season.seasonTitle;
+            document.getElementById('editReleaseYear').value = season.releaseYear;
+            document.getElementById('editEpisodeCount').value = season.episodeCount;
+            document.getElementById('editDescription').value = season.description;
+            document.getElementById('editTags').value = season.tags;
+            document.getElementById('editFeatured').checked = season.featured;
+            document.getElementById('editFinalSeason').checked = season.finalSeason;
+
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('seasonEditForm').reset();
+            document.getElementById('seasonSelect').value = '';
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        document.getElementById('seasonEditForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Season updated successfully!');
+            window.location.href = 'tvshow-seasons.html';
+        });
+    </script>
+</body>
+</html>

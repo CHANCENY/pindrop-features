@@ -1,0 +1,61 @@
+<div class="series-container">
+
+    <div class="series-header">
+        <img src="https://image.tmdb.org/t/p/w185{{ series.poster }}" alt="{{ series.title }}" width="200">
+
+        <div class="series-info">
+            <h1>{{ series.title|trim }}</h1>
+
+            <p>
+                ⭐ {{ series.rating }}
+                • {{ series.status }}
+                • {{ series.start_year|date("Y") }}
+                {% if series.end_year %}
+                    - {{ series.end_year|date("Y") }}
+                {% endif %}
+            </p>
+
+            <p>
+                🌍 {{ series.country|upper }}
+                • {{ series.language|upper }}
+                • {{ series.season_count }} Seasons
+            </p>
+
+            <p>{{ series.description }}</p>
+
+            {# Decode genres JSON #}
+            {% set genres = series.genres|json_decode %}
+            {% if genres %}
+                <p>
+                    <strong>Genres:</strong>
+                    {% for genre in genres %}
+                        <span>{{ genre.value }}</span>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="season-section">
+        <h2>{{ season.title }}</h2>
+
+        <img src="https://image.tmdb.org/t/p/w185{{ season.poster }}" alt="{{ season.title }}" width="150">
+
+        <p>
+            Season {{ season.season_number }}
+            • {{ season.episode_count }} Episodes
+            • ⭐ {{ season.vote_average }}
+        </p>
+
+        <p>
+            Air Date: {{ season.air_date|date("F j, Y") }}
+        </p>
+
+        {% if season.description %}
+            <p>{{ season.description }}</p>
+        {% endif %}
+    </div>
+
+</div>

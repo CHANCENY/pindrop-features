@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineStream - Watch Movies & TV Shows</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-text">CineStream</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link active">Home</a></li>
+                    <li><a href="movies.html" class="nav-link">Movies</a></li>
+                    <li><a href="tv-shows.html" class="nav-link">TV Shows</a></li>
+                    <li><a href="playlists.html" class="nav-link">Playlists</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search movies, shows...">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <button class="menu-toggle">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <img src="https://picsum.photos/seed/featured-movie/1920/1080.jpg" alt="Featured Content">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">FEATURED</div>
+            <h1 class="hero-title">Cosmic Odyssey</h1>
+            <div class="hero-meta">
+                <span class="hero-year">2024</span>
+                <span class="hero-rating">⭐ 8.5</span>
+                <span class="hero-duration">2h 28min</span>
+            </div>
+            <p class="hero-description">
+                An epic journey through space and time, where humanity's future hangs in the balance.
+            </p>
+            <div class="hero-buttons">
+                <a href="player.html?id=1" class="btn-primary play-btn">▶ Play Now</a>
+                <a href="movie-detail.html?id=1" class="btn-secondary more-info-btn">ℹ More Info</a>
+                <a href="playlists.html" class="btn-secondary add-to-list-btn">+ Add to List</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Continue Watching -->
+        <section class="content-section">
+            <h2 class="section-title">Continue Watching</h2>
+            <div class="content-row">
+                <!-- Cosmic Odyssey -->
+                <div class="content-card continue-watching">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=1" class="card-action-btn" title="Resume">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <img src="https://picsum.photos/seed/cosmic-odyssey/300/450.jpg" alt="Cosmic Odyssey">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 65%"></div>
+                    </div>
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Cosmic Odyssey</div>
+                        <div class="content-card-year">65% Complete • Movie</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.5</div>
+                </div>
+                
+                <!-- Tech Titans -->
+                <div class="content-card continue-watching">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=7" class="card-action-btn" title="Resume">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <img src="https://picsum.photos/seed/tech-titans/300/450.jpg" alt="Tech Titans">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 30%"></div>
+                    </div>
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Tech Titans</div>
+                        <div class="content-card-year">30% Complete • TV Show</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.7</div>
+                </div>
+                
+                <!-- The Last Algorithm -->
+                <div class="content-card continue-watching">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=3" class="card-action-btn" title="Resume">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <img src="https://picsum.photos/seed/last-algorithm/300/450.jpg" alt="The Last Algorithm">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 90%"></div>
+                    </div>
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">The Last Algorithm</div>
+                        <div class="content-card-year">90% Complete • Movie</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.2</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trending Now -->
+        <section class="content-section">
+            <h2 class="section-title">Trending Now</h2>
+            <div class="content-row">
+                <!-- Quantum Paradox -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=5" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=5">
+                        <img src="https://picsum.photos/seed/quantum-paradox/300/450.jpg" alt="Quantum Paradox">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Quantum Paradox</div>
+                            <div class="content-card-year">2024 • Movie</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.9</div>
+                    </a>
+                </div>
+                
+                <!-- Cosmic Odyssey -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=1" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=1">
+                        <img src="https://picsum.photos/seed/cosmic-odyssey/300/450.jpg" alt="Cosmic Odyssey">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Cosmic Odyssey</div>
+                            <div class="content-card-year">2024 • Movie</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.5</div>
+                    </a>
+                </div>
+                
+                <!-- Tech Titans -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=7" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="tv-show-detail.html?id=7">
+                        <img src="https://picsum.photos/seed/tech-titans/300/450.jpg" alt="Tech Titans">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Tech Titans</div>
+                            <div class="content-card-year">2024 • TV Show</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.7</div>
+                    </a>
+                </div>
+                
+                <!-- The Last Algorithm -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=3" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=3">
+                        <img src="https://picsum.photos/seed/last-algorithm/300/450.jpg" alt="The Last Algorithm">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">The Last Algorithm</div>
+                            <div class="content-card-year">2024 • Movie</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.2</div>
+                    </a>
+                </div>
+                
+                <!-- Neon Nights -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=2" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=2">
+                        <img src="https://picsum.photos/seed/neon-nights/300/450.jpg" alt="Neon Nights">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Neon Nights</div>
+                            <div class="content-card-year">2023 • Movie</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.8</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Movies -->
+        <section class="content-section">
+            <h2 class="section-title">Popular Movies</h2>
+            <div class="content-row">
+                <!-- Quantum Paradox -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=5" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=5">
+                        <img src="https://picsum.photos/seed/quantum-paradox/300/450.jpg" alt="Quantum Paradox">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Quantum Paradox</div>
+                            <div class="content-card-year">2024 • 2h 35min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.9</div>
+                    </a>
+                </div>
+                
+                <!-- Cosmic Odyssey -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=1" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=1">
+                        <img src="https://picsum.photos/seed/cosmic-odyssey/300/450.jpg" alt="Cosmic Odyssey">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Cosmic Odyssey</div>
+                            <div class="content-card-year">2024 • 2h 28min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.5</div>
+                    </a>
+                </div>
+                
+                <!-- The Last Algorithm -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=3" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=3">
+                        <img src="https://picsum.photos/seed/last-algorithm/300/450.jpg" alt="The Last Algorithm">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">The Last Algorithm</div>
+                            <div class="content-card-year">2024 • 2h 05min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.2</div>
+                    </a>
+                </div>
+                
+                <!-- Neon Nights -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=2" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=2">
+                        <img src="https://picsum.photos/seed/neon-nights/300/450.jpg" alt="Neon Nights">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Neon Nights</div>
+                            <div class="content-card-year">2023 • 2h 15min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.8</div>
+                    </a>
+                </div>
+                
+                <!-- Digital Dreams -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=4" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=4">
+                        <img src="https://picsum.photos/seed/digital-dreams/300/450.jpg" alt="Digital Dreams">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Digital Dreams</div>
+                            <div class="content-card-year">2023 • 1h 55min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.5</div>
+                    </a>
+                </div>
+                
+                <!-- Shadow Protocol -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=6" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=6">
+                        <img src="https://picsum.photos/seed/shadow-protocol/300/450.jpg" alt="Shadow Protocol">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Shadow Protocol</div>
+                            <div class="content-card-year">2023 • 2h 10min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.2</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular TV Shows -->
+        <section class="content-section">
+            <h2 class="section-title">Popular TV Shows</h2>
+            <div class="content-row">
+                <!-- Tech Titans -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=7" class="card-action-btn" title="Play First Episode">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="tv-show-detail.html?id=7">
+                        <img src="https://picsum.photos/seed/tech-titans/300/450.jpg" alt="Tech Titans">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Tech Titans</div>
+                            <div class="content-card-year">2 Seasons • Ongoing</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.7</div>
+                    </a>
+                </div>
+                
+                <!-- Mystic Chronicles -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=8" class="card-action-btn" title="Play First Episode">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="tv-show-detail.html?id=8">
+                        <img src="https://picsum.photos/seed/mystic-chronicles/300/450.jpg" alt="Mystic Chronicles">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Mystic Chronicles</div>
+                            <div class="content-card-year">3 Seasons • Ongoing</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.1</div>
+                    </a>
+                </div>
+                
+                <!-- Code Breakers -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=10" class="card-action-btn" title="Play First Episode">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="tv-show-detail.html?id=10">
+                        <img src="https://picsum.photos/seed/code-breakers/300/450.jpg" alt="Code Breakers">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Code Breakers</div>
+                            <div class="content-card-year">2 Seasons • Completed</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.3</div>
+                    </a>
+                </div>
+                
+                <!-- Urban Legends -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=9" class="card-action-btn" title="Play First Episode">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="tv-show-detail.html?id=9">
+                        <img src="https://picsum.photos/seed/urban-legends/300/450.jpg" alt="Urban Legends">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Urban Legends</div>
+                            <div class="content-card-year">1 Season • Ongoing</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.9</div>
+                    </a>
+                </div>
+                
+                <!-- Silicon Valley Dreams -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=11" class="card-action-btn" title="Play First Episode">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="tv-show-detail.html?id=11">
+                        <img src="https://picsum.photos/seed/silicon-valley-dreams/300/450.jpg" alt="Silicon Valley Dreams">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Silicon Valley Dreams</div>
+                            <div class="content-card-year">4 Seasons • Completed</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.4</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Releases -->
+        <section class="content-section">
+            <h2 class="section-title">New Releases</h2>
+            <div class="content-row">
+                <!-- Quantum Paradox -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=5" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=5">
+                        <img src="https://picsum.photos/seed/quantum-paradox/300/450.jpg" alt="Quantum Paradox">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Quantum Paradox</div>
+                            <div class="content-card-year">2024 • Movie</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.9</div>
+                    </a>
+                </div>
+                
+                <!-- Cosmic Odyssey -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=1" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=1">
+                        <img src="https://picsum.photos/seed/cosmic-odyssey/300/450.jpg" alt="Cosmic Odyssey">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Cosmic Odyssey</div>
+                            <div class="content-card-year">2024 • Movie</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.5</div>
+                    </a>
+                </div>
+                
+                <!-- The Last Algorithm -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=3" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="movie-detail.html?id=3">
+                        <img src="https://picsum.photos/seed/last-algorithm/300/450.jpg" alt="The Last Algorithm">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">The Last Algorithm</div>
+                            <div class="content-card-year">2024 • Movie</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.2</div>
+                    </a>
+                </div>
+                
+                <!-- Tech Titans -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=7" class="card-action-btn" title="Play First Episode">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="tv-show-detail.html?id=7">
+                        <img src="https://picsum.photos/seed/tech-titans/300/450.jpg" alt="Tech Titans">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Tech Titans</div>
+                            <div class="content-card-year">2024 • TV Show</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.7</div>
+                    </a>
+                </div>
+                
+                <!-- Urban Legends -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=9" class="card-action-btn" title="Play First Episode">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="tv-show-detail.html?id=9">
+                        <img src="https://picsum.photos/seed/urban-legends/300/450.jpg" alt="Urban Legends">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Urban Legends</div>
+                            <div class="content-card-year">2024 • TV Show</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.9</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    
+    </body>
+</html>

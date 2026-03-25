@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="movies.html">Movies</a>
+        </div>
+
+        <div class="card">
+            <h2>🎬 Movies Management</h2>
+            <div style="margin-bottom: 20px;">
+                <a href="movie-create.html" class="btn btn-primary">➕ Add New Movie</a>
+                <a href="movie-edit.html" class="btn btn-warning">✏️ Edit Movie</a>
+                <a href="movie-delete.html" class="btn btn-danger">🗑️ Delete Movie</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Genre</th>
+                            <th>Release Year</th>
+                            <th>Duration</th>
+                            <th>Rating</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Inception</td>
+                            <td>Sci-Fi</td>
+                            <td>2010</td>
+                            <td>148 min</td>
+                            <td>⭐ 8.8</td>
+                            <td>
+                                <a href="movie-edit.html?id=1" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="movie-delete.html?id=1" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>The Dark Knight</td>
+                            <td>Action</td>
+                            <td>2008</td>
+                            <td>152 min</td>
+                            <td>⭐ 9.0</td>
+                            <td>
+                                <a href="movie-edit.html?id=2" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="movie-delete.html?id=2" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Interstellar</td>
+                            <td>Sci-Fi</td>
+                            <td>2014</td>
+                            <td>169 min</td>
+                            <td>⭐ 8.6</td>
+                            <td>
+                                <a href="movie-edit.html?id=3" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="movie-delete.html?id=3" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>The Matrix</td>
+                            <td>Action</td>
+                            <td>1999</td>
+                            <td>136 min</td>
+                            <td>⭐ 8.7</td>
+                            <td>
+                                <a href="movie-edit.html?id=4" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="movie-delete.html?id=4" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Pulp Fiction</td>
+                            <td>Crime</td>
+                            <td>1994</td>
+                            <td>154 min</td>
+                            <td>⭐ 8.9</td>
+                            <td>
+                                <a href="movie-edit.html?id=5" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="movie-delete.html?id=5" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <p>Showing 1-5 of 25 movies</p>
+                <div>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">← Previous</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">1</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">2</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">3</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">Next →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

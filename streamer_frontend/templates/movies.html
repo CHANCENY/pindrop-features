@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies - CineStream</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-text">CineStream</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="movies.html" class="nav-link active">Movies</a></li>
+                    <li><a href="tv-shows.html" class="nav-link">TV Shows</a></li>
+                    <li><a href="playlists.html" class="nav-link">Playlists</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search movies...">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <button class="menu-toggle">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <h1 class="page-title">Movies</h1>
+            <p class="page-subtitle">Discover thousands of movies from every genre</p>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+        <div class="filters-container">
+            <div class="filter-group">
+                <label class="filter-label">Genre</label>
+                <select class="filter-select" id="genreFilter">
+                    <option value="">All Genres</option>
+                    <option value="action">Action</option>
+                    <option value="comedy">Comedy</option>
+                    <option value="drama">Drama</option>
+                    <option value="horror">Horror</option>
+                    <option value="sci-fi">Sci-Fi</option>
+                    <option value="romance">Romance</option>
+                    <option value="thriller">Thriller</option>
+                    <option value="documentary">Documentary</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Year</label>
+                <select class="filter-select" id="yearFilter">
+                    <option value="">All Years</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Rating</label>
+                <select class="filter-select" id="ratingFilter">
+                    <option value="">All Ratings</option>
+                    <option value="9">9+ Stars</option>
+                    <option value="8">8+ Stars</option>
+                    <option value="7">7+ Stars</option>
+                    <option value="6">6+ Stars</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Sort By</label>
+                <select class="filter-select" id="sortByFilter">
+                    <option value="popular">Most Popular</option>
+                    <option value="newest">Newest First</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="title">Title A-Z</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- Movies Grid -->
+    <main class="main-content">
+        <div class="movies-grid">
+            <!-- Quantum Paradox -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=5" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=5">
+                    <img src="https://picsum.photos/seed/quantum-paradox/300/450.jpg" alt="Quantum Paradox">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Quantum Paradox</div>
+                        <div class="content-card-year">2024 • 2h 35min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.9</div>
+                </a>
+            </div>
+
+            <!-- Cosmic Odyssey -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=1" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=1">
+                    <img src="https://picsum.photos/seed/cosmic-odyssey/300/450.jpg" alt="Cosmic Odyssey">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Cosmic Odyssey</div>
+                        <div class="content-card-year">2024 • 2h 28min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.5</div>
+                </a>
+            </div>
+
+            <!-- The Last Algorithm -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=3" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=3">
+                    <img src="https://picsum.photos/seed/last-algorithm/300/450.jpg" alt="The Last Algorithm">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">The Last Algorithm</div>
+                        <div class="content-card-year">2024 • 2h 05min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.2</div>
+                </a>
+            </div>
+
+            <!-- Neon Nights -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=2" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=2">
+                    <img src="https://picsum.photos/seed/neon-nights/300/450.jpg" alt="Neon Nights">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Neon Nights</div>
+                        <div class="content-card-year">2023 • 2h 15min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 7.8</div>
+                </a>
+            </div>
+
+            <!-- Digital Dreams -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=4" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=4">
+                    <img src="https://picsum.photos/seed/digital-dreams/300/450.jpg" alt="Digital Dreams">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Digital Dreams</div>
+                        <div class="content-card-year">2023 • 1h 55min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 7.5</div>
+                </a>
+            </div>
+
+            <!-- Shadow Protocol -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=6" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=6">
+                    <img src="https://picsum.photos/seed/shadow-protocol/300/450.jpg" alt="Shadow Protocol">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Shadow Protocol</div>
+                        <div class="content-card-year">2023 • 2h 10min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 7.2</div>
+                </a>
+            </div>
+
+            <!-- Time Loop -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=15" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=15">
+                    <img src="https://picsum.photos/seed/time-loop/300/450.jpg" alt="Time Loop">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Time Loop</div>
+                        <div class="content-card-year">2024 • 2h 20min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.0</div>
+                </a>
+            </div>
+
+            <!-- Virtual Reality -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=16" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=16">
+                    <img src="https://picsum.photos/seed/virtual-reality/300/450.jpg" alt="Virtual Reality">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Virtual Reality</div>
+                        <div class="content-card-year">2024 • 1h 45min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 7.6</div>
+                </a>
+            </div>
+
+            <!-- Cyber Heist -->
+            <div class="content-card">
+                <div class="content-card-actions">
+                    <a href="player.html?id=17" class="card-action-btn" title="Play">▶</a>
+                    <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                </div>
+                <a href="movie-detail.html?id=17">
+                    <img src="https://picsum.photos/seed/cyber-heist/300/450.jpg" alt="Cyber Heist">
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">Cyber Heist</div>
+                        <div class="content-card-year">2023 • 2h 30min</div>
+                    </div>
+                    <div class="content-card-rating">⭐ 8.1</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Load More Button -->
+        <div class="load-more-container">
+            <button class="btn-primary load-more-btn" id="loadMoreBtn">Load More Movies</button>
+        </div>
+    </main>
+
+    
+    </body>
+</html>

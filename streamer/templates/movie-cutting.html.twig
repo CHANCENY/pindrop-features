@@ -1,0 +1,334 @@
+{% extends "templates/base.html.twig" %}
+
+{% block body %}
+<div class="breadcrumb">
+    <a href="index.html">Dashboard</a>
+    <span class="separator">›</span>
+    <a href="playlists.html">Playlists</a>
+    <span class="separator">›</span>
+    <a href="movie-cutting.html">Movie Cutting</a>
+</div>
+
+<div class="card">
+    <h2>✂️ Movie Cutting Tool</h2>
+
+    <div class="alert alert-info">
+        <strong>ℹ️ Info:</strong> Cut and trim movies to create custom playlists. Select start and end points to extract specific scenes or create highlight reels.
+    </div>
+
+    <div class="form-group">
+        <label for="movieSelect">Select Movie to Cut *</label>
+        <input id="movieSelect" name="movieSelect">
+    </div>
+
+    <div id="movieDetails" style="display: none;">
+        <div class="video-player">
+            <video id="moviePreview" controls style="width: 100%; max-height: 400px;">
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="cutTime">Cut Time</label>
+                <input type="number" placeholder="Enter seconds per clip" id="cutTime">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="cutTitle">Cut Title</label>
+            <input type="text" id="cutTitle" placeholder="Enter a title for this cut">
+        </div>
+
+        <input type="hidden" id="cutMovie">
+
+        <div style="margin-top: 20px; text-align: center;">
+            <button type="button" class="btn btn-primary" onclick="saveCut()">💾 Save Cut</button>
+            <button type="button" class="btn btn-warning" onclick="resetCut()">🔄 Reset</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📝 Cutting Queue</h3>
+    <div id="cuttingQueue">
+        <div class="playlist-item">
+            <div class="playlist-item-info">
+                <strong>Inception - Dream Sequence</strong>
+                <p>00:45:00 - 01:15:00 (30 min)</p>
+            </div>
+            <div class="playlist-item-actions">
+                <span style="color: green;">✅ Ready</span>
+                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Remove</button>
+            </div>
+        </div>
+        <div class="playlist-item">
+            <div class="playlist-item-info">
+                <strong>The Matrix - Lobby Scene</strong>
+                <p>01:05:00 - 01:15:00 (10 min)</p>
+            </div>
+            <div class="playlist-item-actions">
+                <span style="color: blue;">🔄 Processing</span>
+                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Remove</button>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top: 15px; text-align: center;">
+        <button class="btn btn-success" onclick="processAllCuts()">🔄 Process All Cuts</button>
+        <button class="btn btn-warning" onclick="clearQueue()">🗑️ Clear Queue</button>
+    </div>
+</div>
+
+<div class="card">
+    <h3>⚙️ Cutting Settings</h3>
+    <div class="grid">
+        <div class="form-group">
+            <label for="outputQuality">Output Quality</label>
+            <select id="outputQuality">
+                <option value="high">High (1080p)</option>
+                <option value="medium">Medium (720p)</option>
+                <option value="low">Low (480p)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="outputFormat">Output Format</label>
+            <select id="outputFormat">
+                <option value="mp4">MP4</option>
+                <option value="avi">AVI</option>
+                <option value="mov">MOV</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox" id="fadeTransitions">
+            Add Fade Transitions
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox" id="autoEnhance">
+            Auto-Enhance Audio/Video
+        </label>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📊 Cutting Progress</h3>
+    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+        <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+    </div>
+    <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to cut</p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+        let currentMovie = null;
+        let cutQueue = [];
+
+        function loadMovieDetails() {
+            const select = document.getElementById('movieSelect');
+            const detailsDiv = document.getElementById('movieDetails');
+            
+            if (select.value) {
+                detailsDiv.style.display = 'block';
+                currentMovie = select.options[select.selectedIndex].text;
+                // In a real application, you would load the actual video file here
+                document.getElementById('moviePreview').src = '#'; // Placeholder
+            } else {
+                detailsDiv.style.display = 'none';
+                currentMovie = null;
+            }
+        }
+
+        function setCutTime(startMin, endMin) {
+            const movieSelect = document.getElementById('movieSelect');
+            if (!movieSelect.value) {
+                alert('Please select a movie first');
+                return;
+            }
+
+            // Get movie duration from select option (simplified)
+            const optionText = movieSelect.options[movieSelect.selectedIndex].text;
+            const duration = parseInt(optionText.match(/(\d+) min/)[1]);
+            
+            let startTime, endTime;
+            
+            if (startMin === -300) {
+                // Last 5 minutes
+                startTime = duration - 5;
+                endTime = duration;
+            } else if (endMin === 0) {
+                // From start to specified time
+                startTime = startMin;
+                endTime = duration;
+            } else {
+                startTime = startMin;
+                endTime = endMin;
+            }
+            
+            document.getElementById('startTime').value = formatTime(startTime * 60);
+            document.getElementById('endTime').value = formatTime(endTime * 60);
+            updateCutPreview();
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function parseTime(timeStr) {
+            const parts = timeStr.split(':');
+            return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+        }
+
+        function updateCutPreview() {
+            const startTime = document.getElementById('cutTime').value;
+            
+            if (startTime) {
+                const startSec = parseTime(startTime);
+                document.getElementById('cutPreview').style.display = 'block';
+                document.getElementById('cutStartPreview').textContent = startSec;
+            }
+        }
+
+        function previewCut() {
+            const startTime = document.getElementById('cutTime').value;
+            
+            if (!startTime) {
+                alert('Please set both start and end times');
+                return;
+            }
+            
+            updateCutPreview();
+            alert('Cut preview ready! Check the preview section below.');
+        }
+
+        function addToPlaylist() {
+            const cutTitle = document.getElementById('cutTitle').value;
+            const startTime = document.getElementById('cutTime').value;
+            const movieId = document.getElementById("cutMovie").value;
+            
+            if (!cutTitle || !startTime || movieId) {
+                alert('Please fill in all cut details');
+                return;
+            }
+            
+            // Add to queue
+            const cutItem = {
+                title: cutTitle,
+                movie: currentMovie,
+                cutTime: startTime,
+                status: 'ready',
+                id: movieId
+            };
+            
+            cutQueue.push(cutItem);
+            updateQueueDisplay();
+            alert('Cut added to queue!');
+        }
+
+        function updateQueueDisplay() {
+            // This would update the queue display in a real application
+            console.log('Queue updated:', cutQueue);
+        }
+
+        function saveCut() {
+            addToPlaylist();
+            alert('Cut saved successfully!');
+            document.getElementById("movieDetails").style.display = 'none';
+        }
+
+        function resetCut() {
+            document.getElementById('startTime').value = '';
+            document.getElementById('endTime').value = '';
+            document.getElementById('cutTitle').value = '';
+            document.getElementById('cutDescription').value = '';
+            document.getElementById('cutPreview').style.display = 'none';
+        }
+
+        function processAllCuts() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            let progress = 0;
+            progressText.textContent = 'Processing cuts...';
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressText.textContent = `Processing cuts... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = 'All cuts processed successfully!';
+                    setTimeout(() => {
+                        alert('All cuts processed successfully!');
+                        progressBar.style.width = '0%';
+                        progressText.textContent = 'Ready to cut';
+                    }, 2000);
+                }
+            }, 300);
+        }
+
+        function clearQueue() {
+            if (confirm('Are you sure you want to clear the cutting queue?')) {
+                cutQueue = [];
+                updateQueueDisplay();
+                alert('Queue cleared!');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded',(e)=>{
+            const titleAutoComplete = new Autocomplete({
+                fieldId: 'movieSelect',
+                source: 'autocomplete.movie.search.local',
+                placeholder: 'Search movies..',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['title', 'id'],
+                noResultsText: 'No movies found',
+                loadingText: 'Searching...',
+                name: 'movieSelect',
+                onSelect: searchMovieDetails
+            });
+        })
+
+        async function searchMovieDetails(selectedItem) {
+            const value = selectedItem.value;
+            const list  = value.split("(");
+            let movieId = list[list.length - 1];
+            movieId = movieId.split(')')[0].trim();
+            let list2 = movieId.split('-');
+            const detail = await SD.getMovieDetailLocal(list2[1]);
+
+            if (detail && detail.id) {
+
+                const movieDetails = document.querySelector("#movieDetails");
+                movieDetails.removeAttribute('style')
+
+                const moviePreview = movieDetails.querySelector('#moviePreview');
+                moviePreview.querySelector('source').src = detail.uri;
+                moviePreview.querySelector('source').type = detail.type;
+                movieDetails.querySelector("#cutMovie").value = detail.id;
+                moviePreview.load();
+                movieDetails.querySelector("#cutTitle").value = detail.title
+
+            }
+
+        }
+
+    </script>
+
+{% endblock %}

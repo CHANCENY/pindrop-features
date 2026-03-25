@@ -1,0 +1,80 @@
+{% extends "templates/base.html.twig" %}
+
+{% block body %}
+
+<div class="breadcrumb">
+    <a href="{{ url('streamer.dashboard') }}">Dashboard</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.shows') }}">TV Shows</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.seasons', {show_id: show.id}) }}">Seasons</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.episodes',{ show_id: show.id, season_id: season.id }) }}">Episodes</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.seasons.episode.edit',{show_id: show.id, season_id: season.id, episode_id: episode_id }) }}">Edit Episode</a>
+</div>
+
+<div class="card">
+    <h2>➕ Create New Episode</h2>
+
+    <div class="alert alert-info">
+        <strong>ℹ️ Edit Episode For:</strong> <span id="currentShow">{{ show.title }}</span> - <span id="currentSeason">{{ season.title }}</span>
+    </div>
+
+    <form id="episodeCreateForm" method="post">
+        <div class="form-group">
+            <div class="preview">
+                <img src="{{ thumbnail_uri }}" id="preview" width="200px" alt="">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="videoFile">Video File *</label>
+            <input type="file" id="videoFile" data-type="video" name="videoFile" accept="video/*">
+            <input type="hidden" name="videoFileId" id="videoFileID" value="{{ video_file_id }}">
+            <div class="preview">
+                <video src="{{ public_uri }}" {% if public_uri is empty %} style="display: none" {% endif %} id="previewVideo" width="200" controls autoplay></video>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <button type="submit" class="btn btn-success">💾 Edit Episode</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3>📊 Upload Progress</h3>
+    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+        <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+    </div>
+    <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to create episode</p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded",(e)=>{
+            SD.fileUpload(document.getElementById('videoFile'),handleVideoUploadCallback);
+        })
+
+        /**
+         * @param {string} responseText
+         */
+        function handleVideoUploadCallback(responseText){
+            const file = JSON.parse(responseText).file;
+            if (file.id && file.public_url) {
+                document.getElementById("videoFileID").value = file.id;
+                const video = document.querySelector("video#previewVideo");
+                video.src = "/sites/default"+file.public_url;
+                video.removeAttribute('style');
+
+                video.load();
+            }
+        }
+    </script>
+
+{% endblock %}

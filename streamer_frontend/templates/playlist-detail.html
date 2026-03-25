@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Details - CineStream</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-text">CineStream</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="movies.html" class="nav-link">Movies</a></li>
+                    <li><a href="tv-shows.html" class="nav-link">TV Shows</a></li>
+                    <li><a href="playlists.html" class="nav-link">Playlists</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <button class="back-btn" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Playlist Hero Section -->
+    <section class="playlist-hero">
+        <div class="playlist-hero-background">
+            <div class="playlist-mosaic">
+                <img src="https://picsum.photos/seed/cosmic-odyssey/400/225.jpg" alt="Cosmic Odyssey">
+                <img src="https://picsum.photos/seed/quantum-paradox/400/225.jpg" alt="Quantum Paradox">
+                <img src="https://picsum.photos/seed/last-algorithm/400/225.jpg" alt="The Last Algorithm">
+                <img src="https://picsum.photos/seed/neon-nights/400/225.jpg" alt="Neon Nights">
+                <img src="https://picsum.photos/seed/digital-dreams/400/225.jpg" alt="Digital Dreams">
+                <img src="https://picsum.photos/seed/shadow-protocol/400/225.jpg" alt="Shadow Protocol">
+                <img src="https://picsum.photos/seed/tech-titans/400/225.jpg" alt="Tech Titans">
+                <img src="https://picsum.photos/seed/mystic-chronicles/400/225.jpg" alt="Mystic Chronicles">
+                <img src="https://picsum.photos/seed/urban-legends/400/225.jpg" alt="Urban Legends">
+                <img src="https://picsum.photos/seed/code-breakers/400/225.jpg" alt="Code Breakers">
+                <img src="https://picsum.photos/seed/time-loop/400/225.jpg" alt="Time Loop">
+                <img src="https://picsum.photos/seed/virtual-reality/400/225.jpg" alt="Virtual Reality">
+            </div>
+            <div class="playlist-hero-overlay"></div>
+        </div>
+        <div class="playlist-hero-content">
+            <div class="playlist-info">
+                <h1 class="playlist-title">Sci-Fi Favorites</h1>
+                <div class="playlist-meta">
+                    <span class="playlist-item-count">12 items</span>
+                    <span class="playlist-duration">18h 45min</span>
+                    <span class="playlist-created">Created: March 1, 2024</span>
+                    <span class="playlist-privacy">Private</span>
+                </div>
+                <p class="playlist-description">
+                    Best science fiction movies and TV shows from different eras. From classic space operas to modern cyberpunk thrillers, this collection has it all.
+                </p>
+                <div class="playlist-actions">
+                    <button class="btn-primary play-playlist-btn" id="playPlaylistBtn">▶ Play Playlist</button>
+                    <button class="btn-secondary shuffle-playlist-btn" id="shufflePlaylistBtn">🔀 Shuffle</button>
+                    <button class="btn-secondary edit-playlist-btn" id="editPlaylistBtn">✏️ Edit</button>
+                    <button class="btn-secondary share-playlist-btn" id="sharePlaylistBtn">🔗 Share</button>
+                    <button class="btn-secondary delete-playlist-btn" id="deletePlaylistBtn">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Playlist Stats -->
+        <section class="playlist-stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalItems">0</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMovies">0</div>
+                    <div class="stat-label">Movies</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTVShows">0</div>
+                    <div class="stat-label">TV Shows</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalHours">0h</div>
+                    <div class="stat-label">Total Duration</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Playlist Items -->
+        <section class="playlist-items-section">
+            <div class="section-header">
+                <h2 class="section-title">Playlist Items</h2>
+                <div class="section-controls">
+                    <div class="sort-controls">
+                        <label>Sort by:</label>
+                        <select class="sort-select" id="sortSelect">
+                            <option value="added">Date Added</option>
+                            <option value="title">Title</option>
+                            <option value="year">Year</option>
+                            <option value="rating">Rating</option>
+                            <option value="duration">Duration</option>
+                        </select>
+                    </div>
+                    <div class="view-controls">
+                        <button class="view-btn active" data-view="grid">Grid</button>
+                        <button class="view-btn" data-view="list">List</button>
+                    </div>
+                    <button class="btn-secondary add-items-btn" id="addItemsBtn">+ Add Items</button>
+                </div>
+            </div>
+            
+            <div class="playlist-items-grid">
+                <!-- Cosmic Odyssey -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=1" class="card-action-btn" title="Play">▶</a>
+                        <a href="movie-detail.html?id=1" class="card-action-btn" title="Details">ℹ</a>
+                        <button class="card-action-btn" title="Remove">🗑️</button>
+                    </div>
+                    <a href="movie-detail.html?id=1">
+                        <img src="https://picsum.photos/seed/cosmic-odyssey/200/300.jpg" alt="Cosmic Odyssey">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Cosmic Odyssey</div>
+                            <div class="content-card-year">2024 • Movie • 2h 28min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.5</div>
+                    </a>
+                </div>
+
+                <!-- Quantum Paradox -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=5" class="card-action-btn" title="Play">▶</a>
+                        <a href="movie-detail.html?id=5" class="card-action-btn" title="Details">ℹ</a>
+                        <button class="card-action-btn" title="Remove">🗑️</button>
+                    </div>
+                    <a href="movie-detail.html?id=5">
+                        <img src="https://picsum.photos/seed/quantum-paradox/200/300.jpg" alt="Quantum Paradox">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Quantum Paradox</div>
+                            <div class="content-card-year">2024 • Movie • 2h 35min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.9</div>
+                    </a>
+                </div>
+
+                <!-- Tech Titans -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=7" class="card-action-btn" title="Play">▶</a>
+                        <a href="tv-show-detail.html?id=7" class="card-action-btn" title="Details">ℹ</a>
+                        <button class="card-action-btn" title="Remove">🗑️</button>
+                    </div>
+                    <a href="tv-show-detail.html?id=7">
+                        <img src="https://picsum.photos/seed/tech-titans/200/300.jpg" alt="Tech Titans">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Tech Titans</div>
+                            <div class="content-card-year">2024 • TV Show • 2 Seasons</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.7</div>
+                    </a>
+                </div>
+
+                <!-- The Last Algorithm -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=3" class="card-action-btn" title="Play">▶</a>
+                        <a href="movie-detail.html?id=3" class="card-action-btn" title="Details">ℹ</a>
+                        <button class="card-action-btn" title="Remove">🗑️</button>
+                    </div>
+                    <a href="movie-detail.html?id=3">
+                        <img src="https://picsum.photos/seed/last-algorithm/200/300.jpg" alt="The Last Algorithm">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">The Last Algorithm</div>
+                            <div class="content-card-year">2024 • Movie • 2h 05min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.2</div>
+                    </a>
+                </div>
+
+                <!-- Neon Nights -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=2" class="card-action-btn" title="Play">▶</a>
+                        <a href="movie-detail.html?id=2" class="card-action-btn" title="Details">ℹ</a>
+                        <button class="card-action-btn" title="Remove">🗑️</button>
+                    </div>
+                    <a href="movie-detail.html?id=2">
+                        <img src="https://picsum.photos/seed/neon-nights/200/300.jpg" alt="Neon Nights">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Neon Nights</div>
+                            <div class="content-card-year">2023 • Movie • 2h 15min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.8</div>
+                    </a>
+                </div>
+
+                <!-- Mystic Chronicles -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=8" class="card-action-btn" title="Play">▶</a>
+                        <a href="tv-show-detail.html?id=8" class="card-action-btn" title="Details">ℹ</a>
+                        <button class="card-action-btn" title="Remove">🗑️</button>
+                    </div>
+                    <a href="tv-show-detail.html?id=8">
+                        <img src="https://picsum.photos/seed/mystic-chronicles/200/300.jpg" alt="Mystic Chronicles">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Mystic Chronicles</div>
+                            <div class="content-card-year">2023 • TV Show • 3 Seasons</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 8.1</div>
+                    </a>
+                </div>
+
+                <!-- Digital Dreams -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=4" class="card-action-btn" title="Play">▶</a>
+                        <a href="movie-detail.html?id=4" class="card-action-btn" title="Details">ℹ</a>
+                        <button class="card-action-btn" title="Remove">🗑️</button>
+                    </div>
+                    <a href="movie-detail.html?id=4">
+                        <img src="https://picsum.photos/seed/digital-dreams/200/300.jpg" alt="Digital Dreams">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Digital Dreams</div>
+                            <div class="content-card-year">2023 • Movie • 1h 55min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.5</div>
+                    </a>
+                </div>
+
+                <!-- Shadow Protocol -->
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=6" class="card-action-btn" title="Play">▶</a>
+                        <a href="movie-detail.html?id=6" class="card-action-btn" title="Details">ℹ</a>
+                        <button class="card-action-btn" title="Remove">🗑️</button>
+                    </div>
+                    <a href="movie-detail.html?id=6">
+                        <img src="https://picsum.photos/seed/shadow-protocol/200/300.jpg" alt="Shadow Protocol">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">Shadow Protocol</div>
+                            <div class="content-card-year">2023 • Movie • 2h 10min</div>
+                        </div>
+                        <div class="content-card-rating">⭐ 7.2</div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="playlist-items-list" id="playlistItemsList" style="display: none;">
+                <!-- Playlist items will be dynamically added in list view -->
+            </div>
+        </section>
+
+        <!-- Related Playlists -->
+        <section class="related-playlists-section">
+            <h2 class="section-title">Related Playlists</h2>
+            <div class="playlists-grid" id="relatedPlaylists">
+                <!-- Related playlists will be dynamically added -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Edit Playlist Modal -->
+    <div class="playlist-modal" id="editPlaylistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Playlist</h3>
+                <button class="close-btn" id="closeEditPlaylistModal">&times;</button>
+            </div>
+            <div class="playlist-form">
+                <div class="form-group">
+                    <label class="form-label">Playlist Name *</label>
+                    <input type="text" id="editPlaylistName" class="form-input" placeholder="Enter playlist name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="editPlaylistDescription" class="form-textarea" placeholder="Describe your playlist (optional)"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Privacy</label>
+                    <select id="editPlaylistPrivacy" class="form-select">
+                        <option value="private">Private</option>
+                        <option value="public">Public</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-secondary" id="cancelEditPlaylistBtn">Cancel</button>
+                    <button class="btn-primary" id="saveEditPlaylistBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Items Modal -->
+    <div class="add-items-modal" id="addItemsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add to Playlist</h3>
+                <button class="close-btn" id="closeAddItemsModal">&times;</button>
+            </div>
+            <div class="add-items-content">
+                <div class="search-section">
+                    <input type="text" id="addItemsSearch" class="search-input" placeholder="Search movies and TV shows...">
+                </div>
+                <div class="content-tabs">
+                    <button class="tab-btn active" data-tab="movies">Movies</button>
+                    <button class="tab-btn" data-tab="tv-shows">TV Shows</button>
+                </div>
+                <div class="items-grid" id="addItemsGrid">
+                    <!-- Items will be dynamically added -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="cancelAddItemsBtn">Cancel</button>
+                    <button class="btn-primary" id="saveItemsBtn">Add Selected Items</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Share Playlist</h3>
+                <button class="close-btn" id="closeShareModal">&times;</button>
+            </div>
+            <div class="share-content">
+                <div class="share-link">
+                    <input type="text" id="shareLink" readonly value="">
+                    <button class="btn-primary copy-link-btn" id="copyLinkBtn">Copy Link</button>
+                </div>
+                <div class="share-options">
+                    <button class="share-btn" data-platform="facebook">Facebook</button>
+                    <button class="share-btn" data-platform="twitter">Twitter</button>
+                    <button class="share-btn" data-platform="whatsapp">WhatsApp</button>
+                    <button class="share-btn" data-platform="email">Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove Item Confirmation Modal -->
+    <div class="confirm-modal" id="removeItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Remove Item</h3>
+                <button class="close-btn" id="closeRemoveItemModal">&times;</button>
+            </div>
+            <div class="confirm-content">
+                <p>Are you sure you want to remove this item from the playlist?</p>
+                <div class="confirm-actions">
+                    <button class="btn-secondary" id="cancelRemoveItemBtn">Cancel</button>
+                    <button class="btn-primary danger" id="confirmRemoveItemBtn">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+</html>

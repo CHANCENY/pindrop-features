@@ -1,0 +1,175 @@
+{% extends "templates/front.base.html.twig" %}
+
+
+{% block hero %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <img src="{{ randomFeatured.thumbnail_path }}" alt="Featured Content">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">FEATURED</div>
+            <h1 class="hero-title">{{ randomFeatured.title }}</h1>
+            <div class="hero-meta">
+                <span class="hero-year">{{ randomFeatured.release_date|date('Y') }}</span>
+                <span class="hero-rating">⭐ {{ randomFeatured.rating }}</span>
+                <span class="hero-duration">{{ randomFeatured.duration }}</span>
+            </div>
+            <p class="hero-description">
+                {{ randomFeatured.description }}
+            </p>
+            <div class="hero-buttons">
+                <a target="_blank" href="{{ url('streamer.dashboard.movie.watch', {movie_id: randomFeatured.id}) }}" class="btn-primary play-btn">▶ Play Now</a>
+                <a href="movie-detail.html?id=1" class="btn-secondary more-info-btn">More Info</a>
+                <a href="playlists.html" class="btn-secondary add-to-list-btn">+ Add to List</a>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Continue Watching -->
+        <section class="content-section">
+            <h2 class="section-title">Continue Watching</h2>
+            <div class="content-row">
+                <!-- Cosmic Odyssey -->
+                {% for playingMovie in playingMovies %}
+                <div class="content-card continue-watching">
+                    <div class="content-card-actions">
+                        <a href="player.html?id=1" class="card-action-btn" title="Resume">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <img src="{{ playingMovie.data.thumbnail_path }}" alt="{{ playingMovie.data.title }}">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ playingMovie.percent }}%"></div>
+                    </div>
+                    <div class="content-card-overlay">
+                        <div class="content-card-title">{{ playingMovie.data.title }}</div>
+                        <div class="content-card-year">{{ playingMovie.percent }}% Complete • {{ playingMovie.media == 'movie' ? 'Movie' : 'Show' }}</div>
+                    </div>
+                    <div class="content-card-rating">⭐ {{ playingMovie.data.rating  }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Trending Now -->
+        <section class="content-section">
+            <h2 class="section-title">Trending Now</h2>
+            <div class="content-row">
+                <!-- Quantum Paradox -->
+                {% for playingNow in playingNows %}
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="{{ playingNow.media == 'movie' ? url('streamer.dashboard.movie.watch', {movie_id: playingNow.data.id}) : url('streamer.dashboard.shows.watch', {show_id: playingNow.data.id}) }}" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="{{ playingNow.media == 'movie' ? url('streamer_frontend.front.movie.detail', {movie_id: playingNow.data.id}) : url('streamer_frontend.front.show.detail', {show_id: playingNow.data.id}) }}">
+                        <img src="{{ playingNow.data.thumbnail_path }}" alt="">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">{{ playingNow.data.title }}</div>
+                            <div class="content-card-year">{{ playingNow.data.release_date|date('Y') }} • {{ playingNow.media == 'movie' ? 'Movie' : 'Show'  }}</div>
+                        </div>
+                        <div class="content-card-rating">⭐ {{ playingNow.data.rating }}</div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Popular Movies -->
+        <section class="content-section">
+            <h2 class="section-title">Popular Movies</h2>
+            <div class="content-row">
+                <!-- Quantum Paradox -->
+                {% for popularMovie in popularMovies %}
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="{{ url('streamer.dashboard.movie.watch', {movie_id: popularMovie.id}) }}" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="{{ url('streamer_frontend.front.movie.detail', {movie_id: popularMovie.id}) }}">
+                        <img src="{{ popularMovie.thumbnail_path }}" alt="">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">{{ popularMovie.title }}</div>
+                            <div class="content-card-year">{{ popularMovie.release_date|date('Y') }} • {{ popularMovie.duration }}</div>
+                        </div>
+                        <div class="content-card-rating">⭐ {{ popularMovie.rating }}</div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Popular TV Shows -->
+        <section class="content-section">
+            <h2 class="section-title">Popular TV Shows</h2>
+            <div class="content-row">
+                <!-- Tech Titans -->
+                {% for popularShow in popularShows %}
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="{{ url('streamer.dashboard.shows.watch', {show_id: popularShow.id}) }}" class="card-action-btn" title="Play First Episode">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="{{ url('streamer_frontend.front.show.detail', {show_id: popularShow.id}) }}">
+                        <img src="{{ popularShow.thumbnail_path }}" alt="">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">{{ popularShow.title }}</div>
+                            <div class="content-card-year">{{ popularShow.season_count }} Seasons • Ongoing</div>
+                        </div>
+                        <div class="content-card-rating">⭐ {{ popularShow.rating }}</div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- New Releases -->
+        <section class="content-section">
+            <h2 class="section-title">New Releases</h2>
+            <div class="content-row">
+                <!-- Quantum Paradox -->
+                {% for newReleaseShow in newReleaseShows %}
+                <div class="content-card">
+                    <div class="content-card-actions">
+                        <a href="{{ url('streamer.dashboard.shows.watch', {show_id: newReleaseShow.id}) }}" class="card-action-btn" title="Play">▶</a>
+                        <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                    </div>
+                    <a href="{{ url('streamer_frontend.front.show.detail', {show_id: newReleaseShow.id}) }}">
+                        <img src="{{ newReleaseShow.thumbnail_path }}" alt="">
+                        <div class="content-card-overlay">
+                            <div class="content-card-title">{{ newReleaseShow.title }}</div>
+                            <div class="content-card-year">{{ newReleaseShows.release_date|date('Y') }} • Show</div>
+                        </div>
+                        <div class="content-card-rating">⭐ {{ newReleaseShow.rating }}</div>
+                    </a>
+                </div>
+                {% endfor %}
+
+                {% for newReleaseMovie in newReleaseMovies %}
+                    <div class="content-card">
+                        <div class="content-card-actions">
+                            <a href="{{ url('streamer.dashboard.movie.watch', {movie_id: newReleaseMovie.id}) }}" class="card-action-btn" title="Play">▶</a>
+                            <a href="playlists.html" class="card-action-btn" title="Add to Playlist">+</a>
+                        </div>
+                        <a href="{{ url('streamer_frontend.front.movie.detail', {movie_id: newReleaseMovie.id}) }}">
+                            <img src="{{ newReleaseMovie.thumbnail_path }}" alt="">
+                            <div class="content-card-overlay">
+                                <div class="content-card-title">{{ newReleaseMovie.title }}</div>
+                                <div class="content-card-year">{{ newReleaseMovie.release_date|date('Y') }} • Show</div>
+                            </div>
+                            <div class="content-card-rating">⭐ {{ newReleaseMovie.rating }}</div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+{% endblock %}

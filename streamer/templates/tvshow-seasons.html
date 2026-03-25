@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Show Seasons - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-seasons.html">Seasons</a>
+        </div>
+
+        <div class="card">
+            <h2>📺 TV Show Seasons Management</h2>
+            
+            <div class="alert alert-info">
+                <strong>ℹ️ Currently Viewing:</strong> <span id="currentShow">Breaking Bad</span>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <a href="season-create.html" class="btn btn-primary">➕ Add New Season</a>
+                <a href="season-edit.html" class="btn btn-warning">✏️ Edit Season</a>
+                <a href="season-delete.html" class="btn btn-danger">🗑️ Delete Season</a>
+                <a href="tv-shows.html" class="btn btn-primary">🔙 Back to TV Shows</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Season</th>
+                            <th>Title</th>
+                            <th>Episodes</th>
+                            <th>Release Year</th>
+                            <th>Duration</th>
+                            <th>Average Rating</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Season 1</td>
+                            <td>7</td>
+                            <td>2008</td>
+                            <td>352 min</td>
+                            <td>⭐ 8.9</td>
+                            <td><span style="color: green;">✅ Complete</span></td>
+                            <td>
+                                <a href="season-episodes.html?season=1" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Episodes</a>
+                                <a href="season-edit.html?season=1" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="season-delete.html?season=1" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Season 2</td>
+                            <td>13</td>
+                            <td>2009</td>
+                            <td>624 min</td>
+                            <td>⭐ 9.0</td>
+                            <td><span style="color: green;">✅ Complete</span></td>
+                            <td>
+                                <a href="season-episodes.html?season=2" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Episodes</a>
+                                <a href="season-edit.html?season=2" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="season-delete.html?season=2" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Season 3</td>
+                            <td>13</td>
+                            <td>2010</td>
+                            <td>624 min</td>
+                            <td>⭐ 9.1</td>
+                            <td><span style="color: green;">✅ Complete</span></td>
+                            <td>
+                                <a href="season-episodes.html?season=3" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Episodes</a>
+                                <a href="season-edit.html?season=3" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="season-delete.html?season=3" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Season 4</td>
+                            <td>13</td>
+                            <td>2011</td>
+                            <td>624 min</td>
+                            <td>⭐ 9.2</td>
+                            <td><span style="color: green;">✅ Complete</span></td>
+                            <td>
+                                <a href="season-episodes.html?season=4" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Episodes</a>
+                                <a href="season-edit.html?season=4" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="season-delete.html?season=4" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Season 5</td>
+                            <td>16</td>
+                            <td>2012-2013</td>
+                            <td>768 min</td>
+                            <td>⭐ 9.5</td>
+                            <td><span style="color: green;">✅ Complete</span></td>
+                            <td>
+                                <a href="season-episodes.html?season=5" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Episodes</a>
+                                <a href="season-edit.html?season=5" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="season-delete.html?season=5" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item">
+                <h3>📊 Season Statistics</h3>
+                <p><strong>Total Seasons:</strong> 5</p>
+                <p><strong>Total Episodes:</strong> 62</p>
+                <p><strong>Total Duration:</strong> 2,992 min</p>
+                <p><strong>Average Episodes/Season:</strong> 12.4</p>
+                <p><strong>Highest Rated:</strong> Season 5 (9.5)</p>
+            </div>
+            <div class="grid-item">
+                <h3>📈 Episode Progress</h3>
+                <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px; margin: 10px 0;">
+                    <div style="background: linear-gradient(90deg, #11998e, #38ef7d); height: 100%; width: 100%;"></div>
+                </div>
+                <p><strong>All Seasons Complete</strong></p>
+                <p>62/62 episodes available</p>
+            </div>
+            <div class="grid-item">
+                <h3>⭐ Season Ratings</h3>
+                <p>🥇 Season 5: 9.5</p>
+                <p>🥈 Season 4: 9.2</p>
+                <p>🥉 Season 3: 9.1</p>
+                <p>Season 2: 9.0</p>
+                <p>Season 1: 8.9</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🎬 Quick Actions</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="episode-create.html?season=5" class="btn btn-success">➕ Add Episode to S5</a>
+                <a href="season-episodes.html?season=5" class="btn btn-primary">📋 Manage S5 Episodes</a>
+                <a href="tvshow-edit.html?id=1" class="btn btn-warning">✏️ Edit TV Show</a>
+                <a href="tv-shows.html" class="btn btn-primary">📺 Browse Other Shows</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get TV show ID from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const tvshowId = urlParams.get('id') || '1';
+        
+        // Update current show name based on ID
+        const showNames = {
+            '1': 'Breaking Bad',
+            '2': 'Game of Thrones',
+            '3': 'Stranger Things',
+            '4': 'The Office',
+            '5': 'Friends',
+            '6': 'The Mandalorian'
+        };
+        
+        document.getElementById('currentShow').textContent = showNames[tvshowId] || 'Unknown Show';
+    </script>
+</body>
+</html>

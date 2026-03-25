@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+            <p style="text-align: center; color: #666; margin-top: 10px;">Manage your movies, TV shows, and playlists</p>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html" style="background: #667eea; color: white;">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <!-- Statistics Overview -->
+        <div class="grid">
+            <div class="grid-item">
+                <h3>📊 Content Overview</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #667eea;">25</div>
+                        <div style="color: #666;">Movies</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #764ba2;">15</div>
+                        <div style="color: #666;">TV Shows</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #11998e;">12</div>
+                        <div style="color: #666;">Playlists</div>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid #e1e5e9; padding-top: 15px;">
+                    <p><strong>Total Seasons:</strong> 87</p>
+                    <p><strong>Total Episodes:</strong> 1,245</p>
+                    <p><strong>Total Duration:</strong> 2,847 hours</p>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <h3>⭐ Top Rated Content</h3>
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>🎬 Breaking Bad</strong>
+                        <p>TV Show • 9.5 ⭐ • 5 Seasons</p>
+                    </div>
+                </div>
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>🎬 The Godfather</strong>
+                        <p>Movie • 9.2 ⭐ • 175 min</p>
+                    </div>
+                </div>
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>🎬 Game of Thrones</strong>
+                        <p>TV Show • 9.3 ⭐ • 8 Seasons</p>
+                    </div>
+                </div>
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>🎬 The Dark Knight</strong>
+                        <p>Movie • 9.0 ⭐ • 152 min</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <h3>📈 Recent Activity</h3>
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>Weekend Binge</strong>
+                        <p>Playlist created • 2 days ago</p>
+                    </div>
+                    <div class="playlist-item-actions">
+                        <span style="color: green;">✅</span>
+                    </div>
+                </div>
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>Stranger Things S4</strong>
+                        <p>Episodes added • 1 week ago</p>
+                    </div>
+                    <div class="playlist-item-actions">
+                        <span style="color: green;">✅</span>
+                    </div>
+                </div>
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>Inception</strong>
+                        <p>Movie uploaded • 2 weeks ago</p>
+                    </div>
+                    <div class="playlist-item-actions">
+                        <span style="color: green;">✅</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <h2>🚀 Quick Actions</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <a href="movie-create.html" class="btn btn-primary" style="text-align: center;">➕ Add Movie</a>
+                <a href="tvshow-create.html" class="btn btn-primary" style="text-align: center;">➕ Add TV Show</a>
+                <a href="playlist-create.html" class="btn btn-primary" style="text-align: center;">➕ Create Playlist</a>
+                <a href="movie-cutting.html" class="btn btn-success" style="text-align: center;">✂️ Cut Movies</a>
+                <a href="season-create.html" class="btn btn-warning" style="text-align: center;">➕ Add Season</a>
+                <a href="episode-create.html" class="btn btn-warning" style="text-align: center;">➕ Add Episode</a>
+            </div>
+        </div>
+
+        <!-- Content Management -->
+        <div class="grid">
+            <div class="card">
+                <h3>🎬 Movies Management</h3>
+                <p style="color: #666; margin-bottom: 15px;">Manage your movie collection</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="movies.html" class="btn btn-primary" style="text-align: center;">📋 Browse Movies</a>
+                    <a href="movie-create.html" class="btn btn-success" style="text-align: center;">➕ Add New Movie</a>
+                    <a href="movie-edit.html" class="btn btn-warning" style="text-align: center;">✏️ Edit Movies</a>
+                    <a href="movie-delete.html" class="btn btn-danger" style="text-align: center;">🗑️ Delete Movies</a>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e1e5e9;">
+                    <p><strong>Recent Additions:</strong></p>
+                    <ul style="margin: 5px 0; padding-left: 20px; color: #666;">
+                        <li>Inception (2010)</li>
+                        <li>The Matrix (1999)</li>
+                        <li>Interstellar (2014)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📺 TV Shows Management</h3>
+                <p style="color: #666; margin-bottom: 15px;">Manage TV shows, seasons, and episodes</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="tv-shows.html" class="btn btn-primary" style="text-align: center;">📋 Browse TV Shows</a>
+                    <a href="tvshow-create.html" class="btn btn-success" style="text-align: center;">➕ Add New Show</a>
+                    <a href="tvshow-seasons.html" class="btn btn-warning" style="text-align: center;">📂 Manage Seasons</a>
+                    <a href="season-episodes.html" class="btn btn-warning" style="text-align: center;">📺 Manage Episodes</a>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e1e5e9;">
+                    <p><strong>Popular Shows:</strong></p>
+                    <ul style="margin: 5px 0; padding-left: 20px; color: #666;">
+                        <li>Breaking Bad (5 Seasons)</li>
+                        <li>Game of Thrones (8 Seasons)</li>
+                        <li>Stranger Things (4 Seasons)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📋 Playlists Management</h3>
+                <p style="color: #666; margin-bottom: 15px;">Create and manage custom playlists</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="playlists.html" class="btn btn-primary" style="text-align: center;">📋 Browse Playlists</a>
+                    <a href="playlist-create.html" class="btn btn-success" style="text-align: center;">➕ Create Playlist</a>
+                    <a href="movie-cutting.html" class="btn btn-warning" style="text-align: center;">✂️ Movie Cutting</a>
+                    <a href="playlist-edit.html" class="btn btn-warning" style="text-align: center;">✏️ Edit Playlists</a>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e1e5e9;">
+                    <p><strong>Active Playlists:</strong></p>
+                    <ul style="margin: 5px 0; padding-left: 20px; color: #666;">
+                        <li>Action Marathon (8 movies)</li>
+                        <li>Sci-Fi Classics (6 movies)</li>
+                        <li>Weekend Binge (3 cuts)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="card">
+            <h3>⚙️ System Status</h3>
+            <div class="grid">
+                <div class="grid-item">
+                    <h4>💾 Storage</h4>
+                    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px; margin: 10px 0;">
+                        <div style="background: linear-gradient(90deg, #11998e, #38ef7d); height: 100%; width: 65%;"></div>
+                    </div>
+                    <p><strong>65% Used</strong> • 650GB of 1TB</p>
+                </div>
+                <div class="grid-item">
+                    <h4>🔄 Processing</h4>
+                    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px; margin: 10px 0;">
+                        <div style="background: linear-gradient(90deg, #f2994a, #f2c94c); height: 100%; width: 20%;"></div>
+                    </div>
+                    <p><strong>2 Active Jobs</strong> • 1 Cutting, 1 Encoding</p>
+                </div>
+                <div class="grid-item">
+                    <h4>📊 Performance</h4>
+                    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px; margin: 10px 0;">
+                        <div style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 85%;"></div>
+                    </div>
+                    <p><strong>85% Optimal</strong> • All Systems Running</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Uploads -->
+        <div class="card">
+            <h3>📤 Recent Uploads</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Title</th>
+                            <th>Duration</th>
+                            <th>Upload Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🎬 Movie</td>
+                            <td>Inception</td>
+                            <td>148 min</td>
+                            <td>Feb 24, 2024</td>
+                            <td><span style="color: green;">✅ Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>📺 Episode</td>
+                            <td>Breaking Bad S1E1</td>
+                            <td>58 min</td>
+                            <td>Feb 23, 2024</td>
+                            <td><span style="color: green;">✅ Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>✂️ Cut</td>
+                            <td>Dream Sequence</td>
+                            <td>30 min</td>
+                            <td>Feb 22, 2024</td>
+                            <td><span style="color: blue;">🔄 Processing</span></td>
+                        </tr>
+                        <tr>
+                            <td>📋 Playlist</td>
+                            <td>Weekend Binge</td>
+                            <td>4h 30min</td>
+                            <td>Feb 21, 2024</td>
+                            <td><span style="color: green;">✅ Complete</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; margin-top: 40px; padding: 20px; color: #666; border-top: 1px solid #e1e5e9;">
+            <p>© 2024 Video Streaming Dashboard • Version 1.0.0</p>
+            <p style="font-size: 0.9rem; margin-top: 5px;">Last updated: February 26, 2024</p>
+        </footer>
+    </div>
+</body>
+</html>

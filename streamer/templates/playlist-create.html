@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Playlist - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="playlists.html">Playlists</a>
+            <span class="separator">›</span>
+            <a href="playlist-create.html">Create Playlist</a>
+        </div>
+
+        <div class="card">
+            <h2>➕ Create New Playlist</h2>
+            
+            <form id="playlistCreateForm">
+                <div class="form-group">
+                    <label for="playlistType">Playlist Type *</label>
+                    <select id="playlistType" name="playlistType" required onchange="updatePlaylistForm()">
+                        <option value="">Select Type</option>
+                        <option value="manual">📝 Manual Playlist</option>
+                        <option value="auto">🤖 Auto Playlist</option>
+                        <option value="cut">✂️ Cut Playlist</option>
+                    </select>
+                </div>
+
+                <div id="manualForm" style="display: none;">
+                    <h3>📝 Manual Playlist</h3>
+                    <div class="form-group">
+                        <label for="playlistName">Playlist Name *</label>
+                        <input type="text" id="playlistName" name="playlistName" required placeholder="Enter playlist name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="playlistDescription">Description</label>
+                        <textarea id="playlistDescription" name="playlistDescription" rows="3" placeholder="Describe your playlist"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="movieSearch">Search and Add Movies</label>
+                        <input type="text" id="movieSearch" placeholder="Type to search movies..." onkeyup="filterMovies()">
+                    </div>
+
+                    <div class="table-container">
+                        <table id="movieTable">
+                            <thead>
+                                <tr>
+                                    <th>Add</th>
+                                    <th>Title</th>
+                                    <th>Genre</th>
+                                    <th>Duration</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" name="movieSelect" value="1"></td>
+                                    <td>Inception</td>
+                                    <td>Sci-Fi</td>
+                                    <td>148 min</td>
+                                    <td>⭐ 8.8</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="movieSelect" value="2"></td>
+                                    <td>The Dark Knight</td>
+                                    <td>Action</td>
+                                    <td>152 min</td>
+                                    <td>⭐ 9.0</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="movieSelect" value="3"></td>
+                                    <td>Interstellar</td>
+                                    <td>Sci-Fi</td>
+                                    <td>169 min</td>
+                                    <td>⭐ 8.6</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="movieSelect" value="4"></td>
+                                    <td>The Matrix</td>
+                                    <td>Action</td>
+                                    <td>136 min</td>
+                                    <td>⭐ 8.7</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="movieSelect" value="5"></td>
+                                    <td>Pulp Fiction</td>
+                                    <td>Crime</td>
+                                    <td>154 min</td>
+                                    <td>⭐ 8.9</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="selectedMovies" style="margin-top: 20px; display: none;">
+                        <div class="alert alert-info">
+                            <strong>Selected Movies:</strong> <span id="selectedCount">0</span>
+                            <div id="selectedList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="autoForm" style="display: none;">
+                    <h3>🤖 Auto Playlist</h3>
+                    <div class="form-group">
+                        <label for="autoPlaylistName">Playlist Name *</label>
+                        <input type="text" id="autoPlaylistName" name="autoPlaylistName" required placeholder="Enter playlist name">
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="genreFilter">Genre Filter</label>
+                            <select id="genreFilter" multiple>
+                                <option value="action">Action</option>
+                                <option value="comedy">Comedy</option>
+                                <option value="drama">Drama</option>
+                                <option value="horror">Horror</option>
+                                <option value="sci-fi">Sci-Fi</option>
+                                <option value="romance">Romance</option>
+                                <option value="thriller">Thriller</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ratingFilter">Minimum Rating</label>
+                            <select id="ratingFilter">
+                                <option value="0">Any Rating</option>
+                                <option value="7">7.0+</option>
+                                <option value="8">8.0+</option>
+                                <option value="9">9.0+</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="yearRange">Year Range</label>
+                            <input type="text" id="yearRange" placeholder="2020-2024">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxMovies">Maximum Movies</label>
+                            <input type="number" id="maxMovies" min="1" placeholder="10">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sortBy">Sort By</label>
+                        <select id="sortBy">
+                            <option value="rating">Rating (High to Low)</option>
+                            <option value="year">Year (New to Old)</option>
+                            <option value="title">Title (A-Z)</option>
+                            <option value="duration">Duration (Long to Short)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="includeFeatured">
+                            Include Featured Movies Only
+                        </label>
+                    </div>
+                </div>
+
+                <div id="cutForm" style="display: none;">
+                    <h3>✂️ Cut Playlist</h3>
+                    <div class="form-group">
+                        <label for="cutPlaylistName">Playlist Name *</label>
+                        <input type="text" id="cutPlaylistName" name="cutPlaylistName" required placeholder="Enter playlist name">
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>ℹ️ Info:</strong> Cut playlists are created from movie segments. Use the <a href="movie-cutting.html">Movie Cutting Tool</a> to create cuts first.
+                    </div>
+
+                    <div class="form-group">
+                        <label for="availableCuts">Available Cuts</label>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Cut Name</th>
+                                        <th>Source Movie</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="checkbox" name="cutSelect" value="1"></td>
+                                        <td>Dream Sequence</td>
+                                        <td>Inception</td>
+                                        <td>30 min</td>
+                                        <td><span style="color: green;">✅ Ready</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" name="cutSelect" value="2"></td>
+                                        <td>Lobby Scene</td>
+                                        <td>The Matrix</td>
+                                        <td>10 min</td>
+                                        <td><span style="color: green;">✅ Ready</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" name="cutSelect" value="3"></td>
+                                        <td>Opening Scene</td>
+                                        <td>Pulp Fiction</td>
+                                        <td>15 min</td>
+                                        <td><span style="color: blue;">🔄 Processing</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="commonForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="playlistTags">Tags (comma separated)</label>
+                        <input type="text" id="playlistTags" placeholder="action, marathon, weekend">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="playlistThumbnail">Playlist Thumbnail</label>
+                        <input type="file" id="playlistThumbnail" accept="image/*">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="playlistPublic">
+                            Make Public
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="playlistFeatured">
+                            Featured Playlist
+                        </label>
+                    </div>
+                </div>
+
+                <div id="submitSection" style="display: none; margin-top: 30px; text-align: center;">
+                    <button type="submit" class="btn btn-success">💾 Create Playlist</button>
+                    <a href="playlists.html" class="btn btn-danger">❌ Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>📊 Upload Progress</h3>
+            <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+                <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+            <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to create playlist</p>
+        </div>
+    </div>
+
+    <script>
+        function updatePlaylistForm() {
+            const playlistType = document.getElementById('playlistType').value;
+            const manualForm = document.getElementById('manualForm');
+            const autoForm = document.getElementById('autoForm');
+            const cutForm = document.getElementById('cutForm');
+            const commonForm = document.getElementById('commonForm');
+            const submitSection = document.getElementById('submitSection');
+
+            // Hide all forms first
+            manualForm.style.display = 'none';
+            autoForm.style.display = 'none';
+            cutForm.style.display = 'none';
+            commonForm.style.display = 'none';
+            submitSection.style.display = 'none';
+
+            if (playlistType) {
+                commonForm.style.display = 'block';
+                submitSection.style.display = 'block';
+
+                switch(playlistType) {
+                    case 'manual':
+                        manualForm.style.display = 'block';
+                        break;
+                    case 'auto':
+                        autoForm.style.display = 'block';
+                        break;
+                    case 'cut':
+                        cutForm.style.display = 'block';
+                        break;
+                }
+            }
+        }
+
+        function filterMovies() {
+            const searchValue = document.getElementById('movieSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#movieTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function updateSelectedMovies() {
+            const checkboxes = document.querySelectorAll('input[name="movieSelect"]:checked');
+            const selectedMovies = document.getElementById('selectedMovies');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectedList = document.getElementById('selectedList');
+
+            if (checkboxes.length > 0) {
+                selectedMovies.style.display = 'block';
+                selectedCount.textContent = checkboxes.length;
+
+                let movieNames = [];
+                checkboxes.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    movieNames.push(row.cells[1].textContent);
+                });
+
+                selectedList.innerHTML = '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                    movieNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            } else {
+                selectedMovies.style.display = 'none';
+            }
+        }
+
+        // Add event listeners for movie selection
+        document.addEventListener('change', function(e) {
+            if (e.target.name === 'movieSelect') {
+                updateSelectedMovies();
+            }
+        });
+
+        document.getElementById('playlistCreateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            let progress = 0;
+            progressText.textContent = 'Creating playlist...';
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressText.textContent = `Creating playlist... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = 'Playlist created successfully! Redirecting...';
+                    
+                    setTimeout(() => {
+                        alert('Playlist created successfully!');
+                        window.location.href = 'playlists.html';
+                    }, 1000);
+                }
+            }, 200);
+        });
+
+        // Check for URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const playlistType = urlParams.get('type');
+        if (playlistType) {
+            document.getElementById('playlistType').value = playlistType;
+            updatePlaylistForm();
+        }
+    </script>
+</body>
+</html>

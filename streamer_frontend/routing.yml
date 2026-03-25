@@ -1,0 +1,62 @@
+streamer_frontend.front.home:
+  path: '/stream'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer_frontend\src\Controller\FrontendController::homepage'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+streamer_frontend.front.movies:
+  path: '/movies'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer_frontend\src\Controller\FrontendController::moviesPage'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+streamer_frontend.front.movie.detail:
+  path: '/movies/[movie_id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer_frontend\src\Controller\FrontendController::moviePage'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+streamer_frontend.front.shows:
+  path: '/shows'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer_frontend\src\Controller\FrontendController::showsPage'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+streamer_frontend.front.show.detail:
+  path: '/shows/[show_id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer_frontend\src\Controller\FrontendController::showPage'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+streamer_frontend.front.playlists:
+  path: '/playlists'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer_frontend\src\Controller\FrontendController::playlistsPage'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+streamer_frontend.front.playlist.detail:
+  path: '/playlists/[id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer_frontend\src\Controller\FrontendController::playlistPage'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+streamer_frontend.front.playlist.delete:
+  path: '/playlist/delete'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer_frontend\src\Controller\FrontendController::deletePlaylistPage'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']

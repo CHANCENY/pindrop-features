@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Show Details - CineStream</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-text">CineStream</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="movies.html" class="nav-link">Movies</a></li>
+                    <li><a href="tv-shows.html" class="nav-link">TV Shows</a></li>
+                    <li><a href="playlists.html" class="nav-link">Playlists</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <button class="back-btn" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- TV Show Hero Section -->
+    <section class="tv-show-hero">
+        <div class="tv-show-hero-background">
+            <img id="tvShowHeroImage" src="" alt="TV Show Background">
+            <div class="tv-show-hero-overlay"></div>
+        </div>
+        <div class="tv-show-hero-content">
+            <div class="tv-show-poster">
+                <img id="tvShowPoster" src="" alt="TV Show Poster">
+            </div>
+            <div class="tv-show-info">
+                <h1 id="tvShowTitle" class="tv-show-title">TV Show Title</h1>
+                <div class="tv-show-meta">
+                    <span id="tvShowYear" class="tv-show-year">2024</span>
+                    <span id="tvShowRating" class="tv-show-rating">⭐ 8.7</span>
+                    <span id="tvShowSeasons" class="tv-show-seasons">3 Seasons</span>
+                    <span id="tvShowEpisodes" class="tv-show-episodes">24 Episodes</span>
+                    <span id="tvShowStatus" class="tv-show-status">Ongoing</span>
+                    <span id="tvShowQuality" class="tv-show-quality">4K HDR</span>
+                </div>
+                <div class="tv-show-genres" id="tvShowGenres">
+                    <!-- Genres will be added dynamically -->
+                </div>
+                <p id="tvShowDescription" class="tv-show-description">
+                    TV show description will appear here...
+                </p>
+                <div class="tv-show-actions">
+                    <button class="btn-primary play-first-episode-btn" id="playFirstEpisodeBtn">▶ Play First Episode</button>
+                    <button class="btn-secondary add-to-playlist-btn" id="addToPlaylistBtn">+ Add to Playlist</button>
+                    <button class="btn-secondary add-to-list-btn" id="addToListBtn">♥ Add to List</button>
+                    <button class="btn-secondary share-btn" id="shareBtn">🔗 Share</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Episodes Section -->
+        <section class="episodes-section">
+            <div class="episodes-header">
+                <h2 class="section-title">Episodes</h2>
+                <div class="episodes-controls">
+                    <select class="season-selector" id="seasonSelector">
+                        <!-- Seasons will be added dynamically -->
+                    </select>
+                    <button class="btn-secondary play-season-btn" id="playSeasonBtn">▶ Play Season</button>
+                </div>
+            </div>
+            <div class="episodes-list" id="episodesList">
+                <!-- Episodes will be dynamically added -->
+            </div>
+        </section>
+
+        <!-- Cast & Crew -->
+        <section class="cast-section">
+            <h2 class="section-title">Cast & Crew</h2>
+            <div class="cast-grid" id="castGrid">
+                <!-- Cast will be dynamically added -->
+            </div>
+        </section>
+
+        <!-- TV Show Details -->
+        <section class="tv-show-details-section">
+            <h2 class="section-title">Show Details</h2>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Creators:</span>
+                    <span class="detail-value" id="tvShowCreators">David Benioff, D.B. Weiss</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Network:</span>
+                    <span class="detail-value" id="tvShowNetwork">HBO</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">First Aired:</span>
+                    <span class="detail-value" id="tvShowFirstAired">March 15, 2024</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Aired:</span>
+                    <span class="detail-value" id="tvShowLastAired">Present</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Country:</span>
+                    <span class="detail-value" id="tvShowCountry">United States</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Language:</span>
+                    <span class="detail-value" id="tvShowLanguage">English</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Episode Runtime:</span>
+                    <span class="detail-value" id="tvShowRuntime">45-60 minutes</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seasons Overview -->
+        <section class="seasons-overview-section">
+            <h2 class="section-title">Seasons Overview</h2>
+            <div class="seasons-grid" id="seasonsGrid">
+                <!-- Seasons will be dynamically added -->
+            </div>
+        </section>
+
+        <!-- Similar TV Shows -->
+        <section class="similar-shows-section">
+            <h2 class="section-title">Similar TV Shows</h2>
+            <div class="tv-shows-grid" id="similarShows">
+                <!-- Similar shows will be dynamically added -->
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="reviews-section">
+            <h2 class="section-title">Reviews & Ratings</h2>
+            <div class="reviews-summary">
+                <div class="rating-overview">
+                    <div class="rating-score">
+                        <span class="score-number" id="ratingScore">8.7</span>
+                        <span class="score-stars">⭐⭐⭐⭐⭐</span>
+                        <span class="score-count" id="ratingCount">Based on 3,892 reviews</span>
+                    </div>
+                    <div class="rating-breakdown">
+                        <div class="rating-bar">
+                            <span>5 stars</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 72%"></div>
+                            </div>
+                            <span>72%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>4 stars</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 18%"></div>
+                            </div>
+                            <span>18%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>3 stars</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 7%"></div>
+                            </div>
+                            <span>7%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>2 stars</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 2%"></div>
+                            </div>
+                            <span>2%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>1 star</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 1%"></div>
+                            </div>
+                            <span>1%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-reviews">
+                <h3>User Reviews</h3>
+                <div class="review-form">
+                    <div class="rating-input">
+                        <label>Rate this show:</label>
+                        <div class="star-rating" id="userStarRating">
+                            <button class="star-btn" data-rating="1">⭐</button>
+                            <button class="star-btn" data-rating="2">⭐</button>
+                            <button class="star-btn" data-rating="3">⭐</button>
+                            <button class="star-btn" data-rating="4">⭐</button>
+                            <button class="star-btn" data-rating="5">⭐</button>
+                        </div>
+                    </div>
+                    <textarea class="review-textarea" placeholder="Write your review..." id="userReview"></textarea>
+                    <button class="btn-primary submit-review-btn" id="submitReviewBtn">Submit Review</button>
+                </div>
+                
+                <div class="reviews-list" id="reviewsList">
+                    <!-- Reviews will be dynamically added -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add to Playlist Modal -->
+    <div class="playlist-modal" id="addToPlaylistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add to Playlist</h3>
+                <button class="close-btn" id="closeAddToPlaylistModal">&times;</button>
+            </div>
+            <div class="playlist-list" id="playlistList">
+                <!-- Playlists will be dynamically added -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Share TV Show</h3>
+                <button class="close-btn" id="closeShareModal">&times;</button>
+            </div>
+            <div class="share-content">
+                <div class="share-link">
+                    <input type="text" id="shareLink" readonly value="">
+                    <button class="btn-primary copy-link-btn" id="copyLinkBtn">Copy Link</button>
+                </div>
+                <div class="share-options">
+                    <button class="share-btn" data-platform="facebook">Facebook</button>
+                    <button class="share-btn" data-platform="twitter">Twitter</button>
+                    <button class="share-btn" data-platform="whatsapp">WhatsApp</button>
+                    <button class="share-btn" data-platform="email">Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+</html>

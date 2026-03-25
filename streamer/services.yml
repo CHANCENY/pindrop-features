@@ -1,0 +1,45 @@
+streamer.config:
+  class: Simp\Pindrop\Modules\streamer\src\Config\Config
+  arguments:
+    - "@plugin.manager"
+  tags:
+    - "streamer.config"
+streamer.auth:
+  class: Simp\Pindrop\Modules\streamer\src\Services\Authentication
+  arguments:
+    - "@streamer.http"
+  tags:
+    - "streamer.auth"
+streamer.http:
+  class: Simp\Pindrop\Modules\streamer\src\Http\Http
+  arguments:
+    - "@streamer.config"
+  tags:
+    - "streamer.http"
+streamer.movie:
+  class: Simp\Pindrop\Modules\streamer\src\Plugin\Movie
+  arguments:
+    - "@streamer.http"
+    - "@streamer.auth"
+  tags:
+    - "streamer.auth"
+streamer.show:
+  class: Simp\Pindrop\Modules\streamer\src\Plugin\Show
+  arguments:
+    - "@streamer.http"
+    - "@streamer.auth"
+  tags:
+    - "streamer.auth"
+streamer.player_manifest_manager:
+  class: Simp\Pindrop\Modules\streamer\src\Plugin\PlayerManifestManager
+  arguments:
+    - "@streamer.show"
+    - "@streamer.movie"
+  tags:
+    - "streamer.manifest"
+streamer.playlist:
+  class: Simp\Pindrop\Modules\streamer\src\Plugin\Playlist
+  arguments:
+    - "@database"
+  tags:
+    - "streamer.playlist"

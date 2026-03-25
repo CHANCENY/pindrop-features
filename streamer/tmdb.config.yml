@@ -1,0 +1,63 @@
+general:
+  base: "https://api.themoviedb.org/3/"
+  accept: "application/json"
+endpoint:
+  auth:
+    path: "authentication"
+    headers:
+      accept: "application/json"
+  movies:
+    search:
+      path: "search/movie"
+      params: ['query', 'include_adult', 'language', 'primary_release_year','page','region','year']
+      results: ['id', 'title', 'original_title', 'overview', 'release_date', 'poster_path', 'backdrop_path', 'vote_average', 'vote_count', 'original_language', 'popularity', 'adult', 'video']
+    detail:
+      path: "movie/[movie_id]"
+      params: ['movie_id','language']
+      results: ['id', 'title', 'overview', 'release_date', 'runtime', 'poster_path', 'backdrop_path', 'vote_average', 'vote_count', 'popularity', 'status', 'imdb_id','genres']
+    images:
+      path: "movie/[movie_id]/images"
+      params: ['movie_id']
+      results: ['backdrops']
+    videos:
+      path: "movie/[movie_id]/videos"
+      params: ['movie_id']
+      results: ['type', 'name', 'key', 'official','size', 'site']
+  show:
+    search:
+      path: "search/tv"
+      params: ['query', 'first_air_date_year','include_adult','language','page','year']
+      results: ['adult','backdrop_path','genre_ids','id','origin_country','original_language','original_name','overview','popularity','poster_path','first_air_date','name','vote_average','vote_count']
+    detail:
+      path: "tv/[series_id]"
+      params: ['series_id','append_to_response','language']
+      results: ['id','name','original_name','overview','poster_path','backdrop_path','first_air_date','last_air_date','genres','origin_country','original_language','number_of_seasons','number_of_episodes','status','vote_average','vote_count','popularity','tagline','episode_run_time','seasons']
+    season:
+      detail:
+        path: "tv/[series_id]/season/[season_number]"
+        params: ['series_id', 'season_number','language']
+        results: ['episodes']
+  genres:
+    path: "genre/movie/list"
+    params: ['language']
+    results: ['id', 'name']
+
+front:
+  detail:
+    path: "/w/dashboard/internal/search"
+    method: "POST"
+  local:
+    movie:
+      path: "/w/dashboard/internal/search/movie/local"
+      method: "POST"
+cli:
+  movie:
+    discover:
+      path: 'discover/movie'
+      params: ['page']
+      results: ['id', 'title', 'original_title', 'overview', 'release_date', 'poster_path', 'backdrop_path', 'vote_average', 'vote_count', 'original_language', 'popularity', 'adult', 'video']
+  show:
+    discover:
+      path: "discover/tv"
+      params: ['page']
+      results: ['adult','backdrop_path','genre_ids','id','origin_country','original_language','original_name','overview','popularity','poster_path','first_air_date','name','vote_average','vote_count']

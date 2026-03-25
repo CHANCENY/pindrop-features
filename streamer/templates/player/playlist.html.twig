@@ -1,0 +1,216 @@
+{% set defaultLanguage = language() %}
+{% set languages_Support = supportLanguages() %}
+<!DOCTYPE html>
+<html lang="{{ defaultLanguage }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ playlist.title }}</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="/modules/streamer/assets/css/extra.css">
+    <link rel="stylesheet" href="https://unpkg.com/simp-player@1.0.2/dist/simp-player.css?v={{ unique }}">
+    <script src="/modules/streamer/assets/js/player.js"></script>
+</head>
+<body>
+
+<div id="playerWrapper"></div>
+
+<script src="https://unpkg.com/simp-player@1.0.2/dist/vplayer.umd.js?v={{ unique }}"></script>
+<script>
+
+    async function startPlayer() {
+
+        let lastSentTime = 0;
+
+        const events = {
+            // Custom control events
+            changeVideo: (event, video, index) => {
+
+            },
+            forwardBtn: (event, progress, any) => {
+
+            },
+            rewindBtn: (event, progress, any) => {
+
+            },
+            playPauseBtn: (event, video) => {
+
+            },
+            prevBtn: (event, video) => {
+
+            },
+            nextBtn: (event, video) => {
+
+            },
+
+            // Check the customization below to understand how to use this event
+            viewsId: (event, video) => {
+                console.log('Event: viewId', event, video);
+            },
+            customMade: (event, video) => {
+
+            },
+
+            // Video tag events
+            playBoxDurationchange: (type, event, object, videoSegment) => {
+
+            },
+            playBoxLoadedmetadata: async (type, event, object, videoSegment) => {
+                const currentTime = Math.floor(type.target.currentTime);
+                const params = await getRecordParams(type, object, currentTime)
+                params.media = "movie"
+                await recordPlayer(params);
+            },
+            playBoxLoadeddata: async (type, event, object, videoSegment) => {
+                console.log("Box loaded")
+            },
+            playBoxProgress: (type, event, object, videoSegment) => {
+
+            },
+            playBoxCanplay: (type, event, object, videoSegment) => {
+
+            },
+            playBoxCanplaythrough: (type, event, object, videoSegment) => {
+
+            },
+            playBoxPlay: async (type, event, object, videoSegment) => {
+                const currentTime = Math.floor(type.target.currentTime);
+                const params = await getRecordParams(type, object, currentTime)
+                params.media = "movie"
+                await recordPlayer(params);
+            },
+            playBoxPlaying: async (type, event, object, videoSegment) => {
+                const currentTime = Math.floor(type.target.currentTime);
+                const params = await getRecordParams(type, object, currentTime)
+                params.media = "movie"
+                await recordPlayer(params);
+            },
+            playBoxPause: async (type, event, object, videoSegment) => {
+                const currentTime = Math.floor(type.target.currentTime);
+                const params = await getRecordParams(type, object, currentTime)
+                params.media = "movie"
+                await recordPlayer(params);
+            },
+            playBoxWaiting: (type, event, object, videoSegment) => {
+
+            },
+            playBoxSeeking: async (type, event, object, videoSegment) => {
+                const currentTime = Math.floor(type.target.currentTime);
+                const params = await getRecordParams(type, object, currentTime)
+                params.media = "movie"
+                await recordPlayer(params);
+            },
+            playBoxSeeked: async (type, event, object, videoSegment) => {
+                const currentTime = Math.floor(type.target.currentTime);
+                const params = await getRecordParams(type, object, currentTime)
+                params.media = "movie"
+                await recordPlayer(params);
+            },
+            playBoxRatechange: (type, event, object, videoSegment) => {
+
+            },
+            playBoxVolumechange: async (type, event, object, videoSegment) => {
+                const currentTime = Math.floor(type.target.currentTime);
+                const params = await getRecordParams(type, object, currentTime)
+                params.media = "movie"
+                await recordPlayer(params);
+            },
+            playBoxStalled: (type, event, object, videoSegment) => {
+
+            },
+            playBoxSuspend: (type, event, object, videoSegment) => {
+
+            },
+            playBoxTimeupdate: async (type, event, object, videoSegment) => {
+
+                const currentTime = Math.floor(type.target.currentTime);
+
+                // send request every 120 seconds
+                if (currentTime - lastSentTime >= 120) {
+
+                    lastSentTime = currentTime;
+
+                    const params = await getRecordParams(type, object, currentTime);
+                    params.media = "movie"
+                    await recordPlayer(params);
+
+                    console.log("Saved progress:", params);
+                }
+
+            },
+            playBoxEnded: async (type, event, object, videoSegment) => {
+                const currentTime = Math.floor(type.target.currentTime);
+                const params = await getRecordParams(type, object, currentTime)
+                params.media = "movie"
+                await recordPlayer(params);
+            },
+            playBoxError: (type, event, object, videoSegment) => {
+
+            }
+        };
+
+        const videUrl = "{{ url("streamer.dashboard.movie.watch.p.video",{playlist_id: playlist.id}) }}";
+        const thumbUrl = "{{ url("streamer.dashboard.movie.watch.p.frame",{playlist_id: playlist.id}) }}";
+        const playlistUrl = "{{ url("streamer.dashboard.movie.watch.p.playlist",{playlist_id: playlist.id}) }}";
+
+        // playlistJson is optional if you don't want to use the playlist endpoint
+
+        const config = new VPlayerConfig(videUrl, thumbUrl, playlistUrl, null,
+            {
+                events: events,
+
+                // Settings
+                animation: false,       // Enable/Disable video animation eg icons
+                mode: 'fetch',          // 'fetch' or 'source' this is way the video will be loaded
+                currentTime: 0,
+            })
+
+        const player = new VPlayer('playerWrapper', config);
+        await player.init();
+
+        const customizer = player.getCustomizer();
+        const el = customizer.addBelow('description-player')
+        const p = document.createElement('p');
+        p.textContent = "{{ movie.description }}"
+        el.appendChild(p);
+
+        const se = customizer.addBelow('movie-player');
+        const seDiv = document.createElement('div');
+        seDiv.innerHTML = `{% include "templates/player/playlist-card.html.twig" with {
+            movie: movie,
+        } %}`
+        el.appendChild(seDiv)
+
+        //customizer.hidSidebar();
+    }
+
+    startPlayer();
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+        setTimeout(()=>{
+            const clickable = document.querySelector('#playlistSidebar');
+            if (clickable) {
+                const items = clickable.querySelectorAll('div')
+                const search = new URL(window.location.href);
+                const pid = search.searchParams.get('pid');
+                if (pid) {
+                    Object.values(items).forEach((item)=>{
+                        const img = item.querySelector('img');
+                        if (img) {
+                            const url = new URL(img.src)
+                            let pid2 = url.searchParams.get('i')
+                            if (parseInt(pid2) === parseInt(pid)) {
+                                item.dispatchEvent(new Event('click', {bubbles: true}))
+                                console.log(item, 'click')
+                            }
+                        }
+                    })
+                }
+            }
+        }, 5000)
+    })
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+{% extends "templates/front.base.html.twig" %}
+
+{% block hero %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <h1 class="page-title">Movies</h1>
+            <p class="page-subtitle">Discover thousands of movies from every genre</p>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+        <form class="filters-container">
+            <div class="filter-group">
+                <label class="filter-label">Search</label>
+                <input type="text" class="filter-input form-control" name="search" placeholder="Search movies..." value="{{ filters.search ?? '' }}">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Genre</label>
+                <select class="filter-select" name="genre">
+                    <option value="">All Genres</option>
+                    {% for genre in availableGenres %}
+                        <option value="{{ genre }}" {{ filters.genre == genre ? 'selected' : '' }}>{{ genre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Year</label>
+                <select class="filter-select" name="year">
+                    <option value="">All Years</option>
+                    {% for year in availableYears %}
+                        <option value="{{ year }}" {{ filters.year == year ? 'selected' : '' }}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Rating</label>
+                <select class="filter-select" name="rating">
+                    <option value="">All Ratings</option>
+                    <option value="9" {{ filters.rating == '9' ? 'selected' : '' }}>9+ Stars</option>
+                    <option value="8" {{ filters.rating == '8' ? 'selected' : '' }}>8+ Stars</option>
+                    <option value="7" {{ filters.rating == '7' ? 'selected' : '' }}>7+ Stars</option>
+                    <option value="6" {{ filters.rating == '6' ? 'selected' : '' }}>6+ Stars</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Sort By</label>
+                <select class="filter-select" name="sort">
+                    <option value="release_date_desc" {{ filters.sort == 'release_date_desc' ? 'selected' : '' }}>Newest First</option>
+                    <option value="release_date_asc" {{ filters.sort == 'release_date_asc' ? 'selected' : '' }}>Oldest First</option>
+                    <option value="rating_desc" {{ filters.sort == 'rating_desc' ? 'selected' : '' }}>Highest Rated</option>
+                    <option value="title_asc" {{ filters.sort == 'title_asc' ? 'selected' : '' }}>Title A-Z</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button type="submit" class="btn-secondary filter-btn">Apply Filters</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Movies Grid -->
+    <main class="main-content">
+        {% if movies is empty %}
+            <div class="no-results">
+                <h3>No movies found</h3>
+                <p>Try adjusting your filters or search terms</p>
+            </div>
+        {% else %}
+            <div class="movies-grid">
+                {% for movie in movies %}
+                    <div class="content-card">
+                        <div class="content-card-actions">
+                            <a href="{{ url('streamer.dashboard.movie.watch', {movie_id: movie.id}) }}" class="card-action-btn" title="Play">▶</a>
+                            <a href="#" class="card-action-btn" title="Add to Playlist">+</a>
+                        </div>
+                        <a href="{{ url('streamer_frontend.front.movie.detail', {movie_id: movie.id}) }}">
+                            <img src="{{ movie.thumbnail_path }}" alt="{{ movie.title }}">
+                            <div class="content-card-overlay">
+                                <div class="content-card-title">{{ movie.title }}</div>
+                                <div class="content-card-year">{{ movie.release_date|date('Y') }} • {{ movie.duration }}</div>
+                                {% if movie.genres %}
+                                    <div class="content-card-genres">
+                                        {% for genre in movie.genres|slice(0, 3) %}
+                                            {% set genreName = genre.name ?? genre %}
+                                            <span class="genre-tag">{{ genreName }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="content-card-rating">⭐ {{ movie.rating }}</div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Load More Button -->
+        {% if hasNext %}
+            <div class="load-more-container">
+                {% set loadMoreUrl = '?page=' ~ (currentPage + 1) %}
+                {% if filters.search %}{% set loadMoreUrl = loadMoreUrl ~ '&search=' ~ filters.search %}{% endif %}
+                {% if filters.genre %}{% set loadMoreUrl = loadMoreUrl ~ '&genre=' ~ filters.genre %}{% endif %}
+                {% if filters.year %}{% set loadMoreUrl = loadMoreUrl ~ '&year=' ~ filters.year %}{% endif %}
+                {% if filters.rating %}{% set loadMoreUrl = loadMoreUrl ~ '&rating=' ~ filters.rating %}{% endif %}
+                {% if filters.sort %}{% set loadMoreUrl = loadMoreUrl ~ '&sort=' ~ filters.sort %}{% endif %}
+                <a href="{{ loadMoreUrl }}" class="btn-primary load-more-btn">Load More Movies</a>
+                <p class="load-more-info">Showing {{ movies|length }} of {{ total }} movies</p>
+            </div>
+        {% else %}
+            <div class="load-more-container">
+                <p class="load-more-info">Showing all {{ movies|length }} movies</p>
+            </div>
+        {% endif %}
+
+    </main>
+
+{% endblock %}
+

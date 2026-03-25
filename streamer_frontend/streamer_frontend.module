@@ -1,0 +1,66 @@
+<?php
+
+
+function streamer_frontend_image_path_resolve(string $path): string
+{
+    if (str_starts_with($path,"public://")) {
+        return str_replace("public://","/sites/default/files/",$path);
+    }
+    else {
+        return $_ENV['TMDB_IMG_PATH'].$path;
+    }
+}
+
+function streamer_frontend_format_minutes($minutes) {
+    $hours = floor($minutes / 60);
+    $mins = $minutes % 60;
+
+    $result = '';
+
+    if ($hours > 0) {
+        $result .= $hours . 'h ';
+    }
+
+    if ($mins > 0) {
+        $result .= $mins . 'min';
+    }
+
+    return trim($result);
+}
+
+function streamer_frontend_resolve_records(array $records)
+{
+    $result = [];
+    foreach ($records as $record) {
+        if ($record['media'] == 'movie') {
+            $movie =  \getAppContainer()->get('streamer.movie')->getMovieLocally($record['video_id']);
+            $movie['thumbnail_path'] = streamer_frontend_image_path_resolve($movie['thumbnail_path']);
+            $result[] = [
+                ...$record,
+                'data' => $movie,
+                'percent' => streamer_frontend_completion_percentage($record['duration'], $record['current_time_played'])
+            ];
+        }
+        else if ($record['media'] == 'episode') {
+            $episode = \getAppContainer()->get('streamer.show')->getEpisodeLocally($record['video_id']);
+            $show =  \getAppContainer()->get('streamer.show')->getShowLocally($episode['series_id']);
+            $show['thumbnail_path'] = streamer_frontend_image_path_resolve($show['thumbnail_path']);
+            $result[] = [
+                ...$record,
+                'data' => $show
+            ];
+        }
+    }
+    return $result;
+}
+
+function streamer_frontend_completion_percentage($duration, $played_time) {
+    if ($duration <= 0) {
+        return 0;
+    }
+
+    $percentage = ($played_time / $duration) * 100;
+
+    // prevent values above 100
+    return min(100, round($percentage, 2));
+}

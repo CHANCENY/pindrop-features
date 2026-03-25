@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Movie - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="movies.html">Movies</a>
+            <span class="separator">›</span>
+            <a href="movie-delete.html">Delete Movie</a>
+        </div>
+
+        <div class="card">
+            <h2>🗑️ Delete Movie</h2>
+            
+            <div class="alert alert-danger">
+                <strong>⚠️ Warning:</strong> This action cannot be undone. Once a movie is deleted, all associated data will be permanently removed.
+            </div>
+
+            <div class="form-group">
+                <label for="movieSearch">Search Movie to Delete</label>
+                <input type="text" id="movieSearch" placeholder="Type to search movies..." onkeyup="filterMovies()">
+            </div>
+
+            <div class="table-container">
+                <table id="movieTable">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Genre</th>
+                            <th>Release Year</th>
+                            <th>Duration</th>
+                            <th>Rating</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" name="movieSelect" value="1" onchange="updateDeleteButton()"></td>
+                            <td>1</td>
+                            <td>Inception</td>
+                            <td>Sci-Fi</td>
+                            <td>2010</td>
+                            <td>148 min</td>
+                            <td>⭐ 8.8</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="movieSelect" value="2" onchange="updateDeleteButton()"></td>
+                            <td>2</td>
+                            <td>The Dark Knight</td>
+                            <td>Action</td>
+                            <td>2008</td>
+                            <td>152 min</td>
+                            <td>⭐ 9.0</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="movieSelect" value="3" onchange="updateDeleteButton()"></td>
+                            <td>3</td>
+                            <td>Interstellar</td>
+                            <td>Sci-Fi</td>
+                            <td>2014</td>
+                            <td>169 min</td>
+                            <td>⭐ 8.6</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="movieSelect" value="4" onchange="updateDeleteButton()"></td>
+                            <td>4</td>
+                            <td>The Matrix</td>
+                            <td>Action</td>
+                            <td>1999</td>
+                            <td>136 min</td>
+                            <td>⭐ 8.7</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="movieSelect" value="5" onchange="updateDeleteButton()"></td>
+                            <td>5</td>
+                            <td>Pulp Fiction</td>
+                            <td>Crime</td>
+                            <td>1994</td>
+                            <td>154 min</td>
+                            <td>⭐ 8.9</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="movieSelect" value="6" onchange="updateDeleteButton()"></td>
+                            <td>6</td>
+                            <td>The Godfather</td>
+                            <td>Crime</td>
+                            <td>1972</td>
+                            <td>175 min</td>
+                            <td>⭐ 9.2</td>
+                            <td><span style="color: red;">❌ In Playlist</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="movieSelect" value="7" onchange="updateDeleteButton()"></td>
+                            <td>7</td>
+                            <td>Forrest Gump</td>
+                            <td>Drama</td>
+                            <td>1994</td>
+                            <td>142 min</td>
+                            <td>⭐ 8.8</td>
+                            <td><span style="color: red;">❌ In Playlist</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label>
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <strong>Select All Movies</strong>
+                </label>
+            </div>
+
+            <div id="selectedMoviesInfo" style="margin-top: 20px; display: none;">
+                <div class="alert alert-warning">
+                    <strong>Selected Movies:</strong> <span id="selectedCount">0</span>
+                    <div id="selectedList"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button id="deleteButton" class="btn btn-danger" onclick="confirmDelete()" disabled>🗑️ Delete Selected Movies</button>
+                <button id="bulkDeleteButton" class="btn btn-danger" onclick="confirmBulkDelete()" style="display: none;">🗑️ Bulk Delete All</button>
+                <a href="movies.html" class="btn btn-primary">🔙 Back to Movies</a>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>🚨 Confirm Deletion</h2>
+                <p>Are you sure you want to delete the selected movie(s)?</p>
+                <p><strong>This action cannot be undone!</strong></p>
+                <div id="modalMovieList"></div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-danger" onclick="executeDelete()">Yes, Delete</button>
+                    <button class="btn btn-primary" onclick="closeModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterMovies() {
+            const searchValue = document.getElementById('movieSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#movieTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('input[name="movieSelect"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateDeleteButton();
+        }
+
+        function updateDeleteButton() {
+            const checkboxes = document.querySelectorAll('input[name="movieSelect"]:checked');
+            const deleteButton = document.getElementById('deleteButton');
+            const selectedMoviesInfo = document.getElementById('selectedMoviesInfo');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectedList = document.getElementById('selectedList');
+            
+            if (checkboxes.length > 0) {
+                deleteButton.disabled = false;
+                selectedMoviesInfo.style.display = 'block';
+                selectedCount.textContent = checkboxes.length;
+                
+                let movieNames = [];
+                checkboxes.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    const title = row.cells[2].textContent;
+                    movieNames.push(title);
+                });
+                
+                selectedList.innerHTML = '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                    movieNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+                
+                // Show bulk delete button if more than 3 movies selected
+                if (checkboxes.length > 3) {
+                    document.getElementById('bulkDeleteButton').style.display = 'inline-block';
+                } else {
+                    document.getElementById('bulkDeleteButton').style.display = 'none';
+                }
+            } else {
+                deleteButton.disabled = true;
+                selectedMoviesInfo.style.display = 'none';
+                document.getElementById('bulkDeleteButton').style.display = 'none';
+            }
+        }
+
+        function confirmDelete() {
+            const checkboxes = document.querySelectorAll('input[name="movieSelect"]:checked');
+            if (checkboxes.length === 0) return;
+            
+            let movieNames = [];
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const title = row.cells[2].textContent;
+                const status = row.cells[7].textContent;
+                movieNames.push(`${title} ${status.includes('In Playlist') ? '(⚠️ In Playlist)' : ''}`);
+            });
+            
+            document.getElementById('modalMovieList').innerHTML = 
+                '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                movieNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function confirmBulkDelete() {
+            confirmDelete();
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function executeDelete() {
+            const checkboxes = document.querySelectorAll('input[name="movieSelect"]:checked');
+            
+            // Simulate deletion process
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                row.style.opacity = '0.5';
+                row.cells[7].innerHTML = '<span style="color: red;">❌ Deleting...</span>';
+            });
+            
+            setTimeout(() => {
+                checkboxes.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    row.remove();
+                });
+                
+                closeModal();
+                alert('Selected movies have been deleted successfully!');
+                updateDeleteButton();
+            }, 2000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

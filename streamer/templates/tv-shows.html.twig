@@ -1,0 +1,209 @@
+{% extends "templates/base.html.twig" %}
+
+{% block body %}
+
+<div class="breadcrumb">
+    <a href="{{ url('streamer.dashboard') }}">Dashboard</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.shows') }}">TV Shows</a>
+</div>
+
+<div class="card">
+    <h2>📺 TV Shows Management</h2>
+    <div style="margin-bottom: 20px;">
+        <a href="{{ url('streamer.dashboard.shows.add') }}" class="btn btn-primary">➕ Add New TV Show</a>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card" style="margin-bottom: 20px; background-color: #f8f9fa;">
+        <h3>🔍 Filters</h3>
+        <form method="GET" action="{{ url('streamer.dashboard.shows') }}" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+            <div style="flex: 1; min-width: 200px;">
+                <label for="title" style="display: block; margin-bottom: 5px; font-weight: bold;">Title:</label>
+                <input type="text" id="title" name="title" value="{{ filters.title|default('') }}" placeholder="Search by title..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="flex: 1; min-width: 150px;">
+                <label for="genre" style="display: block; margin-bottom: 5px; font-weight: bold;">Genre:</label>
+                <select id="genre" name="genre" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">All Genres</option>
+                    <option value="Action" {% if filters.genre == 'Action' %}selected{% endif %}>Action</option>
+                    <option value="Comedy" {% if filters.genre == 'Comedy' %}selected{% endif %}>Comedy</option>
+                    <option value="Drama" {% if filters.genre == 'Drama' %}selected{% endif %}>Drama</option>
+                    <option value="Horror" {% if filters.genre == 'Horror' %}selected{% endif %}>Horror</option>
+                    <option value="Sci-Fi" {% if filters.genre == 'Sci-Fi' %}selected{% endif %}>Sci-Fi</option>
+                    <option value="Thriller" {% if filters.genre == 'Thriller' %}selected{% endif %}>Thriller</option>
+                    <option value="Romance" {% if filters.genre == 'Romance' %}selected{% endif %}>Romance</option>
+                    <option value="Animation" {% if filters.genre == 'Animation' %}selected{% endif %}>Animation</option>
+                    <option value="Crime" {% if filters.genre == 'Crime' %}selected{% endif %}>Crime</option>
+                    <option value="Fantasy" {% if filters.genre == 'Fantasy' %}selected{% endif %}>Fantasy</option>
+                </select>
+            </div>
+            
+            <div style="flex: 1; min-width: 120px;">
+                <label for="year_from" style="display: block; margin-bottom: 5px; font-weight: bold;">Start Year From:</label>
+                <input type="number" id="year_from" name="year_from" value="{{ filters.year_from|default('') }}" placeholder="From" min="1900" max="{{ "now"|date("Y") }}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="flex: 1; min-width: 120px;">
+                <label for="year_to" style="display: block; margin-bottom: 5px; font-weight: bold;">End Year To:</label>
+                <input type="number" id="year_to" name="year_to" value="{{ filters.year_to|default('') }}" placeholder="To" min="1900" max="{{ "now"|date("Y") }}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="flex: 1; min-width: 120px;">
+                <label for="rating_min" style="display: block; margin-bottom: 5px; font-weight: bold;">Min Rating:</label>
+                <input type="number" id="rating_min" name="rating_min" value="{{ filters.rating_min|default('') }}" placeholder="0.0" min="0" max="10" step="0.1" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="flex: 1; min-width: 120px;">
+                <label for="status" style="display: block; margin-bottom: 5px; font-weight: bold;">Status:</label>
+                <select id="status" name="status" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">All Status</option>
+                    <option value="Returning Series" {% if filters.status == 'Returning Series' %}selected{% endif %}>Returning Series</option>
+                    <option value="Ended" {% if filters.status == 'Ended' %}selected{% endif %}>Ended</option>
+                    <option value="Canceled" {% if filters.status == 'Canceled' %}selected{% endif %}>Canceled</option>
+                    <option value="In Production" {% if filters.status == 'In Production' %}selected{% endif %}>In Production</option>
+                </select>
+            </div>
+            
+            <div style="flex: 1; min-width: 120px;">
+                <label for="language" style="display: block; margin-bottom: 5px; font-weight: bold;">Language:</label>
+                <input type="text" id="language" name="language" value="{{ filters.language|default('') }}" placeholder="en" maxlength="2" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary">🔍 Apply Filters</button>
+                <a href="{{ url('streamer.dashboard.shows') }}" class="btn btn-secondary">🔄 Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Start Year</th>
+                <th>End Year</th>
+                <th>Seasons</th>
+                <th>Rating</th>
+                <th>Status</th>
+                <th>Language</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for show in shows %}
+            <tr>
+                <td>{{ show.id }}</td>
+                <td>
+                    {% if show.poster %}
+                        {% if show.poster starts with 'public://' %}
+                            <img src="/sites/default/{{ show.poster|replace({'public://': ''}) }}" alt="{{ show.title }}" style="width: 30px; height: 45px; object-fit: cover; margin-right: 10px; vertical-align: middle;">
+                        {% else %}
+                            <img src="https://image.tmdb.org/t/p/w185{{ show.poster }}" alt="{{ show.title }}" style="width: 30px; height: 45px; object-fit: cover; margin-right: 10px; vertical-align: middle;">
+                        {% endif %}
+                    {% endif %}
+                    {{ show.title }}
+                </td>
+                <td>
+                    {% if show.genres is iterable %}
+                        {{ show.genres|map(g => g.value|default(g))|join(', ') }}
+                    {% elseif show.genres is not empty %}
+                        {{ show.genres }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>{{ show.start_year ? show.start_year|date("Y") : 'N/A' }}</td>
+                <td>{{ show.end_year ? show.end_year|date("Y") : 'Present' }}</td>
+                <td>{{ show.season_count }}</td>
+                <td>⭐ {{ show.rating|default('N/A') }}</td>
+                <td>
+                    {% if show.status == 'Ended' %}
+                        <span style="color: #28a745; font-weight: bold;">✅ {{ show.status }}</span>
+                    {% elseif show.status == 'Returning Series' %}
+                        <span style="color: #007bff; font-weight: bold;">🔄 {{ show.status }}</span>
+                    {% elseif show.status == 'Canceled' %}
+                        <span style="color: #dc3545; font-weight: bold;">❌ {{ show.status }}</span>
+                    {% else %}
+                        <span style="color: #6c757d;">{{ show.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ show.language|default('N/A')|upper }}</td>
+                <td>
+                    <a href="{{ url('streamer.dashboard.seasons', {show_id: show.id}) }}" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Seasons</a>
+                    <a href="{{ url('streamer.dashboard.shows.edit', {show_id: show.id}) }}" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                    <a href="{{ url('streamer.dashboard.shows.delete', {show_id: show.id}) }}" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="10" style="text-align: center; padding: 20px;">No TV shows found matching your criteria.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.total > 0 %}
+    <div style="margin-top: 20px; text-align: center;">
+        <p>Showing {{ ((pagination.current_page - 1) * pagination.per_page) + 1 }}-{{ min(pagination.current_page * pagination.per_page, pagination.total) }} of {{ pagination.total }} TV shows</p>
+        
+        {% set currentParams = filters|default({}) %}
+        {% set baseUrl = url('streamer.dashboard.shows') %}
+        
+        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; flex-wrap: wrap;">
+            <!-- Previous Button -->
+            {% if pagination.has_prev %}
+                {% set prevParams = currentParams|merge({'page': pagination.current_page - 1}) %}
+                <a href="{{ baseUrl }}?{{ prevParams|url_encode }}" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">← Previous</a>
+            {% else %}
+                <button class="btn btn-secondary" style="padding: 8px 15px; font-size: 14px;" disabled>← Previous</button>
+            {% endif %}
+            
+            <!-- Page Numbers -->
+            {% set startPage = max(1, pagination.current_page - 2) %}
+            {% set endPage = min(pagination.total_pages, pagination.current_page + 2) %}
+            
+            {% if startPage > 1 %}
+                {% set firstParams = currentParams|merge({'page': 1}) %}
+                <a href="{{ baseUrl }}?{{ firstParams|url_encode }}" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">1</a>
+                {% if startPage > 2 %}
+                    <span style="padding: 8px;">...</span>
+                {% endif %}
+            {% endif %}
+            
+            {% for page in range(startPage, endPage) %}
+                {% set pageParams = currentParams|merge({'page': page}) %}
+                {% if page == pagination.current_page %}
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px; background-color: #007bff; border-color: #007bff;">{{ page }}</button>
+                {% else %}
+                    <a href="{{ baseUrl }}?{{ pageParams|url_encode }}" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">{{ page }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if endPage < pagination.total_pages %}
+                {% if endPage < pagination.total_pages - 1 %}
+                    <span style="padding: 8px;">...</span>
+                {% endif %}
+                {% set lastParams = currentParams|merge({'page': pagination.total_pages}) %}
+                <a href="{{ baseUrl }}?{{ lastParams|url_encode }}" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">{{ pagination.total_pages }}</a>
+            {% endif %}
+            
+            <!-- Next Button -->
+            {% if pagination.has_next %}
+                {% set nextParams = currentParams|merge({'page': pagination.current_page + 1}) %}
+                <a href="{{ baseUrl }}?{{ nextParams|url_encode }}" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">Next →</a>
+            {% else %}
+                <button class="btn btn-secondary" style="padding: 8px 15px; font-size: 14px;" disabled>Next →</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player - CineStream</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-text">CineStream</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="movies.html" class="nav-link">Movies</a></li>
+                    <li><a href="tv-shows.html" class="nav-link">TV Shows</a></li>
+                    <li><a href="playlists.html" class="nav-link">Playlists</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <button class="back-btn" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Video Player Container -->
+    <div class="player-container">
+        <div class="video-wrapper">
+            <video id="mainVideoPlayer" controls>
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            
+            <!-- Custom Video Controls -->
+            <div class="video-controls-overlay">
+                <div class="video-controls-top">
+                    <div class="video-title-overlay">
+                        <h2 id="videoTitle">Video Title</h2>
+                        <span id="videoMeta">2024 • 2h 15min</span>
+                    </div>
+                </div>
+                
+                <div class="video-controls-bottom">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                            <div class="progress-handle"></div>
+                        </div>
+                        <div class="time-display">
+                            <span class="current-time">00:00</span>
+                            <span class="time-separator">/</span>
+                            <span class="total-time">02:15:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-buttons">
+                        <div class="control-left">
+                            <button class="control-btn play-pause-btn" id="playPauseBtn">▶</button>
+                            <button class="control-btn prev-btn" id="prevBtn">⏮</button>
+                            <button class="control-btn next-btn" id="nextBtn">⏭</button>
+                            <div class="volume-control">
+                                <button class="control-btn volume-btn" id="volumeBtn">🔊</button>
+                                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
+                            </div>
+                        </div>
+                        
+                        <div class="control-right">
+                            <button class="control-btn subtitle-btn" id="subtitleBtn">CC</button>
+                            <button class="control-btn settings-btn" id="settingsBtn">⚙</button>
+                            <button class="control-btn pip-btn" id="pipBtn">📺</button>
+                            <button class="control-btn fullscreen-btn" id="fullscreenBtn">⛶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Information Sidebar -->
+        <div class="video-sidebar">
+            <div class="video-info-panel">
+                <h1 id="mainVideoTitle">Video Title</h1>
+                <div class="video-meta-info">
+                    <span id="videoYear">2024</span>
+                    <span id="videoRating">⭐ 8.5</span>
+                    <span id="videoDuration">2h 15min</span>
+                    <span id="videoQuality">4K HDR</span>
+                </div>
+                <p id="videoDescription">
+                    An epic journey through space and time, where humanity's future hangs in the balance.
+                </p>
+                <div class="video-genres" id="videoGenres">
+                    <!-- Genres will be added dynamically -->
+                </div>
+                
+                <div class="video-actions">
+                    <button class="btn-primary add-to-playlist-btn" id="addToPlaylistBtn">+ Add to Playlist</button>
+                    <button class="btn-secondary add-to-list-btn" id="addToListBtn">♥ Add to List</button>
+                    <button class="btn-secondary share-btn" id="shareBtn">🔗 Share</button>
+                </div>
+            </div>
+
+            <!-- Episodes Section (for TV Shows) -->
+            <div class="episodes-section" id="episodesSection" style="display: none;">
+                <h3>Episodes</h3>
+                <select class="season-selector" id="seasonSelector">
+                    <!-- Seasons will be added dynamically -->
+                </select>
+                <div class="episodes-list" id="episodesList">
+                    <!-- Episodes will be added dynamically -->
+                </div>
+            </div>
+
+            <!-- Cast & Crew -->
+            <div class="cast-section">
+                <h3>Cast & Crew</h3>
+                <div class="cast-list" id="castList">
+                    <!-- Cast will be added dynamically -->
+                </div>
+            </div>
+
+            <!-- Related Content -->
+            <div class="related-section">
+                <h3>Related Content</h3>
+                <div class="related-grid" id="relatedGrid">
+                    <!-- Related content will be added dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Playlist Queue (when playing from playlist) -->
+    <div class="playlist-queue" id="playlistQueue" style="display: none;">
+        <div class="queue-header">
+            <h4>Playlist Queue</h4>
+            <button class="close-queue-btn" id="closeQueueBtn">×</button>
+        </div>
+        <div class="queue-list" id="queueList">
+            <!-- Queue items will be added dynamically -->
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Video Settings</h3>
+                <button class="close-btn" id="closeSettingsModal">&times;</button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-group">
+                    <label>Quality</label>
+                    <select id="qualitySelect">
+                        <option value="auto">Auto</option>
+                        <option value="4k">4K</option>
+                        <option value="1080p">1080p</option>
+                        <option value="720p">720p</option>
+                        <option value="480p">480p</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Playback Speed</label>
+                    <select id="speedSelect">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Subtitles</label>
+                    <select id="subtitleSelect">
+                        <option value="off">Off</option>
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Audio</label>
+                    <select id="audioSelect">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Video</h3>
+                <button class="close-btn" id="closeShareModal">&times;</button>
+            </div>
+            <div class="share-content">
+                <div class="share-link">
+                    <input type="text" id="shareLink" readonly value="">
+                    <button class="btn-primary copy-link-btn" id="copyLinkBtn">Copy Link</button>
+                </div>
+                <div class="share-options">
+                    <button class="share-btn" data-platform="facebook">Facebook</button>
+                    <button class="share-btn" data-platform="twitter">Twitter</button>
+                    <button class="share-btn" data-platform="whatsapp">WhatsApp</button>
+                    <button class="share-btn" data-platform="email">Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add to Playlist Modal -->
+    <div class="playlist-modal" id="addToPlaylistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add to Playlist</h3>
+                <button class="close-btn" id="closeAddToPlaylistModal">&times;</button>
+            </div>
+            <div class="playlist-list" id="playlistList">
+                <!-- Playlists will be dynamically added -->
+            </div>
+        </div>
+    </div>
+
+    </body>
+</html>

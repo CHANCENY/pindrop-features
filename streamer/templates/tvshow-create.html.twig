@@ -1,0 +1,388 @@
+{% extends "templates/base.html.twig" %}
+
+{% block body %}
+
+<div class="breadcrumb">
+    <a href="{{ url('streamer.dashboard') }}">Dashboard</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.shows') }}">TV Shows</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.shows.add') }}">Create TV Show</a>
+</div>
+
+<div class="card">
+    <h2>➕ Create New TV Show</h2>
+
+    <form id="tvshowCreateForm" method="post">
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="title">TV Show Title *</label>
+                <input type="text" id="title" value="{{ title }}" name="title" required placeholder="Enter TV show title">
+            </div>
+
+            <div class="form-group">
+                <label for="genre">Genre *</label>
+                <input type="text" name="genres" value="{{ genres }}" id="genres" required placeholder="Enter TV show genres">
+            </div>
+
+            <div class="form-group">
+                <label for="startYear">Start Year *</label>
+                <input type="date" id="startYear" value="{{ startYear }}" name="startYear" required min="1900" max="2030" placeholder="2024">
+            </div>
+
+            <div class="form-group">
+                <label for="endYear">End Year</label>
+                <input type="number" id="endYear" value="{{ endYear }}" name="endYear" min="1900" max="2030" placeholder="Present if ongoing">
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating (0-10)</label>
+                <input type="number" id="rating" value="{{ rating  }}" name="rating" min="0.0" max="10.0" step="0.1" placeholder="8.5">
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status *</label>
+                <select id="status" name="status" required>
+                    <option {% if status == "Returning Series" %} selected {% endif %} value="Returning Series">Returning Series</option>
+                    <option {% if status == "Planned" %} selected {% endif %} value="Planned">Planned</option>
+                    <option {% if status == "In Production" %} selected {% endif %} value="In Production">In Production</option>
+                    <option {% if status == "Ended" %} selected {% endif %} value="Ended">Ended</option>
+                    <option {% if status == "Cancelled" %} selected {% endif %} value="Cancelled">Cancelled</option>
+                    <option {% if status == "Pilot" %} selected {% endif %} value="Pilot">Pilot</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="Enter TV show description">{{ description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="language">Language</label>
+            <input type="text" id="language" name="language" value="{{ language }}" placeholder="English">
+        </div>
+
+        <div class="form-group">
+            <label for="country">Country of Origin</label>
+            <input type="text" id="country" name="country" value="{{ country }}" placeholder="United States">
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="poster">Poster Image</label>
+                <input type="file" id="poster" data-type="image" name="poster" accept="image/*">
+                <input type="hidden" name="thumbnail_path" value="{{ thumbnail_path }}" id="thumbnail_path">
+                <div class="preview">
+                    <img src="{{ thumbnail_uri }}" alt="" width="100px" id="preview">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" {% if featured is not empty %} checked {% endif %} id="featured" name="featured">
+                Featured TV Show
+            </label>
+        </div>
+
+        <input type="hidden" id="imdb_id" name="imdb_id" {{ imdb_id }}>
+        <input type="hidden" id="season_count" name="season_count" {{ season_count }}>
+        <div class="card">
+            <h3>📊 Quick Season Setup</h3>
+            <div id="seasonSetup" style="display: none;">
+                <div class="form-group">
+                    <label for="firstSeasonTitle">First Season Title</label>
+                    <input type="text" value="{{ firstSeasonTitle }}" name="firstSeasonTitle" id="firstSeasonTitle" placeholder="Season 1">
+                </div>
+                <div class="form-group">
+                    <label for="firstSeasonNumber">Season of Number</label>
+                    <input type="number" value="{{ firstSeasonNumber }}" name="firstSeasonNumber" id="firstSeasonNumber" min="1" placeholder="10">
+                </div>
+                <div class="form-group">
+                    <label for="firstSeasonVoteAverage">Rating</label>
+                    <input type="number" value="{{ firstSeasonVoteAverage }}" name="firstSeasonVoteAverage" id="firstSeasonVoteAverage" step="0.1" min="0.0" placeholder="10.0">
+                </div>
+                <div class="form-group">
+                    <label for="firstSeasonEpisodes">Number of Episodes</label>
+                    <input type="number" value="{{ firstSeasonEpisodes }}" name="firstSeasonEpisodes" id="firstSeasonEpisodes" min="0" placeholder="10">
+                </div>
+                <div class="form-group">
+                    <label for="firstSeasonYear">Release Year</label>
+                    <input type="date" value="{{ firstSeasonYear }}" name="firstSeasonYear" id="firstSeasonYear">
+                </div>
+                <div class="form-group">
+                    <label for="firstSeasonDescription">Description</label>
+                    <textarea id="firstSeasonDescription" name="firstSeasonDescription" rows="4">{{ firstSeasonDescription }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="seasonPoster">Poster Image</label>
+                    <input type="file" id="seasonPoster" name="seasonPoster" data-type="image" accept="image/*">
+                    <input type="hidden" name="season_thumbnail_path" value="{{ season_thumbnail_path }}" id="season_thumbnail_path">
+                    <div class="preview">
+                        <img src="{{ season_thumbnail_uri }}" alt="" width="100px" id="seasonPreview">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="createFirstSeason">Create First Season</label>
+                    <input type="checkbox" {% if createFirstSeason %} checked {% endif %} id="createFirstSeason" name="createFirstSeason">
+                </div>
+                <input type="hidden" name="season_imdb_id" id="season_imdb_id">
+            </div>
+            <p style="text-align: center; color: #666; margin-top: 10px;">You can add seasons after creating the TV show</p>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <button type="submit" class="btn btn-success">💾 Create TV Show</button>
+            <button type="button" class="btn btn-primary" onclick="addSeason()">➕ Add First Season</button>
+        </div>
+    </form>
+
+</div>
+
+<div class="card">
+    <h3>📈 Upload Progress</h3>
+    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+        <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+    </div>
+    <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to upload</p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', (e)=>{
+            const titleAutoComplete = new Autocomplete({
+                fieldId: 'title',
+                source: 'autocomplete.show.search',
+                placeholder: 'Search tv shows..',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['title', 'id'],
+                noResultsText: 'No shows found',
+                loadingText: 'Searching...',
+                name: 'title',
+                onSelect: searchShowDetails
+            })
+
+            if (document.getElementById("genres").value.length > 3) {
+                const genresElem = document.getElementById('genres');
+                const cloneGenresElem = genresElem.cloneNode(true);
+                genresElem.replaceWith(cloneGenresElem)
+                const tagify = new Tagify(cloneGenresElem, {
+                    whitelist: JSON.parse(document.getElementById("genres").value),
+                    enforceWhitelist: true,
+                    dropdown: {
+                        enabled: 0
+                    }
+                });
+            }
+
+            // Add event to file video upload
+            SD.fileUpload(document.getElementById("seasonPoster"), handleImageUploadCallback2);
+            SD.fileUpload(document.getElementById("poster"), handleImageUploadCallback);
+        })
+
+        async function searchShowDetails(selectedItem) {
+            const value = selectedItem.value;
+            const list  = value.split("(");
+            let showId = list[list.length - 1];
+            showId = showId.split(')')[0].trim();
+            const detail = await SD.getShowDetail(showId);
+
+            if (detail && detail.id) {
+
+                const genresElem = document.getElementById('genres');
+
+                if (genresElem && detail.genres && detail.genres.length > 0) {
+
+                    // Convert genres to Tagify format
+                    const genres = detail.genres.map(g => ({
+                        value: g.name,
+                        id: g.id
+
+                    }));
+
+                    // clone and replace
+                    const cloneGenresElem = genresElem.cloneNode(true);
+                    genresElem.replaceWith(cloneGenresElem)
+
+                    const tagify = new Tagify(cloneGenresElem, {
+                        whitelist: genres,
+                        enforceWhitelist: true,
+                        dropdown: {
+                            enabled: 0
+                        }
+                    });
+
+                    // Set initial tags
+                    tagify.addTags(genres);
+                }
+
+                const releaseYear = document.getElementById("startYear");
+                if (releaseYear) {
+                    releaseYear.value = detail.first_air_date
+                    releaseYear.dispatchEvent(new Event('blur', { bubbles: true }));
+                }
+
+                const releaseEnd = document.getElementById("endYear");
+                if (releaseEnd) {
+                    releaseEnd.value = detail.last_air_date
+                    releaseEnd.dispatchEvent(new Event('blur', { bubbles: true }));
+                }
+
+                const duration = document.getElementById('duration')
+                if (duration) {
+                    duration.value = detail.episode_run_time
+                    duration.dispatchEvent(new Event("blur", {bubbles: true}));
+                }
+
+                const language = document.getElementById('language')
+                if (language) {
+                    language.value = detail.original_language
+                    language.dispatchEvent(new Event("blur", {bubbles: true}));
+                }
+
+                const status = document.getElementById('status')
+                if (status) {
+                    status.value = detail.status
+                    status.dispatchEvent(new Event("change", {bubbles: true}));
+                }
+
+                const imdbId = document.getElementById('imdb_id')
+                if (imdbId) {
+                    imdbId.value = detail.id
+                    imdbId.dispatchEvent(new Event("change", {bubbles: true}));
+                }
+
+                const seasonCount = document.getElementById('season_count')
+                if (seasonCount) {
+                    seasonCount.value = detail.number_of_seasons
+                    seasonCount.dispatchEvent(new Event("change", {bubbles: true}));
+                }
+
+                const origin_country = document.getElementById('country')
+                if (origin_country) {
+                    origin_country.value = detail.origin_country[0]
+                    origin_country.dispatchEvent(new Event("blur", {bubbles: true}));
+                }
+
+                const rating = document.getElementById('rating');
+                if (rating) {
+                    rating.value  = Math.round(Number(detail.vote_average) * 10) / 10;
+                    rating.dispatchEvent(new Event('blur', {bubbles: true}));
+                }
+
+                const popularity = document.getElementById('popularity');
+                if (popularity) {
+                    popularity.value = Math.round(Number(detail.vote_count) * 10) / 10;
+                    popularity.dispatchEvent(new Event('blur', {bubbles: true}));
+                }
+
+                const description = document.getElementById("description");
+                if(description) {
+                    description.textContent = detail.overview;
+                    description.dispatchEvent(new Event('blur', {bubbles: true}));
+                }
+
+                const thumbnailPath = document.getElementById("thumbnail_path");
+                if (thumbnailPath) {
+                    thumbnailPath.value = detail.poster_path || detail.backdrop_path;
+                    const preview = document.getElementById("preview");
+                    if (preview) {
+                        preview.src = "http://image.tmdb.org/t/p/w185"+ (detail.poster_path || detail.backdrop_path)
+                    }
+                }
+
+                if (detail.seasons) {
+                    const firstSeason = detail.seasons[0];
+
+                    const firstSeasonTitle = document.getElementById('firstSeasonTitle');
+                    if (firstSeasonTitle) {
+                        firstSeasonTitle.value = firstSeason.name
+                        firstSeasonTitle.dispatchEvent(new Event('blur', {bubbles: true}));
+                    }
+
+                    const firstSeasonEpisodes = document.getElementById('firstSeasonEpisodes');
+                    if (firstSeasonEpisodes) {
+                        firstSeasonEpisodes.value = firstSeason.episode_count
+                        firstSeasonEpisodes.dispatchEvent(new Event('blur', {bubbles: true}));
+                    }
+
+                    const firstSeasonYear = document.getElementById('firstSeasonYear');
+                    if (firstSeasonYear) {
+                        firstSeasonYear.value = firstSeason.air_date;
+                        firstSeasonYear.dispatchEvent(new Event('blur', {bubbles: true}));
+                    }
+
+                    const firstSeasonDescription = document.getElementById('firstSeasonDescription');
+                    if (firstSeasonDescription) {
+                        firstSeasonDescription.textContent = firstSeason.overview
+                        firstSeasonDescription.dispatchEvent(new Event('blur', {bubbles: true}));
+                    }
+
+                    const firstSeasonNumber = document.getElementById('firstSeasonNumber');
+                    if (firstSeasonNumber) {
+                        firstSeasonNumber.value = firstSeason.season_number + 1
+                        firstSeasonNumber.dispatchEvent(new Event('blur', {bubbles: true}));
+                    }
+
+                    const seasonImdb = document.getElementById('season_imdb_id');
+                    if (seasonImdb) {
+                        seasonImdb.value = firstSeason.id
+                        seasonImdb.dispatchEvent(new Event('blur', {bubbles: true}));
+                    }
+
+                    const firstSeasonVoteAverage = document.getElementById('firstSeasonVoteAverage');
+                    if (firstSeasonVoteAverage) {
+                        firstSeasonVoteAverage.value = firstSeason.vote_average
+                        firstSeasonVoteAverage.dispatchEvent(new Event('blur', {bubbles: true}));
+                    }
+
+                    const season_thumbnail_path = document.getElementById("season_thumbnail_path");
+                    if (season_thumbnail_path) {
+                        season_thumbnail_path.value = firstSeason.poster_path;
+                        const seasonPreview = document.getElementById("seasonPreview");
+                        if (seasonPreview) {
+                            seasonPreview.src = "http://image.tmdb.org/t/p/w185"+ (firstSeason.poster_path)
+                        }
+                    }
+                }
+            }
+
+        }
+
+        function addSeason() {
+            const seasonSetup = document.getElementById('seasonSetup');
+            seasonSetup.style.display = seasonSetup.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function handleImageUploadCallback(responseText) {
+            const file = JSON.parse(responseText).file;
+            if (file.id && file.public_url) {
+                document.getElementById("thumbnail_path").value = file.uri;
+                const video = document.querySelector("img#preview");
+                video.src = "/sites/default"+file.public_url;
+                video.removeAttribute('style')
+            }
+        }
+
+        function handleImageUploadCallback2(responseText) {
+            const file = JSON.parse(responseText).file;
+            if (file.id && file.public_url) {
+                document.getElementById("season_thumbnail_path").value = file.uri;
+                const video = document.querySelector("img#seasonPreview");
+                video.src = "/sites/default"+file.public_url;
+                video.removeAttribute('style')
+            }
+        }
+
+    </script>
+
+{% endblock %}

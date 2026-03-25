@@ -1,0 +1,274 @@
+{% extends "templates/base.html.twig" %}
+
+{% block body %}
+
+<div class="breadcrumb">
+    <a href="{{ url('streamer.dashboard') }}">Dashboard</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.playlists') }}">Playlists</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.playlists.add') }}">Create Playlist</a>
+</div>
+
+<div class="card">
+    <h2>➕ Create New Playlist</h2>
+
+    <form id="playlistCreateForm" method="post" novalidate>
+        <div class="form-group">
+            <label for="playlistType">Playlist Type *</label>
+            <select id="playlistType" name="playlistType" required onchange="updatePlaylistForm()">
+                <option value="">Select Type</option>
+                <option value="manual">📝 Manual Playlist</option>
+                <option value="auto">🤖 Auto Playlist</option>
+            </select>
+        </div>
+
+        <div id="manualForm" style="display: none;">
+            <h3>📝 Manual Playlist</h3>
+            <div class="form-group">
+                <label for="playlistName">Playlist Name *</label>
+                <input type="text" id="playlistName" name="playlistName" required placeholder="Enter playlist name">
+            </div>
+
+            <div class="form-group">
+                <label for="playlistDescription">Description</label>
+                <textarea id="playlistDescription" name="playlistDescription" rows="3" placeholder="Describe your playlist"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="movieSearch">Search and Add Movies</label>
+                <input type="text" id="movieSearch" name="movieSearch" placeholder="Type to search movies...">
+            </div>
+
+            <div class="table-container">
+                <table id="movieTable">
+                    <thead>
+                    <tr>
+                        <th>Add</th>
+                        <th>Title</th>
+                        <th>Duration</th>
+                        <th>Rating</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="selectedMovies" style="margin-top: 20px;">
+                <div class="alert alert-info">
+                    <strong>Selected Movies:</strong> <span id="selectedCount">0</span>
+                    <div id="selectedList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="autoForm" style="display: none;">
+            <h3>🤖 Auto Playlist</h3>
+            <div class="form-group">
+                <label for="autoPlaylistName">Playlist Name *</label>
+                <input type="text" id="autoPlaylistName" name="autoPlaylistName" required placeholder="Enter playlist name">
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label for="genreFilter">Genre Filter</label>
+                    <select id="genreFilter" name="genreFilter">
+                        {% for genre in genres %}
+                            <option value="{{ genre.name }}">{{ genre.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ratingFilter">Minimum Rating</label>
+                    <select id="ratingFilter" name="ratingFilter">
+                        <option value="0">Any Rating</option>
+                        <option value="7">7.0+</option>
+                        <option value="8">8.0+</option>
+                        <option value="9">9.0+</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label for="yearRange">From Date</label>
+                    <input type="date" id="yearRange" name="yearRange[]">
+                </div>
+
+                <div class="form-group">
+                    <label for="yearRange">To Date</label>
+                    <input type="date" id="yearRange" name="yearRange[]">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="maxMovies">Maximum Movies</label>
+                    <input type="number" id="maxMovies" name="maxMovies" min="1" placeholder="10">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" name="sortBy">
+                    <option value="rating">Rating (High to Low)</option>
+                    <option value="year">Year (New to Old)</option>
+                    <option value="title">Title (A-Z)</option>
+                    <option value="duration">Duration (Long to Short)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="includeFeatured" name="includeFeatured">
+                    Include Featured Movies Only
+                </label>
+            </div>
+        </div>
+
+        <div id="commonForm" style="display: none;">
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="playlistPublic" id="playlistPublic">
+                    Make Public
+                </label>
+            </div>
+        </div>
+
+        <div id="submitSection" style="display: none; margin-top: 30px; text-align: center;">
+            <button type="submit" class="btn btn-success">💾 Create Playlist</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3>📊 Upload Progress</h3>
+    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+        <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+    </div>
+    <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to create playlist</p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        function updatePlaylistForm() {
+            const playlistType = document.getElementById('playlistType').value;
+            const manualForm = document.getElementById('manualForm');
+            const autoForm = document.getElementById('autoForm');
+            const commonForm = document.getElementById('commonForm');
+            const submitSection = document.getElementById('submitSection');
+
+            // Hide all forms first
+            manualForm.style.display = 'none';
+            autoForm.style.display = 'none';
+            commonForm.style.display = 'none';
+            submitSection.style.display = 'none';
+
+            if (playlistType) {
+                commonForm.style.display = 'block';
+                submitSection.style.display = 'block';
+
+                switch(playlistType) {
+                    case 'manual':
+                        manualForm.style.display = 'block';
+                        break;
+                    case 'auto':
+                        autoForm.style.display = 'block';
+                        break;
+                }
+            }
+        }
+
+        function filterMovies() {
+            const searchValue = document.getElementById('movieSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#movieTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function updateSelectedMovies() {
+            const checkboxes = document.querySelectorAll('.movieSelect:checked');
+            const selectedMovies = document.getElementById('selectedMovies');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectedList = document.getElementById('selectedList');
+
+            if (checkboxes.length > 0) {
+                selectedMovies.style.display = 'block';
+                selectedCount.textContent = checkboxes.length;
+
+                let movieNames = [];
+                checkboxes.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    movieNames.push(row.cells[1].textContent);
+                });
+
+                selectedList.innerHTML = '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                    movieNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+            } else {
+                selectedMovies.style.display = 'none';
+            }
+        }
+
+        // Add event listeners for movie selection
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('movieSelect')) {
+                updateSelectedMovies();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded',(e)=>{
+            const titleAutoComplete = new Autocomplete({
+                fieldId: 'movieSearch',
+                source: 'autocomplete.movie.search.local',
+                placeholder: 'Search movies..',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['title', 'id'],
+                noResultsText: 'No movies found',
+                loadingText: 'Searching...',
+                name: 'movieSearch',
+                onSelect: searchMovieDetails
+            });
+        })
+
+        async function searchMovieDetails(selectedItem) {
+            const value = selectedItem.value;
+            const list  = value.split("(");
+            let movieId = list[list.length - 1];
+            movieId = movieId.split(')')[0].trim();
+            let list2 = movieId.split('-');
+            const detail = await SD.getMovieDetail(list2[0]);
+
+            if (detail && detail.id) {
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = td(list2[1], detail);
+                const movieTable = document.querySelector("#movieTable");
+                movieTable.querySelector("tbody").appendChild(tr)
+            }
+
+        }
+
+        function td(id, detail) {
+            const year = new Date(detail.release_date).getFullYear();
+
+            return `<td><input type="checkbox" class="movieSelect" name="movieSelect[]" value="${id}"></td>
+                        <td>${ detail.title } - ${ year }</td>
+                        <td>${ detail.runtime } min</td>
+                        <td>⭐ ${ detail.vote_average }</td>`;
+        }
+
+
+    </script>
+
+{% endblock %}
+

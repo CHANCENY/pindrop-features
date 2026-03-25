@@ -1,0 +1,298 @@
+.series-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.series-header {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.series-header img {
+    width: 220px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+.series-info h1 {
+    margin: 0 0 10px 0;
+    font-size: 32px;
+}
+
+.series-info p {
+    margin: 8px 0;
+    line-height: 1.6;
+    color: #cccccc;
+}
+
+.series-info strong {
+    color: #ffffff;
+}
+
+.series-info span {
+    background: #222;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    margin-right: 6px;
+}
+
+hr {
+    margin: 40px 0;
+    border: none;
+    border-top: 1px solid #333;
+}
+
+.season-section {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+.season-section img {
+    width: 180px;
+    border-radius: 6px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.season-section h2 {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.season-section p {
+    margin: 6px 0;
+    color: #bbbbbb;
+}
+
+.season-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.season-card {
+    background: #1e1e1e;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.season-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+}
+
+.season-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.season-card-body {
+    padding: 12px;
+}
+
+.season-card h3 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    color: #fff;
+}
+
+.meta,
+.air-date {
+    font-size: 13px;
+    color: #bbb;
+    margin: 3px 0;
+}
+
+.rating {
+    font-size: 14px;
+    color: #f5c518;
+    margin: 4px 0;
+}
+
+.season-card.active {
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.8);
+    border: 1px solid #e50914;
+}
+/* ===== Section Wrapper ===== */
+.movie-section {
+    width: 100%;
+    padding: 60px 0;
+    background: #121212;
+    color: #ffffff;
+}
+
+/* Centered Content */
+.movie-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===== Header ===== */
+.movie-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.movie-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Featured Badge */
+.featured-badge {
+    background: #e50914;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* ===== Meta Info ===== */
+.movie-meta {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+    color: #bbbbbb;
+    margin-bottom: 20px;
+}
+
+.rating {
+    color: #f5c518;
+    font-weight: 600;
+}
+
+/* ===== Genres ===== */
+.movie-genres {
+    margin-bottom: 25px;
+}
+
+.genre-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    border-radius: 50px;
+    background: #1f1f1f;
+    border: 1px solid #2a2a2a;
+    font-size: 0.85rem;
+}
+
+/* ===== Description ===== */
+.movie-description {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #dddddd;
+    max-width: 800px;
+    margin-bottom: 35px;
+}
+
+/* ===== Buttons ===== */
+.movie-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: #e50914;
+    color: #ffffff;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #b20710;
+}
+
+.btn-outline {
+    border: 1px solid #f5c518;
+    color: #f5c518;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.btn-outline:hover {
+    background: #f5c518;
+    color: #000;
+}
+.playlist-card{
+    background:#1e1e1e;
+    border-radius:10px;
+    padding:20px;
+    max-width:500px;
+    color:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+}
+
+.playlist-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.playlist-title{
+    font-size:22px;
+    margin:0;
+}
+
+.playlist-status{
+    font-size:12px;
+    padding:4px 10px;
+    border-radius:20px;
+    background:#4caf50;
+}
+
+.playlist-description{
+    font-size:14px;
+    color:#ccc;
+    margin-bottom:15px;
+}
+
+.playlist-meta{
+    font-size:12px;
+    color:#888;
+    display:flex;
+    gap:15px;
+}
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .movie-title {
+        font-size: 1.8rem;
+    }
+
+    .movie-meta {
+        gap: 15px;
+    }
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .series-header,
+    .season-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .series-header img,
+    .season-section img {
+        width: 80%;
+        max-width: 300px;
+    }
+}

@@ -1,0 +1,19 @@
+<div class="playlist-card">
+    <div class="playlist-header">
+        <h2 class="playlist-title">{{ playlist.title }}</h2>
+        <span class="playlist-status">
+            {{ playlist.is_public ? 'Public' : 'Private' }}
+        </span>
+    </div>
+
+    {% if playlist.description %}
+        <p class="playlist-description">
+            {{ playlist.description }}
+        </p>
+    {% endif %}
+
+    <div class="playlist-meta">
+        <span>Created: {{ playlist.created_at|date("Y-m-d") }}</span>
+        <span>Updated: {{ playlist.updated_at|date("Y-m-d") }}</span>
+    </div>
+</div>

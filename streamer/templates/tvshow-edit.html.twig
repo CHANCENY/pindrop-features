@@ -1,0 +1,264 @@
+{% extends "templates/base.html.twig" %}
+
+{% block body %}
+
+<div class="breadcrumb">
+    <a href="{{ url('streamer.dashboard') }}">Dashboard</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.shows') }}">TV Shows</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.shows.add') }}">Create TV Show</a>
+</div>
+
+<div class="card">
+    <h2>➕ Create New TV Show</h2>
+
+    <form id="tvshowCreateForm" method="post">
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="title">TV Show Title *</label>
+                <input type="text" id="title" value="{{ title }}" name="title" required placeholder="Enter TV show title">
+            </div>
+
+            <div class="form-group">
+                <label for="genre">Genre *</label>
+                <input type="text" name="genres" value="{{ genres }}" id="genres" required placeholder="Enter TV show genres">
+            </div>
+
+            <div class="form-group">
+                <label for="startYear">Start Year *</label>
+                <input type="date" id="startYear" value="{{ startYear ?? start_year }}" name="startYear" required min="1900" max="2030" placeholder="2024">
+            </div>
+
+            <div class="form-group">
+                <label for="endYear">End Year</label>
+                <input type="number" id="endYear" value="{{ endYear ?? end_year }}" name="endYear" min="1900" max="2030" placeholder="Present if ongoing">
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating (0-10)</label>
+                <input type="number" id="rating" value="{{ rating  }}" name="rating" min="0.0" max="10.0" step="0.1" placeholder="8.5">
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status *</label>
+                <select id="status" name="status" required>
+                    <option {% if status == "Returning Series" %} selected {% endif %} value="Returning Series">Returning Series</option>
+                    <option {% if status == "Planned" %} selected {% endif %} value="Planned">Planned</option>
+                    <option {% if status == "In Production" %} selected {% endif %} value="In Production">In Production</option>
+                    <option {% if status == "Ended" %} selected {% endif %} value="Ended">Ended</option>
+                    <option {% if status == "Cancelled" %} selected {% endif %} value="Cancelled">Cancelled</option>
+                    <option {% if status == "Pilot" %} selected {% endif %} value="Pilot">Pilot</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="Enter TV show description">{{ description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="language">Language</label>
+            <input type="text" id="language" name="language" value="{{ language }}" placeholder="English">
+        </div>
+
+        <div class="form-group">
+            <label for="country">Country of Origin</label>
+            <input type="text" id="country" name="country" value="{{ country }}" placeholder="United States">
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="poster">Poster Image</label>
+                <input type="file" id="poster" name="poster" data-type="image" accept="image/*">
+                <input type="hidden" name="thumbnail_path" value="{{ thumbnail_path }}" id="thumbnail_path">
+                <div class="preview">
+                    <img src="{{ thumbnail_uri }}" alt="" width="100px" id="preview">
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <button type="submit" class="btn btn-success">💾 Edit TV Show</button>
+        </div>
+    </form>
+
+</div>
+
+<div class="card">
+    <h3>📈 Upload Progress</h3>
+    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+        <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+    </div>
+    <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to upload</p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', (e)=>{
+            const titleAutoComplete = new Autocomplete({
+                fieldId: 'title',
+                source: 'autocomplete.show.search',
+                placeholder: 'Search tv shows..',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['title', 'id'],
+                noResultsText: 'No shows found',
+                loadingText: 'Searching...',
+                name: 'title',
+                onSelect: searchShowDetails
+            })
+
+            if (document.getElementById("genres").value.length > 3) {
+                const genresElem = document.getElementById('genres');
+                const cloneGenresElem = genresElem.cloneNode(true);
+                genresElem.replaceWith(cloneGenresElem)
+                const tagify = new Tagify(cloneGenresElem, {
+                    whitelist: JSON.parse(document.getElementById("genres").value),
+                    enforceWhitelist: true,
+                    dropdown: {
+                        enabled: 0
+                    }
+                });
+            }
+
+            // Add event to file video upload
+            SD.fileUpload(document.getElementById("poster"), handleImageUploadCallback);
+        })
+
+        async function searchShowDetails(selectedItem) {
+            const value = selectedItem.value;
+            const list  = value.split("(");
+            let showId = list[list.length - 1];
+            showId = showId.split(')')[0].trim();
+            const detail = await SD.getShowDetail(showId);
+
+            if (detail && detail.id) {
+
+                const genresElem = document.getElementById('genres');
+
+                if (genresElem && detail.genres && detail.genres.length > 0) {
+
+                    // Convert genres to Tagify format
+                    const genres = detail.genres.map(g => ({
+                        value: g.name,
+                        id: g.id
+
+                    }));
+
+                    // clone and replace
+                    const cloneGenresElem = genresElem.cloneNode(true);
+                    genresElem.replaceWith(cloneGenresElem)
+
+                    const tagify = new Tagify(cloneGenresElem, {
+                        whitelist: genres,
+                        enforceWhitelist: true,
+                        dropdown: {
+                            enabled: 0
+                        }
+                    });
+
+                    // Set initial tags
+                    tagify.addTags(genres);
+                }
+
+                const releaseYear = document.getElementById("startYear");
+                if (releaseYear) {
+                    releaseYear.value = detail.first_air_date
+                    releaseYear.dispatchEvent(new Event('blur', { bubbles: true }));
+                }
+
+                const releaseEnd = document.getElementById("endYear");
+                if (releaseEnd) {
+                    releaseEnd.value = detail.last_air_date
+                    releaseEnd.dispatchEvent(new Event('blur', { bubbles: true }));
+                }
+
+                const duration = document.getElementById('duration')
+                if (duration) {
+                    duration.value = detail.episode_run_time
+                    duration.dispatchEvent(new Event("blur", {bubbles: true}));
+                }
+
+                const language = document.getElementById('language')
+                if (language) {
+                    language.value = detail.original_language
+                    language.dispatchEvent(new Event("blur", {bubbles: true}));
+                }
+
+                const status = document.getElementById('status')
+                if (status) {
+                    status.value = detail.status
+                    status.dispatchEvent(new Event("change", {bubbles: true}));
+                }
+
+                const imdbId = document.getElementById('imdb_id')
+                if (imdbId) {
+                    imdbId.value = detail.id
+                    imdbId.dispatchEvent(new Event("change", {bubbles: true}));
+                }
+
+                const seasonCount = document.getElementById('season_count')
+                if (seasonCount) {
+                    seasonCount.value = detail.number_of_seasons
+                    seasonCount.dispatchEvent(new Event("change", {bubbles: true}));
+                }
+
+                const origin_country = document.getElementById('country')
+                if (origin_country) {
+                    origin_country.value = detail.origin_country[0]
+                    origin_country.dispatchEvent(new Event("blur", {bubbles: true}));
+                }
+
+                const rating = document.getElementById('rating');
+                if (rating) {
+                    rating.value  = Math.round(Number(detail.vote_average) * 10) / 10;
+                    rating.dispatchEvent(new Event('blur', {bubbles: true}));
+                }
+
+                const popularity = document.getElementById('popularity');
+                if (popularity) {
+                    popularity.value = Math.round(Number(detail.vote_count) * 10) / 10;
+                    popularity.dispatchEvent(new Event('blur', {bubbles: true}));
+                }
+
+                const description = document.getElementById("description");
+                if(description) {
+                    description.textContent = detail.overview;
+                    description.dispatchEvent(new Event('blur', {bubbles: true}));
+                }
+
+                const thumbnailPath = document.getElementById("thumbnail_path");
+                if (thumbnailPath) {
+                    thumbnailPath.value = detail.poster_path || detail.backdrop_path;
+                    const preview = document.getElementById("preview");
+                    if (preview) {
+                        preview.src = "http://image.tmdb.org/t/p/w185"+ (detail.poster_path || detail.backdrop_path)
+                    }
+                }
+
+            }
+
+        }
+
+        function handleImageUploadCallback(responseText) {
+            const file = JSON.parse(responseText).file;
+            if (file.id && file.public_url) {
+                document.getElementById("thumbnail_path").value = file.uri;
+                const video = document.querySelector("img#preview");
+                video.src = "/sites/default"+file.public_url;
+                video.removeAttribute('style')
+            }
+        }
+
+    </script>
+
+{% endblock %}

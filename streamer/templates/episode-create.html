@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Episode - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+            <span class="separator">›</span>
+            <a href="tvshow-seasons.html">Seasons</a>
+            <span class="separator">›</span>
+            <a href="season-episodes.html">Episodes</a>
+            <span class="separator">›</span>
+            <a href="episode-create.html">Create Episode</a>
+        </div>
+
+        <div class="card">
+            <h2>➕ Create New Episode</h2>
+            
+            <div class="alert alert-info">
+                <strong>ℹ️ Creating Episode For:</strong> <span id="currentShow">Breaking Bad</span> - <span id="currentSeason">Season 1</span>
+            </div>
+            
+            <form id="episodeCreateForm">
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="tvshowSelect">TV Show *</label>
+                        <select id="tvshowSelect" name="tvshowId" required onchange="updateShowInfo()">
+                            <option value="">Select TV Show</option>
+                            <option value="1">Breaking Bad</option>
+                            <option value="2">Game of Thrones</option>
+                            <option value="3">Stranger Things</option>
+                            <option value="4">The Office</option>
+                            <option value="5">Friends</option>
+                            <option value="6">The Mandalorian</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="seasonSelect">Season *</label>
+                        <select id="seasonSelect" name="seasonId" required onchange="updateSeasonInfo()">
+                            <option value="">Select Season</option>
+                            <option value="1">Season 1</option>
+                            <option value="2">Season 2</option>
+                            <option value="3">Season 3</option>
+                            <option value="4">Season 4</option>
+                            <option value="5">Season 5</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="episodeNumber">Episode Number *</label>
+                        <input type="number" id="episodeNumber" name="episodeNumber" required min="1" placeholder="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="episodeTitle">Episode Title *</label>
+                        <input type="text" id="episodeTitle" name="episodeTitle" required placeholder="Enter episode title">
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="duration">Duration (minutes) *</label>
+                        <input type="number" id="duration" name="duration" required min="1" placeholder="45">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="airDate">Air Date</label>
+                        <input type="date" id="airDate" name="airDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Episode Description</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Enter episode description or synopsis"></textarea>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="director">Director</label>
+                        <input type="text" id="director" name="director" placeholder="Enter director name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="writer">Writer(s)</label>
+                        <input type="text" id="writer" name="writer" placeholder="Enter writer names">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cast">Guest Stars (comma separated)</label>
+                    <input type="text" id="cast" name="cast" placeholder="Guest Star 1, Guest Star 2">
+                </div>
+
+                <div class="form-group">
+                    <label for="videoFile">Video File *</label>
+                    <input type="file" id="videoFile" name="videoFile" accept="video/*" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="thumbnail">Episode Thumbnail</label>
+                    <input type="file" id="thumbnail" name="thumbnail" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags (comma separated)</label>
+                    <input type="text" id="tags" name="tags" placeholder="action, drama, climax, important">
+                </div>
+
+                <div class="form-group">
+                    <label for="rating">Rating (0-10)</label>
+                    <input type="number" id="rating" name="rating" min="0" max="10" step="0.1" placeholder="8.5">
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="featured" name="featured">
+                            Featured Episode
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="seasonFinale" name="seasonFinale">
+                            Season Finale
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="seasonPremiere" name="seasonPremiere">
+                            Season Premiere
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <button type="submit" class="btn btn-success">💾 Create Episode</button>
+                    <a href="season-episodes.html" class="btn btn-danger">❌ Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>📊 Upload Progress</h3>
+            <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+                <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+            <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to create episode</p>
+        </div>
+    </div>
+
+    <script>
+        function updateShowInfo() {
+            const tvshowSelect = document.getElementById('tvshowSelect');
+            const showNames = {
+                '1': 'Breaking Bad',
+                '2': 'Game of Thrones',
+                '3': 'Stranger Things',
+                '4': 'The Office',
+                '5': 'Friends',
+                '6': 'The Mandalorian'
+            };
+            document.getElementById('currentShow').textContent = showNames[tvshowSelect.value] || 'Select a TV Show';
+        }
+
+        function updateSeasonInfo() {
+            const seasonSelect = document.getElementById('seasonSelect');
+            const seasonNumber = seasonSelect.value;
+            if (seasonNumber) {
+                document.getElementById('currentSeason').textContent = `Season ${seasonNumber}`;
+            }
+        }
+
+        document.getElementById('episodeCreateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            let progress = 0;
+            progressText.textContent = 'Creating episode...';
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressText.textContent = `Creating episode... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = 'Episode created successfully! Redirecting...';
+                    
+                    setTimeout(() => {
+                        alert('Episode created successfully!');
+                        window.location.href = 'season-episodes.html';
+                    }, 1000);
+                }
+            }, 200);
+        });
+
+        // Handle special episode checkboxes
+        document.getElementById('seasonFinale').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('seasonPremiere').checked = false;
+            }
+        });
+
+        document.getElementById('seasonPremiere').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('seasonFinale').checked = false;
+            }
+        });
+
+        // Get URL parameters and set default values
+        const urlParams = new URLSearchParams(window.location.search);
+        const seasonId = urlParams.get('season');
+        if (seasonId) {
+            document.getElementById('seasonSelect').value = seasonId;
+            updateSeasonInfo();
+        }
+    </script>
+</body>
+</html>

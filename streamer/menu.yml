@@ -1,0 +1,8 @@
+groups:
+  streamer:
+    stream.dashbpard:
+      title: Media Manager
+      route: streamer.dashboard
+      icon: fa fa-dashboard
+      weight: 10
+      roles: [admin, super_admin]

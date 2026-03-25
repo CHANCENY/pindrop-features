@@ -1,0 +1,418 @@
+{% extends "templates/front.base.html.twig" %}
+
+{% block hero %}
+
+    <!-- Movie Hero Section -->
+    <section class="movie-hero">
+        <div class="movie-hero-background">
+            <img src="{% if tmdbMovie.backdrop_path %}https://image.tmdb.org/t/p/original{{ tmdbMovie.backdrop_path }}{% else %}{{ movie.thumbnail_path }}{% endif %}" alt="{{ tmdbMovie.title|default(movie.title) }}">
+            <div class="movie-hero-overlay"></div>
+        </div>
+        <div class="movie-hero-content">
+            <div class="movie-poster">
+                <img src="{% if tmdbMovie.poster_path %}https://image.tmdb.org/t/p/w500{{ tmdbMovie.poster_path }}{% else %}{{ movie.thumbnail_path }}{% endif %}" alt="{{ tmdbMovie.title|default(movie.title) }}">
+            </div>
+            <div class="movie-info">
+                <h1 class="movie-title">{{ tmdbMovie.title|default(movie.title) }}</h1>
+                <div class="movie-meta">
+                    <span class="movie-year">{{ tmdbMovie.release_date|date('Y')|default(movie.release_date|date('Y')) }}</span>
+                    <span class="movie-rating">⭐ {{ tmdbMovie.vote_average|default(movie.rating) }}</span>
+                    <span class="movie-duration">{{ movie.duration }}</span>
+                    <span class="movie-quality">4K HDR</span>
+                    <span class="movie-age-rating">{{ tmdbMovie.adult ? 'R' : 'PG-13' }}</span>
+                </div>
+                <div class="movie-genres">
+                    {% set displayGenres = tmdbMovie.genres|default(movie.genres) %}
+                    {% for genre in displayGenres %}
+                        <span class="genre-tag">{{ genre.name|default(genre.value|default(genre)) }}</span>
+                    {% endfor %}
+                </div>
+                <p class="movie-description">{{ tmdbMovie.overview|default(movie.description) }}</p>
+                {% if tmdbMovie.tagline %}
+                    <p class="movie-tagline">{{ tmdbMovie.tagline }}</p>
+                {% endif %}
+                <div class="movie-actions">
+                    <a href="{{ url('streamer.dashboard.movie.watch', {movie_id: movie.id}) }}" class="btn-primary play-movie-btn">▶ Play Now</a>
+                    <button id="playlistBtn" class="btn-secondary add-to-playlist-btn">+ Add to Playlist</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Cast & Crew -->
+        <section class="cast-section">
+            <h2 class="section-title">Cast & Crew</h2>
+            <div class="cast-grid" id="castGrid">
+                <!-- Cast will be dynamically added -->
+            </div>
+        </section>
+
+        <!-- Movie Details -->
+        <section class="movie-details-section">
+            <h2 class="section-title">Details</h2>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">IMDB ID:</span>
+                    <span class="detail-value">{{ tmdbMovie.imdb_id|default(movie.imdb_id) }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Release Date:</span>
+                    <span class="detail-value">{{ tmdbMovie.release_date|date('F j, Y')|default(movie.release_date|date('F j, Y')) }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Popularity:</span>
+                    <span class="detail-value">{{ tmdbMovie.popularity|default(movie.popularity) }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Runtime:</span>
+                    <span class="detail-value">{{ tmdbMovie.runtime ? tmdbMovie.runtime ~ ' min' : movie.duration }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Budget:</span>
+                    <span class="detail-value">${{ tmdbMovie.budget|number_format(0, '.', ',')|default('--') }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Revenue:</span>
+                    <span class="detail-value">${{ tmdbMovie.revenue|number_format(0, '.', ',')|default('--') }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value">{{ tmdbMovie.status|default('--') }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Original Language:</span>
+                    <span class="detail-value">{{ tmdbMovie.original_language|default('--') }}</span>
+                </div>
+                {% if tmdbMovie.production_countries %}
+                <div class="detail-item">
+                    <span class="detail-label">Production Countries:</span>
+                    <span class="detail-value">
+                        {% for country in tmdbMovie.production_countries %}
+                            {{ country.name }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if tmdbMovie.spoken_languages %}
+                <div class="detail-item">
+                    <span class="detail-label">Languages:</span>
+                    <span class="detail-value">
+                        {% for language in tmdbMovie.spoken_languages %}
+                            {{ language.english_name }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if tmdbMovie.production_companies %}
+                <div class="detail-item">
+                    <span class="detail-label">Production Companies:</span>
+                    <span class="detail-value">
+                        {% for company in tmdbMovie.production_companies %}
+                            {{ company.name }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if tmdbMovie.homepage %}
+                <div class="detail-item">
+                    <span class="detail-label">Homepage:</span>
+                    <span class="detail-value">
+                        <a href="{{ tmdbMovie.homepage }}" target="_blank">{{ tmdbMovie.homepage }}</a>
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Similar Movies -->
+        <section class="similar-movies-section">
+            <h2 class="section-title">Similar Movies</h2>
+            <div class="movies-grid" id="similarMovies">
+                <!-- Similar movies will be dynamically added -->
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="reviews-section">
+            <h2 class="section-title">Reviews & Ratings</h2>
+            <div class="reviews-summary">
+                <div class="rating-overview">
+                    <div class="rating-score">
+                        <span class="score-number">{{ tmdbMovie.vote_average|default(movie.rating) }}</span>
+                        <span class="score-stars">⭐⭐⭐⭐</span>
+                        <span class="score-count">Based on {{ tmdbMovie.vote_count|default('user') }} reviews</span>
+                    </div>
+                    <div class="rating-breakdown">
+                        <div class="rating-bar">
+                            <span>5 stars</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 65%"></div>
+                            </div>
+                            <span>65%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>4 stars</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 20%"></div>
+                            </div>
+                            <span>20%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>3 stars</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 10%"></div>
+                            </div>
+                            <span>10%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>2 stars</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 3%"></div>
+                            </div>
+                            <span>3%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>1 star</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 2%"></div>
+                            </div>
+                            <span>2%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-review">
+                <h3>Write Your Review</h3>
+                <div class="review-form">
+                    <div class="rating-input">
+                        <label>Your Rating:</label>
+                        <div class="star-rating">
+                            <button class="star-btn" data-rating="1">⭐</button>
+                            <button class="star-btn" data-rating="2">⭐</button>
+                            <button class="star-btn" data-rating="3">⭐</button>
+                            <button class="star-btn" data-rating="4">⭐</button>
+                            <button class="star-btn" data-rating="5">⭐</button>
+                        </div>
+                    </div>
+                    <textarea class="review-textarea" placeholder="Write your review..." id="userReview"></textarea>
+                    <button class="btn-primary submit-review-btn" id="submitReviewBtn">Submit Review</button>
+                </div>
+
+                <div class="reviews-list" id="reviewsList">
+                    <!-- Reviews will be dynamically added -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add to Playlist Modal -->
+    <div class="playlist-modal" id="addToPlaylistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add to Playlist</h3>
+                <button class="close-btn" id="closeAddToPlaylistModal">&times;</button>
+            </div>
+            <div class="playlist-list" id="playlistList">
+                <form method="POST">
+
+                    {% for playlist in playlists %}
+                        <div class="form-group">
+                            <input type="radio" name="item" value="{{ playlist.id }}">
+                            <label>{{ playlist.title }}</label>
+                            <span>{{ playlist.description }}</span>
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-group">
+                        <label for="name">Title</label>
+                        <input type="text" name="name" id="name" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea name="description" id="description" class="form-control"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="is_public">Make it public</label>
+                        <input type="checkbox" name="is_public" id="is_public" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Share Movie</h3>
+                <button class="close-btn" id="closeShareModal">&times;</button>
+            </div>
+            <div class="share-content">
+                <div class="share-link">
+                    <input type="text" id="shareLink" readonly value="{{ url('streamer_frontend.front.movie.detail', {movie_id: movie.id}) }}">
+                    <button class="btn-primary copy-link-btn" id="copyLinkBtn">Copy Link</button>
+                </div>
+                <div class="share-options">
+                    <button class="share-btn" data-platform="facebook">Facebook</button>
+                    <button class="share-btn" data-platform="twitter">Twitter</button>
+                    <button class="share-btn" data-platform="whatsapp">WhatsApp</button>
+                    <button class="share-btn" data-platform="email">Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <style>
+        form {
+            max-width: 500px;
+            margin: 40px auto;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        /* Playlist radio items */
+        .form-group input[type="radio"] {
+            display: none;
+        }
+
+        .form-group input[type="radio"] + label {
+            display: block;
+            padding: 12px 14px;
+            background: #1e1e1e;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .form-group input[type="radio"]:checked + label {
+            border-color: #7c4dff;
+            background: #2a1e4a;
+        }
+
+        .form-group span {
+            display: block;
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 4px;
+            margin-left: 2px;
+        }
+
+        /* Text inputs */
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea.form-control {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        /* Checkbox */
+        input[type="checkbox"] {
+            width: auto;
+            margin-left: 10px;
+        }
+
+        /* Button */
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #7c4dff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #6936ff;
+        }
+        .form-group.selected {
+            border: 2px solid #7c4dff;
+            background: #2a1e4a;
+        }
+        .form-group {
+            cursor: pointer;
+        }
+
+        /*.form-group.selected {*/
+        /*    border-color: #7c4dff;*/
+        /*}*/
+    </style>
+
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded',()=>{
+            document.querySelector("#playlistBtn").addEventListener('click', openAddToPlaylistModal);
+            document.querySelector("#closeAddToPlaylistModal").addEventListener('click',()=>{
+                const modal = document.querySelector('#addToPlaylistModal');
+                if (modal) {
+                    modal.removeAttribute('style')
+                }
+            })
+
+            const groups = document.querySelectorAll(".form-group");
+
+            groups.forEach(group => {
+                group.addEventListener("click", () => {
+
+                    const radio = group.querySelector("input[type='radio']");
+                    if (!radio) return;
+
+                    radio.checked = true;
+
+                    // remove selection from others
+                    document.querySelectorAll(".form-group").forEach(g => {
+                        g.classList.remove("selected");
+                    });
+
+                    // add selected class
+                    group.classList.add("selected");
+
+                });
+            });
+
+        })
+
+        function openAddToPlaylistModal() {
+            const modal = document.querySelector('#addToPlaylistModal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        }
+
+    </script>
+
+{% endblock %}

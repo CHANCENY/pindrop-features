@@ -1,0 +1,27 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/streamer/assets/css/styles.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% block body %}{% endblock %}
+    <!-- Footer -->
+    <footer style="text-align: center; margin-top: 40px; padding: 20px; color: #666; border-top: 1px solid #e1e5e9;">
+        <p>© 2024 Video Streaming Dashboard • Version 1.0.0</p>
+        <p style="font-size: 0.9rem; margin-top: 5px;">Last updated: February 26, 2024</p>
+    </footer>
+    <noscript id="configs" style="display: none;">{{ _config('streamer', 'tmdb.config')|json_encode|raw }}</noscript>
+    <script src="/modules/streamer/assets/js/stream-dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded',()=> {
+            window.SD = new StreamDashboard();
+        })
+    </script>
+</div>
+{% endblock %}
+
+{% block assets %}
+
+{% endblock %}

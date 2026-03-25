@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlists - CineStream</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-text">CineStream</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="movies.html" class="nav-link">Movies</a></li>
+                    <li><a href="tv-shows.html" class="nav-link">TV Shows</a></li>
+                    <li><a href="playlists.html" class="nav-link active">Playlists</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search playlists...">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <button class="menu-toggle">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <h1 class="page-title">My Playlists</h1>
+            <p class="page-subtitle">Create and manage your custom playlists</p>
+            <button class="btn-primary create-playlist-btn" id="createPlaylistBtn">+ Create New Playlist</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Playlists Grid -->
+        <div class="playlists-grid">
+            <!-- Playlist 1 -->
+            <div class="playlist-card">
+                <div class="playlist-header">
+                    <div class="playlist-title">Sci-Fi Favorites</div>
+                    <div class="playlist-count">8 items</div>
+                </div>
+                <div class="playlist-description">Best science fiction movies and shows</div>
+                <div class="playlist-preview">
+                    <img src="https://picsum.photos/seed/cosmic-odyssey/100/150.jpg" alt="Cosmic Odyssey">
+                    <img src="https://picsum.photos/seed/quantum-paradox/100/150.jpg" alt="Quantum Paradox">
+                    <img src="https://picsum.photos/seed/last-algorithm/100/150.jpg" alt="The Last Algorithm">
+                </div>
+                <div class="playlist-actions">
+                    <a href="playlist-detail.html?id=1" class="btn-primary">▶ Play</a>
+                    <a href="playlist-detail.html?id=1" class="btn-secondary">ℹ Details</a>
+                    <a href="playlist-detail.html?id=1" class="btn-secondary">🗑️ Delete</a>
+                </div>
+            </div>
+
+            <!-- Playlist 2 -->
+            <div class="playlist-card">
+                <div class="playlist-header">
+                    <div class="playlist-title">Action Thrillers</div>
+                    <div class="playlist-count">5 items</div>
+                </div>
+                <div class="playlist-description">High-octane action and thriller movies</div>
+                <div class="playlist-preview">
+                    <img src="https://picsum.photos/seed/neon-nights/100/150.jpg" alt="Neon Nights">
+                    <img src="https://picsum.photos/seed/shadow-protocol/100/150.jpg" alt="Shadow Protocol">
+                    <img src="https://picsum.photos/seed/tech-titans/100/150.jpg" alt="Tech Titans">
+                </div>
+                <div class="playlist-actions">
+                    <a href="playlist-detail.html?id=2" class="btn-primary">▶ Play</a>
+                    <a href="playlist-detail.html?id=2" class="btn-secondary">ℹ Details</a>
+                    <a href="playlist-detail.html?id=2" class="btn-secondary">🗑️ Delete</a>
+                </div>
+            </div>
+
+            <!-- Playlist 3 -->
+            <div class="playlist-card">
+                <div class="playlist-header">
+                    <div class="playlist-title">Weekend Binge</div>
+                    <div class="playlist-count">12 items</div>
+                </div>
+                <div class="playlist-description">Perfect shows for weekend binge-watching</div>
+                <div class="playlist-preview">
+                    <img src="https://picsum.photos/seed/mystic-chronicles/100/150.jpg" alt="Mystic Chronicles">
+                    <img src="https://picsum.photos/seed/urban-legends/100/150.jpg" alt="Urban Legends">
+                    <img src="https://picsum.photos/seed/code-breakers/100/150.jpg" alt="Code Breakers">
+                </div>
+                <div class="playlist-actions">
+                    <a href="playlist-detail.html?id=3" class="btn-primary">▶ Play</a>
+                    <a href="playlist-detail.html?id=3" class="btn-secondary">ℹ Details</a>
+                    <a href="playlist-detail.html?id=3" class="btn-secondary">🗑️ Delete</a>
+                </div>
+            </div>
+
+            <!-- Playlist 4 -->
+            <div class="playlist-card">
+                <div class="playlist-header">
+                    <div class="playlist-title">Drama Collection</div>
+                    <div class="playlist-count">6 items</div>
+                </div>
+                <div class="playlist-description">Emotional and thought-provoking dramas</div>
+                <div class="playlist-preview">
+                    <img src="https://picsum.photos/seed/digital-dreams/100/150.jpg" alt="Digital Dreams">
+                    <img src="https://picsum.photos/seed/cosmic-odyssey/100/150.jpg" alt="Cosmic Odyssey">
+                    <img src="https://picsum.photos/seed/last-algorithm/100/150.jpg" alt="The Last Algorithm">
+                </div>
+                <div class="playlist-actions">
+                    <a href="playlist-detail.html?id=4" class="btn-primary">▶ Play</a>
+                    <a href="playlist-detail.html?id=4" class="btn-secondary">ℹ Details</a>
+                    <a href="playlist-detail.html?id=4" class="btn-secondary">🗑️ Delete</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

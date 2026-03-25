@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Shows - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="tv-shows.html">TV Shows</a>
+        </div>
+
+        <div class="card">
+            <h2>📺 TV Shows Management</h2>
+            <div style="margin-bottom: 20px;">
+                <a href="tvshow-create.html" class="btn btn-primary">➕ Add New TV Show</a>
+                <a href="tvshow-edit.html" class="btn btn-warning">✏️ Edit TV Show</a>
+                <a href="tvshow-delete.html" class="btn btn-danger">🗑️ Delete TV Show</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Genre</th>
+                            <th>Start Year</th>
+                            <th>End Year</th>
+                            <th>Seasons</th>
+                            <th>Episodes</th>
+                            <th>Rating</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Breaking Bad</td>
+                            <td>Crime Drama</td>
+                            <td>2008</td>
+                            <td>2013</td>
+                            <td>5</td>
+                            <td>62</td>
+                            <td>⭐ 9.5</td>
+                            <td><span style="color: green;">✅ Completed</span></td>
+                            <td>
+                                <a href="tvshow-seasons.html?id=1" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Seasons</a>
+                                <a href="tvshow-edit.html?id=1" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="tvshow-delete.html?id=1" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Game of Thrones</td>
+                            <td>Fantasy</td>
+                            <td>2011</td>
+                            <td>2019</td>
+                            <td>8</td>
+                            <td>73</td>
+                            <td>⭐ 9.3</td>
+                            <td><span style="color: green;">✅ Completed</span></td>
+                            <td>
+                                <a href="tvshow-seasons.html?id=2" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Seasons</a>
+                                <a href="tvshow-edit.html?id=2" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="tvshow-delete.html?id=2" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Stranger Things</td>
+                            <td>Sci-Fi Horror</td>
+                            <td>2016</td>
+                            <td>Present</td>
+                            <td>4</td>
+                            <td>42</td>
+                            <td>⭐ 8.7</td>
+                            <td><span style="color: blue;">🔄 Ongoing</span></td>
+                            <td>
+                                <a href="tvshow-seasons.html?id=3" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Seasons</a>
+                                <a href="tvshow-edit.html?id=3" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="tvshow-delete.html?id=3" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>The Office</td>
+                            <td>Comedy</td>
+                            <td>2005</td>
+                            <td>2013</td>
+                            <td>9</td>
+                            <td>201</td>
+                            <td>⭐ 8.9</td>
+                            <td><span style="color: green;">✅ Completed</span></td>
+                            <td>
+                                <a href="tvshow-seasons.html?id=4" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Seasons</a>
+                                <a href="tvshow-edit.html?id=4" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="tvshow-delete.html?id=4" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Friends</td>
+                            <td>Sitcom</td>
+                            <td>1994</td>
+                            <td>2004</td>
+                            <td>10</td>
+                            <td>236</td>
+                            <td>⭐ 8.9</td>
+                            <td><span style="color: green;">✅ Completed</span></td>
+                            <td>
+                                <a href="tvshow-seasons.html?id=5" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Seasons</a>
+                                <a href="tvshow-edit.html?id=5" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="tvshow-delete.html?id=5" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>The Mandalorian</td>
+                            <td>Sci-Fi</td>
+                            <td>2019</td>
+                            <td>Present</td>
+                            <td>3</td>
+                            <td>24</td>
+                            <td>⭐ 8.7</td>
+                            <td><span style="color: blue;">🔄 Ongoing</span></td>
+                            <td>
+                                <a href="tvshow-seasons.html?id=6" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Seasons</a>
+                                <a href="tvshow-edit.html?id=6" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Edit</a>
+                                <a href="tvshow-delete.html?id=6" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <p>Showing 1-6 of 15 TV shows</p>
+                <div>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">← Previous</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">1</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">2</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">3</button>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">Next →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item">
+                <h3>📊 Statistics</h3>
+                <p><strong>Total TV Shows:</strong> 15</p>
+                <p><strong>Ongoing Series:</strong> 4</p>
+                <p><strong>Completed Series:</strong> 11</p>
+                <p><strong>Total Seasons:</strong> 87</p>
+                <p><strong>Total Episodes:</strong> 1,245</p>
+            </div>
+            <div class="grid-item">
+                <h3>🎯 Popular Genres</h3>
+                <p>🔥 Drama: 5 shows</p>
+                <p>🔥 Comedy: 4 shows</p>
+                <p>🔥 Sci-Fi: 3 shows</p>
+                <p>🔥 Action: 2 shows</p>
+                <p>🔥 Documentary: 1 show</p>
+            </div>
+            <div class="grid-item">
+                <h3>⭐ Top Rated</h3>
+                <p>1. Breaking Bad - 9.5</p>
+                <p>2. Game of Thrones - 9.3</p>
+                <p>3. The Office - 8.9</p>
+                <p>4. Friends - 8.9</p>
+                <p>5. Stranger Things - 8.7</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

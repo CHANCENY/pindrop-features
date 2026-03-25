@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Playlist - Video Streaming Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Video Streaming Dashboard</h1>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">🏠 Dashboard</a></li>
+                <li><a href="movies.html">🎬 Movies</a></li>
+                <li><a href="tv-shows.html">📺 TV Shows</a></li>
+                <li><a href="playlists.html">📋 Playlists</a></li>
+            </ul>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="separator">›</span>
+            <a href="playlists.html">Playlists</a>
+            <span class="separator">›</span>
+            <a href="playlist-edit.html">Edit Playlist</a>
+        </div>
+
+        <div class="card">
+            <h2>✏️ Edit Playlist</h2>
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ Note:</strong> Select a playlist to edit from the list below or search for a specific playlist.
+            </div>
+
+            <div class="form-group">
+                <label for="playlistSearch">Search Playlist</label>
+                <input type="text" id="playlistSearch" placeholder="Type to search playlists..." onkeyup="filterPlaylists()">
+            </div>
+
+            <div class="table-container">
+                <table id="playlistTable">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Movies</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="radio" name="playlistSelect" value="1" onchange="loadPlaylist(1)"></td>
+                            <td>1</td>
+                            <td>Action Marathon</td>
+                            <td>Manual</td>
+                            <td>8</td>
+                            <td>18h 24min</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="playlistSelect" value="2" onchange="loadPlaylist(2)"></td>
+                            <td>2</td>
+                            <td>Sci-Fi Classics</td>
+                            <td>Manual</td>
+                            <td>6</td>
+                            <td>14h 12min</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="playlistSelect" value="3" onchange="loadPlaylist(3)"></td>
+                            <td>3</td>
+                            <td>Best of 2023</td>
+                            <td>Auto</td>
+                            <td>10</td>
+                            <td>22h 45min</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="playlistSelect" value="4" onchange="loadPlaylist(4)"></td>
+                            <td>4</td>
+                            <td>Comedy Night</td>
+                            <td>Manual</td>
+                            <td>5</td>
+                            <td>9h 30min</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="playlistSelect" value="5" onchange="loadPlaylist(5)"></td>
+                            <td>5</td>
+                            <td>Horror Collection</td>
+                            <td>Manual</td>
+                            <td>7</td>
+                            <td>15h 18min</td>
+                            <td><span style="color: blue;">🔄 Processing</span></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="playlistSelect" value="6" onchange="loadPlaylist(6)"></td>
+                            <td>6</td>
+                            <td>Weekend Binge</td>
+                            <td>Cut</td>
+                            <td>3</td>
+                            <td>4h 30min</td>
+                            <td><span style="color: green;">✅ Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="editForm" style="display: none; margin-top: 30px;">
+                <h3>📝 Edit Playlist Details</h3>
+                <form id="playlistEditForm">
+                    <div class="form-group">
+                        <label for="editPlaylistName">Playlist Name *</label>
+                        <input type="text" id="editPlaylistName" name="playlistName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editPlaylistDescription">Description</label>
+                        <textarea id="editPlaylistDescription" name="playlistDescription" rows="3"></textarea>
+                    </div>
+
+                    <div id="manualEditForm" style="display: none;">
+                        <h4>📝 Manual Playlist Movies</h4>
+                        <div class="form-group">
+                            <label for="movieSearchEdit">Search and Add Movies</label>
+                            <input type="text" id="movieSearchEdit" placeholder="Type to search movies..." onkeyup="filterMoviesEdit()">
+                        </div>
+
+                        <div class="table-container">
+                            <table id="movieTableEdit">
+                                <thead>
+                                    <tr>
+                                        <th>Add</th>
+                                        <th>Title</th>
+                                        <th>Genre</th>
+                                        <th>Duration</th>
+                                        <th>Rating</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="checkbox" name="movieSelectEdit" value="1"></td>
+                                        <td>Inception</td>
+                                        <td>Sci-Fi</td>
+                                        <td>148 min</td>
+                                        <td>⭐ 8.8</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" name="movieSelectEdit" value="2"></td>
+                                        <td>The Dark Knight</td>
+                                        <td>Action</td>
+                                        <td>152 min</td>
+                                        <td>⭐ 9.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" name="movieSelectEdit" value="3"></td>
+                                        <td>Interstellar</td>
+                                        <td>Sci-Fi</td>
+                                        <td>169 min</td>
+                                        <td>⭐ 8.6</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="currentMovies" style="margin-top: 20px;">
+                            <h5>Current Movies in Playlist:</h5>
+                            <div id="currentMoviesList"></div>
+                        </div>
+                    </div>
+
+                    <div id="autoEditForm" style="display: none;">
+                        <h4>🤖 Auto Playlist Settings</h4>
+                        <div class="grid">
+                            <div class="form-group">
+                                <label for="genreFilterEdit">Genre Filter</label>
+                                <select id="genreFilterEdit" multiple>
+                                    <option value="action">Action</option>
+                                    <option value="comedy">Comedy</option>
+                                    <option value="drama">Drama</option>
+                                    <option value="horror">Horror</option>
+                                    <option value="sci-fi">Sci-Fi</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ratingFilterEdit">Minimum Rating</label>
+                                <select id="ratingFilterEdit">
+                                    <option value="0">Any Rating</option>
+                                    <option value="7">7.0+</option>
+                                    <option value="8">8.0+</option>
+                                    <option value="9">9.0+</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxMoviesEdit">Maximum Movies</label>
+                            <input type="number" id="maxMoviesEdit" min="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sortByEdit">Sort By</label>
+                            <select id="sortByEdit">
+                                <option value="rating">Rating (High to Low)</option>
+                                <option value="year">Year (New to Old)</option>
+                                <option value="title">Title (A-Z)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="cutEditForm" style="display: none;">
+                        <h4>✂️ Cut Playlist Segments</h4>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Cut Name</th>
+                                        <th>Source Movie</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="checkbox" name="cutSelectEdit" value="1"></td>
+                                        <td>Dream Sequence</td>
+                                        <td>Inception</td>
+                                        <td>30 min</td>
+                                        <td><span style="color: green;">✅ Ready</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" name="cutSelectEdit" value="2"></td>
+                                        <td>Lobby Scene</td>
+                                        <td>The Matrix</td>
+                                        <td>10 min</td>
+                                        <td><span style="color: green;">✅ Ready</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editPlaylistTags">Tags (comma separated)</label>
+                        <input type="text" id="editPlaylistTags" name="playlistTags">
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editPlaylistPublic" name="playlistPublic">
+                                Make Public
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="editPlaylistFeatured" name="playlistFeatured">
+                                Featured Playlist
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button type="submit" class="btn btn-success">💾 Update Playlist</button>
+                        <button type="button" class="btn btn-warning" onclick="resetForm()">🔄 Reset</button>
+                        <a href="playlists.html" class="btn btn-danger">❌ Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const playlistData = {
+            1: { 
+                name: "Action Marathon", 
+                type: "manual", 
+                description: "High-octane action movies for an adrenaline-filled movie night.",
+                tags: "action, marathon, weekend",
+                public: true,
+                featured: false,
+                movies: ["The Dark Knight", "Mad Max: Fury Road", "John Wick", "Die Hard", "The Matrix", "Mission: Impossible", "Fast & Furious", "Terminator 2"]
+            },
+            2: { 
+                name: "Sci-Fi Classics", 
+                type: "manual", 
+                description: "Essential science fiction movies that defined the genre.",
+                tags: "sci-fi, classics, space",
+                public: true,
+                featured: true,
+                movies: ["Blade Runner", "2001: A Space Odyssey", "Alien", "The Terminator", "Star Wars", "Metropolis"]
+            },
+            3: { 
+                name: "Best of 2023", 
+                type: "auto", 
+                description: "Top-rated movies from 2023 automatically selected.",
+                tags: "2023, best, top-rated",
+                public: true,
+                featured: true,
+                genreFilter: ["action", "drama", "comedy"],
+                ratingFilter: "8",
+                maxMovies: 10,
+                sortBy: "rating"
+            },
+            4: { 
+                name: "Comedy Night", 
+                type: "manual", 
+                description: "Laugh-out-loud comedies for a fun evening.",
+                tags: "comedy, fun, night",
+                public: false,
+                featured: false,
+                movies: ["The Hangover", "Superbad", "Bridesmaids", "Step Brothers", "Anchorman"]
+            },
+            5: { 
+                name: "Horror Collection", 
+                type: "manual", 
+                description: "Spine-chilling horror movies for brave viewers.",
+                tags: "horror, scary, thriller",
+                public: true,
+                featured: false,
+                movies: ["The Conjuring", "Get Out", "A Quiet Place", "Hereditary", "The Babadook", "It Follows", "Sinister"]
+            },
+            6: { 
+                name: "Weekend Binge", 
+                type: "cut", 
+                description: "Quick cuts from popular movies for a weekend binge.",
+                tags: "cuts, weekend, binge",
+                public: false,
+                featured: false,
+                cuts: ["Dream Sequence", "Lobby Scene", "Opening Scene"]
+            }
+        };
+
+        function filterPlaylists() {
+            const searchValue = document.getElementById('playlistSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#playlistTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function filterMoviesEdit() {
+            const searchValue = document.getElementById('movieSearchEdit').value.toLowerCase();
+            const rows = document.querySelectorAll('#movieTableEdit tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        }
+
+        function loadPlaylist(playlistId) {
+            const playlist = playlistData[playlistId];
+            if (!playlist) return;
+
+            document.getElementById('editPlaylistName').value = playlist.name;
+            document.getElementById('editPlaylistDescription').value = playlist.description;
+            document.getElementById('editPlaylistTags').value = playlist.tags;
+            document.getElementById('editPlaylistPublic').checked = playlist.public;
+            document.getElementById('editPlaylistFeatured').checked = playlist.featured;
+
+            // Hide all specific forms first
+            document.getElementById('manualEditForm').style.display = 'none';
+            document.getElementById('autoEditForm').style.display = 'none';
+            document.getElementById('cutEditForm').style.display = 'none';
+
+            // Show relevant form based on playlist type
+            switch(playlist.type) {
+                case 'manual':
+                    document.getElementById('manualEditForm').style.display = 'block';
+                    displayCurrentMovies(playlist.movies);
+                    break;
+                case 'auto':
+                    document.getElementById('autoEditForm').style.display = 'block';
+                    document.getElementById('genreFilterEdit').value = playlist.genreFilter || [];
+                    document.getElementById('ratingFilterEdit').value = playlist.ratingFilter || '0';
+                    document.getElementById('maxMoviesEdit').value = playlist.maxMovies || '';
+                    document.getElementById('sortByEdit').value = playlist.sortBy || 'rating';
+                    break;
+                case 'cut':
+                    document.getElementById('cutEditForm').style.display = 'block';
+                    break;
+            }
+
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function displayCurrentMovies(movies) {
+            const currentMoviesList = document.getElementById('currentMoviesList');
+            if (movies && movies.length > 0) {
+                currentMoviesList.innerHTML = '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                    movies.map(movie => `<li>${movie}</li>`).join('') + '</ul>';
+            } else {
+                currentMoviesList.innerHTML = '<p style="color: #666;">No movies in playlist</p>';
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('playlistEditForm').reset();
+            document.querySelectorAll('input[name="playlistSelect"]').forEach(radio => radio.checked = false);
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        document.getElementById('playlistEditForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Playlist updated successfully!');
+            window.location.href = 'playlists.html';
+        });
+    </script>
+</body>
+</html>

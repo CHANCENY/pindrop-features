@@ -1,0 +1,8 @@
+streamer.movie:
+  name: "Movies CLI tool"
+  script: "modules/streamer/cli/movie.php"
+  status: true
+streamer.show:
+  name: "Show CLI Tool"
+  script: "modules/streamer/cli/show.php"
+  status: true

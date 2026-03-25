@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineStream - Watch Movies & TV Shows</title>
+    <link rel="stylesheet" href="/modules/streamer_frontend/assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-text">CineStream</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link {{ is_route('admin.home') ? 'active' : '' }}">Home</a></li>
+                <li><a href="/movies" class="nav-link {{ is_route('streamer_frontend.front.movies') ? 'active' : '' }}">Movies</a></li>
+                <li><a href="/shows" class="nav-link  {{ is_route('streamer_frontend.front.shows') ? 'active' : '' }}">TV Shows</a></li>
+                <li><a href="/playlists" class="nav-link  {{ is_route('streamer_frontend.front.playlists') ? 'active' : '' }}">Playlists</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search movies, shows...">
+                <button class="search-btn">🔍</button>
+            </div>
+            <button class="menu-toggle">☰</button>
+        </div>
+    </div>
+</nav>
+
+{% block hero %}{% endblock %}
+
+{% block main %}{% endblock %}
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

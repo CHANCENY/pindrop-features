@@ -1,0 +1,248 @@
+{% extends "templates/base.html.twig" %}
+
+{% block body %}
+<div class="breadcrumb">
+    <a href="{{ url('streamer.dashboard') }}">Dashboard</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.movies') }}">Movies</a>
+    <span class="separator">›</span>
+    <a href="{{ url('streamer.dashboard.add.movie') }}">Create Movie</a>
+</div>
+
+<div class="card">
+    <h2>➕ Create New Movie</h2>
+
+    <form id="movieCreateForm" method="post">
+        <div class="grid">
+            <div class="form-group">
+                <label for="title">Movie Title *</label>
+                <input type="text" id="title" name="title" value="{{ title }}" required placeholder="Enter movie title">
+            </div>
+
+            <div class="form-group">
+                <label for="genre">Genre *</label>
+                <input type="text" id="genres" name="genres" value="{{ genres }}" required placeholder="Enter movie genres">
+            </div>
+
+            <div class="form-group">
+                <label for="releaseYear">Release Year *</label>
+                <input type="datetime-local" id="releaseYear" value="{{ release_year }}" name="releaseYear" required placeholder="Enter movie release date">
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration (minutes) *</label>
+                <input type="number" id="duration" name="duration" {{ duration }} required min="1" placeholder="120">
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating (0-10)</label>
+                <input type="number" id="rating" name="rating" value="{{ rating }}" min="0.0" max="10.0" step="0.1" placeholder="8.5">
+            </div>
+
+            <div class="form-group">
+                <label for="director">Vote Count</label>
+                <input type="text" id="popularity" {{ popularity }} name="popularity" placeholder="Enter movie popularity">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="Enter movie description">{{ description }}</textarea>
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="videoFile">Video File *</label>
+                <input type="file" id="videoFile" data-type="video" name="videoFile" accept="video/*">
+                <input type="hidden" name="videoFileId" id="videoFileID" value="{{ video_file_id }}">
+                <div class="preview">
+                    <video src="{{ public_uri }}" {% if public_uri is empty %} style="display: none" {% endif %} id="previewVideo" width="200" controls autoplay></video>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="thumbnail">Thumbnail Image</label>
+                <input type="file" data-type="image" id="thumbnail" name="thumbnail" accept="image/*">
+                <input type="hidden" name="thumbnail_path" id="thumbnail_path">
+                <div class="preview">
+                    <img src="{{ thumbnail_uri }}" alt="" width="100px" id="preview">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="tags">IMDB ID</label>
+            <input type="text" id="imdb_id" value="{{ imdb_id }}" name="imdb_id">
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" {% if featured %} checked {% endif %} id="featured" name="featured">
+                Featured Movie
+            </label>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <button type="submit" class="btn btn-success">💾 Create Movie</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3>📊 Upload Progress</h3>
+    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px;">
+        <div id="progressBar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+    </div>
+    <p id="progressText" style="text-align: center; margin-top: 10px;">Ready to upload</p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded",(e)=>{
+        const titleAutoComplete = new Autocomplete({
+            fieldId: 'title',
+            source: 'autocomplete.movie.search',
+            placeholder: 'Search movies..',
+            minQueryLength: 2,
+            limit: 10,
+            displayField: 'label',
+            valueField: 'value',
+            searchFields: ['title', 'id'],
+            noResultsText: 'No movies found',
+            loadingText: 'Searching...',
+            name: 'title',
+            onSelect: searchMovieDetails
+        });
+
+        // Add event to file video upload
+        SD.fileUpload(document.getElementById('videoFile'),handleVideoUploadCallback);
+        SD.fileUpload(document.getElementById("thumbnail"), handleImageUploadCallback);
+
+        if (document.getElementById("genres").value.length > 3) {
+            const genresElem = document.getElementById('genres');
+            const cloneGenresElem = genresElem.cloneNode(true);
+            genresElem.replaceWith(cloneGenresElem)
+            const tagify = new Tagify(cloneGenresElem, {
+                whitelist: JSON.parse(document.getElementById("genres").value),
+                enforceWhitelist: true,
+                dropdown: {
+                    enabled: 0
+                }
+            });
+        }
+    })
+
+    async function searchMovieDetails(selectedItem) {
+        const value = selectedItem.value;
+        const list  = value.split("(");
+        let movieId = list[list.length - 1];
+        movieId = movieId.split(')')[0].trim();
+        const detail = await SD.getMovieDetail(movieId);
+
+        if (detail && detail.id) {
+
+            const genresElem = document.getElementById('genres');
+
+            if (genresElem && detail.genres && detail.genres.length > 0) {
+
+                // Convert genres to Tagify format
+                const genres = detail.genres.map(g => ({
+                    value: g.name,
+                    id: g.id
+
+                }));
+
+                // clone and replace
+                const cloneGenresElem = genresElem.cloneNode(true);
+                genresElem.replaceWith(cloneGenresElem)
+
+                const tagify = new Tagify(cloneGenresElem, {
+                    whitelist: genres,
+                    enforceWhitelist: true,
+                    dropdown: {
+                        enabled: 0
+                    }
+                });
+
+                // Set initial tags
+                tagify.addTags(genres);
+            }
+
+            const releaseYear = document.getElementById("releaseYear");
+            if (releaseYear) {
+                releaseYear.value = detail.release_date
+                releaseYear.dispatchEvent(new Event('blur', { bubbles: true }));
+            }
+
+            const duration = document.getElementById('duration')
+            if (duration) {
+                duration.value = detail.runtime
+                duration.dispatchEvent(new Event("blur", {bubbles: true}));
+            }
+
+            const rating = document.getElementById('rating');
+            if (rating) {
+                rating.value  = Math.round(Number(detail.vote_average) * 10) / 10;
+                rating.dispatchEvent(new Event('blur', {bubbles: true}));
+            }
+
+            const popularity = document.getElementById('popularity');
+            if (popularity) {
+                popularity.value = Math.round(Number(detail.vote_count) * 10) / 10;
+                popularity.dispatchEvent(new Event('blur', {bubbles: true}));
+            }
+
+            const description = document.getElementById("description");
+            if(description) {
+                description.textContent = detail.overview;
+                description.dispatchEvent(new Event('blur', {bubbles: true}));
+            }
+
+            const thumbnailPath = document.getElementById("thumbnail_path");
+            if (thumbnailPath) {
+                thumbnailPath.value = detail.poster_path || detail.backdrop_path;
+                const preview = document.getElementById("preview");
+                if (preview) {
+                    preview.src = "https://image.tmdb.org/t/p/w185"+ (detail.poster_path || detail.backdrop_path)
+                }
+            }
+
+            const imdbId = document.getElementById("imdb_id");
+            if (imdbId) {
+                imdbId.value = detail.imdb_id
+                imdbId.setAttribute('readonly', "true");
+            }
+        }
+
+    }
+
+    /**
+     * @param {string} responseText
+     */
+    function handleVideoUploadCallback(responseText){
+        const file = JSON.parse(responseText).file;
+        if (file.id && file.public_url) {
+            document.getElementById("videoFileID").value = file.id;
+            const video = document.querySelector("video#previewVideo");
+            video.src = "/sites/default"+file.public_url;
+            video.removeAttribute('style');
+
+            video.load();
+        }
+    }
+
+    function handleImageUploadCallback(responseText) {
+        const file = JSON.parse(responseText).file;
+        if (file.id && file.public_url) {
+            document.getElementById("thumbnail_path").value = file.uri;
+            const video = document.querySelector("img#preview");
+            video.src = "/sites/default"+file.public_url;
+            video.removeAttribute('style')
+        }
+    }
+
+</script>
+
+{% endblock %}

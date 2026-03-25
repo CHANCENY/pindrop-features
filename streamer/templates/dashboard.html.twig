@@ -1,0 +1,194 @@
+{% extends "templates/base.html.twig" %}
+
+{% block body %}
+
+        <!-- Statistics Overview -->
+        <div class="grid">
+            <div class="grid-item">
+                <h3>📊 Content Overview</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #667eea;">{{ movies_count }}</div>
+                        <div style="color: #666;">Movies</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #764ba2;">{{ tv_shows_count }}</div>
+                        <div style="color: #666;">TV Shows</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #11998e;">{{ playlist_count }}</div>
+                        <div style="color: #666;">Playlists</div>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid #e1e5e9; padding-top: 15px;">
+                    <p><strong>Total Seasons:</strong> 87</p>
+                    <p><strong>Total Episodes:</strong> 1,245</p>
+                    <p><strong>Total Duration:</strong> 2,847 hours</p>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <h3>⭐ Top Rated Content</h3>
+
+                {% for top_rated_tv in top_rated_tvs %}
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>🎬 {{ top_rated_tv.title }}</strong>
+                        <p>TV Show • {{ top_rated_tv.rating }} ⭐ • {{ top_rated_tv.season_count }} Seasons</p>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% for top_rated_movie in top_rated_movies%}
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>🎬 {{ top_rated_movie.title }}</strong>
+                        <p>Movie • {{ top_rated_movie.rating }} ⭐ • {{ top_rated_movie.duration }} min</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="grid-item">
+                <h3>📈 Recent Activity</h3>
+                {% for recent_activity in recent_activities %}
+                <div class="playlist-item">
+                    <div class="playlist-item-info">
+                        <strong>{{ recent_activity.title }}</strong>
+                        <p>{{ recent_activity.type }} • {{ recent_activity.created_at }}</p>
+                    </div>
+                    <div class="playlist-item-actions">
+                        <span style="color: green;">✅</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <h2>🚀 Quick Actions</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <a href="{{ url('streamer.dashboard.add.movie') }}" class="btn btn-primary" style="text-align: center;">➕ Add Movie</a>
+                <a href="{{ url('streamer.dashboard.shows.add') }}" class="btn btn-primary" style="text-align: center;">➕ Add TV Show</a>
+                <a href="{{ url('streamer.dashboard.playlists.add') }}" class="btn btn-primary" style="text-align: center;">➕ Create Playlist</a>
+            </div>
+        </div>
+
+        <!-- Content Management -->
+        <div class="grid">
+            <div class="card">
+                <h3>🎬 Movies Management</h3>
+                <p style="color: #666; margin-bottom: 15px;">Manage your movie collection</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="{{ url("streamer.dashboard.movies") }}" class="btn btn-primary" style="text-align: center;">📋 Browse Movies</a>
+                    <a href="{{ url('streamer.dashboard.add.movie') }}" class="btn btn-success" style="text-align: center;">➕ Add New Movie</a>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e1e5e9;">
+                    <p><strong>Recent Additions:</strong></p>
+                    <ul style="margin: 5px 0; padding-left: 20px; color: #666;">
+                        {% for recent_movie in recent_movies %}
+                        <li>{{ recent_movie.title}} ({{ recent_movie.release_date|date('Y') }})</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📺 TV Shows Management</h3>
+                <p style="color: #666; margin-bottom: 15px;">Manage TV shows, seasons, and episodes</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="{{ url('streamer.dashboard.shows') }}" class="btn btn-primary" style="text-align: center;">📋 Browse TV Shows</a>
+                    <a href="{{ url('streamer.dashboard.shows.add') }}" class="btn btn-success" style="text-align: center;">➕ Add New Show</a>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e1e5e9;">
+                    <p><strong>Popular Shows:</strong></p>
+                    <ul style="margin: 5px 0; padding-left: 20px; color: #666;">
+                        {% for recent_show in recent_shows %}
+                        <li>{{ recent_show.title }} ({{ recent_show.season_count }} Seasons)</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📋 Playlists Management</h3>
+                <p style="color: #666; margin-bottom: 15px;">Create and manage custom playlists</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="{{ url('streamer.dashboard.playlists') }}" class="btn btn-primary" style="text-align: center;">📋 Browse Playlists</a>
+                    <a href="{{ url('streamer.dashboard.playlists.add') }}" class="btn btn-success" style="text-align: center;">➕ Create Playlist</a>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e1e5e9;">
+                    <p><strong>Active Playlists:</strong></p>
+                    <ul style="margin: 5px 0; padding-left: 20px; color: #666;">
+                        {% for playlist in playlists %}
+                        <li>{{ playlist.title }} ({{ playlist.item_count }} movies)</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="card">
+            <h3>⚙️ System Status</h3>
+            <div class="grid">
+                <div class="grid-item">
+                    <h4>💾 Storage</h4>
+                    <div style="background: #f0f0f0; border-radius: 8px; overflow: hidden; height: 20px; margin: 10px 0;">
+                        <div style="background: linear-gradient(90deg, #11998e, #38ef7d); height: 100%; width: {{ percent_used }}%;"></div>
+                    </div>
+                    <p><strong>{{ percent_used }}% Used</strong> • {{ occupied_space }} of {{ total_space }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Uploads -->
+        <div class="card">
+            <h3>📤 Recent Uploads</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Title</th>
+                        <th>Duration</th>
+                        <th>Upload Date</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>🎬 Movie</td>
+                        <td>Inception</td>
+                        <td>148 min</td>
+                        <td>Feb 24, 2024</td>
+                        <td><span style="color: green;">✅ Complete</span></td>
+                    </tr>
+                    <tr>
+                        <td>📺 Episode</td>
+                        <td>Breaking Bad S1E1</td>
+                        <td>58 min</td>
+                        <td>Feb 23, 2024</td>
+                        <td><span style="color: green;">✅ Complete</span></td>
+                    </tr>
+                    <tr>
+                        <td>✂️ Cut</td>
+                        <td>Dream Sequence</td>
+                        <td>30 min</td>
+                        <td>Feb 22, 2024</td>
+                        <td><span style="color: blue;">🔄 Processing</span></td>
+                    </tr>
+                    <tr>
+                        <td>📋 Playlist</td>
+                        <td>Weekend Binge</td>
+                        <td>4h 30min</td>
+                        <td>Feb 21, 2024</td>
+                        <td><span style="color: green;">✅ Complete</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+{% endblock %}

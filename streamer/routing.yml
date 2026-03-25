@@ -1,0 +1,277 @@
+streamer.dashboard:
+  path: '/w/dashboard'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::dashboard'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.add.movie:
+  path: '/w/dashboard/movies/create'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::createMovie'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.edit.movie:
+  path: '/w/dashboard/movies/[movie_id:int]/edit'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::editMovie'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.delete.movie:
+  path: '/w/dashboard/movies/[movie_id:int]/delete'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::deleteMovie'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.movies:
+  path: '/w/dashboard/movies'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::moviesListing'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.detail:
+  path: '/w/dashboard/internal/search'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::internalMediaDetail'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.detail.local:
+  path: '/w/dashboard/internal/search/movie/local'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::internalLocalDetail'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.upload:
+  path: '/w/dashboard/internal/upload'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::internalUpload'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.shows:
+  path: '/w/dashboard/shows'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::showsListing'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.shows.add:
+  path: '/w/dashboard/shows/create'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::createShow'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+
+streamer.dashboard.shows.edit:
+  path: '/w/dashboard/shows/[show_id:int]/edit'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::editShow'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.shows.delete:
+  path: '/w/dashboard/shows/[show_id:int]/delete'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::deleteShow'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.seasons:
+  path: '/w/dashboard/shows/[show_id:int]/seasons'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::seasonsListing'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.seasons.add:
+  path: '/w/dashboard/shows/[show_id:int]/seasons/create'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::createSeason'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+
+streamer.dashboard.seasons.delete:
+  path: '/w/dashboard/shows/[show_id:int]/seasons/[season_id:int]/delete'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::deleteSeason'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.episodes:
+  path: '/w/dashboard/shows/[show_id:int]/seasons/[season_id:int]/episodes'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::episodesListing'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.seasons.episode.add:
+  path: '/w/dashboard/shows/[show_id:int]/seasons/[season_id:int]/episodes/create'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::createEpisode'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.seasons.episode.edit:
+  path: '/w/dashboard/shows/[show_id:int]/seasons/[season_id:int]/episodes/[episode_id:int]/edit'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::editEpisode'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+streamer.dashboard.seasons.episode.delete:
+  path: '/w/dashboard/shows/[show_id:int]/seasons/[season_id:int]/episodes/[episode_id:int]/delete'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::deleteEpisode'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+
+# TV SHOW PLAYER ROUTES
+streamer.dashboard.shows.watch:
+  path: '/w/dashboard/shows/watch/[show_id:int]'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::watchShow'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.shows.watch.show.playlist:
+  path: '/w/dashboard/shows/watch/episodes/[show_id:int]/[season_id:int]'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playListEpisodes'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.shows.watch.show.frame:
+  path: '/w/dashboard/shows/watch/episodes/[show_id:int]/f'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playListEpisodeFrame'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.shows.watch.show.video:
+  path: '/w/dashboard/shows/watch/episodes/[show_id:int]/v'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playListEpisodeVideo'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+# MOVIE PLAYER ROUTE
+streamer.dashboard.movie.watch:
+  path: '/w/dashboard/movie/watch/[movie_id:int]'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::watchMovie'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.movie.watch.movie.playlist:
+  path: '/w/dashboard/movie/watch/metadata/[movie_id:int]'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playListMovie'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.movie.watch.movie.frame:
+  path: '/w/dashboard/movie/watch/frame/[movie_id:int]/f'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playListMovieFrame'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.movie.watch.movie.video:
+  path: '/w/dashboard/movie/watch/stream/[movie_id:int]/v'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playListMovieVideo'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+# RECORDER PATHs
+streamer.dashboard.recorder:
+  path: '/w/internal/player/activity'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playerRecorder'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.recorder.record:
+  path: '/w/internal/player/activity/record'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playerRecorder'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.playlists:
+  path: '/w/dashboard/playlists'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::playlistListing'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+
+streamer.dashboard.playlists.add:
+  path: '/w/dashboard/playlists/create'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::createPlaylist'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+
+streamer.dashboard.playlists.delete:
+  path: '/w/dashboard/playlists/[playlist_id:int]/delete'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\StreamDashboardController::deletePlaylist'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator']
+
+
+# PLAYLIST PLAYER ROUTE
+streamer.dashboard.playlist.watch:
+  path: '/w/dashboard/playlist/watch/[session_token:string]'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::watchPlaylist'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+
+streamer.dashboard.movie.watch.p.playlist:
+  path: '/w/dashboard/p/watch/metadata/[playlist_id:int]'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playlistMetadata'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.movie.watch.p.frame:
+  path: '/w/dashboard/p/watch/frame/[playlist_id:int]/f'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playListFrame'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']
+
+streamer.dashboard.movie.watch.p.video:
+  path: '/w/dashboard/p/watch/stream/[playlist_id:int]/v'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\streamer\src\Controller\PlayerController::playListVideo'
+  methods: ['GET', 'POST']
+  requirements:
+    _permission: ['admin', 'super_admin','moderator','user','guest']

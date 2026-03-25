@@ -1,0 +1,43 @@
+<section class="movie-section">
+
+    <div class="movie-container">
+
+        <div class="movie-header">
+            <h1 class="movie-title">
+                {{ movie.title|trim }}
+            </h1>
+
+            {% if movie.featured %}
+                <span class="featured-badge">Featured</span>
+            {% endif %}
+        </div>
+
+        <div class="movie-meta">
+            <span class="rating">⭐ {{ movie.rating }}</span>
+            <span>{{ movie.release_date|date("Y") }}</span>
+            <span>{{ movie.duration }} min</span>
+            <span>Popularity: {{ movie.popularity }}</span>
+        </div>
+
+        <div class="movie-genres">
+            {% set genres = movie.genres|json_decode %}
+            {% for genre in genres %}
+                <span class="genre-badge">{{ genre.value }}</span>
+            {% endfor %}
+        </div>
+
+        <p class="movie-description">
+            {{ movie.description }}
+        </p>
+
+        <div class="movie-actions">
+            <a href="https://www.imdb.com/title/{{ movie.imdb_id }}"
+               target="_blank"
+               class="btn-outline">
+                View on IMDb
+            </a>
+        </div>
+
+    </div>
+
+</section>
