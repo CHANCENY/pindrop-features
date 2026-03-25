@@ -1,0 +1,11 @@
+upload.files:
+  path: '/pindrop/uploads/files'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\upload\src\Controller\UploadController::handleUpload'
+  methods: [POST]
+  
+upload.files.remove:
+  path: '/pindrop/uploads/files/remove'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\upload\src\Controller\UploadController::removeFile'
+  methods: [POST]

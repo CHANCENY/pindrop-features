@@ -1,0 +1,6 @@
+name: "File Upload Plugin"
+description: "Handles file uploads with validation and storage using FileSystem service"
+version: "1.0.0"
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"

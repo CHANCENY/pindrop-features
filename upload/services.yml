@@ -1,0 +1,8 @@
+upload.service:
+  class: Simp\Pindrop\Modules\upload\src\Services\UploadService
+  arguments:
+    - "@filesystem.interface"
+    - "@logger"
+  tags:
+    - "upload"
+    - "file"
