@@ -1,0 +1,6 @@
+name: "Admin Plugin"
+description: "Provides admin dashboard and management functionality"
+version: "1.0.0"
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"

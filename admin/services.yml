@@ -1,0 +1,16 @@
+admin.service:
+  class: Simp\Pindrop\Modules\admin\src\Services\AdminService
+  arguments:
+    - "@logger"
+    - "@plugin.manager"
+  tags:
+    - "admin"
+    - "management"
+internal.autocomplete:
+  class: Simp\Pindrop\Modules\admin\src\Services\AutoCompleteService
+  arguments:
+    - "@database"
+    - "@logger"
+    - "@plugin.manager"
+  tags:
+    - "autocomplete"

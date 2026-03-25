@@ -1,0 +1,3 @@
+settings:
+  name: Admin Settings
+  class: Simp\Pindrop\Modules\admin\src\Plugin\AdminSettings

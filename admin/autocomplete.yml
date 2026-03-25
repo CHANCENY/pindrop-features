@@ -1,0 +1,4 @@
+autocomplete.users:
+  handler: Simp\Pindrop\Modules\admin\src\Plugin\AutocompleteInternal::matchUsers
+autocomplete.route.search:
+  handler: Simp\Pindrop\Modules\admin\src\Plugin\AutocompleteInternal::matchRoutes

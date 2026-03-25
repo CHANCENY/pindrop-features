@@ -1,0 +1,35 @@
+groups:
+  admin:
+    dashboard:
+      title: Dashboard
+      route: admin.dashboard
+      icon: fa fa-dashboard
+      weight: 1
+      roles: [admin, super_admin]
+    
+    content:
+      title: Content
+      route: admin.content
+      icon: fa fa-table
+      weight: 2
+      roles: [admin, super_admin]
+    
+    users:
+      title: Users
+      route: admin.users
+      icon: fa fa-users
+      weight: 3
+      roles: [admin, super_admin]
+    
+    plugins:
+      title: Plugins
+      route: admin.plugins
+      icon: fa fa-plug
+      weight: 4
+      roles: [admin, super_admin]
+    settings:
+      title: Settings
+      route: admin.settings
+      icon: fa fa-gear
+      weight: 5
+      roles: [ admin, super_admin ]

@@ -1,0 +1,7 @@
+username,email,first_name,last_name,role,status
+john_doe,john.doe@example.com,John,Doe,user,pending
+jane_smith,jane.smith@example.com,Jane,Smith,moderator,active
+admin_user,admin@example.com,Admin,User,admin,active
+super_admin,super@example.com,Super,Admin,super_admin,active
+test_user1,test1@example.com,Test,User,user,inactive
+test_user2,test2@example2.com,Test,Two,user,pending

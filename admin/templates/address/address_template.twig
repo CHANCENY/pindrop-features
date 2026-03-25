@@ -1,0 +1,99 @@
+<div class="drupal-address-container">
+    <div class="address-grid" target-api="address">
+        {% if countries is not empty %}
+            <div class="form-item full-width">
+                <label for="countryCode">Country</label>
+                <select name="{{ section_name }}_countryCode">
+                    {% for code, name in countries %}
+                        <option value="{{ code }}"
+                                {% if code == countryCode %}selected{% endif %}>
+                            {{ name.getName }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endif %}
+
+        {% for field in fields %}
+            {# First Name #}
+            {% if field == 'givenName' %}
+                <div class="form-item half-width">
+                    <label for="givenName">First Name</label>
+                    <input value="{{ first_name }}" type="text" name="{{ section_name }}_givenName" required>
+                </div>
+            {% endif %}
+
+            {# Last Name #}
+            {% if field == 'familyName' %}
+                <div class="form-item half-width">
+                    <label for="familyName">Last Name</label>
+                    <input value="{{ last_name }}" type="text" name="{{ section_name }}_familyName" required>
+                </div>
+            {% endif %}
+
+            {# Address Line 1 #}
+            {% if field == 'addressLine1' %}
+                <div class="form-item full-width">
+                    <label for="addressLine1">Street Address</label>
+                    <input value="{{ address1 }}" type="text" name="{{ section_name }}_addressLine1" required>
+                </div>
+            {% endif %}
+
+            {# City / Locality #}
+            {% if field == 'locality' %}
+                <div class="form-item half-width">
+                    <label for="locality">City</label>
+                    {% if cities is not empty %}
+                        <select name="locality">
+                            {% for code, name in cities %}
+                                <option {% if code == city %} selected {% endif %} value="{{ code }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <input type="text" value="{{ city }}" name="{{ section_name }}_locality" required>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {# State / Province #}
+            {% if field == 'administrativeArea' %}
+                <div class="form-item half-width">
+                    <label for="administrativeArea">State / Province</label>
+                    {% if states is not empty %}
+                        <select name="{{ section_name }}_administrativeArea">
+                            {% for code, name in states %}
+                                <option {% if state == code %} selected {% endif %} value="{{ code }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <input type="text" value="{{ state }}" name="{{ section_name }}_administrativeArea" required>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {# County (optional deeper level) #}
+            {% if field == 'dependentLocality' %}
+                <div class="form-item half-width">
+                    <label for="dependentLocality">County</label>
+                    {% if counties is not empty %}
+                        <select name="{{ section_name }}_dependentLocality">
+                            {% for code, name in counties %}
+                                <option {% if county == code %} selected {% endif %} value="{{ code }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <input type="text" value="{{ county }}" name="{{ section_name }}_dependentLocality">
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {# Postal Code #}
+            {% if field == 'postalCode' %}
+                <div class="form-item half-width">
+                    <label for="postalCode">Postal Code</label>
+                    <input type="text" value="{{ postalcode }}" name="{{ section_name }}_postalCode" required>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

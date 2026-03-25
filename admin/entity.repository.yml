@@ -1,0 +1,11 @@
+article:
+  class: Simp\Pindrop\Modules\admin\src\Entity\Article
+  description: "Article content entity"
+  category: "content"
+  version: "1.0"
+
+page:
+  class: Simp\Pindrop\Modules\admin\src\Entity\Page
+  description: "Page content entity"
+  category: "content"
+  version: "1.0"

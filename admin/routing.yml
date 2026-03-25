@@ -1,0 +1,277 @@
+admin.home:
+  path: '/'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::home'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+admin.dashboard:
+  path: '/admin'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::dashboard'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.settings:
+  path: '/admin/settings'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::settings'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.users:
+  path: '/admin/users'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::users'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+# User Management Routes
+admin.users.create:
+  path: '/admin/users/create'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::createUser'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.users.edit:
+  path: '/admin/users/[user_id:int]/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::editUser'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.users.view:
+  path: '/admin/users/[user_id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::viewUser'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+users.view.user:
+  path: '/user/[user_id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::viewUserDisplay'
+  requirements:
+    _permission: ['admin', 'super_admin', 'user', 'moderator']
+
+admin.users.delete:
+  path: '/admin/users/[user_id:int]/delete'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::deleteUser'
+  requirements:
+    _permission: ['super_admin']
+
+admin.users.toggle_status:
+  path: '/admin/users/[user_id:int]/toggle'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::toggleUserStatus'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.users.bulk_action:
+  path: '/admin/users/bulk'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::bulkUserAction'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+
+admin.user.import.template:
+  path: '/admin/users/import-template'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::importTemplate'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content:
+  path: '/admin/content'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::content'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.create:
+  path: '/admin/content/create'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::createContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add:
+  path: '/admin/content/[type:string]/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::addContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+# Plugin Management Routes
+admin.plugins:
+  path: '/admin/plugins'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::index'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.plugins.install:
+  path: '/admin/plugins/install/[plugin:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::install'
+  requirements:
+    _permission: ['super_admin']
+
+admin.plugins.install.page:
+  path: '/admin/plugins/install'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::install'
+  requirements:
+    _permission: ['super_admin']
+
+admin.plugins.uninstall:
+  path: '/admin/plugins/uninstall/[plugin:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::uninstall'
+  requirements:
+    _permission: ['super_admin']
+
+admin.plugins.enable:
+  path: '/admin/plugins/enable/[plugin:string]'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::enable'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.plugins.disable:
+  path: '/admin/plugins/disable/[plugin:string]'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::disable'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.plugins.config:
+  path: '/admin/plugins/config/[plugin:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::config'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.plugins.scan:
+  path: '/admin/plugins/scan'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::scan'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.plugins.upload:
+  path: '/admin/plugins/upload'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\PluginController::upload'
+  requirements:
+    _permission: ['super_admin']
+
+# User Authentication Routes (public access)
+user.register:
+  path: '/user/register'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::register'
+  requirements: {}
+
+user.login:
+  path: '/user/login'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::login'
+  requirements: {}
+
+user.logout:
+  path: '/user/logout'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::logout'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin']
+
+user.forgot_password:
+  path: '/user/forgot-password'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::forgotPassword'
+  requirements: {}
+
+user.reset_password:
+  path: '/user/reset-password/[token:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::resetPassword'
+  requirements: {}
+
+user.verify_email:
+  path: '/user/verify-email/[token:string]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::verifyEmail'
+  requirements: {}
+
+# User Import Routes
+admin.users.import_template:
+  path: '/admin/users/import-template'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::importTemplate'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.users.import_preview:
+  path: '/admin/users/import-preview'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::importPreview'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.users.import:
+  path: '/admin/users/import'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::import'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.autocomplete:
+  path: '/internal/autocomplete'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::autocomplete'
+  requirements:
+    _permission:  ['user', 'moderator', 'admin', 'super_admin']
+
+commerce_store.address:
+  path: '/internal/address/[code:string]/[name:string]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::addressFieldBuild'
+  requirements:
+    _permission:  ['user', 'moderator', 'admin', 'super_admin','guest']
