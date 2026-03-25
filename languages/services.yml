@@ -1,0 +1,5 @@
+language.support.service:
+  class: Simp\Pindrop\Modules\languages\src\Services\LanguageSupport
+  arguments:
+  tags:
+    - "languages"

@@ -1,0 +1,15 @@
+languages.switcher:
+  path: '/internal/lang/switch'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\languages\src\Controller\LangController::switchLanguage'
+  methods: [POST]
+  requirements:
+    _permission: ['admin', 'super_admin', 'user', 'moderator', 'guest']
+
+languages.default:
+  path: '/internal/lang/support/default'
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\languages\src\Controller\LangController::language'
+  methods: [GET]
+  requirements:
+    _permission: ['admin', 'super_admin', 'user', 'moderator', 'guest']
