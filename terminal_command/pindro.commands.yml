@@ -1,0 +1,4 @@
+terminal_command.default:
+  name: "Default CLI commands"
+  script: "modules/terminal_command/cli/default.php"
+  status: true

@@ -1,0 +1,6 @@
+name: "Terminal"
+description: "Provides default commands that can be used in cli of pindro eg pindro site"
+version: 1.0.0
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"
