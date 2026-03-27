@@ -1,0 +1,226 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}View Order #{{ order.order.order_number }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/order-view.css">
+{% endblock %}
+
+{% block content %}
+    <div class="drupal-order-view-container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Order #{{ order.order.order_number }}</h1>
+                    <p>Placed on {{ order.order.created_at|date('M j, Y H:i') }}</p>
+                </div>
+                <div class="page-actions">
+                    <a href="{{ url('commerce_store.orders.edit', {'id': order.order.id}) }}" class="btn btn-primary">Edit Order</a>
+                    <a href="{{ url('commerce_store.orders.print', {'id': order.order.id}) }}" class="btn" target="_blank">Print</a>
+                    <a href="{{ url('commerce_store.orders.invoice', {'id': order.order.id}) }}" class="btn">Send Invoice</a>
+                    <a href="{{ url('commerce_store.order.payments', {'id': order.order.id}) }}" class="btn" target="_blank">Payments</a>
+
+                    <a href="{{ url('commerce_store.orders') }}" class="btn">Back to Orders</a>
+                </div>
+            </div>
+        </div>
+
+        {% if success %}
+            <div class="alert alert-success" style="padding: 1rem; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin-bottom: 1rem;">
+                {{ success }}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% if order %}
+            <!-- Order Summary Grid -->
+            <div class="view-section">
+                <h3>Order Summary</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Order Status</span>
+                        <span class="info-value">
+                        <span class="badge badge-{{ order.order.status == 'completed' ? 'success' : (order.order.status == 'cancelled' ? 'danger' : 'warning') }}">
+                            {{ order.order.status|title }}
+                        </span>
+                    </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Payment Status</span>
+                        <span class="info-value">
+                        <span class="badge badge-{{ order.order.payment_status == 'completed' ? 'success' : (order.order.payment_status == 'failed' ? 'danger' : 'warning') }}">
+                            {{ order.order.payment_status|title }}
+                        </span>
+                    </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total Amount</span>
+                        <span class="info-value text-primary">{{ order.order.currency }} {{ order.order.total_amount|number_format(2) }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Customer ID</span>
+                        <span class="info-value">#{{ order.customer.id }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer & Billing Addresses -->
+            <div class="view-section">
+                <div class="split-grid">
+                    <!-- Customer Info -->
+                    <div>
+                        <h3>Customer Information</h3>
+                        <div class="info-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="info-item">
+                                <span class="info-label">Name</span>
+                                <span class="info-value">{{ order.customer.first_name }} {{ order.customer.last_name }}</span>
+                            </div>
+                            <div class="info-item" style="border-right: none;">
+                                <span class="info-label">Email</span>
+                                <span class="info-value"><a href="mailto:{{ order.customer.email }}">{{ order.customer.email }}</a></span>
+                            </div>
+                            <div class="info-item" style="border-bottom: none;">
+                                <span class="info-label">Phone</span>
+                                <span class="info-value">{{ order.customer.phone ?: 'Not provided' }}</span>
+                            </div>
+                            <div class="info-item" style="border-right: none; border-bottom: none;">
+                                <span class="info-label">Type</span>
+                                <span class="info-value">{{ order.customer.customer_type|title }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing Address -->
+                    <div>
+                        <h3>Billing Address</h3>
+                        <div style="padding: 15px;">
+                            {% if order.customer.billing_address_1 %}
+                                <div class="info-value">
+                                    {{ order.customer.billing_address_1 }}<br>
+                                    {% if order.customer.billing_address_2 %}{{ order.customer.billing_address_2 }}<br>{% endif %}
+                                    {{ order.customer.billing_city }}, {{ order.customer.billing_state }} {{ order.customer.billing_postcode }}<br>
+                                    {{ order.customer.billing_country }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No billing address provided</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items Table -->
+            <div class="view-section">
+                <h3>Order Items</h3>
+                <div class="drupal-table-wrapper">
+                    <table class="drupal-table">
+                        <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if order.items|length > 0 %}
+                            {% for item in order.items %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.item_name }}</strong>
+                                        {% if item.variation_id %}
+                                            <br><small class="text-muted">Variation ID: {{ item.variation_id }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.item_sku }}</td>
+                                    <td>{{ order.order.currency }} {{ item.unit_price|number_format(2) }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ order.order.currency }} {{ (item.unit_price * item.quantity)|number_format(2) }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ item.status == 'completed' ? 'success' : (item.status == 'cancelled' ? 'danger' : 'warning') }}">
+                                            {{ item.status|title }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No items found for this order.</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Totals & Adjustments -->
+            <div class="view-section">
+                <div class="split-grid">
+                    <!-- Totals -->
+                    <div>
+                        <h3>Order Totals</h3>
+                        <div class="info-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="info-item">
+                                <span class="info-label">Subtotal</span>
+                                <span class="info-value">{{ order.order.currency }} {{ order.order.subtotal|number_format(2) }}</span>
+                            </div>
+                            <div class="info-item" style="border-right: none;">
+                                <span class="info-label">Tax</span>
+                                <span class="info-value">{{ order.order.currency }} {{ order.order.tax_amount|number_format(2) }}</span>
+                            </div>
+                            <div class="info-item" style="border-bottom: none;">
+                                <span class="info-label">Shipping</span>
+                                <span class="info-value">{{ order.order.currency }} {{ order.order.shipping_amount|number_format(2) }}</span>
+                            </div>
+                            <div class="info-item" style="border-right: none; border-bottom: none;">
+                                <span class="info-label">Discount</span>
+                                <span class="info-value">-{{ order.order.currency }} {{ order.order.discount_amount|number_format(2) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Adjustments -->
+                    <div>
+                        <h3>Adjustments</h3>
+                        <div class="drupal-table-wrapper">
+                            <table class="drupal-table">
+                                <thead>
+                                <tr>
+                                    <th>Label</th>
+                                    <th>Type</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% if order.order.adjustments|length > 0 %}
+                                    {% for adjustment in order.order.adjustments %}
+                                        <tr>
+                                            <td><strong>{{ adjustment.label }}</strong></td>
+                                            <td>{{ adjustment.type|title }}</td>
+                                            <td class="text-right">{{ order.order.currency }} {{ adjustment.amount|number_format(2) }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">No adjustments recorded.</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

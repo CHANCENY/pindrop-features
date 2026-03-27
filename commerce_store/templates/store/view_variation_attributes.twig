@@ -1,0 +1,245 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Variation Attributes - {{ variation.name }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/view-variation-attributes.css">
+{% endblock %}
+
+{% block content %}
+    {# Scoped Drupal-like Variation Attributes Structure #}
+    <div class="drupal-variation-attributes">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Variation Attributes</h1>
+                    <p>{{ variation.name }} - {{ product.name }}</p>
+                </div>
+                <div class="page-actions">
+                    <a href="{{ url('commerce_store.products.variations.view', {id: product.id, variation_id: variation.id}) }}" class="btn">
+                        Back to Variation
+                    </a>
+                    <a href="{{ url('commerce_store.products.variations', {id: product.id}) }}" class="btn">
+                        All Variations
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success and Error Messages -->
+        {% if error %}
+            <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <div class="drupal-entity-view">
+            <div class="drupal-main-content">
+
+                <!-- Variation Info (Seamless Grid) -->
+                <div class="drupal-section">
+                    <h3 class="drupal-section-header">Variation Information</h3>
+                    <div class="details-grid">
+                        <div class="detail-group">
+                            <label class="detail-label">Variation Name</label>
+                            <div class="detail-value">{{ variation.name }}</div>
+                        </div>
+                        <div class="detail-group">
+                            <label class="detail-label">SKU</label>
+                            <div class="detail-value">{{ variation.sku }}</div>
+                        </div>
+                        <div class="detail-group">
+                            <label class="detail-label">Product</label>
+                            <div class="detail-value">{{ product.name }}</div>
+                        </div>
+                        <div class="detail-group">
+                            <label class="detail-label">Regular Price</label>
+                            <div class="detail-value price" style="color: #28a745;">${{ variation.regular_price }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Attributes -->
+                <div class="drupal-section">
+                    <h3 class="drupal-section-header">Current Attributes</h3>
+                    {% if attributes|length > 0 %}
+                        <div class="attributes-grid">
+                            {% for attribute in attributes %}
+                                <div class="attribute-card">
+                                    <div class="attribute-header">
+                                        <h4 class="attribute-name">{{ attribute.attribute_name|title }}</h4>
+                                        <span class="attribute-type">{{ attribute.attribute_type|default('text') }}</span>
+                                    </div>
+                                    <div class="attribute-value">
+                                        {% if attribute.attribute_type == 'color' %}
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <span style="width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ddd; background: {{ attribute.attribute_value }};"></span>
+                                                <span>{{ attribute.attribute_value }}</span>
+                                            </div>
+                                        {% elseif attribute.attribute_type == 'boolean' %}
+                                            <span class="status-badge {{ attribute.attribute_value == '1' ? 'status-enabled' : 'status-disabled' }}">
+                                            {{ attribute.attribute_value == '1' ? 'Yes' : 'No' }}
+                                        </span>
+                                        {% else %}
+                                            <div style="font-weight: 600;">{{ attribute.attribute_value }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div style="padding: 2rem; text-align: center; color: #777;">
+                            <p>No attributes defined for this variation yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Add New Attribute (Seamless Grid) -->
+                <div class="drupal-section">
+                    <h3 class="drupal-section-header">Add New Attribute</h3>
+                    <form method="POST" action="{{ url('commerce_store.products.variations.attributes.create', {id: product.id, variation_id: variation.id}) }}" class="attribute-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="attribute_name" class="form-label">Attribute Name *</label>
+                                <input type="text" id="attribute_name" name="attribute_name" class="form-control" required placeholder="e.g., Color">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="attribute_type" class="form-label">Attribute Type *</label>
+                                <select id="attribute_type" name="attribute_type" class="form-control" required>
+                                    <option value="text">Text</option>
+                                    <option value="number">Number</option>
+                                    <option value="boolean">Boolean</option>
+                                    <option value="select">Select</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="attribute_value" class="form-label">Attribute Value *</label>
+                                <input type="text" id="attribute_value" name="attribute_value" class="form-control" required placeholder="Enter value">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="attribute_order" class="form-label">Display Order</label>
+                                <input type="number" id="attribute_order" name="attribute_order" class="form-control" value="0">
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="padding: 15px;">
+                            <label class="form-label">Visibility & Options</label>
+                            <div class="checkbox-group">
+                                <div class="form-check">
+                                    <input type="checkbox" id="is_visible" name="is_visible" value="1" checked>
+                                    <label class="form-check-label" for="is_visible">Visible to customers</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="is_variation" name="is_variation" value="1" checked>
+                                    <label class="form-check-label" for="is_variation">Used for variation</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Attribute</button>
+                            <a href="{{ url('commerce_store.products.variations.attributes', {id: product.id, variation_id: variation.id}) }}" class="btn">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="drupal-sidebar">
+                <div class="drupal-section">
+                    <h3 class="drupal-section-header">Quick Actions</h3>
+                    <div style="padding: 15px;">
+                        <a href="{{ url('commerce_store.products.variations.edit', {id: product.id, variation_id: variation.id}) }}" class="btn btn-primary btn-block">Edit Variation</a>
+                        <a href="{{ url('commerce_store.products.variations.view', {id: product.id, variation_id: variation.id}) }}" class="btn btn-block">View Details</a>
+                    </div>
+                </div>
+
+                {% if attributes|length > 0 %}
+                    <div class="drupal-section">
+                        <h3 class="drupal-section-header">Summary</h3>
+                        <div style="padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-weight: 700; font-size: 0.85rem;">Total Attributes:</span>
+                                <span style="font-weight: 600;">{{ attributes|length }}</span>
+                            </div>
+                            <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 5px;">Types Used:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                <span class="type-badge">Text</span>
+                                <span class="type-badge">Color</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function updateAttributeTypeFields() {
+            const attributeType = document.getElementById('attribute_type').value;
+            const valueGroup = document.getElementById('attribute_value_group');
+            const valueInput = document.getElementById('attribute_value');
+            const valueLabel = valueGroup.querySelector('label');
+            const valuePlaceholder = valueInput;
+            const valueText = valueGroup.querySelector('.form-text');
+            
+            // Clear existing value
+            valueInput.value = '';
+            
+            switch(attributeType) {
+                case 'text':
+                    valueInput.type = 'text';
+                    valueLabel.textContent = 'Attribute Value *';
+                    valuePlaceholder.placeholder = 'Enter text value';
+                    valueText.textContent = 'The text value for this attribute';
+                    break;
+                    
+                case 'number':
+                    valueInput.type = 'number';
+                    valueLabel.textContent = 'Attribute Value *';
+                    valuePlaceholder.placeholder = 'Enter number';
+                    valueText.textContent = 'The numeric value for this attribute';
+                    break;
+                    
+                case 'boolean':
+                    // Replace with checkbox for boolean
+                    valueGroup.innerHTML = `
+                        <label class="form-label">Attribute Value *</label>
+                        <div class="form-check">
+                            <input type="checkbox" id="attribute_value" name="attribute_value" value="1">
+                            <label class="form-check-label" for="attribute_value">Enabled</label>
+                        </div>
+                        <div class="form-text">Check if this attribute is enabled/true</div>
+                    `;
+                    break;
+                    
+                case 'select':
+                    valueInput.type = 'text';
+                    valueLabel.textContent = 'Attribute Value *';
+                    valuePlaceholder.placeholder = 'option1,option2,option3';
+                    valueText.textContent = 'Enter comma-separated options for dropdown';
+                    break;
+                    
+                case 'multiselect':
+                    valueInput.type = 'text';
+                    valueLabel.textContent = 'Attribute Value *';
+                    valuePlaceholder.placeholder = 'option1,option2,option3';
+                    valueText.textContent = 'Enter comma-separated options for multi-select';
+                    break;
+                    
+                default:
+                    valueInput.type = 'text';
+                    valueLabel.textContent = 'Attribute Value *';
+                    valuePlaceholder.placeholder = 'Enter attribute value';
+                    valueText.textContent = 'The value for this attribute';
+            }
+        }
+    </script>
+{% endblock %}

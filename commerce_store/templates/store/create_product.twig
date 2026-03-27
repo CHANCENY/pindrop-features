@@ -1,0 +1,264 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Create Product{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/create-product.css">
+{% endblock %}
+
+{% block content %}
+    <!-- Success and Error Messages -->
+    {% if success %}
+        <div class="alert alert-success">
+            {{ success }}
+        </div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <!-- Scoped Drupal-like Form Structure -->
+    <form method="POST" action="{{ current_url }}" id="product-form" enctype="multipart/form-data" class="drupal-entity-form">
+
+        <!-- Main Content Area -->
+        <div class="drupal-main-content">
+
+            <!-- Basic Information -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Basic Information</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="sku" class="form-label">SKU *</label>
+                        <input type="text" class="form-control" id="sku" name="sku" value="{{ submitted_data.sku|default('') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="form-label">Product Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ submitted_data.name|default('') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="slug" class="form-label">Slug</label>
+                        <input type="text" class="form-control" id="slug" name="slug" value="{{ submitted_data.slug|default('') }}">
+                        <div class="form-text">Leave empty to auto-generate from name</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="form-label">Product Type</label>
+                        <select class="form-control" id="type" name="type">
+                            <option value="simple" {{ submitted_data.type == 'simple' or submitted_data.type is empty ? 'selected' : '' }}>Simple Product</option>
+                            <option value="variable" {{ submitted_data.type == 'variable' ? 'selected' : '' }}>Variable Product</option>
+                        </select>
+                    </div>
+
+                    <!-- Full width fields -->
+                    <div class="form-group full-width">
+                        <label for="short_description" class="form-label">Short Description</label>
+                        <textarea class="form-control" id="short_description" name="short_description" rows="2">{{ submitted_data.short_description|default('') }}</textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control editor" id="description" name="description" rows="4">{{ submitted_data.description|default('') }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Pricing</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="regular_price" class="form-label">Regular Price *</label>
+                        <input type="number" class="form-control" id="regular_price" name="regular_price" step="0.01" value="{{ submitted_data.regular_price|default('') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sale_price" class="form-label">Sale Price</label>
+                        <input type="number" class="form-control" id="sale_price" name="sale_price" step="0.01" value="{{ submitted_data.sale_price|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="sale_price_start_date" class="form-label">Sale Start Date</label>
+                        <input type="datetime-local" class="form-control" id="sale_price_start_date" name="sale_price_start_date" value="{{ submitted_data.sale_price_start_date|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="sale_price_end_date" class="form-label">Sale End Date</label>
+                        <input type="datetime-local" class="form-control" id="sale_price_end_date" name="sale_price_end_date" value="{{ submitted_data.sale_price_end_date|default('') }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Inventory</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="manage_stock" name="manage_stock" value="1" {{ submitted_data.manage_stock == 1 or submitted_data.manage_stock is empty ? 'checked' : '' }}>
+                            <label class="form-check-label" for="manage_stock">Manage Stock</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock_quantity" class="form-label">Stock Quantity</label>
+                        <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" value="{{ submitted_data.stock_quantity|default(0) }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock_status" class="form-label">Stock Status</label>
+                        <select class="form-control" id="stock_status" name="stock_status">
+                            <option value="instock" {{ submitted_data.stock_status == 'instock' or submitted_data.stock_status is empty ? 'selected' : '' }}>In Stock</option>
+                            <option value="outofstock" {{ submitted_data.stock_status == 'outofstock' ? 'selected' : '' }}>Out of Stock</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="backorders_allowed" name="backorders_allowed" value="1" {{ submitted_data.backorders_allowed == 1 ? 'checked' : '' }}>
+                            <label class="form-check-label" for="backorders_allowed">Allow Backorders</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sold_individually" name="sold_individually" value="1" {{ submitted_data.sold_individually == 1 ? 'checked' : '' }}>
+                            <label class="form-check-label" for="sold_individually">Sold Individually</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Shipping</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="weight" class="form-label">Weight (kg)</label>
+                        <input type="number" class="form-control" id="weight" name="weight" step="0.01" value="{{ submitted_data.weight|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="dimensions_length" class="form-label">Length (cm)</label>
+                        <input type="number" class="form-control" id="dimensions_length" name="dimensions_length" step="0.01" value="{{ submitted_data.dimensions_length|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="dimensions_width" class="form-label">Width (cm)</label>
+                        <input type="number" class="form-control" id="dimensions_width" name="dimensions_width" step="0.01" value="{{ submitted_data.dimensions_width|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="dimensions_height" class="form-label">Height (cm)</label>
+                        <input type="number" class="form-control" id="dimensions_height" name="dimensions_height" step="0.01" value="{{ submitted_data.dimensions_height|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="shipping_class" class="form-label">Shipping Class</label>
+                        <input type="text" class="form-control" id="shipping_class" name="shipping_class" value="{{ submitted_data.shipping_class|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="shipping_required" name="shipping_required" value="1" {{ submitted_data.shipping_required == 1 or submitted_data.shipping_required is empty ? 'checked' : '' }}>
+                            <label class="form-check-label" for="shipping_required">Shipping Required</label>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="purchase_note" class="form-label">Purchase Note</label>
+                        <textarea class="form-control" id="purchase_note" name="purchase_note" rows="2">{{ submitted_data.purchase_note|default('') }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Digital Products -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Digital Products</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="virtual" name="virtual" value="1" {{ submitted_data.virtual == 1 ? 'checked' : '' }}>
+                            <label class="form-check-label" for="virtual">Virtual Product</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="downloadable" name="downloadable" value="1" {{ submitted_data.downloadable == 1 ? 'checked' : '' }}>
+                            <label class="form-check-label" for="downloadable">Downloadable</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="download_limit" class="form-label">Download Limit</label>
+                        <input type="number" class="form-control" id="download_limit" name="download_limit" value="{{ submitted_data.download_limit|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="download_expiry" class="form-label">Download Expiry (days)</label>
+                        <input type="number" class="form-control" id="download_expiry" name="download_expiry" value="{{ submitted_data.download_expiry|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="external_url" class="form-label">External URL</label>
+                        <input type="url" class="form-control" id="external_url" name="external_url" value="{{ submitted_data.external_url|default('') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="button_text" class="form-label">Button Text</label>
+                        <input type="text" class="form-control" id="button_text" name="button_text" value="{{ submitted_data.button_text|default('') }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Product</button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="drupal-sidebar">
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Publishing Options</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="draft" {{ submitted_data.status == 'draft' or submitted_data.status is empty ? 'selected' : '' }}>Draft</option>
+                            <option value="publish" {{ submitted_data.status == 'publish' ? 'selected' : '' }}>Published</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="catalog_visibility" class="form-label">Catalog Visibility</label>
+                        <select class="form-control" id="catalog_visibility" name="catalog_visibility">
+                            <option value="visible" {{ submitted_data.catalog_visibility == 'visible' or submitted_data.catalog_visibility is empty ? 'selected' : '' }}>Visible</option>
+                            <option value="hidden" {{ submitted_data.catalog_visibility == 'hidden' ? 'selected' : '' }}>Hidden</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="featured" name="featured" value="1" {{ submitted_data.featured == 1 ? 'checked' : '' }}>
+                            <label class="form-check-label" for="featured">Featured Product</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="menu_order" class="form-label">Menu Order</label>
+                        <input type="number" class="form-control" id="menu_order" name="menu_order" value="{{ submitted_data.menu_order|default(0) }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Taxation</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="tax_status" class="form-label">Tax Status</label>
+                        <select class="form-control" id="tax_status" name="tax_status">
+                            <option value="taxable" {{ submitted_data.tax_status == 'taxable' or submitted_data.tax_status is empty ? 'selected' : '' }}>Taxable</option>
+                            <option value="none" {{ submitted_data.tax_status == 'none' ? 'selected' : '' }}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tax_class" class="form-label">Tax Class</label>
+                        <input type="text" class="form-control" id="tax_class" name="tax_class" value="{{ submitted_data.tax_class|default('') }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Reviews</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="reviews_allowed" name="reviews_allowed" value="1" {{ submitted_data.reviews_allowed == 1 or submitted_data.reviews_allowed is empty ? 'checked' : '' }}>
+                            <label class="form-check-label" for="reviews_allowed">Allow Reviews</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

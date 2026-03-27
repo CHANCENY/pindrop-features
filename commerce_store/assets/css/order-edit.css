@@ -1,0 +1,186 @@
+/* Scoped Drupal-like Order Edit Grid Layout */
+
+.drupal-order-edit-container {
+    --drupal-border-color: #d3d3d3;
+    --drupal-bg-header: #f1f1f1;
+    --drupal-bg-stripe: #f9f9f9;
+    --drupal-label-weight: 700;
+    --drupal-primary-color: #007bff;
+    --drupal-text-color: #333;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--drupal-text-color);
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.drupal-order-edit-container *,
+.drupal-order-edit-container *::before,
+.drupal-order-edit-container *::after {
+    box-sizing: inherit;
+}
+
+/* Page Header */
+.drupal-order-edit-container .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    padding-bottom: 1rem;
+}
+
+.drupal-order-edit-container .page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drupal-order-edit-container .page-title h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* FORM SECTIONS */
+.drupal-order-edit-container .order-edit-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.drupal-order-edit-container h3 {
+    background: var(--drupal-bg-header);
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    margin: 0;
+}
+
+/* SEAMLESS FORM GRID ENGINE */
+.drupal-order-edit-container .form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+}
+
+.drupal-order-edit-container .form-group {
+    margin-bottom: 0;
+    padding: 15px;
+    border-right: 1px solid var(--drupal-border-color);
+    border-bottom: 1px solid var(--drupal-border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Grid logic for 4-columns */
+.drupal-order-edit-container .form-grid > .form-group:nth-child(4n) {
+    border-right: none;
+}
+
+/* Full width fields */
+.drupal-order-edit-container .form-group.full-width {
+    grid-column: 1 / -1;
+    border-right: none;
+}
+
+/* Half width fields */
+.drupal-order-edit-container .form-group.half-width {
+    grid-column: span 2;
+}
+
+/* Labels and Inputs */
+.drupal-order-edit-container .form-label {
+    display: block;
+    font-weight: var(--drupal-label-weight);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.drupal-order-edit-container .form-control {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    font-size: 0.9rem;
+    background-color: #fff;
+}
+
+/* ORDER ITEMS & ADJUSTMENTS */
+.drupal-order-edit-container .order-items-section,
+.drupal-order-edit-container .order-adjustments-section {
+    padding: 0;
+}
+
+.drupal-order-edit-container .adjustment-actions {
+    grid-column: span 1;
+    padding: 15px;
+    border-bottom: 1px solid var(--drupal-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drupal-order-edit-container .add-more-item {
+    padding: 15px;
+    background: #fcfcfc;
+    border-bottom: 1px solid var(--drupal-border-color);
+}
+
+/* FORM ACTIONS */
+.drupal-order-edit-container .form-actions {
+    padding: 20px 15px;
+    background: #f8f9fa;
+    display: flex;
+    gap: 12px;
+}
+
+.drupal-order-edit-container .btn {
+    padding: 8px 16px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #333;
+}
+
+.drupal-order-edit-container .btn-primary {
+    background-color: var(--drupal-primary-color);
+    color: white;
+    border-color: var(--drupal-primary-color);
+}
+
+.drupal-order-edit-container .btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.drupal-order-edit-container .btn-outline {
+    border-color: var(--drupal-primary-color);
+    color: var(--drupal-primary-color);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .drupal-order-edit-container .form-grid { grid-template-columns: repeat(2, 1fr); }
+    .drupal-order-edit-container .form-grid > .form-group:nth-child(2n) { border-right: none; }
+    .drupal-order-edit-container .form-grid > .form-group:nth-child(2n+1) { border-right: 1px solid var(--drupal-border-color); }
+}
+
+@media (max-width: 768px) {
+    .drupal-order-edit-container .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .drupal-order-edit-container .form-group,
+    .drupal-order-edit-container .adjustment-actions {
+        border-right: none;
+    }
+}

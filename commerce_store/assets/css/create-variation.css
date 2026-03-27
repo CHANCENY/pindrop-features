@@ -1,0 +1,211 @@
+/* Scoped Drupal-like Create Variation Grid Layout */
+
+.drupal-create-variation {
+    --drupal-border-color: #d3d3d3;
+    --drupal-bg-header: #f1f1f1;
+    --drupal-bg-sidebar: #ffffff;
+    --drupal-label-weight: 700;
+    --drupal-primary-color: #007bff;
+    --drupal-text-color: #333;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--drupal-text-color);
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.drupal-create-variation *,
+.drupal-create-variation *::before,
+.drupal-create-variation *::after {
+    box-sizing: inherit;
+}
+
+/* Page Header */
+.drupal-create-variation .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    padding-bottom: 1rem;
+}
+
+.drupal-create-variation .page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drupal-create-variation .page-title h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.drupal-create-variation .page-title p {
+    margin: 0.25rem 0 0;
+    color: #666;
+}
+
+/* SEAMLESS INFO GRID */
+.drupal-create-variation .product-info-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+}
+
+.drupal-create-variation .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+}
+
+.drupal-create-variation .info-item {
+    padding: 12px 15px;
+    border-right: 1px solid var(--drupal-border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.drupal-create-variation .info-item:last-child {
+    border-right: none;
+}
+
+.drupal-create-variation .info-item label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.drupal-create-variation .info-item span {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* SEAMLESS FORM GRID ENGINE */
+.drupal-create-variation .variations-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+}
+
+.drupal-create-variation .form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+}
+
+.drupal-create-variation .form-group {
+    margin-bottom: 0;
+    padding: 15px;
+    border-right: 1px solid var(--drupal-border-color);
+    border-bottom: 1px solid var(--drupal-border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Remove right border on the last item of each row (4-col) */
+.drupal-create-variation .form-grid > .form-group:nth-child(4n) {
+    border-right: none;
+}
+
+/* Full width fields */
+.drupal-create-variation .form-group.full-width {
+    grid-column: 1 / -1;
+    border-right: none;
+}
+
+/* 2-column fields */
+.drupal-create-variation .form-group.half-width {
+    grid-column: span 2;
+}
+
+/* Labels and Inputs */
+.drupal-create-variation .form-label {
+    display: block;
+    font-weight: var(--drupal-label-weight);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.drupal-create-variation .form-input,
+.drupal-create-variation .form-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    font-size: 0.9rem;
+    background-color: #fff;
+}
+
+.drupal-create-variation textarea.form-input {
+    resize: vertical;
+}
+
+/* Helper text */
+.drupal-create-variation .form-text {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+/* Form Actions */
+.drupal-create-variation .form-actions {
+    grid-column: 1 / -1;
+    padding: 20px 15px;
+    background: #f8f9fa;
+    display: flex;
+    gap: 12px;
+}
+
+.drupal-create-variation .btn {
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drupal-create-variation .btn-primary {
+    background-color: var(--drupal-primary-color);
+    color: white;
+    border-color: var(--drupal-primary-color);
+}
+
+.drupal-create-variation .btn-secondary {
+    background-color: #fff;
+    color: #333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .drupal-create-variation .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .drupal-create-variation .form-grid > .form-group:nth-child(2n) {
+        border-right: none;
+    }
+    .drupal-create-variation .form-grid > .form-group:nth-child(2n+1) {
+        border-right: 1px solid var(--drupal-border-color);
+    }
+}
+
+@media (max-width: 768px) {
+    .drupal-create-variation .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .drupal-create-variation .form-grid > .form-group {
+        border-right: none;
+    }
+    .drupal-create-variation .info-grid {
+        grid-template-columns: 1fr;
+    }
+    .drupal-create-variation .info-item {
+        border-right: none;
+        border-bottom: 1px solid var(--drupal-border-color);
+    }
+}

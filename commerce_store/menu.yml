@@ -1,0 +1,8 @@
+groups:
+  store:
+    store_dashboard:
+      title: Store
+      route: commerce_store.admin_commerce_store_dashboard
+      icon: fa fa-store
+      weight: 1
+      roles: [admin, super_admin]

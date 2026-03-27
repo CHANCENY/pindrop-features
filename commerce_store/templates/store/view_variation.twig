@@ -1,0 +1,330 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}View Variation - {{ variation.name }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/view-product.css">
+{% endblock %}
+
+{% block content %}
+    <!-- Success and Error Messages -->
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="page-title">
+                <h1>View Variation</h1>
+                <p>{{ variation.name }}</p>
+            </div>
+            <div class="page-actions">
+                <a href="{{ url('commerce_store.products.variations.edit', {id: variation.id}) }}" class="btn btn-primary">
+                    <i class="icon-edit"></i> Edit Variation
+                </a>
+                <a href="{{ url('commerce_store.products.variations', {id: product.id}) }}" class="btn btn-secondary">
+                    <i class="icon-arrow-left"></i> Back to Variations
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Variation Details -->
+    <div class="drupal-entity-view">
+        <!-- Main Content Area -->
+        <div class="drupal-main-content">
+
+            <!-- Basic Information -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Basic Information</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">SKU</label>
+                        <div class="detail-value">{{ variation.sku }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Variation Name</label>
+                        <div class="detail-value">{{ variation.name }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Slug</label>
+                        <div class="detail-value">{{ variation.slug ?: 'Auto-generated' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Product</label>
+                        <div class="detail-value">{{ product.name }} ({{ product.sku }})</div>
+                    </div>
+                    <div class="detail-group full-width">
+                        <label class="detail-label">Description</label>
+                        <div class="detail-value">{{ variation.description|raw ?: 'No description' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Pricing</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Regular Price</label>
+                        <div class="detail-value price">${{ variation.regular_price }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Sale Price</label>
+                        <div class="detail-value">
+                            {% if variation.sale_price %}
+                                <span class="sale-price">${{ variation.sale_price }}</span>
+                                <span class="original-price">${{ variation.regular_price }}</span>
+                            {% else %}
+                                <span class="no-sale">No sale price set</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Sale Start Date</label>
+                        <div class="detail-value">{{ variation.sale_price_start_date ?: 'Not set' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Sale End Date</label>
+                        <div class="detail-value">{{ variation.sale_price_end_date ?: 'Not set' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Inventory</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Manage Stock</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.manage_stock ? 'status-enabled' : 'status-disabled' }}">
+                                {{ variation.manage_stock ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Stock Quantity</label>
+                        <div class="detail-value">
+                            {% if variation.manage_stock %}
+                                {{ variation.stock_quantity }}
+                            {% else %}
+                                <span class="unlimited">Unlimited</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Stock Status</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.stock_status == 'instock' ? 'status-instock' : 'status-outofstock' }}">
+                                {{ variation.stock_status == 'instock' ? 'In Stock' : 'Out of Stock' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Allow Backorders</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.backorders_allowed ? 'status-enabled' : 'status-disabled' }}">
+                                {{ variation.backorders_allowed ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Sold Individually</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.sold_individually ? 'status-enabled' : 'status-disabled' }}">
+                                {{ variation.sold_individually ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Shipping</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Weight</label>
+                        <div class="detail-value">{{ variation.weight ?: 'Not set' }} kg</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Dimensions</label>
+                        <div class="detail-value">
+                            {% if variation.dimensions_length or variation.dimensions_width or variation.dimensions_height %}
+                                {{ variation.dimensions_length ?: '0' }} × {{ variation.dimensions_width ?: '0' }} × {{ variation.dimensions_height ?: '0' }} cm
+                            {% else %}
+                                Not set
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Shipping Class</label>
+                        <div class="detail-value">{{ variation.shipping_class ?: 'Not set' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Shipping Required</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.shipping_required ? 'status-enabled' : 'status-disabled' }}">
+                                {{ variation.shipping_required ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group full-width">
+                        <label class="detail-label">Purchase Note</label>
+                        <div class="detail-value">{{ variation.purchase_note ?: 'No purchase note' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Digital Products -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Digital Products</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Virtual Product</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.virtual ? 'status-enabled' : 'status-disabled' }}">
+                                {{ variation.virtual ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Downloadable</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.downloadable ? 'status-enabled' : 'status-disabled' }}">
+                                {{ variation.downloadable ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Download Limit</label>
+                        <div class="detail-value">{{ variation.download_limit ?: 'Unlimited' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Download Expiry</label>
+                        <div class="detail-value">{{ variation.download_expiry ? variation.download_expiry ~ ' days' : 'Never' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variation Attributes -->
+            {% if attributes|length > 0 %}
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Variation Attributes</h3>
+                <div class="details-grid">
+                    {% for attribute in attributes %}
+                    <div class="detail-group">
+                        <label class="detail-label">{{ attribute.attribute_name|title }}</label>
+                        <div class="detail-value">{{ attribute.attribute_value }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Variation Images -->
+            {% if images|length > 0 %}
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Variation Images</h3>
+                <div class="images-grid">
+                    {% for image in images %}
+                    <div class="image-item {% if image.is_featured %}featured{% endif %}">
+                        <img src="{{ image.image_url }}" alt="{{ image.image_alt }}" title="{{ image.image_title }}">
+                        {% if image.is_featured %}
+                        <span class="featured-badge">Featured</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="drupal-sidebar">
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Publishing Options</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Status</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.status == 'publish' ? 'status-published' : 'status-draft' }}">
+                                {{ variation.status == 'publish' ? 'Published' : 'Draft' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Catalog Visibility</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.catalog_visibility == 'visible' ? 'status-visible' : 'status-hidden' }}">
+                                {{ variation.catalog_visibility == 'visible' ? 'Visible' : 'Hidden' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Featured Variation</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.featured ? 'status-featured' : 'status-not-featured' }}">
+                                {{ variation.featured ? 'Featured' : 'Not Featured' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Menu Order</label>
+                        <div class="detail-value">{{ variation.menu_order ?: '0' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Taxation</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Tax Status</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ variation.tax_status == 'taxable' ? 'status-taxable' : 'status-non-taxable' }}">
+                                {{ variation.tax_status == 'taxable' ? 'Taxable' : 'None' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Tax Class</label>
+                        <div class="detail-value">{{ variation.tax_class ?: 'Not set' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Variation Information</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Variation ID</label>
+                        <div class="detail-value">{{ variation.id }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">UUID</label>
+                        <div class="detail-value">{{ variation.uuid }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Created</label>
+                        <div class="detail-value">{{ variation.created_at|date('M j, Y, g:i a') }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Updated</label>
+                        <div class="detail-value">{{ variation.updated_at|date('M j, Y, g:i a') }}</div>
+                    </div>
+                    {% if variation.published_at %}
+                    <div class="detail-group">
+                        <label class="detail-label">Published</label>
+                        <div class="detail-value">{{ variation.published_at|date('M j, Y, g:i a') }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

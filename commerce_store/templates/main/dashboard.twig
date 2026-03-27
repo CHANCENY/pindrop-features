@@ -1,0 +1,136 @@
+{% extends "templates/base.twig" %}
+
+
+{% block title %}Commerce{% endblock %}
+
+{% block content %}
+<div class="commerce-dashboard">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Commerce Dashboard</h1>
+        <p class="dashboard-subtitle">Manage your store and track performance</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon sales">💰</div>
+            <div class="stat-value">$12,450</div>
+            <div class="stat-label">Total Sales</div>
+            <div class="stat-change positive">
+                <span>↑</span> 12.5% from last month
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon orders">📋</div>
+            <div class="stat-value">248</div>
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-change positive">
+                <span>↑</span> 8.3% from last month
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon products">📦</div>
+            <div class="stat-value">156</div>
+            <div class="stat-label">Products</div>
+            <div class="stat-change positive">
+                <span>↑</span> 4 new this week
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon customers">👥</div>
+            <div class="stat-value">1,234</div>
+            <div class="stat-label">Customers</div>
+            <div class="stat-change positive">
+                <span>↑</span> 18.7% from last month
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="actions-grid">
+            <a href="{{ url('commerce_store.product.create') }}" class="action-btn">
+                <div class="action-icon icon-plus"></div>
+                <div class="action-title">Add Product</div>
+                <div class="action-description">Create new product listing</div>
+            </a>
+            
+            <a href="{{ url('commerce_store.orders') }}" class="action-btn">
+                <div class="action-icon icon-order"></div>
+                <div class="action-title">View Orders</div>
+                <div class="action-description">Manage customer orders</div>
+            </a>
+            
+            <a href="{{ url('commerce_store.products') }}" class="action-btn">
+                <div class="action-icon icon-product"></div>
+                <div class="action-title">Products</div>
+                <div class="action-description">Manage inventory</div>
+            </a>
+            
+            <a href="#" class="action-btn">
+                <div class="action-icon icon-customer"></div>
+                <div class="action-title">Customers</div>
+                <div class="action-description">View customer list</div>
+            </a>
+            
+            <a href="#" class="action-btn">
+                <div class="action-icon icon-analytics"></div>
+                <div class="action-title">Analytics</div>
+                <div class="action-description">View detailed reports</div>
+            </a>
+            
+            <a href="{{ url('commerce_store.admin_commerce_store_setting') }}" class="action-btn">
+                <div class="action-icon icon-settings"></div>
+                <div class="action-title">Store Settings</div>
+                <div class="action-description">Configure store options</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+        <h2 class="section-title">Recent Activity</h2>
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-icon" style="background: #dcfce7; color: #16a34a;">🛒</div>
+                <div class="activity-content">
+                    <div class="activity-title">New Order #1234</div>
+                    <div class="activity-time">2 minutes ago</div>
+                </div>
+                <div class="activity-amount">$89.99</div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon" style="background: #fef3c7; color: #d97706;">📦</div>
+                <div class="activity-content">
+                    <div class="activity-title">Product "Wireless Headphones" updated</div>
+                    <div class="activity-time">15 minutes ago</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon" style="background: #dbeafe; color: #2563eb;">👤</div>
+                <div class="activity-content">
+                    <div class="activity-title">New customer registered</div>
+                    <div class="activity-time">1 hour ago</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon" style="background: #f3e8ff; color: #9333ea;">📊</div>
+                <div class="activity-content">
+                    <div class="activity-title">Monthly report generated</div>
+                    <div class="activity-time">3 hours ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="/modules/commerce_store/assets/css/dashboard.css">
+{% endblock %}

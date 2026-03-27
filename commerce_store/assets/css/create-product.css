@@ -1,0 +1,179 @@
+/* Scoped Drupal-like Entity Form Grid Layout */
+
+/* All styles are prefixed with .drupal-entity-form to ensure no global leakage */
+
+.drupal-entity-form {
+  --drupal-border-color: #d3d3d3;
+  --drupal-bg-header: #f1f1f1;
+  --drupal-bg-sidebar: #ffffff;
+  --drupal-label-weight: 600;
+  --drupal-primary-color: #007bff;
+  --drupal-text-color: #333;
+
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  align-items: start;
+  max-width: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--drupal-text-color);
+  box-sizing: border-box;
+}
+
+.drupal-entity-form *,
+.drupal-entity-form *::before,
+.drupal-entity-form *::after {
+  box-sizing: inherit;
+}
+
+@media (max-width: 992px) {
+  .drupal-entity-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Main Content Area */
+.drupal-entity-form .drupal-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Sidebar Area */
+.drupal-entity-form .drupal-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Drupal Section Styling */
+.drupal-entity-form .drupal-section {
+  border: 1px solid var(--drupal-border-color);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.drupal-entity-form .drupal-section-header {
+  background: var(--drupal-bg-header);
+  padding: 10px 15px;
+  font-weight: 700;
+  font-size: 1rem;
+  border-bottom: 1px solid var(--drupal-border-color);
+  margin: 0;
+}
+
+/* SEAMLESS GRID ENGINE */
+.drupal-entity-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+}
+
+/* Grid items borders */
+.drupal-entity-form .form-grid > .form-group {
+  margin-bottom: 0;
+  padding: 12px 15px;
+  border-right: 1px solid var(--drupal-border-color);
+  border-bottom: 1px solid var(--drupal-border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Remove right border on the last item of each row (4-col) */
+.drupal-entity-form .form-grid > .form-group:nth-child(4n) {
+  border-right: none;
+}
+
+/* Full width fields */
+.drupal-entity-form .form-grid > .form-group.full-width {
+  grid-column: 1 / -1;
+  border-right: none;
+}
+
+/* Remove bottom border on specific rows if needed,
+   but usually Drupal keeps them for the grid look */
+
+/* Labels and Inputs */
+.drupal-entity-form .form-label {
+  display: block;
+  font-weight: var(--drupal-label-weight);
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.drupal-entity-form .form-control {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-size: 0.9rem;
+  background-color: #fff;
+}
+
+.drupal-entity-form textarea.form-control {
+  resize: vertical;
+}
+
+.drupal-entity-form .form-control:focus {
+  border-color: var(--drupal-primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+}
+
+/* Checkbox styling */
+.drupal-entity-form .form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  min-height: 38px; /* Match input height roughly */
+}
+
+.drupal-entity-form .form-check-input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.drupal-entity-form .form-check-label {
+  font-weight: var(--drupal-label-weight);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Helper text */
+.drupal-entity-form .form-text {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 5px;
+}
+
+/* Sidebar overrides */
+.drupal-entity-form .drupal-sidebar .form-grid {
+  grid-template-columns: 1fr;
+}
+
+.drupal-entity-form .drupal-sidebar .form-group {
+  border-right: none;
+}
+
+/* Buttons */
+.drupal-entity-form .form-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 10px;
+}
+
+.drupal-entity-form .btn {
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+}
+
+.drupal-entity-form .btn-primary {
+  background-color: var(--drupal-primary-color);
+  color: white;
+}

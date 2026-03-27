@@ -1,0 +1,155 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/checkout.css">
+    <script src="/modules/commerce_store/assets/js/checkout.js"></script>
+
+{% endblock %}
+
+{% block content %}
+    <div class="drupal-checkout-container" id="checkoutWrapperElement">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Checkout</h1>
+                    <p>Complete your order securely</p>
+                </div>
+                <div class="page-actions">
+                    <a href="{{ url('commerce_store.orders') }}" class="btn">My Orders</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Progress Grid -->
+        <div class="progress-section">
+            <div class="checkout-progress">
+                {% for checkoutStep in steps %}
+                    {% set currentStepIndex = loop.index0 %}
+                    {% set stepCompleted = (checkoutStep.id == step) or (checkoutStep.completed ?? false) %}
+
+                    <div class="progress-step {{ stepCompleted ? 'completed' : '' }} {{ checkoutStep.id == step ? 'active' : '' }}">
+                        <div class="step-number">{{ currentStepIndex + 1 }}</div>
+                        <div class="step-info">
+                            <div class="step-title">{{ checkoutStep.title }}</div>
+                            <div class="step-description">{{ checkoutStep.description }}</div>
+                        </div>
+                        {% if stepCompleted and checkoutStep.id != step %}
+                            <div class="step-check" style="margin-left: auto; color: #2e7d32;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Main Content & Summary Grid -->
+        <div class="main-grid">
+
+            <!-- Left Column: Checkout Form -->
+            <div class="form-column">
+                <div class="view-section">
+                    <h3>
+                        {% for checkoutStep in steps %}
+                            {% if checkoutStep.id == step %}
+                                {{ checkoutStep.title }}
+                            {% endif %}
+                        {% endfor %}
+                    </h3>
+
+                    {% set messages = order_draft.getMessages() %}
+                    {% set messagesuccess = messages[1] %}
+                    {% set messagesErrors = messages[2] %}
+
+                    {% for messageS in messagesuccess %}
+                        <div class="alert alert-success" style="padding: 1rem; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin: 1rem;">
+                            {{ messageS }}
+                        </div>
+                    {% endfor %}
+
+                    {% for messageE in messagesErrors %}
+                        <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin: 1rem;">
+                            {{ messageE }}
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-content">
+                        {% if fieldsHtml %}
+                            <form method="POST" action="{{ url('commerce_store.order.checkout', {'step': step, 'id': id}) }}" id="checkout-form">
+                                <!-- Dynamic Form Fields -->
+                                <div class="dynamic-fields">
+                                    {{ fieldsHtml|raw }}
+                                </div>
+
+                                <!-- Navigation Buttons -->
+                                <div id="navigation" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 25px;">
+
+                                </div>
+                            </form>
+                        {% else %}
+                            <div style="text-align: center; padding: 60px;">
+                                <i class="fas fa-exclamation-triangle fa-3x" style="color: #ffc107; margin-bottom: 15px;"></i>
+                                <h5>Step Not Available</h5>
+                                <p style="color: #666; margin-bottom: 25px;">This checkout step is not available at the moment.</p>
+                                <a href="{{ url('commerce_store.orders') }}" class="btn btn-primary">
+                                    Back to My Orders
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary Sidebar -->
+            <div class="sidebar-column" id="summary-section">
+                <div class="summary-box">
+                    <h3>Order Summary</h3>
+                    <div class="summary-content">
+                        <div id="order-summary-content" style="margin-bottom: 20px; display: none;">
+                            <!-- Populated by JS -->
+                            <div style="text-align: center; padding: 20px; color: #999;">
+                                <i class="fas fa-spinner fa-spin" style="margin-bottom: 10px;"></i>
+                                <p>Loading summary...</p>
+                            </div>
+                        </div>
+                        <div id="order-summary" style="display: none;">
+                            <div class="total-row">
+                                <span>Subtotal</span>
+                                <span id="order-subtotal">$0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Shipping</span>
+                                <span id="order-shipping">$0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Tax</span>
+                                <span id="order-tax">$0.00</span>
+                            </div>
+
+                            <div class="total-row grand-total">
+                                <span>Total</span>
+                                <span id="order-total" style="color: var(--drupal-primary-color);">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+        window.checkoutApi = new Checkout(document.getElementById('checkoutWrapperElement'), {{ order.id }}, {{ cartOptions|json_encode|raw }});
+
+    </script>
+
+{% endblock %}

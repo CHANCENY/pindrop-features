@@ -1,0 +1,20 @@
+checkout-review:
+  label: "Cart Review"
+  description: "Reviewing order items added in cart and editing the quantity"
+  status: open
+  weight: 0
+billing:
+  label: "Billing Information"
+  description: "Collecting billing information for order"
+  status: open
+  weight: 1
+shipping:
+  label: "Shipping Information"
+  description: "Collecting shipping information for order"
+  status: open
+  weight: 2
+payment:
+  label: "Make Payment"
+  description: "Making payment for order"
+  status: open
+  weight: 3

@@ -1,0 +1,203 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Create Order - {{ store.store_name }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/order-create.css">
+{% endblock %}
+
+{% block content %}
+    {# Scoped Drupal-like Order Create Structure #}
+    <div class="drupal-order-create-container">
+
+        <!-- Success and Error Messages -->
+        {% if success %}
+            <div class="alert alert-success" style="padding: 1rem; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin-bottom: 1rem;">
+                {{ success }}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Create Order</h1>
+                    <p>Create a new order manually</p>
+                </div>
+                <div class="page-actions">
+                    <a href="{{ url('commerce_store.orders') }}" class="btn">
+                        Back to Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Create Form (Seamless Grid) -->
+        <div class="order-create-section">
+            <h3>General Information</h3>
+            <form method="POST" action="{{ current_url }}" class="order-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="customer_id" class="form-label">Customer *</label>
+                        <input type="text" class="form-control" id="customer_id" name="customer_id" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="order_number" class="form-label">Order Number</label>
+                        <input type="text" class="form-control" id="order_number" name="order_number" value="{{ order_data.order_number ?? '' }}" placeholder="Auto-generated">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status" class="form-label">Order Status</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="pending" {% if order_data.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="processing" {% if order_data.status == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="completed" {% if order_data.status == 'completed' %}selected{% endif %}>Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payment_status" class="form-label">Payment Status</label>
+                        <select class="form-control" id="payment_status" name="payment_status">
+                            <option value="pending" {% if order_data.payment_status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="completed" {% if order_data.payment_status == 'completed' %}selected{% endif %}>Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3>Financial Details</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="subtotal" class="form-label">Subtotal</label>
+                        <input type="number" step="0.01" class="form-control" id="subtotal" name="subtotal" value="{{ order_data.subtotal ?? '' }}" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tax_amount" class="form-label">Tax Amount</label>
+                        <input type="number" step="0.01" class="form-control" id="tax_amount" name="tax_amount" value="{{ order_data.tax_amount ?? '' }}" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shipping_amount" class="form-label">Shipping</label>
+                        <input type="number" step="0.01" class="form-control" id="shipping_amount" name="shipping_amount" value="{{ order_data.shipping_amount ?? '' }}" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="total_amount" class="form-label">Total Amount *</label>
+                        <input type="number" step="0.01" class="form-control" id="total_amount" name="total_amount" value="{{ order_data.total_amount ?? '' }}" placeholder="0.00" required>
+                    </div>
+                </div>
+
+                <h3>Notes & Comments</h3>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="notes" class="form-label">Order Notes (Customer Visible)</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2">{{ order_data.notes ?? '' }}</textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="admin_notes" class="form-label">Admin Notes (Internal)</label>
+                        <textarea class="form-control" id="admin_notes" name="admin_notes" rows="2">{{ order_data.admin_notes ?? '' }}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Order</button>
+                    <a href="{{ url('commerce_store.orders') }}" class="btn">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Quick Actions (Seamless Grid) -->
+        <div class="quick-actions-section">
+            <h3>Post-Creation Actions</h3>
+            <div class="quick-actions-grid">
+                <div class="quick-action-card">
+                    <h4>Add Order Items</h4>
+                    <p>Add specific products and variations to this order once created.</p>
+                    <button class="btn btn-outline" disabled>Add Items</button>
+                </div>
+
+                <div class="quick-action-card">
+                    <h4>Process Payment</h4>
+                    <p>Record or trigger payment processing for this new order.</p>
+                    <button class="btn btn-outline" disabled>Add Payment</button>
+                </div>
+
+                <div class="quick-action-card">
+                    <h4>Send Invoice</h4>
+                    <p>Email a professional invoice to the customer.</p>
+                    <button class="btn btn-outline" disabled>Send Invoice</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Initialize customer autocomplete
+        document.addEventListener('DOMContentLoaded', function() {
+            const customerAutocomplete = new Autocomplete({
+                fieldId: 'customer_id',
+                source: 'autocomplete.users',
+                placeholder: 'Search customers by name or email...',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['first_name', 'last_name', 'email'],
+                noResultsText: 'No customers found',
+                loadingText: 'Searching...',
+                name: 'customer_id'
+            });
+
+            // Set initial value if editing
+            {% if order_data.customer_id %}
+                customerAutocomplete.setValue('{{ order_data.customer_id }}');
+            {% endif %}
+
+            const orderNumberAutocomplete = new Autocomplete({
+                fieldId: 'order_number',
+                source: 'commerce.order_number_generate',
+                placeholder: 'Generate order number...',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['order_number'],
+                noResultsText: 'No orders found',
+                loadingText: 'Generating...',
+                name: 'order_number'
+            });
+        });
+
+        // Auto-generate order number if empty
+        document.getElementById('order_number').addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                const date = new Date();
+                const timestamp = date.getTime().toString(36).toUpperCase();
+                this.value = 'ORD-' + timestamp;
+            }
+        });
+
+        // Calculate total when subtotal, tax, or shipping changes
+        function calculateTotal() {
+            const subtotal = parseFloat(document.getElementById('subtotal').value) || 0;
+            const tax = parseFloat(document.getElementById('tax_amount').value) || 0;
+            const shipping = parseFloat(document.getElementById('shipping_amount').value) || 0;
+            const discount = parseFloat(document.getElementById('discount_amount').value) || 0;
+
+            const total = subtotal + tax + shipping - discount;
+            document.getElementById('total_amount').value = total.toFixed(2);
+        }
+
+    </script>
+
+{% endblock %}

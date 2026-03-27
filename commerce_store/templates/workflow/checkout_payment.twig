@@ -1,0 +1,412 @@
+<!-- Checkout Payment Step -->
+<div class="checkout-payment-section">
+    <div class="section-header">
+        <h4>Payment Method</h4>
+        <p>Select your preferred payment method and complete the payment process.</p>
+    </div>
+
+    <!-- Payment Options Selection -->
+    <div class="payment-options-section">
+        <h5>Available Payment Methods</h5>
+        <div class="payment-options-grid">
+            {% for gateway in payment_gateways %}
+            <div class="payment-option-card {{ gateway.gatewayId == selected_gateway ? 'selected' : '' }}">
+                <div class="payment-option-header">
+                    <div class="gateway-icon">
+                        {% if gateway.gatewaySettings.settings.icon %}
+                            <i class="fas {{ gateway.gatewaySettings.settings.icon }}"></i>
+                        {% endif %}
+                    </div>
+                    <div class="gateway-info">
+                        <h6>{{ gateway.gatewayName }}</h6>
+                        <p>{{ gateway.gatewayDescription }}</p>
+                    </div>
+                    <div class="gateway-selector">
+                        <input type="radio" 
+                               name="payment_gateway" 
+                               value="{{ gateway.gatewayId }}"
+                               id="gateway_{{ gateway.gatewayId }}"
+                               {{ gateway.id == selected_gateway ? 'checked' : '' }}
+                               onchange="selectPaymentGateway('{{ gateway.gatewayId }}')">
+                        <label for="gateway_{{ gateway.id }}"></label>
+                    </div>
+                </div>
+                
+                {% if gateway.fees %}
+                <div class="gateway-fees">
+                    <small class="text-muted">
+                        {% if gateway.gatewaySettings.settings.fees.type == 'percentage' %}
+                            Processing fee: {{ gateway.gatewaySettings.settings.fees.amount }}%
+                        {% elseif gateway.gatewaySettings.settings.fees.type == 'fixed' %}
+                            Processing fee: ${{ gateway.gatewaySettings.settings.fees.amount }}
+                        {% else %}
+                            No additional fees
+                        {% endif %}
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Payment Form Area -->
+    <div class="payment-form-section">
+        <div id="payment-form-container">
+            {% if selected_gateway %}
+                <!-- Dynamic payment form will be loaded here -->
+                <div class="form-loading" id="payment-form-loading">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-spin fa-2x"></i>
+                        <p class="mt-2">Loading payment form...</p>
+                    </div>
+                </div>
+                <div class="payment-form-content" id="payment-form-content" style="display: none;">
+                </div>
+                <input type="hidden" name="gateway_id">
+            {% else %}
+                <div class="no-gateway-selected">
+                    <div class="text-center py-5">
+                        <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
+                        <h5>Select a Payment Method</h5>
+                        <p class="text-muted">Please select a payment method from the options above to continue.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.checkout-payment-section {
+    margin-bottom: 30px;
+}
+
+.section-header {
+    margin-bottom: 25px;
+}
+
+.section-header h4 {
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.section-header p {
+    color: #666;
+    margin: 0;
+}
+
+.payment-options-section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.payment-options-section h5 {
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+.payment-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.payment-option-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.payment-option-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.payment-option-card.selected {
+    border-color: #007bff;
+    background: #f8f9ff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.payment-option-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.gateway-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.gateway-icon img {
+    max-width: 40px;
+    max-height: 40px;
+    object-fit: contain;
+}
+
+.gateway-icon i {
+    font-size: 24px;
+    color: #6c757d;
+}
+
+.gateway-info {
+    flex: 1;
+}
+
+.gateway-info h6 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.gateway-info p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.gateway-selector {
+    position: relative;
+}
+
+.gateway-selector input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.gateway-selector label {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ced4da;
+    border-radius: 50%;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.gateway-selector input[type="radio"]:checked + label {
+    border-color: #007bff;
+    background: #007bff;
+}
+
+.gateway-selector input[type="radio"]:checked + label::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.gateway-fees {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.payment-form-section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+    min-height: 300px;
+}
+
+.payment-form-section h5 {
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+.form-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.payment-form-content {
+    /* Payment form styles will be inherited from gateway-specific forms */
+}
+
+.no-gateway-selected {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.order-summary-section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.order-summary-section h5 {
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+.summary-card {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 20px;
+}
+
+.summary-items {
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.item-quantity {
+    font-size: 14px;
+    color: #666;
+}
+
+.item-price {
+    font-weight: 600;
+    color: #333;
+}
+
+.summary-totals {
+    border-top: 2px solid #dee2e6;
+    padding-top: 15px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.total-row.discount {
+    color: #28a745;
+}
+
+.total-row.grand-total {
+    font-size: 18px;
+    font-weight: 700;
+    color: #007bff;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.security-section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.security-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.security-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.security-item i {
+    font-size: 24px;
+    color: #28a745;
+    margin-top: 2px;
+}
+
+.security-item h6 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.security-item p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .payment-options-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .payment-option-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .security-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .item-price {
+        align-self: flex-end;
+    }
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{
+        window.checkoutApi.paymentGatewayInit();
+    })
+</script>

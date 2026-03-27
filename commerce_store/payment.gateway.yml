@@ -1,0 +1,16 @@
+quote.payment.gateway:
+  class: Simp\Pindrop\Modules\commerce_store\src\Payments\Gateway\QuotePaymentGateway
+  settings:
+    id: quote.payment.gateway
+    name: "Quote"
+    description: "Create order of items you want to quote with seller."
+    status: open
+    icon: 'fa fa-solid fa-bolt'
+purchase.order.gateway:
+  class: Simp\Pindrop\Modules\commerce_store\src\Payments\Gateway\PurchaseOrderGateway
+  settings:
+    id: purchase.order.gateway
+    name: "Purchase Order"
+    description: "Make purchase order payment with your po number"
+    status: open
+    icon: "fa-solid fa-bag-shopping"

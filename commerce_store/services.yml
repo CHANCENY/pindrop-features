@@ -1,0 +1,60 @@
+commerce_store.currencies:
+  class: Simp\Pindrop\Modules\commerce_store\src\Services\Currency
+  arguments:
+    - "@database"
+  tags:
+    - "currency"
+commerce_store.store:
+  class: Simp\Pindrop\Modules\commerce_store\src\Services\Store
+  arguments:
+    - "@database"
+  tags:
+    - "currency"
+commerce_store.adjustments:
+  class: Simp\Pindrop\Modules\commerce_store\src\Services\AdjustmentService
+  arguments:
+    - "@plugin.manager"
+  tags:
+    - "adjustment"
+commerce_store.products:
+  class: Simp\Pindrop\Modules\commerce_store\src\Services\Product
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "products"
+commerce_store.product_variations:
+  class: Simp\Pindrop\Modules\commerce_store\src\Services\ProductVariation
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "product_variations"
+commerce_store.product_variation_attributes:
+  class: Simp\Pindrop\Modules\commerce_store\src\Services\ProductVariationAttributes
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "product_variation_attributes"
+commerce_store.order_manager:
+  class: Simp\Pindrop\Modules\commerce_store\src\Order\OrderManager
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "order_manager"
+commerce_store.calculator:
+  class: Simp\Pindrop\Modules\commerce_store\src\Order\Calculator
+  tags:
+    - "calculator"
+commerce_store.payment.manager:
+  class: Simp\Pindrop\Modules\commerce_store\src\Payments\PaymentManager
+  tags:
+    - "payment.manager"
+commerce_store.shipping.method:
+  class: Simp\Pindrop\Modules\commerce_store\src\Shipment\ShipmentMethodManager
+  tags:
+    - "shipping.method"
+commerce_store.checkout.manager:
+  class: Simp\Pindrop\Modules\commerce_store\src\Checkout\CheckoutManager

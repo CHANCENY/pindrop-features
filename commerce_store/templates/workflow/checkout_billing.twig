@@ -1,0 +1,269 @@
+<!-- Checkout Billing Step -->
+<div class="checkout-billing-section">
+    <div class="section-header">
+        <h4>Billing Information</h4>
+        <p>Please provide your billing details for this order.</p>
+    </div>
+
+    <div class="billing-form">
+
+        <!-- Billing Address -->
+        <div class="form-section">
+            <h5>Billing Address</h5>
+            {{ addressFormatter|raw }}
+        </div>
+
+        <input type="submit" value="Save Address">
+    </div>
+</div>
+
+<style>
+.checkout-billing-section {
+    margin-bottom: 30px;
+}
+
+.section-header {
+    margin-bottom: 25px;
+}
+
+.section-header h4 {
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.section-header p {
+    color: #666;
+    margin: 0;
+}
+
+.billing-form {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-section:last-child {
+    margin-bottom: 0;
+}
+
+.form-section h5 {
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.form-group {
+    padding: 0 15px;
+    margin-bottom: 20px;
+    flex: 1 0 0%;
+}
+
+.col-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #007bff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+}
+
+.input-group-append {
+    display: flex;
+    margin-left: -1px;
+}
+
+.input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0 5px 5px 0;
+}
+
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.form-check {
+    position: relative;
+    display: block;
+    padding-left: 35px;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.form-check-input {
+    position: absolute;
+    margin-top: 4px;
+    margin-left: -35px;
+}
+
+.form-check-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.form-check-label i {
+    font-size: 18px;
+    color: #007bff;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .form-group {
+        padding: 0;
+        margin-bottom: 15px;
+    }
+
+    .col-md-6,
+    .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .payment-methods {
+        grid-template-columns: 1fr;
+    }
+
+    .billing-form {
+        padding: 20px 15px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show/hide credit card details based on payment method selection
+    const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+    const creditCardDetails = document.getElementById('credit-card-details');
+
+    paymentMethods.forEach(method => {
+        method.addEventListener('change', function() {
+            if (this.value === 'credit_card') {
+                creditCardDetails.style.display = 'block';
+                // Make credit card fields required
+                document.getElementById('card_number').required = true;
+                document.getElementById('card_expiry').required = true;
+                document.getElementById('card_cvv').required = true;
+                document.getElementById('card_name').required = true;
+            } else {
+                creditCardDetails.style.display = 'none';
+                // Remove required from credit card fields
+                document.getElementById('card_number').required = false;
+                document.getElementById('card_expiry').required = false;
+                document.getElementById('card_cvv').required = false;
+                document.getElementById('card_name').required = false;
+            }
+        });
+    });
+
+    // Format card number input
+    const cardNumberInput = document.getElementById('card_number');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+    }
+
+    // Format expiry date input
+    const expiryInput = document.getElementById('card_expiry');
+    if (expiryInput) {
+        expiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Only allow numbers for CVV
+    const cvvInput = document.getElementById('card_cvv');
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    }
+});
+</script>

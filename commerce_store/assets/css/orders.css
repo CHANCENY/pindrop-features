@@ -1,0 +1,200 @@
+/* Scoped Drupal-like Orders Grid Layout */
+
+.drupal-orders-container {
+    --drupal-border-color: #d3d3d3;
+    --drupal-bg-header: #f1f1f1;
+    --drupal-bg-stripe: #f9f9f9;
+    --drupal-label-weight: 700;
+    --drupal-primary-color: #007bff;
+    --drupal-text-color: #333;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--drupal-text-color);
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.drupal-orders-container *,
+.drupal-orders-container *::before,
+.drupal-orders-container *::after {
+    box-sizing: inherit;
+}
+
+/* Page Header */
+.drupal-orders-container .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    padding-bottom: 1rem;
+}
+
+.drupal-orders-container .page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drupal-orders-container .page-title h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* DASHBOARD STATS GRID */
+.drupal-orders-container .stats-section {
+    margin-bottom: 2rem;
+}
+
+.drupal-orders-container .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+}
+
+.drupal-orders-container .stat-card {
+    padding: 20px;
+    border-right: 1px solid var(--drupal-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drupal-orders-container .stat-card:last-child {
+    border-right: none;
+}
+
+.drupal-orders-container .stat-number {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.drupal-orders-container .stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* SEAMLESS FILTER GRID */
+.drupal-orders-container .filters-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+}
+
+.drupal-orders-container .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    width: 100%;
+}
+
+.drupal-orders-container .filter-group {
+    padding: 12px 15px;
+    border-right: 1px solid var(--drupal-border-color);
+    border-bottom: 1px solid var(--drupal-border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.drupal-orders-container .filter-group:nth-child(5n) {
+    border-right: none;
+}
+
+.drupal-orders-container .filter-actions {
+    grid-column: 1 / -1;
+    padding: 12px 15px;
+    background: #fcfcfc;
+    display: flex;
+    gap: 10px;
+}
+
+.drupal-orders-container .filter-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.drupal-orders-container .form-control {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+}
+
+/* SEAMLESS TABLE GRID */
+.drupal-orders-container .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+}
+
+.drupal-orders-container .orders-table th {
+    background: var(--drupal-bg-header);
+    border: 1px solid var(--drupal-border-color);
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.drupal-orders-container .orders-table td {
+    border: 1px solid var(--drupal-border-color);
+    padding: 12px 15px;
+    font-size: 0.9rem;
+}
+
+.drupal-orders-container .orders-table tr:nth-child(even) {
+    background-color: var(--drupal-bg-stripe);
+}
+
+/* Status Badges */
+.drupal-orders-container .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.drupal-orders-container .bg-success { background: #d4edda; color: #155724; }
+.drupal-orders-container .bg-danger { background: #f8d7da; color: #721c24; }
+.drupal-orders-container .bg-warning { background: #fff3cd; color: #856404; }
+.drupal-orders-container .bg-info { background: #d1ecf1; color: #0c5460; }
+.drupal-orders-container .bg-primary { background: #cce5ff; color: #004085; }
+.drupal-orders-container .bg-secondary { background: #e2e3e5; color: #383d41; }
+
+/* Buttons */
+.drupal-orders-container .btn {
+    padding: 6px 12px;
+    font-weight: 600;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-size: 0.85rem;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.drupal-orders-container .btn-primary {
+    background-color: var(--drupal-primary-color);
+    color: white;
+    border-color: var(--drupal-primary-color);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .drupal-orders-container .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .drupal-orders-container .stat-card:nth-child(2n) { border-right: none; }
+    .drupal-orders-container .stat-card:nth-child(1), .drupal-orders-container .stat-card:nth-child(2) { border-bottom: 1px solid var(--drupal-border-color); }
+
+    .drupal-orders-container .filter-grid { grid-template-columns: repeat(3, 1fr); }
+    .drupal-orders-container .filter-group:nth-child(3n) { border-right: none; }
+}

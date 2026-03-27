@@ -1,0 +1,237 @@
+# Commerce store Management Routes
+commerce_store.admin_commerce_store_dashboard:
+  path: '/admin/com/store'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::storeDashboard'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.admin_commerce_store_setting:
+  path: '/admin/com/store/settings'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::storeSettings'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.product.create:
+  path: '/admin/com/store/products/create'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::createProduct'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products:
+  path: '/admin/com/store/products'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::listProducts'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+commerce_store.products.edit:
+  path: '/admin/com/store/products/[id:int]/edit'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::editProduct'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.view:
+  path: '/admin/com/store/products/[id:int]/view'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::viewProduct'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.delete:
+  path: '/admin/com/store/products/[id:int]/delete'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::deleteProduct'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.delete.silent:
+  path: '/admin/com/store/products/delete'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::deleteProduct'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.import:
+  path: '/admin/com/store/products/imports'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::importProducts'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.variations:
+  path: '/admin/com/store/products/[id:int]/variations'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::productVariations'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.variations.create:
+  path: '/admin/com/store/products/[id:int]/variations/create'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::createProductVariation'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.variations.edit:
+  path: '/admin/com/store/products/[id:int]/variations/[variation_id:int]/edit'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::editProductVariation'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.variations.delete:
+  path: '/admin/com/store/products/variations/[variation_id:int]/delete'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::deleteProductVariations'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.variations.import:
+  path: '/store/products/variations/import'
+  methods: [GET, POST]
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::importVariations'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.variations.view:
+  path: '/admin/com/store/products/[id:int]/variations/[variation_id:int]/view'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::viewProductVariation'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.variations.attributes:
+  path: '/admin/com/store/products/[id:int]/variations/[variation_id:int]/attributes'
+  methods: ['GET','POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::viewVariationAttributes'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.products.variations.attributes.create:
+  path: '/admin/com/store/products/[id:int]/variations/[variation_id:int]/attributes/create'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::createVariationAttribute'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.orders:
+  path: '/admin/com/store/orders'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::orders'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.orders.view:
+  path: '/admin/com/store/orders/view/[id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::viewOrder'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.orders.edit:
+  path: '/admin/com/store/orders/[id:int]/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::editOrder'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+commerce_store.orders.print:
+  path: '/admin/com/store/orders/print/[id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::printOrder'
+  requirements:
+    _permission: ['admin', 'super_admin']
+    id: '\d+'
+commerce_store.orders.invoice:
+  path: '/admin/com/store/orders/invoice/[id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::generateInvoice'
+  requirements:
+    _permission: ['admin', 'super_admin']
+    id: '\d+'
+commerce_store.orders.export:
+  path: '/admin/com/store/orders/export'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::exportOrders'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.orders.cancel:
+  path: '/admin/com/store/orders/cancel'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::cancelOrder'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.order.create:
+  path: '/admin/com/store/orders/create'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::createOrder'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.order.payments:
+  path: '/admin/com/store/orders/payments/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::payments'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.order.payments.options:
+  path: '/admin/com/store/orders/payments/[id:int]/options'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::paymentOptions'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.order.payments.options.payment:
+  path: '/admin/com/store/orders/payments/[id:int]/options/payment'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::paymentOptionPayment'
+  requirements:
+    _permission: ['admin', 'super_admin']
+commerce_store.order.checkout:
+  path: '/order/checkout/[id:int]/[step:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::checkoutWorkFlow'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin']
+commerce_store.order.autoUpdate:
+  path: '/order/items/auto-save'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::autoSaveOrderItems'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin']
+commerce_store.order.summaryUpdate:
+  path: '/order/summary/auto-save/[id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::summaryUpdate'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin']
+commerce_store.shopping:
+  path: '/products'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::shopping'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+commerce_store.payment.form:
+  path: '/internal/payment/form/build'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\commerce_store\src\Controller\CommerceStoreController::paymentFormBuild'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin']

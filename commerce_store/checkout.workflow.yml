@@ -1,0 +1,12 @@
+checkout-review:
+  handlers:
+    - Simp\Pindrop\Modules\commerce_store\src\Checkout\Workflow\CheckoutWorkflowReview
+billing:
+  handlers:
+    - Simp\Pindrop\Modules\commerce_store\src\Checkout\Workflow\CheckoutWorkflowBilling
+shipping:
+  handlers:
+    - Simp\Pindrop\Modules\commerce_store\src\Checkout\Workflow\CheckoutWorkflowShipping
+payment:
+  handlers:
+    - Simp\Pindrop\Modules\commerce_store\src\Checkout\Workflow\CheckoutWorkflowPayment

@@ -1,0 +1,182 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Create Product Variation - {{ product.name }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/create-variation.css">
+{% endblock %}
+
+{% block content %}
+    {# Scoped Drupal-like Create Variation Structure #}
+    <div class="drupal-create-variation">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Create Product Variation</h1>
+                    <p>Add a new variation for: <strong>{{ product.name }}</strong></p>
+                </div>
+                <div class="page-actions">
+                    <a href="{{ url('commerce_store.products.variations', {id: product.id}) }}" class="btn btn-secondary">
+                        Back to Variations
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success and Error Messages -->
+        {% if success %}
+            <div class="alert alert-success" style="padding: 1rem; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin-bottom: 1rem;">
+                {{ success }}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Product Info (Seamless Grid) -->
+        <div class="product-info-section">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Product SKU</label>
+                    <span>{{ product.sku }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Product Name</label>
+                    <span>{{ product.name }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Product Type</label>
+                    <div><span class="badge" style="background: #e2e3e5; color: #383d41; padding: 2px 8px; border-radius: 3px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">Variable Product</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Variation Form (Seamless Grid) -->
+        <div class="variations-section">
+            <form method="POST" class="variation-form">
+                <div class="form-grid">
+                    <!-- Basic Information -->
+                    <div class="form-group">
+                        <label for="sku" class="form-label">SKU *</label>
+                        <input type="text" id="sku" name="sku" class="form-input" required value="{{ formData.sku ?? '' }}">
+                        <div class="form-text">Enter a unique SKU for this variation</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name" class="form-label">Variation Name *</label>
+                        <input type="text" id="name" name="name" class="form-input" required value="{{ formData.name ?? '' }}">
+                        <div class="form-text">Descriptive name (e.g., "Large Blue")</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slug" class="form-label">Slug</label>
+                        <input type="text" id="slug" name="slug" class="form-input" value="{{ formData.slug ?? '' }}">
+                        <div class="form-text">URL-friendly slug (auto-generated)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status" class="form-label">Status</label>
+                        <select id="status" name="status" class="form-select">
+                            <option value="publish" {{ formData.status == 'publish' ? 'selected' : '' }}>Published</option>
+                            <option value="draft" {{ formData.status == 'draft' ? 'selected' : '' }}>Draft</option>
+                        </select>
+                        <div class="form-text">Visibility status</div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea id="description" name="description" class="form-input editor" rows="3">{{ formData.description ?? '' }}</textarea>
+                        <div class="form-text">Detailed description of this variation</div>
+                    </div>
+
+                    <!-- Pricing -->
+                    <div class="form-group">
+                        <label for="regular_price" class="form-label">Regular Price *</label>
+                        <input type="number" id="regular_price" name="regular_price" class="form-input" step="0.01" min="0" required value="{{ formData.regular_price ?? '' }}">
+                        <div class="form-text">Base price for this variation</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sale_price" class="form-label">Sale Price</label>
+                        <input type="number" id="sale_price" name="sale_price" class="form-input" step="0.01" min="0" value="{{ formData.sale_price ?? '' }}">
+                        <div class="form-text">Optional discounted price</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sale_price_start_date" class="form-label">Sale Start Date</label>
+                        <input type="datetime-local" id="sale_price_start_date" name="sale_price_start_date" class="form-input" value="{{ formData.sale_price_start_date ?? '' }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sale_price_end_date" class="form-label">Sale End Date</label>
+                        <input type="datetime-local" id="sale_price_end_date" name="sale_price_end_date" class="form-input" value="{{ formData.sale_price_end_date ?? '' }}">
+                    </div>
+
+                    <!-- Inventory -->
+                    <div class="form-group">
+                        <label for="manage_stock" class="form-label">Manage Stock</label>
+                        <select id="manage_stock" name="manage_stock" class="form-select">
+                            <option value="1" {{ formData.manage_stock == '1' ? 'selected' : '' }}>Yes</option>
+                            <option value="0" {{ formData.manage_stock == '0' ? 'selected' : '' }}>No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock_quantity" class="form-label">Stock Quantity</label>
+                        <input type="number" id="stock_quantity" name="stock_quantity" class="form-input" min="0" value="{{ formData.stock_quantity ?? '' }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock_status" class="form-label">Stock Status</label>
+                        <select id="stock_status" name="stock_status" class="form-select">
+                            <option value="instock" {{ formData.stock_status == 'instock' ? 'selected' : '' }}>In Stock</option>
+                            <option value="outofstock" {{ formData.stock_status == 'outofstock' ? 'selected' : '' }}>Out of Stock</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="backorders_allowed" class="form-label">Allow Backorders</label>
+                        <select id="backorders_allowed" name="backorders_allowed" class="form-select">
+                            <option value="0" {{ formData.backorders_allowed == '0' ? 'selected' : '' }}>No</option>
+                            <option value="1" {{ formData.backorders_allowed == '1' ? 'selected' : '' }}>Yes</option>
+                        </select>
+                    </div>
+
+                    <!-- Tax & Shipping -->
+                    <div class="form-group">
+                        <label for="tax_status" class="form-label">Tax Status</label>
+                        <select id="tax_status" name="tax_status" class="form-select">
+                            <option value="taxable" {{ formData.tax_status == 'taxable' ? 'selected' : '' }}>Taxable</option>
+                            <option value="none" {{ formData.tax_status == 'none' ? 'selected' : '' }}>None</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weight" class="form-label">Weight (kg)</label>
+                        <input type="number" id="weight" name="weight" class="form-input" step="0.01" min="0" value="{{ formData.weight ?? '' }}">
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label class="form-label">Dimensions (L x W x H cm)</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" min="0.1" step="any" name="dimensions_length" placeholder="L" class="form-input" value="{{ formData.dimensions_length ?? '' }}">
+                            <input type="number" min="0.1" step="any" name="dimensions_width" placeholder="W" class="form-input" value="{{ formData.dimensions_width ?? '' }}">
+                            <input type="number" min="0.1" step="any" name="dimensions_height" placeholder="H" class="form-input" value="{{ formData.dimensions_height ?? '' }}">
+                        </div>
+                    </div>
+
+                    <!-- Form Actions Area -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Create Variation</button>
+                        <a href="{{ url('commerce_store.products.variations', {id: product.id}) }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

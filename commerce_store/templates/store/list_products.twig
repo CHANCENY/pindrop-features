@@ -1,0 +1,432 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Products - {{ store.store_name }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/list-products.css">
+{% endblock %}
+
+{% block content %}
+    {# Scoped Drupal-like Product List Structure #}
+    <div class="drupal-entity-list">
+
+        <!-- Success and Error Messages -->
+        {% if success %}
+            <div class="alert alert-success">
+                {{ success }}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Products</h1>
+                    <p>Manage your store's products</p>
+                </div>
+                <div class="page-actions">
+                    <a href="{{ url('commerce_store.product.create') }}" class="btn btn-primary">
+                        <i class="icon-plus"></i> Add New Product
+                    </a>
+                    <button type="button" class="btn btn-secondary" onclick="showImportModal()">
+                        <i class="icon-upload"></i> Import Products
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters (Seamless Grid) -->
+        <div class="filters-section">
+            <form method="GET" action="{{ current_url }}" class="filter-form">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="status" class="filter-label">Status</label>
+                        <select name="status" id="status" class="form-control">
+                            <option value="">All Status</option>
+                            <option value="draft" {% if filters.status == 'draft' %}selected{% endif %}>Draft</option>
+                            <option value="publish" {% if filters.status == 'publish' %}selected{% endif %}>Published</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="type" class="filter-label">Product Type</label>
+                        <select name="type" id="type" class="form-control">
+                            <option value="">All Types</option>
+                            <option value="simple" {% if filters.type == 'simple' %}selected{% endif %}>Simple Product</option>
+                            <option value="variable" {% if filters.type == 'variable' %}selected{% endif %}>Variable Product</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="featured" class="filter-label">Featured</label>
+                        <select name="featured" id="featured" class="form-control">
+                            <option value="">All Products</option>
+                            <option value="1" {% if filters.featured == '1' %}selected{% endif %}>Featured Only</option>
+                            <option value="0" {% if filters.featured == '0' %}selected{% endif %}>Not Featured</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="catalog_visibility" class="filter-label">Visibility</label>
+                        <select name="catalog_visibility" id="catalog_visibility" class="form-control">
+                            <option value="">All Visibility</option>
+                            <option value="visible" {% if filters.catalog_visibility == 'visible' %}selected{% endif %}>Visible</option>
+                            <option value="hidden" {% if filters.catalog_visibility == 'hidden' %}selected{% endif %}>Hidden</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="{{ url('commerce_store.products') }}" class="btn">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Products Table (Seamless Grid) -->
+        <div class="products-section">
+            {% if products|length > 0 %}
+                <div class="table-responsive">
+                    <table class="products-table">
+                        <thead>
+                        <tr>
+                            <th class="col-product">Product</th>
+                            <th class="col-sku">SKU</th>
+                            <th class="col-price">Price</th>
+                            <th class="col-stock">Stock</th>
+                            <th class="col-variations">Variations</th>
+                            <th class="col-status">Status</th>
+                            <th class="col-actions">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td class="col-product">
+                                    <div class="product-info">
+                                        <div class="product-image">
+                                            {% if product.image %}
+                                                <img src="{{ product.image }}" alt="{{ product.name }}">
+                                            {% else %}
+                                                <div class="no-image">No Image</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="product-details">
+                                            <h4 class="product-name">
+                                                <a href="{{ url('commerce_store.products.view', {id: product.id}) }}">
+                                                    {{ product.name }}
+                                                </a>
+                                            </h4>
+                                            <p class="product-type">{{ product.type == 'simple' ? 'Simple' : 'Variable' }}</p>
+                                            {% if product.featured %}
+                                                <span class="badge badge-featured">Featured</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="col-sku">
+                                    <code>{{ product.sku }}</code>
+                                </td>
+                                <td class="col-price">
+                                    {% if product.sale_price %}
+                                        <span class="sale-price">${{ product.sale_price }}</span>
+                                        <span class="regular-price" style="text-decoration: line-through; color: #999; font-size: 0.8rem; margin-left: 5px;">${{ product.regular_price }}</span>
+                                    {% else %}
+                                        <span class="regular-price">${{ product.regular_price }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="col-stock">
+                                    {% if product.manage_stock %}
+                                        <div class="stock-quantity" style="font-weight: 700;">{{ product.stock_quantity }}</div>
+                                        <div class="stock-status {{ product.stock_status }}" style="font-size: 0.8rem;">
+                                            {{ product.stock_status == 'instock' ? 'In Stock' : 'Out of Stock' }}
+                                        </div>
+                                    {% else %}
+                                        <span class="stock-status">Unlimited</span>
+                                    {% endif %}
+                                </td>
+                                <td class="col-variations">
+                                    {% if product.type == 'variable' %}
+                                        <div class="variations-info">
+                                            <span class="variations-count">
+                                                {% if product.variation_count %}
+                                                    {{ product.variation_count }} variations
+                                                {% else %}
+                                                    <a href="{{ url('commerce_store.products.variations', {id: product.id}) }}" class="btn btn-sm btn-outline">
+                                                        Manage Variations
+                                                    </a>
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    {% else %}
+                                        <span class="no-variations">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="col-status">
+                                    <span class="status-badge status-{{ product.status }}">
+                                        {{ product.status == 'publish' ? 'Published' : 'Draft' }}
+                                    </span>
+                                </td>
+                                <td class="col-actions">
+                                    <div class="action-buttons">
+                                        <a href="{{ url('commerce_store.products.edit', {id: product.id}) }}"
+                                           class="btn btn-sm" title="Edit">
+                                            Edit
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger"
+                                                onclick="confirmDelete({{ product.id }}, '{{ product.name|escape('js') }}')"
+                                                title="Delete">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No products found</h3>
+                    <p>
+                        {% if filters|length > 0 %}
+                            No products match your current filters.
+                            <a href="{{ current_url }}">Clear filters</a> to see all products.
+                        {% else %}
+                            You haven't created any products yet.
+                            <a href="{{ url('commerce_store.products.create') }}">Create your first product</a>
+                            to get started.
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+            <div class="pagination-section">
+                <div class="pagination-info">
+                    Showing {{ (current_page - 1) * per_page + 1 }} to {{ current_page * per_page < total_items ? current_page * per_page : total_items }} of {{ total_items }} products
+                </div>
+                <div class="pagination-controls">
+                    {% if current_page > 1 %}
+                        <a href="{{ current_url }}?page={{ current_page - 1 }}{% if status %}&status={{ status }}{% endif %}{% if search %}&search={{ search }}{% endif %}" class="pagination-link pagination-prev">
+                            <i class="icon-chevron-left"></i> Previous
+                        </a>
+                    {% endif %}
+                    
+                    <div class="pagination-numbers">
+                        {% set start_page = max(1, current_page - 2) %}
+                        {% set end_page = min(total_pages, current_page + 2) %}
+                        
+                        {% if start_page > 1 %}
+                            <a href="{{ current_url }}?page=1{% if status %}&status={{ status }}{% endif %}{% if search %}&search={{ search }}{% endif %}" class="pagination-link">1</a>
+                            {% if start_page > 2 %}
+                                <span class="pagination-ellipsis">...</span>
+                            {% endif %}
+                        {% endif %}
+                        
+                        {% for page in range(start_page, end_page) %}
+                            {% if page == current_page %}
+                                <span class="pagination-current">{{ page }}</span>
+                            {% else %}
+                                <a href="{{ current_url }}?page={{ page }}{% if status %}&status={{ status }}{% endif %}{% if search %}&search={{ search }}{% endif %}" class="pagination-link">{{ page }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if end_page < total_pages %}
+                            {% if end_page < total_pages - 1 %}
+                                <span class="pagination-ellipsis">...</span>
+                            {% endif %}
+                            <a href="{{ current_url }}?page={{ total_pages }}{% if status %}&status={{ status }}{% endif %}{% if search %}&search={{ search }}{% endif %}" class="pagination-link">{{ total_pages }}</a>
+                        {% endif %}
+                    </div>
+                    
+                    {% if current_page < total_pages %}
+                        <a href="{{ current_url }}?page={{ current_page + 1 }}{% if status %}&status={{ status }}{% endif %}{% if search %}&search={{ search }}{% endif %}" class="pagination-link pagination-next">
+                            Next <i class="icon-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <div class="pagination-per-page">
+                    <label for="per_page">Show:</label>
+                    <select id="per_page" onchange="changePerPage(this.value)">
+                        <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                        <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                        <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                        <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+                    </select>
+                    <span>per page</span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Import Products Modal -->
+    <div id="importModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import Products</h3>
+                <button type="button" class="modal-close" onclick="hideImportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="importForm" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="import_file" class="form-label">CSV File *</label>
+                        <input type="file" id="import_file" name="import_file" accept=".csv" required>
+                        <div class="form-text">Upload a CSV file with product data. Maximum file size: 10MB</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Import Options</label>
+                        <div class="checkbox-group">
+                            <div class="form-check">
+                                <input type="checkbox" id="update_existing" name="update_existing" value="1">
+                                <label class="form-check-label" for="update_existing">Update existing products if SKU matches</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="skip_first_row" name="skip_first_row" value="1" checked>
+                                <label class="form-check-label" for="skip_first_row">Skip first row (header row)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Required CSV Columns</label>
+                        <div class="csv-columns">
+                            <div class="column-item">
+                                <span class="required">SKU *</span>
+                                <small>Product unique identifier</small>
+                            </div>
+                            <div class="column-item">
+                                <span class="required">Name *</span>
+                                <small>Product name</small>
+                            </div>
+                            <div class="column-item">
+                                <span class="optional">Regular Price *</span>
+                                <small>Product price</small>
+                            </div>
+                            <div class="column-item">
+                                <span class="optional">Description</span>
+                                <small>Product description</small>
+                            </div>
+                            <div class="column-item">
+                                <span class="optional">Stock Quantity</span>
+                                <small>Available stock</small>
+                            </div>
+                            <div class="column-item">
+                                <span class="optional">Status</span>
+                                <small>draft or publish</small>
+                            </div>
+                        </div>
+                        <div class="template-download">
+                            <a href="/modules/commerce_store/assets/product_template.csv" download="product_template.csv" class="btn btn-outline btn-sm">
+                                <i class="icon-download"></i> Download Template
+                            </a>
+                            <small>Download this CSV template to see the expected format</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Import Products</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideImportModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function confirmDelete(productId, productName) {
+            if (confirm('Are you sure you want to delete "' + productName + '"? This action cannot be undone.')) {
+                // Create form for deletion
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ url("commerce_store.products.delete.silent") }}';
+                
+                const productIdInput = document.createElement('input');
+                productIdInput.type = 'hidden';
+                productIdInput.name = 'product_id';
+                productIdInput.value = productId;
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = 'csrf_token';
+               {#// csrfToken.value = '{{ csrf_token() }}';#}
+                
+                form.appendChild(productIdInput);
+               // form.appendChild(csrfToken);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function showImportModal() {
+            document.getElementById('importModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('importModal');
+            if (event.target == modal) {
+                hideImportModal();
+            }
+        }
+
+        function changePerPage(perPage) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('per_page', perPage);
+            url.searchParams.set('page', '1'); // Reset to first page
+            window.location.href = url.toString();
+        }
+
+        // Handle import form submission
+        document.getElementById('importForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            // Show loading state
+            submitBtn.textContent = 'Importing...';
+            submitBtn.disabled = true;
+            
+            fetch('{{ url("commerce_store.products.import") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideImportModal();
+                location.reload();
+            })
+            .catch(error => {
+                hideImportModal();
+                location.reload();
+                console.error('Import error:', error);
+            })
+            .finally(() => {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+    </script>
+{% endblock %}

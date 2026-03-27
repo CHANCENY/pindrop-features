@@ -1,0 +1,176 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Payment Options{% endblock %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/payment-options.css">
+
+{% endblock %}
+
+{% block content %}
+    <div class="drupal-payment-options-container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Payment Options</h1>
+                    <p>Select a secure payment gateway to process your order</p>
+                </div>
+                <div class="page-actions">
+                    {% if order %}
+                        <a href="{{ url('commerce_store.order.payments', {'id': order.id}) }}" class="btn btn-primary">View Payments</a>
+                    {% endif %}
+                    <a href="{{ url('commerce_store.orders') }}" class="btn">Back to Orders</a>
+                </div>
+            </div>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% if store %}
+            <!-- Payment Gateways Grid -->
+            <div class="view-section">
+                <h3>Available Payment Gateways</h3>
+                {% if payment_options|length > 0 %}
+                    <div class="gateway-grid">
+                        {% for gateway in payment_options %}
+                            <div class="gateway-item">
+                                <div class="gateway-icon">
+                                    {% if gateway.gatewaySettings.settings.icon %}
+                                        <i class="{{ gateway.gatewaySettings.settings.icon }} fa-3x"></i>
+                                    {% else %}
+                                        <i class="fas fa-credit-card fa-3x"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="gateway-name">{{ gateway.gatewayName }}</div>
+                                <div class="gateway-description">{{ gateway.gatewayDescription }}</div>
+
+                                {% if order %}
+                                    <a href="{{ url('commerce_store.order.payments.options.payment',{id: order.id, method: gateway.gatewayId }) }}" class="btn btn-primary btn-block">
+                                        Pay with {{ gateway.gatewayName }}
+                                    </a>
+                                {% else %}
+                                    <button type="button" class="btn btn-block" style="color: #999; border-color: #ddd; cursor: not-allowed;" disabled>
+                                        Select Order First
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 60px;">
+                        <p style="color: #666; margin-bottom: 0;">No payment gateways are currently available for this store.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Order Summary Grid -->
+            {% if order %}
+                <div class="view-section">
+                    <h3>Order Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Order Number</span>
+                            <span class="info-value">{{ order.order_number }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Total Amount</span>
+                            <span class="info-value" style="color: var(--drupal-primary-color); font-weight: 700;">{{ order.currency }} {{ order.total_amount|number_format(2) }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Order Status</span>
+                            <span class="info-value">
+                            <span class="badge badge-{{ order.status == 'completed' ? 'success' : (order.status == 'cancelled' ? 'danger' : 'warning') }}">
+                                {{ order.status|title }}
+                            </span>
+                        </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Payment Status</span>
+                            <span class="info-value">
+                            <span class="badge badge-{{ order.payment_status == 'completed' ? 'success' : (order.payment_status == 'failed' ? 'danger' : 'warning') }}">
+                                {{ order.payment_status|title }}
+                            </span>
+                        </span>
+                        </div>
+                        <div class="info-item" style="border-bottom: none;">
+                            <span class="info-label">Customer</span>
+                            <span class="info-value">{{ order.customer.first_name }} {{ order.customer.last_name }}</span>
+                        </div>
+                        <div class="info-item" style="border-bottom: none; border-right: none;">
+                            <span class="info-label">Order Date</span>
+                            <span class="info-value">{{ order.created_at|date('M j, Y H:i') }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Instructions & Notes Grid -->
+            <div class="view-section">
+                <h3>Instructions & Guidelines</h3>
+                <div style="padding: 20px;">
+                    <div class="alert alert-info">
+                        <h6 style="margin-top: 0; font-weight: 700;">How to Process Payments</h6>
+                        <ol style="margin-bottom: 0; padding-left: 20px;">
+                            <li>Select a payment gateway from the available options above.</li>
+                            <li>Click "Pay with [Gateway Name]" to initiate the secure payment process.</li>
+                            <li>You will be redirected to the secure payment provider's page.</li>
+                            <li>Complete the transaction and wait to be redirected back to the store.</li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-warning" style="margin-bottom: 0;">
+                        <h6 style="margin-top: 0; font-weight: 700;">Important Security Notes</h6>
+                        <ul style="margin-bottom: 0; padding-left: 20px;">
+                            <li>All transactions are encrypted and processed through secure payment gateways.</li>
+                            <li>We do not store your credit card or sensitive financial information on our servers.</li>
+                            <li>A confirmation email will be sent automatically upon successful payment.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                Store not found or unable to load configuration.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.payment-gateway-icon {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.payment-gateway-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.payment-gateway-description {
+    font-size: 14px;
+    min-height: 40px;
+}
+
+.payment-gateway-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-gateway-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}

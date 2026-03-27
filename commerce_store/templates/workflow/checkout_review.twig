@@ -1,0 +1,73 @@
+<!-- Checkout Review Step - Order Items Review -->
+<div class="drupal-checkout-container">
+    <div class="checkout-review-section">
+        <div class="section-header">
+            <h4>Review Your Order</h4>
+            <p>Please review your order details before proceeding to payment.</p>
+        </div>
+
+        <!-- Order Items Review -->
+        <div class="order-items-review">
+            <div class="items-header">
+                <h5>Order Items ({{ items|length }})</h5>
+                <a href="{{ url('commerce_store.shopping') }}" class="btn btn-sm btn-outline">
+                    <i class="fas fa-shopping-bag" style="margin-right: 5px;"></i> Continue Shopping
+                </a>
+            </div>
+
+            <div class="items-table">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th style="text-align: center;">Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td>
+                                <div class="item-info">
+                                    <div class="item-name">{{ item.item_name }}</div>
+                                    <div class="item-sku">SKU: {{ item.item_sku }}</div>
+                                </div>
+                            </td>
+                            <td class="unit-price" style="font-weight: 500;">${{ item.unit_price }}</td>
+                            <td style="text-align: center;">
+                                <div class="quantity-controls">
+                                    <button type="button" class="quantity-btn quantity-btn-minus">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span data-order="{{ item.id }}" class="quantity-display">{{ item.quantity }}</span>
+                                    <button type="button" class="quantity-btn quantity-btn-plus">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="item-total" style="font-weight: 700; color: var(--drupal-primary-color);">${{ item.total_price }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{
+        window.checkoutApi.orderItemActionInit(".order-items-review",
+            { minusBtn: ".quantity-btn-minus",
+                plusBtn:  ".quantity-btn-plus",
+                quantityField: ".quantity-display",
+                autoSave: 2000,
+                itemTotal: ".item-total",
+                unitPrice: ".unit-price"
+            }
+        );
+
+        console.log(window.checkoutApi)
+    })
+</script>

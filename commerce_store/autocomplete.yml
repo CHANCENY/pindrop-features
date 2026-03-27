@@ -1,0 +1,8 @@
+commerce.order_number_generate:
+  handler: Simp\Pindrop\Modules\commerce_store\src\Autocomplete\AutocompleteOrderNumber::generateOrderNumber
+
+autocomplete.products:
+  handler: Simp\Pindrop\Modules\commerce_store\src\Autocomplete\AutocompleteOrderNumber::getProducts
+
+autocompelete.shipping.method:
+  handler: Simp\Pindrop\Modules\commerce_store\src\Autocomplete\AutocompleteOrderNumber::searchShippingMethods

@@ -1,0 +1,320 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}View Product - {{ product.name }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/view-product.css">
+{% endblock %}
+
+{% block content %}
+    <!-- Success and Error Messages -->
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="page-title">
+                <h1>View Product</h1>
+                <p>{{ product.name }}</p>
+            </div>
+            <div class="page-actions">
+                <a href="{{ url('commerce_store.products.edit', {id: product.id}) }}" class="btn btn-primary">
+                    <i class="icon-edit"></i> Edit Product
+                </a>
+                <a href="{{ url('commerce_store.products') }}" class="btn btn-secondary">
+                    <i class="icon-arrow-left"></i> Back to Products
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details -->
+    <div class="drupal-entity-view">
+        <!-- Main Content Area -->
+        <div class="drupal-main-content">
+
+            <!-- Basic Information -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Basic Information</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">SKU</label>
+                        <div class="detail-value">{{ product.sku }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Product Name</label>
+                        <div class="detail-value">{{ product.name }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Slug</label>
+                        <div class="detail-value">{{ product.slug ?: 'Auto-generated' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Product Type</label>
+                        <div class="detail-value">{{ product.type == 'simple' ? 'Simple Product' : 'Variable Product' }}</div>
+                    </div>
+                    <div class="detail-group full-width">
+                        <label class="detail-label">Short Description</label>
+                        <div class="detail-value">{{ product.short_description ?: 'No short description' }}</div>
+                    </div>
+                    <div class="detail-group full-width">
+                        <label class="detail-label">Description</label>
+                        <div class="detail-value">{{ product.description|raw ?: 'No description' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Pricing</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Regular Price</label>
+                        <div class="detail-value price">${{ product.regular_price }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Sale Price</label>
+                        <div class="detail-value">
+                            {% if product.sale_price %}
+                                <span class="sale-price">${{ product.sale_price }}</span>
+                                <span class="original-price">${{ product.regular_price }}</span>
+                            {% else %}
+                                <span class="no-sale">No sale price set</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Sale Start Date</label>
+                        <div class="detail-value">{{ product.sale_price_start_date ?: 'Not set' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Sale End Date</label>
+                        <div class="detail-value">{{ product.sale_price_end_date ?: 'Not set' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Inventory</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Manage Stock</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.manage_stock ? 'status-enabled' : 'status-disabled' }}">
+                                {{ product.manage_stock ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Stock Quantity</label>
+                        <div class="detail-value">
+                            {% if product.manage_stock %}
+                                {{ product.stock_quantity }}
+                            {% else %}
+                                <span class="unlimited">Unlimited</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Stock Status</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.stock_status == 'instock' ? 'status-instock' : 'status-outofstock' }}">
+                                {{ product.stock_status == 'instock' ? 'In Stock' : 'Out of Stock' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Allow Backorders</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.backorders_allowed ? 'status-enabled' : 'status-disabled' }}">
+                                {{ product.backorders_allowed ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Sold Individually</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.sold_individually ? 'status-enabled' : 'status-disabled' }}">
+                                {{ product.sold_individually ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Shipping</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Weight</label>
+                        <div class="detail-value">{{ product.weight ?: 'Not set' }} kg</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Dimensions</label>
+                        <div class="detail-value">
+                            {% if product.dimensions_length or product.dimensions_width or product.dimensions_height %}
+                                {{ product.dimensions_length ?: '0' }} × {{ product.dimensions_width ?: '0' }} × {{ product.dimensions_height ?: '0' }} cm
+                            {% else %}
+                                Not set
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Shipping Class</label>
+                        <div class="detail-value">{{ product.shipping_class ?: 'Not set' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Shipping Required</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.shipping_required ? 'status-enabled' : 'status-disabled' }}">
+                                {{ product.shipping_required ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group full-width">
+                        <label class="detail-label">Purchase Note</label>
+                        <div class="detail-value">{{ product.purchase_note ?: 'No purchase note' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Digital Products -->
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Digital Products</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Virtual Product</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.virtual ? 'status-enabled' : 'status-disabled' }}">
+                                {{ product.virtual ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Downloadable</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.downloadable ? 'status-enabled' : 'status-disabled' }}">
+                                {{ product.downloadable ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Download Limit</label>
+                        <div class="detail-value">{{ product.download_limit ?: 'Unlimited' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Download Expiry</label>
+                        <div class="detail-value">{{ product.download_expiry ? product.download_expiry ~ ' days' : 'Never' }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">External URL</label>
+                        <div class="detail-value">
+                            {% if product.external_url %}
+                                <a href="{{ product.external_url }}" target="_blank">{{ product.external_url }}</a>
+                            {% else %}
+                                Not set
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Button Text</label>
+                        <div class="detail-value">{{ product.button_text ?: 'Not set' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="drupal-sidebar">
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Publishing Options</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Status</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.status == 'publish' ? 'status-published' : 'status-draft' }}">
+                                {{ product.status == 'publish' ? 'Published' : 'Draft' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Catalog Visibility</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.catalog_visibility == 'visible' ? 'status-visible' : 'status-hidden' }}">
+                                {{ product.catalog_visibility == 'visible' ? 'Visible' : 'Hidden' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Featured Product</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.featured ? 'status-featured' : 'status-not-featured' }}">
+                                {{ product.featured ? 'Featured' : 'Not Featured' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Menu Order</label>
+                        <div class="detail-value">{{ product.menu_order ?: '0' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Taxation</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Tax Status</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.tax_status == 'taxable' ? 'status-taxable' : 'status-non-taxable' }}">
+                                {{ product.tax_status == 'taxable' ? 'Taxable' : 'None' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Tax Class</label>
+                        <div class="detail-value">{{ product.tax_class ?: 'Not set' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Reviews</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Reviews Allowed</label>
+                        <div class="detail-value">
+                            <span class="status-badge {{ product.reviews_allowed ? 'status-enabled' : 'status-disabled' }}">
+                                {{ product.reviews_allowed ? 'Yes' : 'No' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drupal-section">
+                <h3 class="drupal-section-header">Product Information</h3>
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <label class="detail-label">Product ID</label>
+                        <div class="detail-value">{{ product.id }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Created</label>
+                        <div class="detail-value">{{ product.created_at|date('M j, Y, g:i a') }}</div>
+                    </div>
+                    <div class="detail-group">
+                        <label class="detail-label">Updated</label>
+                        <div class="detail-value">{{ product.updated_at|date('M j, Y, g:i a') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,18 @@
+free.shipping.method:
+  name: "Free"
+  flat_price: 0
+  dynamic_price: 0
+  weight_unit: "oz"
+  applicable_max_weight: 100
+  applicable_max_dimensions: "1X1X1" # 1 is in meter
+  dimension_price: "0/0"
+  status: open
+standard.shipping.method:
+  name: "Standard"
+  flat_rate: 5
+  dynamic_price: 0.59 #  if is 0 means flat_price need to be used i not we use flat plus total amount of dynamic_price * total weight
+  weight_unit: "oz"   #  always calculate in oz i other unit given to to convert it oz first
+  applicable_max_weight: 100
+  price_aply_over_max_weight: 2.40 # this is amount to apply per oz if total weight exceed applicable_max_weight
+  dimension_price: "1.20/5" # 5 is square area while 1.20 is amount which mean here 5 square area * 120
+  status: open

@@ -1,0 +1,6 @@
+name: "Commerce Store"
+description: "Provides commerce store functionality for stores."
+version: "1.0.0"
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"

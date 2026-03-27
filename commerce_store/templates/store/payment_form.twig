@@ -1,0 +1,301 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Payment Form{% endblock %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/payment-form.css">
+
+{% endblock %}
+
+{% block content %}
+    <div class="drupal-payment-processing-container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>
+                        {% if gateway %}
+                            <i class="{{ gateway.gatewaySettings.settings.icon ?? 'fas fa-credit-card' }}"></i>
+                            {{ gateway.name ?? 'Payment Gateway' }}
+                        {% else %}
+                            Payment Processing
+                        {% endif %}
+                    </h1>
+                </div>
+                <div class="page-actions">
+                    {% if order %}
+                        <a href="{{ url('commerce_store.order.payments', {'id': order.id}) }}" class="btn">Back to Payments</a>
+                        <a href="{{ url('commerce_store.orders.view', {'id': order.id}) }}" class="btn">View Order</a>
+                    {% endif %}
+                    <a href="{{ url('commerce_store.orders') }}" class="btn">Back to Orders</a>
+                </div>
+            </div>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong style="display: block; margin-bottom: 5px;">Error</strong>
+                    {{ error }}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if store and order and gateway %}
+            <!-- Order Summary Grid -->
+            <div class="view-section">
+                <h3>Order Summary</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Order Number</span>
+                        <span class="info-value">{{ order.order_number }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total Amount</span>
+                        <span class="info-value" style="color: var(--drupal-primary-color); font-weight: 700;">{{ order.currency }} {{ order.total_amount|number_format(2) }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Payment Method</span>
+                        <span class="info-value">
+                        <span class="badge badge-primary">{{ gateway.gatewaySettings.settings.name ?? gateway.gatewayName }}</span>
+                    </span>
+                    </div>
+                    <div class="info-item" style="border-bottom: none;">
+                        <span class="info-label">Customer</span>
+                        <span class="info-value">{{ order.customer.first_name }} {{ order.customer.last_name }}</span>
+                    </div>
+                    <div class="info-item" style="border-bottom: none;">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ order.customer.email }}</span>
+                    </div>
+                    <div class="info-item" style="border-bottom: none; border-right: none;">
+                        <span class="info-label">Order Date</span>
+                        <span class="info-value">{{ order.created_at|date('M j, Y H:i') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Form Section -->
+            <div class="view-section">
+                <h3><i class="fas fa-lock"></i> Secure Payment Information</h3>
+                <div class="form-area">
+                    {% if form %}
+                        <div class="payment-form-inner">
+                            <div class="alert alert-info">
+                                <i class="fas fa-shield-alt"></i>
+                                <div>
+                                    <strong>Secure Payment:</strong> Your payment information is encrypted and processed securely. We never store your payment details on our servers.
+                                </div>
+                            </div>
+
+                            {% if gateway.gatewaySettings.settings.description %}
+                                <div style="background: #f8f9fa; padding: 15px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 20px; font-size: 0.9rem;">
+                                    <strong>{{ gateway.gatewaySettings.settings.name }}:</strong> {{ gateway.gatewaySettings.settings.description }}
+                                </div>
+                            {% endif %}
+
+                            <div class="raw-form-container">
+                                {{ form|raw }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div style="text-align: center; padding: 50px;">
+                            <i class="fas fa-exclamation-triangle fa-3x" style="color: #ffc107; margin-bottom: 15px;"></i>
+                            <h5 style="margin-bottom: 10px;">Payment Form Not Available</h5>
+                            <p style="color: #666; margin-bottom: 20px;">The payment gateway form could not be loaded. Please try again or contact support.</p>
+                            <a href="{{ url('commerce_store.order.payments', {'id': order.id}) }}" class="btn btn-primary">
+                                Back to Payments
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Security & Privacy Split Grid -->
+                <div class="security-grid">
+                    <div class="security-col">
+                        <h4><i class="fas fa-lock"></i> Security Features</h4>
+                        <ul>
+                            <li>256-bit SSL encryption</li>
+                            <li>PCI DSS compliant</li>
+                            <li>Fraud detection system</li>
+                            <li>Secure data transmission</li>
+                        </ul>
+                    </div>
+                    <div class="security-col">
+                        <h4><i class="fas fa-user-shield"></i> Privacy Protection</h4>
+                        <ul>
+                            <li>No card details stored</li>
+                            <li>Privacy policy compliance</li>
+                            <li>GDPR compliant processing</li>
+                            <li>Secure data handling</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong style="display: block; margin-bottom: 5px;">Unable to Process Payment</strong>
+                    <p style="margin-bottom: 15px;">Please ensure you have a valid store, order, and payment gateway selected.</p>
+                    <a href="{{ url('commerce_store.orders') }}" class="btn btn-primary">
+                        Back to Orders
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.payment-form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.payment-form-container form {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.payment-form-container .form-group {
+    margin-bottom: 20px;
+}
+
+.payment-form-container label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.payment-form-container .form-control {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.payment-form-container .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.payment-form-container .btn-primary {
+    background: #007bff;
+    border: none;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.payment-form-container .btn-primary:hover {
+    background: #0056b3;
+}
+
+.payment-form-container .text-muted {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.payment-form-container .alert {
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.payment-form-container .card-number-group,
+.payment-form-container .expiry-group,
+.payment-form-container .cvv-group {
+    display: flex;
+    gap: 15px;
+}
+
+.payment-form-container .card-number-group .form-group {
+    flex: 1;
+}
+
+.payment-form-container .expiry-group .form-group,
+.payment-form-container .cvv-group .form-group {
+    flex: 1;
+}
+
+.payment-form-container .card-icon {
+    position: absolute;
+    right: 15px;
+    top: 42px;
+    font-size: 20px;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .payment-form-container {
+        padding: 20px;
+    }
+    
+    .payment-form-container .card-number-group,
+    .payment-form-container .expiry-group,
+    .payment-form-container .cvv-group {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-format card number
+    const cardNumberInput = document.querySelector('input[name*="card_number"], input[name*="card-number"]');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+    }
+
+    // Auto-format expiry date
+    const expiryInput = document.querySelector('input[name*="expiry"], input[name*="expiration"]');
+    if (expiryInput) {
+        expiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Only allow numbers for CVV
+    const cvvInput = document.querySelector('input[name*="cvv"], input[name*="cvc"]');
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    }
+
+    // Form validation
+    const form = document.querySelector('.payment-form-container form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,640 @@
+/* Scoped Drupal-like Checkout Grid Layout */
+
+.drupal-checkout-container {
+    --drupal-border-color: #d3d3d3;
+    --drupal-bg-header: #f1f1f1;
+    --drupal-bg-stripe: #f9f9f9;
+    --drupal-label-weight: 700;
+    --drupal-primary-color: #007bff;
+    --drupal-text-color: #333;
+    --drupal-input-bg: #fff;
+    --drupal-input-border: #ccc;
+    --drupal-input-focus: #007bff;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--drupal-text-color);
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.drupal-checkout-container *,
+.drupal-checkout-container *::before,
+.drupal-checkout-container *::after {
+    box-sizing: inherit;
+}
+
+/* Page Header */
+.drupal-checkout-container .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    padding-bottom: 1rem;
+}
+
+.drupal-checkout-container .page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drupal-checkout-container .page-title h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* PROGRESS STEPS */
+.drupal-checkout-container .progress-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+    padding: 20px;
+}
+
+.drupal-checkout-container .checkout-progress {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.drupal-checkout-container .progress-step {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #eee;
+    background: #fcfcfc;
+    position: relative;
+}
+
+.drupal-checkout-container .progress-step.active {
+    border-color: var(--drupal-primary-color);
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.drupal-checkout-container .progress-step.completed {
+    background: #f6fff6;
+    border-color: #c8e6c9;
+}
+
+.drupal-checkout-container .step-number {
+    width: 30px;
+    height: 30px;
+    background: #eee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.drupal-checkout-container .progress-step.active .step-number {
+    background: var(--drupal-primary-color);
+    color: #fff;
+}
+
+.drupal-checkout-container .progress-step.completed .step-number {
+    background: #2e7d32;
+    color: #fff;
+}
+
+.drupal-checkout-container .step-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.drupal-checkout-container .step-description {
+    font-size: 0.75rem;
+    color: #777;
+}
+
+/* MAIN CONTENT & SIDEBAR GRID */
+.drupal-checkout-container .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+    align-items: start;
+}
+
+/* SECTIONS */
+.drupal-checkout-container .view-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+}
+
+.drupal-checkout-container h3,
+.drupal-checkout-container h5 {
+    background: var(--drupal-bg-header);
+    padding: 12px 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    margin: 0;
+}
+
+/* GENERAL FORM ELEMENT STYLING (FOR DYNAMIC HTML) */
+.drupal-checkout-container form {
+    padding: 20px;
+}
+
+.drupal-checkout-container input[type="text"],
+.drupal-checkout-container input[type="email"],
+.drupal-checkout-container input[type="tel"],
+.drupal-checkout-container input[type="password"],
+.drupal-checkout-container input[type="number"],
+.drupal-checkout-container select,
+.drupal-checkout-container textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid var(--drupal-input-border);
+    background-color: var(--drupal-input-bg);
+    border-radius: 2px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    color: var(--drupal-text-color);
+}
+
+.drupal-checkout-container input:focus,
+.drupal-checkout-container select:focus,
+.drupal-checkout-container textarea:focus {
+    outline: none;
+    border-color: var(--drupal-input-focus);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.drupal-checkout-container label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.drupal-checkout-container .form-item {
+    margin-bottom: 20px;
+}
+
+/* BUTTONS */
+.drupal-checkout-container .btn {
+    padding: 12px 20px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.drupal-checkout-container .btn-primary {
+    background-color: var(--drupal-primary-color);
+    color: white;
+    border-color: var(--drupal-primary-color);
+}
+
+.drupal-checkout-container .btn-success {
+    background-color: #2e7d32;
+    color: white;
+    border-color: #2e7d32;
+}
+
+.drupal-checkout-container .btn-outline {
+    border-color: var(--drupal-primary-color);
+    color: var(--drupal-primary-color);
+}
+
+.drupal-checkout-container .btn-block {
+    width: 100%;
+}
+
+/* ORDER SUMMARY SIDEBAR */
+.drupal-checkout-container .summary-box {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    position: sticky;
+    top: 20px;
+}
+
+.drupal-checkout-container .summary-content {
+    padding: 20px;
+}
+
+.drupal-checkout-container .total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.drupal-checkout-container .grand-total {
+    border-top: 1px solid var(--drupal-border-color);
+    margin-top: 15px;
+    padding-top: 15px;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* Scoped Drupal-like Checkout Grid Layout */
+
+.drupal-checkout-container {
+    --drupal-border-color: #d3d3d3;
+    --drupal-bg-header: #f1f1f1;
+    --drupal-bg-stripe: #f9f9f9;
+    --drupal-label-weight: 700;
+    --drupal-primary-color: #007bff;
+    --drupal-text-color: #333;
+    --drupal-input-bg: #fff;
+    --drupal-input-border: #ccc;
+    --drupal-input-focus: #007bff;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--drupal-text-color);
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.drupal-checkout-container *,
+.drupal-checkout-container *::before,
+.drupal-checkout-container *::after {
+    box-sizing: inherit;
+}
+
+/* Page Header */
+.drupal-checkout-container .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    padding-bottom: 1rem;
+}
+
+.drupal-checkout-container .page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drupal-checkout-container .page-title h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* PROGRESS STEPS */
+.drupal-checkout-container .progress-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+    padding: 20px;
+}
+
+.drupal-checkout-container .checkout-progress {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.drupal-checkout-container .progress-step {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #eee;
+    background: #fcfcfc;
+    position: relative;
+}
+
+.drupal-checkout-container .progress-step.active {
+    border-color: var(--drupal-primary-color);
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.drupal-checkout-container .progress-step.completed {
+    background: #f6fff6;
+    border-color: #c8e6c9;
+}
+
+.drupal-checkout-container .step-number {
+    width: 30px;
+    height: 30px;
+    background: #eee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.drupal-checkout-container .progress-step.active .step-number {
+    background: var(--drupal-primary-color);
+    color: #fff;
+}
+
+.drupal-checkout-container .progress-step.completed .step-number {
+    background: #2e7d32;
+    color: #fff;
+}
+
+.drupal-checkout-container .step-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.drupal-checkout-container .step-description {
+    font-size: 0.75rem;
+    color: #777;
+}
+
+/* MAIN CONTENT & SIDEBAR GRID */
+.drupal-checkout-container .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+    align-items: start;
+}
+
+/* SECTIONS */
+.drupal-checkout-container .view-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+}
+
+.drupal-checkout-container h3,
+.drupal-checkout-container h5 {
+    background: var(--drupal-bg-header);
+    padding: 12px 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    margin: 0;
+}
+
+/* GENERAL FORM ELEMENT STYLING (FOR DYNAMIC HTML) */
+.drupal-checkout-container form {
+    padding: 20px;
+}
+
+.drupal-checkout-container input[type="text"],
+.drupal-checkout-container input[type="email"],
+.drupal-checkout-container input[type="tel"],
+.drupal-checkout-container input[type="password"],
+.drupal-checkout-container input[type="number"],
+.drupal-checkout-container select,
+.drupal-checkout-container textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid var(--drupal-input-border);
+    background-color: var(--drupal-input-bg);
+    border-radius: 2px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    color: var(--drupal-text-color);
+}
+
+.drupal-checkout-container input:focus,
+.drupal-checkout-container select:focus,
+.drupal-checkout-container textarea:focus {
+    outline: none;
+    border-color: var(--drupal-input-focus);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.drupal-checkout-container label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.drupal-checkout-container .form-item {
+    margin-bottom: 20px;
+}
+
+/* BUTTONS */
+.drupal-checkout-container .btn {
+    padding: 12px 20px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.drupal-checkout-container .btn-primary {
+    background-color: var(--drupal-primary-color);
+    color: white;
+    border-color: var(--drupal-primary-color);
+}
+
+.drupal-checkout-container .btn-success {
+    background-color: #2e7d32;
+    color: white;
+    border-color: #2e7d32;
+}
+
+.drupal-checkout-container .btn-outline {
+    border-color: var(--drupal-primary-color);
+    color: var(--drupal-primary-color);
+}
+
+.drupal-checkout-container .btn-block {
+    width: 100%;
+}
+
+/* ORDER SUMMARY SIDEBAR */
+.drupal-checkout-container .summary-box {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    position: sticky;
+    top: 20px;
+}
+
+.drupal-checkout-container .summary-content {
+    padding: 20px;
+}
+
+.drupal-checkout-container .total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.drupal-checkout-container .grand-total {
+    border-top: 1px solid var(--drupal-border-color);
+    margin-top: 15px;
+    padding-top: 15px;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+
+/* Responsive */
+@media (max-width: 992px) {
+    .drupal-checkout-container .main-grid { grid-template-columns: 1fr; }
+    .drupal-checkout-container .checkout-progress { flex-direction: column; }
+}
+
+/* ORDER ITEMS REVIEW STYLING */
+.drupal-checkout-container .checkout-review-section {
+    margin-top: 10px;
+}
+
+.drupal-checkout-container .section-header {
+    padding: 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--drupal-border-color);
+}
+
+.drupal-checkout-container .section-header h4 {
+    margin: 0 0 5px 0;
+    font-weight: 700;
+    color: var(--drupal-text-color);
+}
+
+.drupal-checkout-container .section-header p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.drupal-checkout-container .order-items-review {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-top: 20px;
+}
+
+.drupal-checkout-container .items-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: var(--drupal-bg-header);
+    border-bottom: 1px solid var(--drupal-border-color);
+}
+
+.drupal-checkout-container .items-header h5 {
+    margin: 0;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* SEAMLESS TABLE STYLING */
+.drupal-checkout-container .items-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.drupal-checkout-container .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.drupal-checkout-container .table th {
+    background: var(--drupal-bg-stripe);
+    text-align: left;
+    padding: 12px 15px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #555;
+    border-bottom: 2px solid var(--drupal-border-color);
+    border-right: 1px solid var(--drupal-border-color);
+}
+
+.drupal-checkout-container .table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--drupal-border-color);
+    border-right: 1px solid var(--drupal-border-color);
+    vertical-align: middle;
+}
+
+.drupal-checkout-container .table th:last-child,
+.drupal-checkout-container .table td:last-child {
+    border-right: none;
+}
+
+.drupal-checkout-container .table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ITEM INFO */
+.drupal-checkout-container .item-info .item-name {
+    font-weight: 700;
+    color: var(--drupal-primary-color);
+    margin-bottom: 4px;
+}
+
+.drupal-checkout-container .item-info .item-sku {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* QUANTITY CONTROLS */
+.drupal-checkout-container .quantity-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #f1f1f1;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.drupal-checkout-container .quantity-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.drupal-checkout-container .quantity-btn:hover {
+    border-color: var(--drupal-primary-color);
+    color: var(--drupal-primary-color);
+}
+
+.drupal-checkout-container .quantity-display {
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+}
+
+.drupal-checkout-container .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+}
+
+
+/* Responsive */
+@media (max-width: 992px) {
+    .drupal-checkout-container .main-grid { grid-template-columns: 1fr; }
+    .drupal-checkout-container .checkout-progress { flex-direction: column; }
+}

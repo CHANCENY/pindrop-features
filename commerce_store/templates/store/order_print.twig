@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order #{{ order.order.order_number }} - Invoice</title>
+    <style>
+        /* Scoped Drupal-like Invoice Grid Layout */
+
+        .drupal-invoice-container {
+            --drupal-border-color: #d3d3d3;
+            --drupal-bg-header: #f1f1f1;
+            --drupal-bg-stripe: #f9f9f9;
+            --drupal-label-weight: 700;
+            --drupal-primary-color: #007bff;
+            --drupal-text-color: #333;
+
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--drupal-text-color);
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 30px;
+            background: #fff;
+            border: 1px solid var(--drupal-border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .drupal-invoice-container *,
+        .drupal-invoice-container *::before,
+        .drupal-invoice-container *::after {
+            box-sizing: inherit;
+        }
+
+        /* Header Section */
+        .drupal-invoice-container .invoice-header {
+            border-bottom: 3px solid var(--drupal-primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .drupal-invoice-container .header-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: start;
+        }
+
+        .drupal-invoice-container .header-left h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: var(--drupal-primary-color);
+            letter-spacing: 2px;
+        }
+
+        .drupal-invoice-container .header-left h2 {
+            margin: 5px 0 0;
+            font-size: 1.25rem;
+            color: #666;
+        }
+
+        .drupal-invoice-container .header-right {
+            text-align: right;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Address Split Grid */
+        .drupal-invoice-container .address-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--drupal-border-color);
+            margin-bottom: 30px;
+        }
+
+        .drupal-invoice-container .address-box {
+            padding: 20px;
+            border-right: 1px solid var(--drupal-border-color);
+        }
+
+        .drupal-invoice-container .address-box:last-child {
+            border-right: none;
+        }
+
+        .drupal-invoice-container .address-box h3 {
+            background: var(--drupal-bg-header);
+            margin: -20px -20px 15px -20px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--drupal-border-color);
+        }
+
+        .drupal-invoice-container .address-content {
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Items Table */
+        .drupal-invoice-container .drupal-table-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .drupal-invoice-container .drupal-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid var(--drupal-border-color);
+        }
+
+        .drupal-invoice-container .drupal-table th {
+            background: var(--drupal-bg-header);
+            border-bottom: 2px solid var(--drupal-border-color);
+            border-right: 1px solid var(--drupal-border-color);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .drupal-invoice-container .drupal-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--drupal-border-color);
+            border-right: 1px solid var(--drupal-border-color);
+            font-size: 0.95rem;
+        }
+
+        .drupal-invoice-container .drupal-table th:last-child,
+        .drupal-invoice-container .drupal-table td:last-child {
+            border-right: none;
+        }
+
+        .drupal-invoice-container .text-right { text-align: right; }
+
+        /* Totals and Notes Grid */
+        .drupal-invoice-container .bottom-section {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 30px;
+        }
+
+        .drupal-invoice-container .notes-area h3,
+        .drupal-invoice-container .totals-area h3 {
+            font-size: 1rem;
+            border-bottom: 1px solid var(--drupal-border-color);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .drupal-invoice-container .notes-content {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .drupal-invoice-container .totals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border: 1px solid var(--drupal-border-color);
+        }
+
+        .drupal-invoice-container .total-label {
+            padding: 8px 15px;
+            background: var(--drupal-bg-header);
+            border-bottom: 1px solid var(--drupal-border-color);
+            border-right: 1px solid var(--drupal-border-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .drupal-invoice-container .total-value {
+            padding: 8px 15px;
+            border-bottom: 1px solid var(--drupal-border-color);
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        .drupal-invoice-container .grand-total {
+            background: var(--drupal-primary-color);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .drupal-invoice-container .grand-total-label {
+            background: #333;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .drupal-invoice-container .invoice-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--drupal-border-color);
+            text-align: center;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Print Specifics */
+        @media print {
+            .drupal-invoice-container {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+{# Scoped Drupal-like Invoice Structure #}
+<div class="drupal-invoice-container">
+
+    <!-- Invoice Header -->
+    <div class="invoice-header">
+        <div class="header-grid">
+            <div class="header-left">
+                <h1>INVOICE</h1>
+                <h2>Order #{{ order.order.order_number }}</h2>
+            </div>
+            <div class="header-right">
+                <strong>Date:</strong> {{ order.order.created_at|date('F j, Y') }}<br>
+                <strong>Invoice #:</strong> INV-{{ order.order.id }}<br>
+                <strong>Status:</strong> {{ order.order.status|title }}<br>
+                <strong>Payment:</strong> {{ order.order.payment_status|title }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill To / Ship To Split Grid -->
+    <div class="address-section">
+        <div class="address-box">
+            <h3>Bill To</h3>
+            <div class="address-content">
+                <strong>{{ order.customer.first_name }} {{ order.customer.last_name }}</strong><br>
+                {% if order.customer.company %}{{ order.customer.company }}<br>{% endif %}
+                {{ order.customer.billing_address_1 }}<br>
+                {% if order.customer.billing_address_2 %}{{ order.customer.billing_address_2 }}<br>{% endif %}
+                {{ order.customer.billing_city }}, {{ order.customer.billing_state }} {{ order.customer.billing_postcode }}<br>
+                {{ order.customer.billing_country }}<br>
+                <strong>Email:</strong> {{ order.customer.email }}<br>
+                {% if order.customer.phone %}<strong>Phone:</strong> {{ order.customer.phone }}{% endif %}
+            </div>
+        </div>
+        <div class="address-box">
+            <h3>Ship To</h3>
+            <div class="address-content">
+                {% if order.customer.shipping_same_as_billing %}
+                    <em>Same as billing address</em>
+                {% else %}
+                    {{ order.customer.shipping_address_1 }}<br>
+                    {% if order.customer.shipping_address_2 %}{{ order.customer.shipping_address_2 }}<br>{% endif %}
+                    {{ order.customer.shipping_city }}, {{ order.customer.shipping_state }} {{ order.customer.shipping_postcode }}<br>
+                    {{ order.customer.shipping_country }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items Table -->
+    <div class="drupal-table-wrapper">
+        <table class="drupal-table">
+            <thead>
+            <tr>
+                <th>Product Description</th>
+                <th>SKU</th>
+                <th>Unit Price</th>
+                <th>Qty</th>
+                <th class="text-right">Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in order.items %}
+                <tr>
+                    <td>
+                        <strong>{{ item.item_name }}</strong>
+                        {% if item.variation_id %}
+                            <br><small style="color: #666;">Variation ID: {{ item.variation_id }}</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.item_sku }}</td>
+                    <td>{{ order.order.currency }} {{ item.unit_price|number_format(2) }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td class="text-right">{{ order.order.currency }} {{ (item.unit_price * item.quantity)|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bottom Section: Notes and Totals -->
+    <div class="bottom-section">
+        <!-- Notes Area -->
+        <div class="notes-area">
+            {% if order.order.notes or order.order.admin_notes or order.order.adjustments|length > 0 %}
+                {% if order.order.adjustments|length > 0 %}
+                    <h3>Adjustments</h3>
+                    <div class="notes-content" style="margin-bottom: 20px;">
+                        {% for adjustment in order.order.adjustments %}
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>{{ adjustment.label }} ({{ adjustment.type|title }})</span>
+                                <span style="font-weight: 600;">{{ adjustment.amount > 0 ? '+' : '' }}{{ order.order.currency }} {{ adjustment.amount|number_format(2) }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if order.order.notes or order.order.admin_notes %}
+                    <h3>Notes</h3>
+                    <div class="notes-content">
+                        {% if order.order.notes %}
+                            <p><strong>Customer Notes:</strong> {{ order.order.notes }}</p>
+                        {% endif %}
+                        {% if order.order.admin_notes %}
+                            <p><strong>Internal Notes:</strong> {{ order.order.admin_notes }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Totals Area -->
+        <div class="totals-area">
+            <h3>Summary</h3>
+            <div class="totals-grid">
+                <div class="total-label">Subtotal</div>
+                <div class="total-value">{{ order.order.currency }} {{ order.order.subtotal|number_format(2) }}</div>
+
+                <div class="total-label">Tax</div>
+                <div class="total-value">{{ order.order.currency }} {{ order.order.tax_amount|number_format(2) }}</div>
+
+                <div class="total-label">Shipping</div>
+                <div class="total-value">{{ order.order.currency }} {{ order.order.shipping_amount|number_format(2) }}</div>
+
+                <div class="total-label">Discount</div>
+                <div class="total-value">-{{ order.order.currency }} {{ order.order.discount_amount|number_format(2) }}</div>
+
+                <div class="total-label grand-total-label">Grand Total</div>
+                <div class="total-value grand-total">{{ order.order.currency }} {{ order.order.total_amount|number_format(2) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Footer -->
+    <div class="invoice-footer">
+        <p>Thank you for your business!</p>
+        <p>This is a computer-generated invoice. No signature is required.</p>
+        <p>Generated on: {{ "now"|date('F j, Y H:i') }}</p>
+    </div>
+</div>
+
+    <!-- Print Button (hidden when printing) -->
+    <div class="no-print" style="text-align: center; margin-top: 20px;">
+        <button onclick="window.print()" class="btn btn-primary">Print Invoice</button>
+        <button onclick="window.close()" class="btn btn-outline">Close</button>
+    </div>
+</body>
+</html>

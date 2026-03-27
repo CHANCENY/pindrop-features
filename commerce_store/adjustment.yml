@@ -1,0 +1,34 @@
+discount:
+  label: Discount
+  type: discount
+  weight: 1
+  description: 'Store discount'
+tax:
+  label: Tax
+  type: tax
+  weight: 2
+  description: 'Store tax'
+promotion:
+  label: Promotion
+  type: promotion
+  weight: 3
+  description: 'Store promotion'
+coupon:
+  label: Coupon
+  type: coupon
+  weight: 4
+  description: 'Store coupon'
+custom:
+  label: Custom
+  type: custom
+  weight: 5
+  description: 'Custom adjustment'
+shipping:
+  label: "Shipping"
+  type: shipping
+  weight: 6
+  description: "Shipping adjustment"
+
+# These are default adjustments can be used in order adjustments.
+# You can make your own adjustments and use them in order adjustments.
+# You need to define them in your module like this, the system will pick up the adjustments automatically.

@@ -1,0 +1,227 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Orders - {{ store.store_name }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/orders.css">
+{% endblock %}
+
+{% block content %}
+    {# Scoped Drupal-like Orders List Structure #}
+    <div class="drupal-orders-container">
+
+        <!-- Success and Error Messages -->
+        {% if success %}
+            <div class="alert alert-success" style="padding: 1rem; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin-bottom: 1rem;">
+                {{ success }}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Orders</h1>
+                    <p>Manage your store orders</p>
+                </div>
+                <div class="page-actions">
+                    <a href="{{ url('commerce_store.order.create') }}" class="btn btn-primary">
+                        Create Order
+                    </a>
+                    <a href="{{ url('commerce_store.orders.export') }}" id="exportOrder" class="btn">
+                        Export Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Statistics (Seamless Grid) -->
+        {% if stats.orders %}
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-number" style="color: #007bff;">{{ stats.orders.total_orders }}</div>
+                            <div class="stat-label">Total Orders</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-number" style="color: #28a745;">${{ stats.orders.total_revenue|number_format(2, '.', ',') }}</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-number" style="color: #17a2b8;">{{ stats.customers.total_customers }}</div>
+                            <div class="stat-label">Total Customers</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-number" style="color: #ffc107;">${{ stats.orders.average_order_value|number_format(2, '.', ',') }}</div>
+                            <div class="stat-label">Avg Order Value</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Filters Section (Seamless Grid) -->
+        <div class="filters-section">
+            <form method="GET" action="{{ current_url }}" class="filter-form">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="search" class="filter-label">Search</label>
+                        <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Order #...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="status" class="filter-label">Order Status</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="processing" {% if status == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="payment_status" class="filter-label">Payment Status</label>
+                        <select class="form-control" id="payment_status" name="payment_status">
+                            <option value="">All Payments</option>
+                            <option value="completed" {% if payment_status == 'completed' %}selected{% endif %}>Completed</option>
+                            <option value="pending" {% if payment_status == 'pending' %}selected{% endif %}>Pending</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="date_from" class="filter-label">Date From</label>
+                        <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}">
+                    </div>
+                    <div class="filter-group">
+                        <label for="date_to" class="filter-label">Date To</label>
+                        <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}">
+                    </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="{{ url('commerce_store.orders') }}" class="btn">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Orders Table (Seamless Grid) -->
+        <div class="orders-section">
+            <table class="orders-table">
+                <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Total</th>
+                    <th>Items</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if orders %}
+                    {% for order in orders %}
+                        <tr>
+                            <td><strong>{{ order.order_number }}</strong></td>
+                            <td>
+                                <div>{{ order.customer_name }}</div>
+                                <small style="color: #666;">{{ order.customer_email }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ order.status == 'completed' ? 'success' : 'info' }}">
+                                    {{ order.status|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ order.payment_status == 'completed' ? 'success' : 'warning' }}">
+                                    {{ order.payment_status|title }}
+                                </span>
+                            </td>
+                            <td><strong>${{ order.total_amount }}</strong></td>
+                            <td>{{ order.item_count }}</td>
+                            <td>{{ order.created_at|date('M j, Y') }}</td>
+                            <td>
+                                <a href="{{ url('commerce_store.orders.view', {id: order.id}) }}" class="btn">View</a>
+                                <a href="{{ url('commerce_store.orders.edit',{id: order.id}) }}" class="btn">Edit</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: #777;">No orders found.</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmCancelOrder(orderId) {
+    const modal = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
+    modal.show();
+    
+    document.getElementById('confirmCancelBtn').onclick = function() {
+        const reason = document.getElementById('cancelReason').value;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url("commerce_store.orders.cancel") }}';
+        
+        const orderIdInput = document.createElement('input');
+        orderIdInput.type = 'hidden';
+        orderIdInput.name = 'order_id';
+        orderIdInput.value = orderId;
+        form.appendChild(orderIdInput);
+        
+        const reasonInput = document.createElement('input');
+        reasonInput.type = 'hidden';
+        reasonInput.name = 'reason';
+        reasonInput.value = reason;
+        form.appendChild(reasonInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    };
+}
+function exportFunction(element) {
+
+    const date_from = document.getElementById('date_from').value;
+    const date_to   = document.getElementById('date_to').value;
+
+    if (element && date_from && date_to) {
+        const params = {
+            date_from,
+            date_to,
+            status: document.getElementById('status').value,
+            payment_status: document.getElementById('payment_status').value,
+            search: document.getElementById('search').value
+        }
+
+        const url = element.href;
+        const query = new URLSearchParams(params);
+        window.location.href = url + "?" + query.toString();
+    }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('exportOrder').addEventListener('click',(e)=>{
+        e.preventDefault();
+        exportFunction(e.target)
+    })
+})
+
+</script>
+{% endblock %}

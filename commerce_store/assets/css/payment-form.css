@@ -1,0 +1,205 @@
+/* Scoped Drupal-like Payment Processing Grid Layout */
+
+.drupal-payment-processing-container {
+    --drupal-border-color: #d3d3d3;
+    --drupal-bg-header: #f1f1f1;
+    --drupal-bg-stripe: #f9f9f9;
+    --drupal-label-weight: 700;
+    --drupal-primary-color: #007bff;
+    --drupal-text-color: #333;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--drupal-text-color);
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.drupal-payment-processing-container *,
+.drupal-payment-processing-container *::before,
+.drupal-payment-processing-container *::after {
+    box-sizing: inherit;
+}
+
+/* Page Header */
+.drupal-payment-processing-container .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    padding-bottom: 1rem;
+}
+
+.drupal-payment-processing-container .page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drupal-payment-processing-container .page-title h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* GRID SECTIONS */
+.drupal-payment-processing-container .view-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.drupal-payment-processing-container h3 {
+    background: var(--drupal-bg-header);
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* SEAMLESS INFO GRID ENGINE */
+.drupal-payment-processing-container .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+}
+
+.drupal-payment-processing-container .info-item {
+    margin-bottom: 0;
+    padding: 15px;
+    border-right: 1px solid var(--drupal-border-color);
+    border-bottom: 1px solid var(--drupal-border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Grid logic for 3-columns */
+.drupal-payment-processing-container .info-grid > .info-item:nth-child(3n) {
+    border-right: none;
+}
+
+/* Labels and Values */
+.drupal-payment-processing-container .info-label {
+    display: block;
+    font-weight: var(--drupal-label-weight);
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.drupal-payment-processing-container .info-value {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* PAYMENT FORM CONTAINER */
+.drupal-payment-processing-container .form-area {
+    padding: 20px;
+}
+
+.drupal-payment-processing-container .payment-form-inner {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* BADGES */
+.drupal-payment-processing-container .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.drupal-payment-processing-container .badge-primary { background: #e7f3f9; color: #1d5d8e; border: 1px solid #bcdff1; }
+
+/* BUTTONS */
+.drupal-payment-processing-container .btn {
+    padding: 8px 16px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #333;
+}
+
+.drupal-payment-processing-container .btn-primary {
+    background-color: var(--drupal-primary-color);
+    color: white;
+    border-color: var(--drupal-primary-color);
+}
+
+.drupal-payment-processing-container .btn-outline {
+    border-color: var(--drupal-primary-color);
+    color: var(--drupal-primary-color);
+}
+
+/* ALERTS */
+.drupal-payment-processing-container .alert {
+    padding: 15px;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.drupal-payment-processing-container .alert-info { background: #e7f3f9; color: #1d5d8e; border-color: #bcdff1; }
+.drupal-payment-processing-container .alert-danger { background: #fdeaea; color: #c62828; border-color: #ffcdd2; }
+.drupal-payment-processing-container .alert-warning { background: #fffcf0; color: #846107; border-color: #ffeeb8; }
+
+/* SECURITY LISTS */
+.drupal-payment-processing-container .security-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--drupal-border-color);
+}
+
+.drupal-payment-processing-container .security-col {
+    padding: 20px;
+    border-right: 1px solid var(--drupal-border-color);
+}
+
+.drupal-payment-processing-container .security-col:last-child {
+    border-right: none;
+}
+
+.drupal-payment-processing-container .security-col h4 {
+    margin-top: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drupal-payment-processing-container .security-col ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .drupal-payment-processing-container .info-grid { grid-template-columns: 1fr; }
+    .drupal-payment-processing-container .info-item { border-right: none; }
+    .drupal-payment-processing-container .security-grid { grid-template-columns: 1fr; }
+    .drupal-payment-processing-container .security-col { border-right: none; border-bottom: 1px solid var(--drupal-border-color); }
+}

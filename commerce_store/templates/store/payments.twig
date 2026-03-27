@@ -1,0 +1,190 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Payments for Order #{{ order.order_number }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/modules/commerce_store/assets/css/payments.css">
+{% endblock %}
+
+{% block content %}
+<div class="drupal-order-payments-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="page-title">
+                <h1>Payments for Order #{{ order.order_number }}</h1>
+                <p>Manage transaction history and payment status</p>
+            </div>
+            <div class="page-actions">
+                <a href="{{ url('commerce_store.orders.view', {'id': order.id}) }}" class="btn">View Order</a>
+                <a href="{{ url('commerce_store.orders.edit', {'id': order.id}) }}" class="btn btn-primary">Edit Order</a>
+                <a href="{{ url('commerce_store.orders') }}" class="btn">Back to Orders</a>
+            </div>
+        </div>
+    </div>
+
+    {% if success %}
+        <div class="alert alert-success" style="padding: 1rem; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin-bottom: 1rem;">
+            {{ success }}
+        </div>
+    {% endif %}
+
+    {% if error %}
+        <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if order %}
+        <!-- Order Summary Grid -->
+        <div class="view-section">
+            <h3>Order Summary</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Order Number</span>
+                    <span class="info-value">{{ order.order_number }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Order Date</span>
+                    <span class="info-value">{{ order.created_at|date('M j, Y H:i') }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Total Amount</span>
+                    <span class="info-value">{{ order.currency }} {{ order.total_amount|number_format(2) }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Payment Status</span>
+                    <span class="info-value">
+                        <span class="badge badge-{{ order.payment_status == 'completed' ? 'success' : (order.payment_status == 'failed' ? 'danger' : 'warning') }}">
+                            {{ order.payment_status|title }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Info Grid -->
+        <div class="view-section">
+            <h3>Customer Information</h3>
+            <div class="info-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="info-item">
+                    <span class="info-label">Name</span>
+                    <span class="info-value">{{ order.customer.first_name }} {{ order.customer.last_name }}</span>
+                </div>
+                <div class="info-item" style="border-right: none;">
+                    <span class="info-label">Email</span>
+                    <span class="info-value"><a href="mailto:{{ order.customer.email }}">{{ order.customer.email }}</a></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments List Table -->
+        <div class="view-section">
+            <h3>
+                Payment Transactions
+                <a href="{{ url('commerce_store.order.payments.options',{id: order.id}) }}" type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addPaymentModal">
+                    Add Payment
+                </a>
+            </h3>
+            <div class="drupal-table-wrapper">
+                <table class="drupal-table">
+                    <thead>
+                        <tr>
+                            <th>Payment ID</th>
+                            <th>Method</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Transaction ID</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if payments|length > 0 %}
+                            {% for payment in payments %}
+                                <tr>
+                                    <td>#{{ payment.id }}</td>
+                                    <td>{{ payment.payment_method|title }}</td>
+                                    <td>{{ order.currency }} {{ payment.amount|number_format(2) }}</td>
+                                    <td>
+                                        <span class="badge badge-{% if payment.status == 'completed' %}success{% elseif payment.status == 'failed' %}danger{% elseif payment.status == 'refunded' %}warning{% else %}secondary{% endif %}">
+                                            {{ payment.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>{{ payment.created_at|date('M j, Y H:i') }}</td>
+                                    <td>
+                                        {% if payment.transaction_id %}
+                                            <code>{{ payment.transaction_id }}</code>
+                                        {% else %}
+                                            <span style="color: #999;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; gap: 5px;">
+                                            {% if payment.status == 'pending' %}
+                                                <button type="button" class="btn btn-success btn-sm" onclick="processPayment({{ payment.id }})">Process</button>
+                                            {% endif %}
+                                            {% if payment.status == 'completed' %}
+                                                <button type="button" class="btn btn-warning btn-sm" onclick="refundPayment({{ payment.id }})">Refund</button>
+                                            {% endif %}
+                                            <button type="button" class="btn btn-sm" onclick="viewPaymentDetails({{ payment.id }})">Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px;">
+                                    <p style="color: #666; margin-bottom: 15px;">No payments recorded for this order yet.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payment Summary Grid -->
+        {% if payments|length > 0 %}
+            <div class="view-section">
+                <h3>Payment Summary</h3>
+                {% set totalPaid = 0 %}
+                {% set completedPayments = 0 %}
+                {% for payment in payments %}
+                    {% if payment.status == 'completed' %}
+                        {% set completedPayments = completedPayments + 1 %}
+                        {% set totalPaid = totalPaid + payment.amount %}
+                    {% endif %}
+                {% endfor %}
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Total Paid</span>
+                        <span class="info-value" style="color: #2e7d32;">{{ order.currency }} {{ totalPaid|number_format(2) }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Remaining Balance</span>
+                        <span class="info-value" style="color: {{ (order.total_amount - totalPaid) > 0 ? '#c62828' : '#2e7d32' }};">
+                            {{ order.currency }} {{ (order.total_amount - totalPaid)|number_format(2) }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Completed Transactions</span>
+                        <span class="info-value">{{ completedPayments }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total Transactions</span>
+                        <span class="info-value">{{ payments|length }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+</script>
+{% endblock %}

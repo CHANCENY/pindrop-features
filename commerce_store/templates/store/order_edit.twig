@@ -1,0 +1,518 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Edit Order - {{ store.store_name }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/commerce_store/assets/css/order-edit.css">
+    <link rel="stylesheet" href="/themes/admin/assets/css/autocomplete.css">
+{% endblock %}
+
+{% block content %}
+    {# Scoped Drupal-like Order Edit Structure #}
+    <div class="drupal-order-edit-container">
+
+        <!-- Success and Error Messages -->
+        {% if success %}
+            <div class="alert alert-success" style="padding: 1rem; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin-bottom: 1rem;">
+                {{ success }}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger" style="padding: 1rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h1>Edit Order</h1>
+                    <p>Update order: <strong>{{ order.order.order_number }}</strong></p>
+                </div>
+                <div class="page-actions">
+                    <a href="{{ url('commerce_store.orders') }}" class="btn">
+                        Back to Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Edit Form (Seamless Grid) -->
+        {% if order %}
+            <div class="order-edit-section">
+                <form method="POST" action="{{ current_url }}" class="order-form">
+
+                    <!-- ADDRESS SECTIONS (SIDE BY SIDE) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #d3d3d3;">
+                        <!-- Billing Address -->
+                        <div style="border-right: 1px solid #d3d3d3;">
+                            <h3 style="background: #f1f1f1; padding: 10px 15px; font-weight: 700; font-size: 1rem; border-bottom: 1px solid #d3d3d3; margin: 0;">Billing Address</h3>
+                            <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="billing[name]" value="{{ order.customer.first_name ?? '' }} {{ order.customer.last_name ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="billing[email]" value="{{ order.customer.email ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" name="billing[phone]" value="{{ order.customer.phone ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Address Line 1</label>
+                                    <input type="text" class="form-control" name="billing[address1]" value="{{ order.customer.billing_address_1 ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Address Line 2</label>
+                                    <input type="text" class="form-control" name="billing[address2]" value="{{ order.customer.billing_address_2 ?? '' }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">City</label>
+                                    <input type="text" class="form-control" name="billing[city]" value="{{ order.customer.billing_city ?? '' }}">
+                                </div>
+                                <div class="form-group" style="border-right: none;">
+                                    <label class="form-label">Postal Code</label>
+                                    <input type="text" class="form-control" name="billing[postcode]" value="{{ order.customer.billing_postcode ?? '' }}">
+                                </div>
+                                <div class="form-group" style="border-right: none;">
+                                    <label class="form-label">State</label>
+                                    <input type="text" class="form-control" name="billing[state]" value="{{ order.customer.billing_state ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2; border-bottom: none;">
+                                    <label class="form-label">Country</label>
+                                    <input type="text" class="form-control" name="billing[country]" value="{{ order.customer.billing_country ?? '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Address -->
+                        <div>
+                            <h3 style="background: #f1f1f1; padding: 10px 15px; font-weight: 700; font-size: 1rem; border-bottom: 1px solid #d3d3d3; margin: 0;">Shipping Address</h3>
+                            <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="shipping[name]" value="{{ order.customer.first_name ?? '' }} {{ order.customer.last_name ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="shipping[email]" value="{{ order.customer.email ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" name="shipping[phone]" value="{{ order.customer.phone ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Address Line 1</label>
+                                    <input type="text" class="form-control" name="shipping[address1]" value="{{ order.customer.shipping_address_1 ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label">Address Line 2</label>
+                                    <input type="text" class="form-control" name="shipping[address2]" value="{{ order.customer.shipping_address_2 ?? '' }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">City</label>
+                                    <input type="text" class="form-control" name="shipping[city]" value="{{ order.customer.shipping_city ?? '' }}">
+                                </div>
+                                <div class="form-group" style="border-right: none;">
+                                    <label class="form-label">Postal Code</label>
+                                    <input type="text" class="form-control" name="shipping[postcode]" value="{{ order.customer.shipping_postcode ?? '' }}">
+                                </div>
+                                <div class="form-group" style="border-right: none;">
+                                    <label class="form-label">State</label>
+                                    <input type="text" class="form-control" name="shipping[state]" value="{{ order.customer.shipping_state ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2; border-bottom: none;">
+                                    <label class="form-label">Country</label>
+                                    <input type="text" class="form-control" name="shipping[country]" value="{{ order.customer.shipping_country ?? '' }}">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2; border-bottom: none;">
+                                    <label class="form-label">Shipping address same as billing address</label>
+                                    <input {% if order.customer.shipping_same_as_billing %} checked {% endif%} type="checkbox" class="" name="shipping[same_as]" value="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>General Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="order_number" class="form-label">Order Number *</label>
+                            <input type="text" class="form-control" id="order_number" name="order_number" value="{{ order.order.order_number }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customer_id" class="form-label">Customer ID *</label>
+                            <input type="text" class="form-control" id="customer_id" name="customer_id" value="{{ order.order.customer.id }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="pending" {% if order.order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="processing" {% if order.order.status == 'processing' %}selected{% endif %}>Processing</option>
+                                <option value="completed" {% if order.order.status == 'completed' %}selected{% endif %}>Completed</option>
+                                <option value="cancelled" {% if order.order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="payment_status" class="form-label">Payment Status</label>
+                            <select class="form-control" id="payment_status" name="payment_status">
+                                <option value="pending" {% if order.order.payment_status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="processing" {% if order.order.payment_status == 'processing' %}selected{% endif %}>Processing</option>
+                                <option value="completed" {% if order.order.payment_status == 'completed' %}selected{% endif %}>Completed</option>
+                                <option value="failed" {% if order.order.payment_status == 'failed' %}selected{% endif %}>Failed</option>
+                                <option value="refund" {% if order.order.payment_status == 'refund' %}selected{% endif %}>Refund</option>
+                                <option value="partially_refund" {% if order.order.payment_status == 'partially_refund' %}selected{% endif %}>Partial Refund</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3>Financial Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="subtotal" class="form-label">Subtotal</label>
+                            <input type="number" step="0.01" class="form-control" id="subtotal" name="subtotal" value="{{ order.order.subtotal }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tax_amount" class="form-label">Tax Amount</label>
+                            <input type="number" step="0.01" class="form-control" id="tax_amount" name="tax_amount" value="{{ order.order.tax_amount }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="shipping_amount" class="form-label">Shipping</label>
+                            <input type="number" step="0.01" class="form-control" id="shipping_amount" name="shipping_amount" value="{{ order.order.shipping_amount }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="total_amount" class="form-label">Total Amount *</label>
+                            <input type="number" step="0.01" class="form-control" id="total_amount" name="total_amount" value="{{ order.order.total_amount }}" required>
+                        </div>
+                    </div>
+
+                    <h3>Order Items</h3>
+                    <div class="order-items-section">
+                        {% if order.items is defined and order.items|length > 0 %}
+                            {% for item in order.items %}
+                                <div class="form-grid">
+                                    <div class="form-group half-width">
+                                        <label class="form-label">Item</label>
+                                        <input type="text" class="form-control"
+                                               name="order_items[id][]"
+                                               value="{{ item|auto_complete_order_item['value'] }}" placeholder="Search for products">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Quantity</label>
+                                        <input type="number" class="form-control" name="order_items[quantity][]" value="{{ item.quantity }}">
+                                    </div>
+                                    <div class="adjustment-actions">
+                                        <button type="button" class="btn btn-danger">Remove</button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="form-grid">
+                                <div class="form-group half-width">
+                                    <label class="form-label">Item</label>
+                                    <input type="text" class="form-control" name="order_items[id][]" placeholder="Search for products">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" name="order_items[quantity][]" value="1">
+                                </div>
+                                <div class="adjustment-actions">
+                                    <button type="button" class="btn btn-danger">Remove</button>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="add-more-item">
+                            <button type="button" class="btn btn-outline">Add Another Item</button>
+                        </div>
+                    </div>
+
+                    <h3>Order Adjustments</h3>
+                    <div class="order-adjustments-section">
+                        {% if order.order.adjustments is defined and order.order.adjustments|length > 0 %}
+                            {% for adjustment in order.order.adjustments %}
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Type</label>
+                                        <select class="form-control" name="adjustments[type][]">
+                                            {% for option in adjustment_list %}
+                                                <option value="{{ option.type }}"
+                                                        {% if option.type == adjustment.type %}selected{% endif %}>
+                                                    {{ option.label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Label</label>
+                                        <input type="text" class="form-control" name="adjustments[label][]" value="{{ adjustment.label }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Amount</label>
+                                        <input type="text" class="form-control" name="adjustments[amount][]" value="{{ adjustment.amount }}">
+                                    </div>
+                                    <div class="adjustment-actions">
+                                        <button type="button" class="btn btn-danger">Remove</button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-control" name="adjustments[type][]">
+                                        {% for option in adjustment_list %}
+                                            <option value="{{ option.type }}" {% if option.type == adjustment.type %}selected{% endif %}>{{ option.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Label</label>
+                                    <input type="text" class="form-control" name="adjustments[label][]" placeholder="Adjustment Label">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Amount</label>
+                                    <input type="text" class="form-control" name="adjustments[amount][]" placeholder="0.00">
+                                </div>
+                                <div class="adjustment-actions">
+                                    <button type="button" class="btn btn-danger">Remove</button>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="add-more-item">
+                            <button type="button" class="btn btn-outline">Add Another Adjustment</button>
+                        </div>
+                    </div>
+
+                    <h3>Order Shipping</h3>
+                    <div class="order-shipping-section">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Method</label>
+                                <input class="form-control" type="text" name="shipping_method" id="shipping_method" value="{{ shipping.auto_value }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Additional Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group half-width">
+                            <label for="notes" class="form-label">Customer Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3">{{ order.order.notes }}</textarea>
+                        </div>
+
+                        <div class="form-group half-width">
+                            <label for="admin_notes" class="form-label">Admin Notes (Internal)</label>
+                            <textarea class="form-control" id="admin_notes" name="admin_notes" rows="3">{{ order.order.admin_notes }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Update Order</button>
+                        <a href="{{ url('commerce_store.orders') }}" class="btn">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Initialize customer autocomplete
+        document.addEventListener('DOMContentLoaded', function() {
+            const customerAutocomplete = new Autocomplete({
+                fieldId: 'customer_id',
+                source: 'autocomplete.users',
+                placeholder: 'Search customers by name or email...',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['first_name', 'last_name', 'email'],
+                noResultsText: 'No customers found',
+                loadingText: 'Searching...',
+                name: 'customer_id'
+            });
+
+            // Set initial value if editing
+            {% if order.customer.id %}
+            customerAutocomplete.setValue('{{ order.customer.email }} ({{ order.customer.id }})');
+            {% endif %}
+
+            const orderNumberAutocomplete = new Autocomplete({
+                fieldId: 'order_number',
+                source: 'commerce.order_number_generate',
+                placeholder: 'Generate order number...',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['order_number'],
+                noResultsText: 'No orders found',
+                loadingText: 'Generating...',
+                name: 'order_number'
+            });
+
+            {% if order.order.order_number %}
+            orderNumberAutocomplete.setValue('{{ order.order.order_number }}');
+            {% endif %}
+
+            const shippingMethodAutocomplete = new Autocomplete({
+                fieldId: 'shipping_method',
+                source: 'autocompelete.shipping.method',
+                placeholder: 'Select shipping method...',
+                minQueryLength: 2,
+                limit: 10,
+                displayField: 'label',
+                valueField: 'value',
+                searchFields: ['shipping_method'],
+                noResultsText: 'No shipping method available',
+                loadingText: 'Searching...',
+                name: 'shipping_method'
+            });
+
+            {% if shipping.auto_value %}
+            shippingMethodAutocomplete.setValue('{{ shipping.auto_value }}');
+            {% endif %}
+        });
+
+        // Calculate total when subtotal, tax, or shipping changes
+        function calculateTotal() {
+            const subtotal = parseFloat(document.getElementById('subtotal').value) || 0;
+            const tax = parseFloat(document.getElementById('tax_amount').value) || 0;
+            const shipping = parseFloat(document.getElementById('shipping_amount').value) || 0;
+            const discount = parseFloat(document.getElementById('discount_amount').value) || 0;
+
+            const total = subtotal + tax + shipping - discount;
+            document.getElementById('total_amount').value = total.toFixed(2);
+        }
+
+        // Add event listeners for auto-calculation
+        ['subtotal', 'tax_amount', 'shipping_amount', 'discount_amount'].forEach(function(id) {
+           // document.getElementById(id).addEventListener('input', calculateTotal);
+        });
+
+        const autoCompleteList = [];
+        const autoComplete2 = [];
+
+        function duplicateGrid(grid) {
+            const newGrid = grid.cloneNode(true);
+            // empty the input fields and select field if any
+            newGrid.querySelectorAll('input').forEach(function(input) {
+                input.value = '';
+            })
+            newGrid.querySelectorAll('select').forEach(function(select) {
+                select.selectedIndex = 0;
+            })
+            grid.parentNode.insertBefore(newGrid, grid.nextSibling);
+            //console.log(newGrid);
+        }
+
+        function addAutoComplete(input, datasource) {
+            if (input) {
+                let autocomplete = new Autocomplete({
+                    fieldId: input.id,
+                    source: datasource,
+                    placeholder: input.getAttribute('placeholder'),
+                    minQueryLength: 2,
+                    limit: 10,
+                    displayField: 'label',
+                    valueField: 'value',
+                    searchFields: ['name'],
+                    noResultsText: 'No items found',
+                    loadingText: 'Searching...',
+                    name: 'order_items[id][]'
+                });
+
+                if (input.value) {
+                    autocomplete.setValue(input.value);
+                }
+
+                autoCompleteList.push(autocomplete)
+            }
+        }
+
+        function removeAutoComplete() {
+            console.log(autoCompleteList);
+            autoCompleteList.forEach(function(autocomplete) {
+                autocomplete.destroy();
+            })
+        }
+
+        // handle Order items
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const grids = document.querySelectorAll('.order-items-section .form-grid');
+            const addMoreBtn = document.querySelector('.order-items-section .add-more-item button');
+
+            addMoreBtn.addEventListener('click', function() {
+                const grids = document.querySelectorAll('.order-items-section .form-grid');
+                removeAutoComplete();
+                duplicateGrid(grids[grids.length - 1]);
+                init(document.querySelectorAll('.order-items-section .form-grid'));
+            })
+
+            function init(grids) {
+
+                grids.forEach(function(grid, index) {
+                    const input = grid.querySelector('input[name="order_items[id][]"]');
+                    if (input) {
+                        input.id = "autocomplete-item-" + index;
+                        addAutoComplete(input, "autocomplete.products");
+                    }
+                })
+                const removeBtns = document.querySelectorAll('.order-items-section .adjustment-actions button');
+                removeBtns.forEach(function(btn) {
+
+                    btn.addEventListener('click', function() {
+                        this.parentElement.parentElement.remove();
+                    })
+                });
+            }
+
+            init(grids);
+        });
+
+        // handle Order adjustments
+        document.addEventListener('DOMContentLoaded', function() {
+            const grids = document.querySelectorAll('.order-adjustments-section .form-grid');
+            const addMoreBtn = document.querySelector('.order-adjustments-section .add-more-item button');
+
+            addMoreBtn.addEventListener('click', function (){
+                duplicateGrid(grids[grids.length - 1]);
+                init(document.querySelectorAll('.order-adjustments-section .form-grid'));
+            })
+
+            function init(grids) {
+                grids.forEach(function(grid, index) {
+                    const select = grid.querySelector('select');
+                    if (select) {
+                        select.id = "adjustment-type-" + index;
+                    }
+                })
+
+                const removeBtns = document.querySelectorAll('.order-adjustments-section .adjustment-actions button');
+                removeBtns.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        this.parentElement.parentElement.remove();
+                    })
+                })
+            }
+
+            init(document.querySelectorAll('.order-adjustments-section .form-grid'));
+        })
+
+
+
+    </script>
+
+{% endblock %}
