@@ -118,6 +118,21 @@ admin.content.add:
     _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::addContent'
   requirements:
     _permission: ['admin', 'super_admin', 'moderator']
+admin.content.edit:
+  path: '/admin/content/[id:int]/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::editContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.view:
+  path: '/content/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::viewContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
 
 # Plugin Management Routes
 admin.plugins:

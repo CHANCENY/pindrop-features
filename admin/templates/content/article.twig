@@ -1,0 +1,73 @@
+<article class="article">
+    <h1 class="article-head-title">{{ entity.title }}</h1>
+    <div class="article-meta">
+        <span class="article-author">
+            {% if entity.author.username %}
+
+                <em>created by <a href="{{ url('users.view.user',{user_id: entity.author.id }) }}" class="author"
+                    modal="true" path="{{ url('users.view.user',{user_id: entity.author.id }) }}" ajax="true">
+                        {{ entity.author.username }}</a>
+                </em>
+
+            {% endif %}
+        </span>
+        <span class="article-publication-date">
+            <em>published on {{ entity.getUpdatedAt.format('d F, Y') }}</em>
+        </span>
+    </div>
+
+    <div class="article-content">
+        {% set values = entity.getValues %}
+        {% set fields = entity.fieldDefinitions.fields %}
+
+        <div class="wiki-layout">
+            <table class="wiki-table">
+                <tbody>
+                {% for key, definition in fields %}
+                    {% set value = values[key] ?? definition.default ?? null %}
+
+                    {% if value is not null %}
+                        <tr>
+                            <th class="wiki-label">
+                                {{ key|replace({'_': ' '})|title }}
+                            </th>
+
+                            <td class="wiki-value">
+                                {% if definition.type == 'string' %}
+
+                                    {% if 'url' in key %}
+                                        <a href="{{ value }}" target="_blank">{{ value }}</a>
+
+                                    {% elseif key == 'featured_image' %}
+                                        <img src="{{ value }}" alt="" />
+
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+
+                                {% elseif definition.type == 'integer' %}
+                                    {{ value }}
+
+                                {% elseif definition.type == 'boolean' %}
+                                    {{ value ? 'Yes' : 'No' }}
+
+                                {% elseif definition.type == 'array' %}
+                                    <ul>
+                                        {% for item in value %}
+                                            <li>{{ item }}</li>
+                                        {% endfor %}
+                                    </ul>
+
+                                {% else %}
+                                    {{ value }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</article>

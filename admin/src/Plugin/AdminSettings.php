@@ -23,6 +23,8 @@ class AdminSettings implements SettingsInterface
     {
         return [
             'site_name' => $request->request->get('site_name'),
+            'page_not_error' => $request->request->get('page_not_error'),
+            'forbidden_error' => $request->request->get('forbidden_error'),
         ];
     }
 

@@ -2,6 +2,8 @@
 
 namespace Simp\Pindrop\Modules\admin\src\Entity;
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Simp\Pindrop\Content\Storage\StorageEntity;
 
 class Article extends StorageEntity
@@ -33,5 +35,14 @@ class Article extends StorageEntity
                 'related_articles' => ['type' => 'array', 'required' => false, 'default' => []]
             ]
         ];
+    }
+
+    /**
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    public function getView(): string
+    {
+        return \getAppContainer()->get('twig')->render('@admin/content/article.twig', ['entity' => $this]);
     }
 }

@@ -15,6 +15,7 @@ use RuntimeException;
 use Shuchkin\SimpleCSV;
 use Shuchkin\SimpleXLS;
 use Shuchkin\SimpleXLSX;
+use Simp\Pindrop\Content\Storage\ContentEntityInterface;
 use Simp\Pindrop\Content\Storage\StorageEntity;
 use Simp\Pindrop\Controller\ControllerBase;
 use Simp\Pindrop\Database\DatabaseException;
@@ -23,11 +24,13 @@ use Simp\Pindrop\Entity\File\File;
 use Simp\Pindrop\Entity\User\User;
 use Simp\Pindrop\Entity\User\CurrentUser;
 use Simp\Pindrop\Entity\User\UserVerification;
+use Simp\Pindrop\Events\EventsManager;
 use Simp\Pindrop\Form\FormBuilder;
 use Simp\Pindrop\Form\FormState;
 use Simp\Pindrop\Message\Message;
 use Simp\Pindrop\Modules\admin\src\Address\AddressFormatter;
 use Simp\Pindrop\Modules\admin\src\Form\ContentEntityForm;
+use Simp\Pindrop\Modules\admin\src\Plugin\Events\Events;
 use Simp\Pindrop\Modules\admin\src\Services\AutoCompleteService;
 use Simp\Pindrop\Plugin\PluginManager;
 use Simp\Pindrop\Routing\RouteManager;
@@ -415,7 +418,7 @@ class AdminController extends ControllerBase
         try {
             // Create temporary ZIP file
             $zipFileName = 'user_import_templates_' . date('Y-m-d_H-i-s') . '.zip';
-            $tempZipPath = sys_get_temp_dir() . '/' . $zipFileName;
+            $tempZipPath = sys_get_temp_dir() . 'AdminController.php/' . $zipFileName;
             
             // Initialize ZIP archive
             $zip = new ZipArchive();
@@ -1126,7 +1129,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                         if ($file && $file->isValid()) {
                             // Create destination URI using public:// stream wrapper
                             $extension = $file->getClientOriginalExtension();
-                            $filename = uniqid() . '.' . $extension;
+                            $filename = uniqid() . 'Controller' . $extension;
                             $destinationUri = 'public://content/' . date('Y/m') . '/' . $filename;
                             
                             // Upload file using FileSystem service
@@ -1264,7 +1267,8 @@ Generated: " . date('Y-m-d H:i:s') . "
                 'content_type' => ucfirst($type),
                 'type' => $type,
                 'form_html' => $formHtml,
-                'description' => $contentTypeInfo['config']['description'] ?? ""
+                'description' => $contentTypeInfo['config']['description'] ?? "",
+                'entity' => $storageEntity,
             ]);
             
         } catch (\Exception $e) {
@@ -1279,6 +1283,234 @@ Generated: " . date('Y-m-d H:i:s') . "
             $container->get('session')->getFlashBag()->add('error', 'Failed to load content creation page');
             return $this->redirect('/admin/content/create');
         }
+    }
+
+    public function editContent(Request $request, string $route_name, array $options)
+    {
+        $id = $request->query->get('id');
+
+        if (empty($id)) {
+            return $this->redirect('/admin/content');
+        }
+
+        try {
+            $container = getAppContainer();
+            $repository = $container->get('content.repository');
+
+            /**@var ContentEntityInterface $entity **/
+            $entity = $repository->find($id);
+
+            $contentTypeInfo = $repository->get($entity->getNodeType());
+            $className = $contentTypeInfo['class'];
+
+            $formHtml = $entity->getEntityForm();
+
+            if ($request->isMethod('POST')) {
+                try {
+                    // Get form data and files
+                    $formData = $request->request->all();
+                    $files = $request->files->all();
+
+                    // Handle file uploads using FileSystem service
+                    $fileSystem = $container->get('filesystem');
+
+                    foreach ($files as $fieldName => $file) {
+                        if ($file && $file->isValid()) {
+                            // Create destination URI using public:// stream wrapper
+                            $extension = $file->getClientOriginalExtension();
+                            $filename = uniqid() . 'Controller' . $extension;
+                            $destinationUri = 'public://content/' . date('Y/m') . '/' . $filename;
+
+                            // Upload file using FileSystem service
+                            $uploadResult = $fileSystem->uploadFile([
+                                'name' => $file->getClientOriginalName(),
+                                'tmp_name' => $file->getPathname(),
+                                'size' => $file->getSize(),
+                                'error' => $file->getError()
+                            ], $fileSystem->resolvedRealPath($destinationUri), [
+                                'unique' => true,
+                                'allowed_types' => ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'txt']
+                            ]);
+
+                            if ($uploadResult['success']) {
+                                // Create File entity record
+                                $fileEntity = new \Simp\Pindrop\Entity\File\File([
+                                    'filename' => $uploadResult['data'][0]['name'],
+                                    'uri' => $destinationUri,
+                                    'filemime' => $uploadResult['data'][0]['mime_type'],
+                                    'filesize' => $uploadResult['data'][0]['size'],
+                                    'status' => \Simp\Pindrop\Entity\File\File::STATUS_PERMANENT,
+                                    'uid' => $container->get('current_user')->getId(),
+                                    'fieldname' => $fieldName,
+                                    'entity_type' => $entity->getNodeType(),
+                                    'entity_id' => $entity->getId() ?? 0,
+                                    'bundle' => $entity->getNodeType(),
+                                    'langcode' => 'en'
+                                ], $container->get('database'), $container->get('logger'));
+
+                                if ($fileEntity->save()) {
+                                    // Store file URI in form data
+                                    $formData[$fieldName] = $destinationUri;
+                                } else {
+                                    throw new \Exception('Failed to save file entity record');
+                                }
+                            } else {
+                                throw new \Exception('File upload failed: ' . $uploadResult['message']);
+                            }
+                        }
+                    }
+
+                    // Set core entity properties using proper setters
+                    if (isset($formData['title'])) $entity->setTitle($formData['title']);
+                    if (isset($formData['slug'])) $entity->setValue('slug', $formData['slug']);
+                    if (isset($formData['content'])) $entity->setContent($formData['content']);
+                    if (isset($formData['excerpt'])) $entity->setValue('excerpt', $formData['excerpt']);
+
+                    // Set publication status
+                    if (isset($formData['status'])) {
+                        $entity->setStatus($formData['status']);
+                    }
+                    if (isset($formData['is_published'])) {
+                        $entity->setPublished((bool) $formData['is_published']);
+                        if ($formData['is_published']) {
+                            $entity->setPublishedAt(new \DateTime());
+                        }
+                    }
+
+                    // Set boolean fields
+                    $entity->setValue('featured', isset($formData['featured']) ? (bool) $formData['featured'] : false);
+                    $entity->setValue('sticky', isset($formData['sticky']) ? (bool) $formData['sticky'] : false);
+                    $entity->setValue('allow_comments', isset($formData['allow_comments']) ? (bool) $formData['allow_comments'] : true);
+
+                    // Set metadata fields
+                    $entity->setValue('password', $formData['password'] ?? null);
+                    $entity->setValue('template', $formData['template'] ?? null);
+                    $entity->setValue('language', $formData['language'] ?? 'en');
+
+                    // Set SEO fields
+                    $entity->setValue('meta_title', $formData['meta_title'] ?? null);
+                    $entity->setValue('meta_description', $formData['meta_description'] ?? null);
+                    $entity->setValue('meta_keywords', $formData['meta_keywords'] ?? null);
+                    $entity->setValue('canonical_url', $formData['canonical_url'] ?? null);
+                    $entity->setValue('redirect_url', $formData['redirect_url'] ?? null);
+
+                    // Set author and timestamps
+                    $entity->setAuthorId($container->get('current_user')->getId());
+                    $entity->setCreatedAt(new \DateTime());
+                    $entity->setUpdatedAt(new \DateTime());
+
+                    // Set dynamic fields (entity-specific fields)
+                    $coreFields = [
+                        'entity_type', 'id', 'title', 'slug', 'content', 'excerpt',
+                        'status', 'is_published', 'featured', 'sticky', 'allow_comments',
+                        'password', 'template', 'language', 'meta_title', 'meta_description',
+                        'meta_keywords', 'canonical_url', 'redirect_url', 'submit'
+                    ];
+
+                    $fields = $entity->fieldDefinitions();
+
+                    foreach ($formData as $key => $value) {
+                        if (!in_array($key, $coreFields) && array_key_exists($key, $fields['fields'])) {
+                            $field = $fields['fields'][$key];
+                            if (!empty($field['type'])) {
+                                switch ($field['type']) {
+                                    case 'array':
+                                        $value = json_decode($value, true);
+                                }
+                            }
+                            $entity->setValue($key, $value);
+                        }
+                    }
+
+                    // Save the entity
+                    if ($entity->save()) {
+                        // Update file entities with the new entity ID
+                        foreach ($files as $fieldName => $file) {
+                            if ($file && $file->isValid() && isset($formData[$fieldName])) {
+                                $fileEntity = \Simp\Pindrop\Entity\File\File::loadByUri($formData[$fieldName], $container->get('database'));
+                                if ($fileEntity) {
+                                    $fileEntity->setEntityId($entity->getId());
+                                    $fileEntity->save();
+                                }
+                            }
+                        }
+
+                        // Redirect to edit page
+                        return $this->redirect("/admin/content");
+                    } else {
+                        throw new \Exception('Failed to save entity');
+                    }
+
+                } catch (\Exception $e) {
+                    $container->get('logger')->error('Failed to save content', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'type' => $entity->getNodeType(),
+                        'data' => $request->request->all()
+                    ]);
+
+                    // Add error message
+                    $container->get('session')->getFlashBag()->add('error', 'Failed to save ' . $entity->getNodeType() . ': ' . $e->getMessage());
+
+                    // Re-throw exception to let Whoops handle it in development
+                    $environment = getenv('APP_ENV') ?: 'development';
+                    if ($environment !== 'production') {
+                        throw $e;
+                    }
+                }
+            }
+
+            return $this->renderTwig('admin/content/add.twig', [
+                'page_title' => 'Edit ' . ucfirst($entity->getNodeType()),
+                'content_type' => ucfirst($entity->getNodeType()),
+                'type' => $entity->getNodeType(),
+                'form_html' => $formHtml,
+                'description' => $contentTypeInfo['config']['description'] ?? "",
+                'entity' => $entity,
+            ]);
+
+        } catch (\Exception $e) {
+            // Re-throw exception to let Whoops handle it in development
+            $environment = getenv('APP_ENV') ?: 'development';
+            if ($environment !== 'production') {
+                throw $e;
+            }
+
+            // In production, show generic error and redirect
+            $container = getAppContainer();
+            $container->get('session')->getFlashBag()->add('error', 'Failed to load content creation page');
+            return $this->redirect('/admin/content/create');
+        }
+    }
+
+    public function viewContent(Request $request, string $route_name, array $options)
+    {
+        $id = $request->query->get('id');
+
+        if (empty($id)) {
+            return $this->redirect('/admin/content');
+        }
+
+        try{
+            $container = getAppContainer();
+            $repository = $container->get('content.repository');
+
+            $addAdminTheme = in_array($this->getCurrentUser()['role'], ['super_admin', 'admin', 'moderator']);
+
+            $theme = $addAdminTheme ? "admin/content/view_admin.twig" : "admin/content/view.twig";
+
+            /**@var ContentEntityInterface $entity **/
+            $entity = $repository->find($id);
+            return $this->renderTwig($theme, [
+                'entity' => $entity,
+                'admin_theme' => $addAdminTheme,
+
+            ]);
+        }catch (\Throwable $exception) {
+
+        }
+
+        return $this->redirect('/admin/content');
     }
     
     /**
@@ -1877,6 +2109,8 @@ Generated: " . date('Y-m-d H:i:s') . "
                     
                     // Revoke all other sessions for security
                     CurrentUser::revokeAllUserSessions($this->database, getAppContainer()->get('logger'), $user->getId());
+
+                    \appEvents()->invokeEvents(\Simp\Pindrop\Events\SystemEvents\Events::AUTH_PASSWORD_RESET, ['user' => $user]);
 
                     getAppContainer()->get('logger')->info('Password reset successful', [
                         'user_id' => $user->getId(),
