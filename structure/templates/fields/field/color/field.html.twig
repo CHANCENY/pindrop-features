@@ -1,0 +1,26 @@
+{# Color Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.settings.label_display != 'hidden' %}
+        <label for="{{ name }}" class="field-label">
+            {{ field.label }}
+            {% if field.required %}<span class="required">*</span>{% endif %}
+        </label>
+    {% endif %}
+    
+    <div class="color-input-wrapper">
+        <input 
+            type="color"
+            id="{{ name }}"
+            name="{{ name }}"
+            class="form-control color-field"
+{#            value="{{ request.request.get(name, field.defaultValue ) }}"#}
+            {% if field.required %}required{% endif %}
+        />
+        <div class="color-preview" style="background-color: {{ field.defaultValue|default('#000000') }};"></div>
+    </div>
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

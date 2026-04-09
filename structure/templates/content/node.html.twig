@@ -1,0 +1,141 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="drupal-node-view-container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>{{ node.entityDefinition.name|split('.')|last|capitalize }}: <span style="color: #666;">{{ node.title }}</span></h1>
+                <p style="color: #888; margin-top: 5px; font-size: 0.85rem;">
+                    Created by <strong>{{ node.author.username|default('Admin User') }}</strong> on {{ node.createdAt|date('F j, Y - H:i') }}
+                </p>
+            </div>
+        </div>
+
+        <div class="node-view-layout">
+
+            <!-- MAIN CONTENT AREA -->
+            <div class="node-main-content">
+
+                <!-- Main Content Section -->
+                <div class="node-section">
+                    <h3>Content Details</h3>
+                    <div class="view-grid">
+                        <!-- Title -->
+                        <div class="view-item full-width">
+                            <div class="field-label">Title</div>
+                            <div class="field-value title-value">{{ node.title }}</div>
+                        </div>
+
+                        <!-- Dynamic Fields from Entity Definition -->
+                        {% for field_name, field_def in node.entityDefinition.fields %}
+                            {% set field_data = node.values[field_name].default|default(null) %}
+
+                            {# Determine if the field should be full-width (like body/textarea) #}
+                            {% set is_long_text = field_def.struct_type == 'textarea' or field_name == 'body' %}
+
+                            <div class="view-item {{ is_long_text ? 'full-width' : 'half-width' }}">
+                                <div class="field-label">{{ field_def.label|default(field_name|capitalize) }}</div>
+                                <div class="field-value">
+                                    {% if field_data %}
+                                        {% if field_data.values is defined %}
+                                            <ul>
+                                                {% for val in field_data.values %}
+                                                    <li>{{ val }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% elseif field_data.value is defined %}
+                                            {% if is_long_text %}
+                                                {{ field_data.value|raw }}
+                                            {% else %}
+                                                {{ field_data.value }}
+                                            {% endif %}
+                                        {% else %}
+                                            <span style="color: #999; font-style: italic;">No value</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span style="color: #999; font-style: italic;">No value</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SIDEBAR AREA -->
+            <div class="node-sidebar">
+
+                <!-- Publishing Information -->
+                <div class="node-section">
+                    <h3>Publishing</h3>
+                    <div class="view-grid" style="grid-template-columns: 1fr;">
+                        <div class="view-item" style="border-right: none;">
+                            <div class="field-label">Status</div>
+                            <div class="field-value">
+                                {% if node.status %}
+                                    <span class="status-badge status-published">Published</span>
+                                {% else %}
+                                    <span class="status-badge status-draft">Draft</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="view-item" style="border-right: none; border-bottom: none;">
+                            <div class="field-label">Machine Name</div>
+                            <div class="field-value" style="font-family: monospace; font-size: 0.85rem;">{{ node.type }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Authoring Details -->
+                <div class="node-section">
+                    <h3>Authoring</h3>
+                    <div class="view-grid" style="grid-template-columns: 1fr;">
+                        <div class="view-item" style="border-right: none;">
+                            <div class="field-label">Authored by</div>
+                            <div class="field-value">{{ node.author }}</div>
+                        </div>
+                        <div class="view-item" style="border-right: none;">
+                            <div class="field-label">Created</div>
+                            <div class="field-value">{{ node.createdAt|date('Y-m-d H:i') }}</div>
+                        </div>
+                        <div class="view-item" style="border-right: none; border-bottom: none;">
+                            <div class="field-label">Last Updated</div>
+                            <div class="field-value">{{ node.updatedAt|date('Y-m-d H:i') }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metadata -->
+                <div class="node-section">
+                    <h3>Metadata</h3>
+                    <div class="view-grid" style="grid-template-columns: 1fr;">
+                        <div class="view-item" style="border-right: none;">
+                            <div class="field-label">NID</div>
+                            <div class="field-value">{{ node.nid }}</div>
+                        </div>
+                        <div class="view-item" style="border-right: none; border-bottom: none;">
+                            <div class="field-label">UUID</div>
+                            <div class="field-value" style="font-size: 0.75rem; word-break: break-all; color: #666;">
+                                {{ node.uuid|default('N/A') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+

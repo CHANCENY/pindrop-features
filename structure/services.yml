@@ -1,0 +1,19 @@
+structure.repository:
+  class: Simp\Pindrop\Modules\structure\src\Services\StructureManager
+  arguments:
+    - "@plugin.manager"
+  tags:
+    - "structure"
+structure.config:
+  class: Simp\Pindrop\Modules\structure\src\Plugin\Structure\StructureConfigurationHandler
+  arguments:
+    - "@database"
+  tags:
+    - "config"
+structure.content_type:
+  class: Simp\Pindrop\Modules\structure\src\Plugin\NodeType\NodeTypeConfiguration
+  arguments:
+    - "@structure.repository"
+    - "@structure.config"
+  tags:
+    - "content_type"

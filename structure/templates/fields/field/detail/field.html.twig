@@ -1,0 +1,23 @@
+{# Details Field Template #}
+<details class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}" 
+    {% if field.open %}open{% endif %}>
+    
+    <summary class="details-summary">
+        {{ field.summary }}
+    </summary>
+    
+    <div class="details-content">
+        {% if field.helpText %}
+            <div class="field-help details-help">{{ field.helpText }}</div>
+        {% endif %}
+
+        {% set ffs = field.fields %}
+
+        {% for ff in ffs %}
+
+            {{ ff.render }}
+
+        {% endfor %}
+    </div>
+
+</details>

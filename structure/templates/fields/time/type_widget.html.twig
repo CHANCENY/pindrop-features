@@ -1,0 +1,68 @@
+<div class="drupal-time-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Time Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Time') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Time Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Minimum Time -->
+                <div class="form-item half-width">
+                    <label for="min">Minimum Time</label>
+                    <input type="time" id="min" name="min" value="{{ field.config.min|default('') }}">
+                    <div class="help-text">The earliest time that can be selected.</div>
+                </div>
+
+                <!-- Row 1: Maximum Time -->
+                <div class="form-item half-width">
+                    <label for="max">Maximum Time</label>
+                    <input type="time" id="max" name="max" value="{{ field.config.max|default('') }}">
+                    <div class="help-text">The latest time that can be selected.</div>
+                </div>
+
+                <!-- Row 2: Step -->
+                <div class="form-item half-width">
+                    <label for="step">Step (in seconds)</label>
+                    <input type="number" id="step" name="step" value="{{ field.config.step|default('60') }}" min="1">
+                    <div class="help-text">The increment step for time selection. 60 = 1 minute, 300 = 5 minutes.</div>
+                </div>
+
+                <!-- Row 2: Default Value -->
+                <div class="form-item half-width">
+                    <label for="default_value">Default Value</label>
+                    <input type="time" id="default_value" name="defaultValue" value="{{ field.config.defaultValue }}">
+                    <div class="help-text">A time to be used if the user leaves the field empty.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Required -->
+                <div class="form-item half-width">
+                    <label for="required">Required Field</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="required" name="required" {{ field.config.required == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Users must select a time.</span>
+                    </div>
+                </div>
+
+                <!-- Row 2: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user when selecting a time.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the field on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

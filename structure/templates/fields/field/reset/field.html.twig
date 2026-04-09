@@ -1,0 +1,19 @@
+{# Reset Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    <button 
+        type="reset"
+        id="{{ name }}"
+        name="{{ name }}"
+        class="btn btn-{{ field.buttonStyle|default('secondary') }} reset-field"
+    >
+        {{ field.buttonText|default('Reset') }}
+    </button>
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+    
+    {% if field.comment %}
+        <div class="field-comment">{{ field.comment }}</div>
+    {% endif %}
+</div>

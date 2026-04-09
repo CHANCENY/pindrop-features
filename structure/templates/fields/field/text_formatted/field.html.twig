@@ -1,0 +1,30 @@
+{# Text Formatted Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.settings.label_display != 'hidden' %}
+        <label for="{{ name }}" class="field-label">
+            {{ field.label }}
+            {% if field.required %}<span class="required">*</span>{% endif %}
+        </label>
+    {% endif %}
+    <textarea 
+        id="{{ name }}"
+        name="{{ name }}"
+        class="form-control formatted-text-field {% if field.settings.text_processing == 'html' %} editor {% endif %}"
+        {% if field.settings.rows %}rows="{{ field.settings.rows }}"{% endif %}
+        {% if field.maxLength %}maxlength="{{ field.maxLength }}"{% endif %}
+        {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+        {% if field.required %}required{% endif %}
+        {% if field.cardinality %}data-cardinality="{{ field.cardinality }}"{% endif %}
+    ></textarea>
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+    
+    {% if field.settings.text_processing %}
+        <div class="text-processing-info">
+            <small>Text processing: {{ field.settings.text_processing }}</small>
+        </div>
+    {% endif %}
+
+</div>

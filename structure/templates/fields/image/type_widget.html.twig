@@ -1,0 +1,77 @@
+<div class="drupal-image-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Image Upload Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Image Upload') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Image Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: File Types -->
+                <div class="form-item full-width">
+                    <label for="file_types">Allowed Image Types</label>
+                    <textarea id="file_types" name="fileTypes" rows="3" placeholder="jpg,jpeg,png,gif,webp">{{ field.config.fileTypes|default('jpg,jpeg,png,gif,webp') }}</textarea>
+                    <div class="help-text">Comma-separated list of allowed image extensions.</div>
+                </div>
+
+                <!-- Row 2: Maximum Size -->
+                <div class="form-item half-width">
+                    <label for="max_size">Maximum File Size (MB)</label>
+                    <input type="number" id="max_size" name="maxSize" value="{{ field.config.maxSize|default('5') }}" min="1">
+                    <div class="help-text">Maximum image file size in megabytes.</div>
+                </div>
+
+                <!-- Row 2: Multiple -->
+                <div class="form-item half-width">
+                    <label for="multiple">Allow Multiple Images</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="multiple" name="multiple" {{ field.config.multiple == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Allow users to upload multiple images.</span>
+                    </div>
+                </div>
+
+                <!-- Row 3: Maximum Width -->
+                <div class="form-item half-width">
+                    <label for="max_width">Maximum Width (px)</label>
+                    <input type="number" id="max_width" name="maxWidth" value="{{ field.config.maxWidth|default('') }}" min="1">
+                    <div class="help-text">Maximum image width in pixels. Leave empty for no limit.</div>
+                </div>
+
+                <!-- Row 3: Maximum Height -->
+                <div class="form-item half-width">
+                    <label for="max_height">Maximum Height (px)</label>
+                    <input type="number" id="max_height" name="maxHeight" value="{{ field.config.maxHeight|default('') }}" min="1">
+                    <div class="help-text">Maximum image height in pixels. Leave empty for no limit.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Required -->
+                <div class="form-item half-width">
+                    <label for="required">Required Field</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="required" name="required" {{ field.config.required == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Users must upload at least one image.</span>
+                    </div>
+                </div>
+
+                <!-- Row 2: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user when uploading images.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the field on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

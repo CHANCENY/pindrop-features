@@ -1,0 +1,152 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- Admin Wrapper -->
+    <div class="admin-wrapper">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li>
+                    <a href="{{ url('admin.home') }}">Home</a>
+                    <span>/</span>
+                </li>
+                <li>
+                    <a href="{{ url('admin.dashboard') }}">Administration</a>
+                    <span>/</span>
+                </li>
+                <li>
+                    <a href="{{ url('structure.structures') }}">Structure</a>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Content types</h1>
+
+            <a href="{{ url('structure.structures.content.types.create') }}" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Add content type
+            </a>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container" id="table-container">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Operations</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Article Row -->
+                {% for type in types %}
+
+                    {% if type.deleted != 1 %}
+                <tr>
+                    <td>
+                        <div class="name-col">{{ type.config.label }}</div>
+                        <div class="machine-name">Machine name: {{ type.config.machine_name }}</div>
+                    </td>
+                    <td>
+                        <div class="description-col">{{ type.config.description }}</div>
+                    </td>
+                    <td>
+                        <div class="operations-wrapper">
+                            <button class="operations-btn dropdown-toggle"  data-target="dropdown-{{ type.config.machine_name }}">
+                                Manage fields
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <!-- Dropdown Menu -->
+                            <div id="dropdown-{{ type.config.machine_name }}" class="dropdown-menu">
+                                <div role="menu">
+                                    <a href="{{ url('structure.structures.content.types.manage.fields',{id: type.config.machine_name }) }}">Manage fields</a>
+                                    <a href="{{ url('structure.structures.content.types.manage.form.display',{id: type.config.machine_name }) }}">Manage form display</a>
+                                    <a href="#">Manage display</a>
+                                    <hr>
+                                    <a href="{{ url('structure.structures.content.types.edit',{id: type.config.machine_name}) }}">Edit</a>
+                                    <a href="{{ url('structure.structures.content.types.delete',{id: type.config.machine_name}) }}" class="text-red-600">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                    {% endif %}
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Help Section -->
+        <div class="help-section">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p>
+                        Content types are used to group similar content. Each content type can have its own fields, form display, and display settings.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggles = document.querySelectorAll('.dropdown-toggle');
+
+            toggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const targetId = this.getAttribute('data-target');
+                    const targetMenu = document.getElementById(targetId);
+
+                    const tableContainer = document.getElementById("table-container");
+
+                    // Close all other menus
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        if (menu !== targetMenu) {
+                            menu.classList.remove('show');
+                        }
+                    });
+
+                    // Toggle the clicked menu
+                    targetMenu.classList.toggle('show');
+                    tableContainer.classList.add('table-no-overflow')
+                });
+            });
+
+            // Close menus when clicking outside
+            window.addEventListener('click', function() {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                    const tableContainer = document.getElementById("table-container");
+                    tableContainer.classList.remove('table-no-overflow')
+                });
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+<div class="drupal-password-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Password Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Password') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Password Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Minimum Length -->
+                <div class="form-item half-width">
+                    <label for="min_length">Minimum Length</label>
+                    <input type="number" id="min_length" name="minLength" value="{{ field.config.minLength|default('8') }}" min="1">
+                    <div class="help-text">The minimum password length required.</div>
+                </div>
+
+                <!-- Row 1: Maximum Length -->
+                <div class="form-item half-width">
+                    <label for="max_length">Maximum Length</label>
+                    <input type="number" id="max_length" name="maxLength" value="{{ field.config.maxLength|default('128') }}" min="1">
+                    <div class="help-text">The maximum password length allowed.</div>
+                </div>
+
+                <!-- Row 2: Placeholder -->
+                <div class="form-item half-width">
+                    <label for="placeholder">Placeholder</label>
+                    <input value="{{ field.config.placeholder }}" type="text" id="placeholder" name="placeholder" placeholder="Enter password">
+                    <div class="help-text">A short hint displayed in the input field before the user enters a value.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Required -->
+                <div class="form-item half-width">
+                    <label for="required">Required Field</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="required" name="required" {{ field.config.required == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Users must enter a password.</span>
+                    </div>
+                </div>
+
+                <!-- Row 1: Default Value -->
+                <div class="form-item half-width">
+                    <label for="default_value">Default Value</label>
+                    <input type="text" id="default_value" name="defaultValue" value="{{ field.config.defaultValue }}" readonly>
+                    <div class="help-text">Default values are not recommended for password fields for security reasons.</div>
+                </div>
+
+                <!-- Row 2: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user when entering a password.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the field on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

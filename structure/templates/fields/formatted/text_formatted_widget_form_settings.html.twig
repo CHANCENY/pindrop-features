@@ -1,0 +1,17 @@
+<!-- Row 1: Status -->
+<div class="form-item half-width">
+    <label for="status">Enable/Disable</label>
+    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+        <input {% if field.config.settings.status == 1 %} checked {% endif %} type="checkbox" id="status" name="settings[status]">
+        <span style="font-size: 0.9rem; color: #666;">Enable this field</span>
+    </div>
+</div>
+<!-- Row 1: Text Processing -->
+<div class="form-item half-width">
+    <label for="text_processing">Text Processing</label>
+    <select id="text_processing" name="settings[text_processing]">
+        <option value="plain" {% if field.config.settings.text_processing == 'plain' %} selected {% endif %}>Plain text</option>
+        <option value="html" {% if field.config.settings.text_processing == 'html' %} selected {% endif %}>Full Html</option>
+    </select>
+    <div class="help-text">Choose whether to allow formatted HTML content or strictly plain text.</div>
+</div>

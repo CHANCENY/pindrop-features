@@ -1,0 +1,30 @@
+{# Fieldset Field Template #}
+<fieldset class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }} 
+    {% if field.collapsible == 'on' %}collapsible{% endif %}
+    {% if field.collapsed == 'on' %}collapsed{% endif %}">
+
+    {% if field.legend %}
+        <legend class="fieldset-legend">
+            {{ field.legend }}
+            {% if field.collapsible %}
+                <button type="button" class="fieldset-toggle" aria-expanded="{{ field.collapsed ? 'false' : 'true' }}">
+                    <span class="toggle-icon">{{ field.collapsed ? '▶' : '▼' }}</span>
+                </button>
+            {% endif %}
+        </legend>
+    {% endif %}
+    
+    <div class="fieldset-content">
+        {% if field.helpText %}
+            <div class="field-help fieldset-help">{{ field.helpText }}</div>
+        {% endif %}
+
+        {% set ffs = field.fields %}
+
+        {% for ff in ffs %}
+
+            {{ ff.render }}
+
+        {% endfor %}
+    </div>
+</fieldset>

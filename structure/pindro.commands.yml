@@ -1,0 +1,4 @@
+structure.default:
+  name: "Structure CLI commands"
+  script: "modules/structure/cli/default.php"
+  status: true

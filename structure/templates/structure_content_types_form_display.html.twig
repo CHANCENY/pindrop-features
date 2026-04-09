@@ -1,0 +1,297 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+
+    <style>
+        /* Scoped Drupal-like Manage Form Display Grid Layout */
+
+        .drupal-manage-form-display-container {
+            --drupal-border-color: #d3d3d3;
+            --drupal-bg-header: #f1f1f1;
+            --drupal-bg-stripe: #f9f9f9;
+            --drupal-label-weight: 700;
+            --drupal-primary-color: #007bff;
+            --drupal-text-color: #333;
+            --drupal-input-bg: #fff;
+            --drupal-input-border: #ccc;
+            --drupal-input-focus: #007bff;
+            --drupal-help-text: #666;
+
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--drupal-text-color);
+            margin: 20px auto;
+            box-sizing: border-box;
+        }
+
+        .drupal-manage-form-display-container *,
+        .drupal-manage-form-display-container *::before,
+        .drupal-manage-form-display-container *::after {
+            box-sizing: inherit;
+        }
+
+        /* Page Header */
+        .drupal-manage-form-display-container .page-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--drupal-border-color);
+            padding-bottom: 1rem;
+        }
+
+        .drupal-manage-form-display-container .page-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* MAIN TABLE SECTION */
+        .drupal-manage-form-display-container .table-section {
+            border: 1px solid var(--drupal-border-color);
+            background: #fff;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .drupal-manage-form-display-container h3 {
+            background: var(--drupal-bg-header);
+            padding: 10px 15px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--drupal-border-color);
+            margin: 0;
+            color: #555;
+        }
+
+        /* SEAMLESS TABLE STYLING */
+        .drupal-manage-form-display-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .drupal-manage-form-display-container th {
+            background: var(--drupal-bg-stripe);
+            text-align: left;
+            padding: 12px 15px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #555;
+            border-bottom: 2px solid var(--drupal-border-color);
+            border-right: 1px solid var(--drupal-border-color);
+        }
+
+        .drupal-manage-form-display-container td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--drupal-border-color);
+            border-right: 1px solid var(--drupal-border-color);
+            vertical-align: middle;
+        }
+
+        .drupal-manage-form-display-container th:last-child,
+        .drupal-manage-form-display-container td:last-child {
+            border-right: none;
+        }
+
+        .drupal-manage-form-display-container tr:nth-child(even) {
+            background-color: var(--drupal-bg-stripe);
+        }
+
+        /* SEAMLESS SETTINGS GRID */
+        .drupal-manage-form-display-container .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            width: 100%;
+            background: #fdfdfd;
+            border-top: 1px solid var(--drupal-border-color);
+        }
+
+        .drupal-manage-form-display-container .settings-item {
+            padding: 15px;
+            border-right: 1px solid var(--drupal-border-color);
+            border-bottom: 1px solid var(--drupal-border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drupal-manage-form-display-container .settings-grid > .settings-item:nth-child(4n) {
+            border-right: none;
+        }
+
+        .drupal-manage-form-display-container .full-width { grid-column: span 4; border-right: none; }
+        .drupal-manage-form-display-container .half-width { grid-column: span 2; }
+
+        /* INPUTS */
+        .drupal-manage-form-display-container label {
+            display: block;
+            font-weight: var(--drupal-label-weight);
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .drupal-manage-form-display-container select,
+        .drupal-manage-form-display-container input[type="text"],
+        .drupal-manage-form-display-container input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--drupal-input-border);
+            background-color: var(--drupal-input-bg);
+            border-radius: 2px;
+            font-size: 0.9rem;
+        }
+
+        /* DRAG HANDLE */
+        .drupal-manage-form-display-container .drag-handle {
+            cursor: move;
+            color: #aaa;
+            font-size: 1rem;
+        }
+
+        /* BUTTONS */
+        .drupal-manage-form-display-container .btn {
+            padding: 8px 16px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            background: #fff;
+            color: #333;
+        }
+
+        .drupal-manage-form-display-container .btn-primary {
+            background-color: var(--drupal-primary-color);
+            color: white;
+            border-color: var(--drupal-primary-color);
+        }
+
+        .drupal-manage-form-display-container .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.75rem;
+        }
+
+        /* DRAG & DROP VISUAL FEEDBACK */
+        .drupal-manage-form-display-container .is-dragging {
+            opacity: 0.5;
+            background-color: #f1f1f1 !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .drupal-manage-form-display-container .drag-placeholder {
+            background-color: #e1f5fe;
+            border: 2px dashed #03a9f4;
+            height: 50px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .drupal-manage-form-display-container tr[draggable="true"]:hover {
+            background-color: #f8f9fa;
+        }
+
+        .drupal-manage-form-display-container .drag-handle:hover {
+            color: var(--drupal-primary-color);
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .drupal-manage-form-display-container .settings-grid { grid-template-columns: 1fr; }
+            .drupal-manage-form-display-container .settings-item { border-right: none !important; }
+            .drupal-manage-form-display-container .full-width,
+            .drupal-manage-form-display-container .half-width { grid-column: span 1; }
+        }
+
+    </style>
+
+    <script src="/modules/structure/assets/sortable.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="drupal-manage-form-display-container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Manage form display</h1>
+            <p>Configure how fields are displayed on the content entry form.</p>
+        </div>
+
+        <form action="#" method="POST">
+            <!-- Field Management Section -->
+            <div class="table-section">
+                <h3>Fields</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="width: 50px; text-align: center;">Order</th>
+                        <th>Field</th>
+                        <th>Weight</th>
+                        <th>Parent</th>
+                        <th style="text-align: right;">Operations</th>
+                    </tr>
+                    </thead>
+                    <tbody class="sortable">
+
+                    <!-- Field Row: Product Name -->
+                    {% for field in fields %}
+                    <tr class="draggable-row" data-id="product_name">
+                        <td style="text-align: center;"><i class="fas fa-arrows-alt-v drag-handle"></i></td>
+                        <td style="font-weight: 700;">{{ field.config.label }}</td>
+                        <td>
+                            <input type="number" class="weight-input"
+                                   name="weight[{{ field.config.name }}]"
+                                   value="{{ form_display.config.weight[field.config.name]|default(loop.index) }}">
+                        </td>
+                        <td title="parent can be fieldset and detail wrapper fields">
+                            <select class="parent-select" name="parent[{{ field.config.name }}]">
+                                <option value="">- None -</option>
+                                {% for wrapper in  fields %}
+                                    {% if wrapper.config.struct_type == 'fieldset' or wrapper.config.struct_type == 'detail' %}
+                                <option value="{{ wrapper.config.name }}"
+                                {% if form_display.config.parent[field.config.name] == wrapper.config.name %} selected {% endif %}
+                                >{{ wrapper.config.label }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="{{ url('structure.structures.content.types.manage.fields.add.field.setting.edit',{
+                                id: type.config.machine_name,
+                                type: field.config.struct_type,
+                                name: field.config.name
+                            }) }}" target="_blank" class="btn btn-sm">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Actions -->
+            <div style="margin-top: 1rem; display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary">Save Configuration</button>
+                <a href="#" class="btn">Cancel</a>
+            </div>
+        </form>
+
+    </div>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script src="/modules/structure/assets/scripts.js"></script>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{# Select Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.settings.label_display != 'hidden' %}
+        <label for="{{ name }}" class="field-label">
+            {{ field.label }}
+            {% if field.required %}<span class="required">*</span>{% endif %}
+        </label>
+    {% endif %}
+    
+    <select 
+        id="{{ name }}"
+        name="{{ name }}"
+        class="form-control select-field"
+        {% if field.multiple %}multiple{% endif %}
+        {% if field.required %}required{% endif %}
+        {% if field.cardinality and field.multiple %}data-cardinality="{{ field.cardinality }}"{% endif %}
+    >
+        {% if not field.required and not field.multiple %}
+            <option value="">Select an option...</option>
+        {% endif %}
+        
+        {% if field.options %}
+            {% for option in field.options %}
+                <option value="{{ option.value }}" 
+{#                    {% if request.request.get(name,field.defaultValue) == option.value %}selected{% endif %}#}
+                >
+                    {{ option.label }}
+                </option>
+            {% endfor %}
+        {% endif %}
+    </select>
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

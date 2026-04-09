@@ -1,0 +1,63 @@
+<div class="drupal-checkbox-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Checkbox Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Checkbox') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Storage Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Options -->
+                <div class="form-item full-width">
+                    <label for="options">Options</label>
+                    <textarea id="options" name="options" rows="6" placeholder="Option 1|option_key_1&#10;Option 2|option_key_2&#10;Option 3|option_key_3">{{ field.config.options|default('') }}</textarea>
+                    <div class="help-text">Enter one option per line in the format: "Label|key". Leave empty for a single boolean checkbox. The key is the stored value, the label is what users see.</div>
+                </div>
+
+                <!-- Row 2: Multiple -->
+                <div class="form-item half-width">
+                    <label for="multiple">Multiple Checkboxes</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="multiple" name="multiple" {{ field.config.multiple == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Display as multiple checkboxes when options are provided.</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Required -->
+                <div class="form-item half-width">
+                    <label for="required">Required Field</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="required" name="required" {{ field.config.required == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Users must check this box or select at least one option.</span>
+                    </div>
+                </div>
+
+                <!-- Row 1: Default Value -->
+                <div class="form-item half-width">
+                    <label for="default_value">Default Value</label>
+                    <input type="text" id="default_value" name="default_value" value="{{ field.config.defaultValue }}" placeholder="1 or option_key_1">
+                    <div class="help-text">For single checkbox: 1 for checked, 0 for unchecked. For multiple: comma-separated keys.</div>
+                </div>
+
+                <!-- Row 2: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user when selecting options.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the field on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

@@ -1,0 +1,38 @@
+{# Number Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.settings.label_display != 'hidden' %}
+        <label for="{{ name }}" class="field-label">
+            {{ field.label }}
+            {% if field.required %}<span class="required">*</span>{% endif %}
+        </label>
+    {% endif %}
+    
+    <div class="number-input-wrapper">
+        {% if field.prefix %}
+            <span class="number-prefix">{{ field.prefix }}</span>
+        {% endif %}
+        
+        <input 
+            type="number"
+            id="{{ name }}"
+            name="{{ name }}"
+            class="form-control number-field"
+            {% if field.min %}min="{{ field.min }}"{% endif %}
+            {% if field.max %}max="{{ field.max }}"{% endif %}
+            {% if field.step %}step="{{ field.step }}"{% endif %}
+            {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+            {% if field.required %}required{% endif %}
+{#            value="{{ request.request.get(name,field.defaultValue) }}"#}
+            {% if field.cardinality %}data-cardinality="{{ field.cardinality }}"{% endif %}
+        />
+
+        {% if field.suffix %}
+            <span class="number-suffix">{{ field.suffix }}</span>
+        {% endif %}
+    </div>
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

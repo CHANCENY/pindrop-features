@@ -1,0 +1,70 @@
+<div class="drupal-select-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Select List Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Select List') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Storage Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Options -->
+                <div class="form-item full-width">
+                    <label for="options">Options *</label>
+                    <textarea id="options" name="options" rows="6" required placeholder="Option 1|option_key_1&#10;Option 2|option_key_2&#10;Option 3|option_key_3">{{ field.config.options|default('') }}</textarea>
+                    <div class="help-text">Enter one option per line in the format: "Label|key". The key is the stored value, the label is what users see. If no key is provided, the label will be used as the key.</div>
+                </div>
+
+                <!-- Row 2: Multiple -->
+                <div class="form-item half-width">
+                    <label for="multiple">Allow Multiple Selections</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="multiple" name="multiple" {{ field.config.multiple == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Allow users to select multiple options.</span>
+                    </div>
+                </div>
+
+                <!-- Row 2: Placeholder -->
+                <div class="form-item half-width">
+                    <label for="placeholder">Placeholder</label>
+                    <input value="{{ field.config.placeholder }}" type="text" id="placeholder" name="placeholder" placeholder="Select an option...">
+                    <div class="help-text">Text displayed when no option is selected.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Required -->
+                <div class="form-item half-width">
+                    <label for="required">Required Field</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="required" name="required" {{ field.config.required == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Users must select at least one option.</span>
+                    </div>
+                </div>
+
+                <!-- Row 1: Default Value -->
+                <div class="form-item half-width">
+                    <label for="default_value">Default Value</label>
+                    <input type="text" id="default_value" name="default_value" value="{{ field.config.defaultValue }}" placeholder="option_key_1">
+                    <div class="help-text">The key of the option to be selected by default. For multiple selections, separate keys with commas.</div>
+                </div>
+
+                <!-- Row 2: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user when selecting options.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the field on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

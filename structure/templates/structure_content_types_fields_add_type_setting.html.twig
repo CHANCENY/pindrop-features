@@ -1,0 +1,88 @@
+{% extends "templates/base.twig" %}
+
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+    <link rel="stylesheet" href="/modules/structure/assets/field-setting.css">
+
+{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="drupal-field-settings-container">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="{{ url('admin.home') }}">Home</a><span>/</span></li>
+                <li><a href="{{ url('admin.dashboard') }}">Administration</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures') }}">Structure</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures.content.types') }}">Content types</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures.content.types.edit',{id: type.config.machine_name }) }}">Edit Content type</a></li>
+            </ol>
+        </nav>
+
+        <form id="field-settings-form" action="#" method="POST">
+
+            {{ html }}
+
+            <!-- Actions -->
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="#" class="btn">Cancel</a>
+            </div>
+        </form>
+
+        <!-- Simple JavaScript for Machine Name Auto-generation -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const labelInput = document.getElementById('field_label');
+                const machineNameDisplay = document.getElementById('machine-name-display');
+                const machineNameInput = document.getElementById('field_machine_name');
+                const editBtn = document.getElementById('edit-machine-name');
+
+                let isManualEdit = false;
+
+                // Function to slugify the label
+                function slugify(text) {
+                    return text.toString().toLowerCase()
+                        .replace(/\s+/g, '_')           // Replace spaces with _
+                        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                        .replace(/\-\-+/g, '_')         // Replace multiple - with single _
+                        .replace(/^-+/, '')             // Trim - from start of text
+                        .replace(/-+$/, '');            // Trim - from end of text
+                }
+
+                // Update machine name as label is typed
+                labelInput.addEventListener('input', function() {
+                    if (!isManualEdit) {
+                        const slug = slugify(this.value);
+                        machineNameDisplay.textContent = slug || '...';
+                        machineNameInput.value = slug;
+                    }
+                });
+
+                // Handle manual edit toggle
+                editBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    isManualEdit = true;
+
+                    const currentVal = machineNameInput.value;
+                    const newVal = prompt('Enter a new machine name (lowercase, numbers, and underscores only):', currentVal);
+
+                    if (newVal !== null) {
+                        const slugifiedNewVal = slugify(newVal);
+                        machineNameDisplay.textContent = slugifiedNewVal;
+                        machineNameInput.value = slugifiedNewVal;
+                    }
+                });
+            });
+        </script>
+
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Admin Wrapper -->
+    <div class="admin-wrapper">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li>
+                    <a href="{{ url('admin.home') }}">Home</a>
+                    <span>/</span>
+                </li>
+                <li>
+                    <a href="{{ url('admin.dashboard') }}">Administration</a>
+                    <span>/</span>
+                </li>
+
+                <li>
+                    <a href="{{ url('admin.content') }}">Content</a>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Add Content</h1>
+        </div>
+
+        <!-- Structure List Container -->
+        <div class="structure-list-container">
+            <ul>
+                <!-- Content Types -->
+                {% for type in types %}
+                    <li>
+                        <div>
+                            <a href="{{ url('admin.content.add.node',{type: type.config.machine_name}) }}">{{ type.config.label }}</a>
+                            <p>{{ type.config.description }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+
+{% endblock %}

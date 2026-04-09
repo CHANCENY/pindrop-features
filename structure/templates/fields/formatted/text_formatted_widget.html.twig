@@ -1,0 +1,66 @@
+<div class="drupal-formatted-text-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Text (Formatted, Long) Field Settings</h1>
+        <p>Configure the specific settings for the <strong>Product Description</strong> field.</p>
+    </div>
+
+    <!-- Field Storage Settings -->
+    <div class="form-section">
+        <h3>Storage Settings</h3>
+        <div class="form-grid">
+
+            <!-- Row 1: Rows -->
+            <div class="form-item half-width">
+                <label for="rows">Rows *</label>
+                <input type="number"  id="rows" name="rows" value="{{ field.config.rows|default(5) }}" min="1" required>
+                <div class="help-text">The number of rows displayed in the text area.</div>
+            </div>
+
+            <!-- Row 1: Placeholder -->
+            <div class="form-item half-width">
+                <label for="placeholder">Placeholder</label>
+                <input type="text" id="placeholder" name="placeholder" value="{{ field.config.placeholder }}" placeholder="e.g. Enter product details here...">
+                <div class="help-text">A hint displayed in the text area before the user enters a value.</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Global Field Settings -->
+    <div class="form-section">
+        <h3>Field Settings</h3>
+        <div class="form-grid">
+
+            <!-- Row 1: Required -->
+            <div class="form-item half-width">
+                <label for="required">Required Field</label>
+                <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                    <input type="checkbox" id="required" name="required" {% if field.config.required == 1 %} checked {% endif %}>
+                    <span style="font-size: 0.9rem; color: #666;">Users must enter a value for this field.</span>
+                </div>
+            </div>
+
+            <!-- Row 1: Text Processing (Fixed for this type) -->
+            <div class="form-item half-width">
+                <label>Text Processing</label>
+                <div style="font-weight: 700; color: #555; padding: 10px 0;">Filtered text (allows HTML)</div>
+                <div class="help-text">This field type always supports formatted HTML content.</div>
+            </div>
+
+            <!-- Row 2: Default Value -->
+            <div class="form-item full-width" style="border-bottom: none;">
+                <label for="default_value">Default Value</label>
+                <div style="background: #f8f9fa; border: 1px solid #ccc; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-style: italic; color: #888; text-align: center;">
+                    [ Rich Text Editor would be initialized here ]
+                </div>
+                <textarea id="default_value" name="default_value" rows="4" placeholder="Enter a default description if needed.">{{ field.config.defaultValue }}</textarea>
+                <div class="help-text">The initial value for this field when creating new content.</div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>

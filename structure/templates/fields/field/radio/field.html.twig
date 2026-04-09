@@ -1,0 +1,32 @@
+{# Radio Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.settings.label_display != 'hidden' %}
+        <div class="field-label">{{ field.label }}
+            {% if field.required %}<span class="required">*</span>{% endif %}
+        </div>
+    {% endif %}
+    
+    <div class="radio-group">
+        {% for option in field.options %}
+            <div class="radio-item">
+                <input 
+                    type="radio"
+                    id="{{ name }}_{{ loop.index0 }}"
+                    name="{{ name }}"
+                    value="{{ option.value }}"
+                    class="form-check-input radio-field"
+                    {% if field.required and loop.first %}required{% endif %}
+{#                    {% if request.request.get(name,field.defaultValue) == option.value %}checked{% endif %}#}
+                />
+                <label for="{{ name }}_{{ loop.index0 }}" class="form-check-label">
+                    {{ option.label }}
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

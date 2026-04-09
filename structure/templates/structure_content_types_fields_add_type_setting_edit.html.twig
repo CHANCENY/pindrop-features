@@ -1,0 +1,141 @@
+{% extends "templates/base.twig" %}
+
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+    <link rel="stylesheet" href="/modules/structure/assets/field-setting.css">
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="/modules/structure/assets/scripts.js"></script>
+{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="drupal-field-settings-container">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="{{ url('admin.home') }}">Home</a><span>/</span></li>
+                <li><a href="{{ url('admin.dashboard') }}">Administration</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures') }}">Structure</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures.content.types') }}">Content types</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures.content.types.edit',{id: type.config.machine_name }) }}">Edit Content type</a></li>
+            </ol>
+        </nav>
+
+        <form id="field-settings-form" action="#" method="POST">
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button type="button" class="tab active" data-tab="general">General</button>
+                <button type="button" class="tab" data-tab="fields">Settings</button>
+                <button type="button" class="tab" data-tab="form">Others</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content active" id="tab-general">
+                <div class="form-grid">
+
+                    <!-- Row 1: Label -->
+                    <div class="form-item half-width">
+                        <label for="field_label">Label *</label>
+                        <input value="{{ field.config.label }}" type="text" id="field_label" name="field_label" placeholder="e.g. Product Weight" required autofocus>
+                        <div class="help-text">The label shown to the user when they enter data.</div>
+                    </div>
+                    <input value="{{ field.config.name }}" type="hidden" id="field_machine_name" name="field_machine_name">
+
+                    <!-- Row 2: Storage Settings -->
+                    <div class="form-item half-width">
+                        <label for="cardinality">Allowed number of values</label>
+                        <select id="cardinality" name="cardinality">
+                            <option value="1" {% if field.config.cardinality == 1 %} selected {% endif %}>Limited: 1</option>
+                            <option value="2" {% if field.config.cardinality == 2 %} selected {% endif %}>Limited: 2</option>
+                            <option value="3" {% if field.config.cardinality == 3 %} selected {% endif %}>Limited: 3</option>
+                            <option value="4" {% if field.config.cardinality == 4 %} selected {% endif %}>Limited: 4</option>
+                            <option value="5" {% if field.config.cardinality == 5 %} selected {% endif %}>Limited: 5</option>
+                            <option value="unlimited" {% if field.config.cardinality == 'unlimited' %} selected {% endif %}>Unlimited</option>
+                        </select>
+                        <div class="help-text">The maximum number of values users can enter for this field.</div>
+                    </div>
+
+                    <!-- Row 3: Description / Help Text -->
+                    <div class="form-item full-width" style="border-bottom: none;">
+                        <label for="field_description">Help Text</label>
+                        <textarea id="field_description" name="field_description" rows="3" placeholder="Instructions for the user when entering data.">{{ field.config.comment }}</textarea>
+                        <div class="help-text">This text will be displayed below the field on the entry form.</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-fields">
+                {{ html|raw }}
+            </div>
+
+            <div class="tab-content" id="tab-form">
+                {{ form_settings|raw }}
+            </div>
+
+            <!-- Actions -->
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ request.getRequestUri }}" class="btn">Cancel</a>
+            </div>
+        </form>
+
+        <!-- Simple JavaScript for Machine Name Auto-generation -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const labelInput = document.getElementById('field_label');
+                const machineNameDisplay = document.getElementById('machine-name-display');
+                const machineNameInput = document.getElementById('field_machine_name');
+                const editBtn = document.getElementById('edit-machine-name');
+
+                let isManualEdit = false;
+
+                // Function to slugify the label
+                function slugify(text) {
+                    return text.toString().toLowerCase()
+                        .replace(/\s+/g, '_')           // Replace spaces with _
+                        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                        .replace(/\-\-+/g, '_')         // Replace multiple - with single _
+                        .replace(/^-+/, '')             // Trim - from start of text
+                        .replace(/-+$/, '');            // Trim - from end of text
+                }
+
+                // Update machine name as label is typed
+                labelInput.addEventListener('input', function() {
+                    if (!isManualEdit) {
+                        const slug = slugify(this.value);
+                        machineNameDisplay.textContent = slug || '...';
+                        machineNameInput.value = slug;
+                    }
+                });
+
+                // Handle manual edit toggle
+                editBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    isManualEdit = true;
+
+                    const currentVal = machineNameInput.value;
+                    const newVal = prompt('Enter a new machine name (lowercase, numbers, and underscores only):', currentVal);
+
+                    if (newVal !== null) {
+                        const slugifiedNewVal = slugify(newVal);
+                        machineNameDisplay.textContent = slugifiedNewVal;
+                        machineNameInput.value = slugifiedNewVal;
+                    }
+                });
+            });
+        </script>
+
+    </div>
+
+
+{% endblock %}

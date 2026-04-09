@@ -1,0 +1,51 @@
+<div class="drupal-longtext-settings-container">
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Storage Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Rows -->
+                <div class="form-item half-width">
+                    <label for="rows">Rows *</label>
+                    <input type="number" id="rows" name="settings[rows]" value="{{ field.config.settings.rows|default(1) }}" min="1" required>
+                    <div class="help-text">The number of rows displayed in the text area.</div>
+                </div>
+
+                <!-- Row 1: Rows -->
+                <div class="form-item half-width">
+                    <label for="label_display">Label *</label>
+                    <select id="label_display" name="settings[label_display]" required>
+                        <option value="top" {% if field.config.settings.label_display == 'top' %} selected {% endif %}>Top</option>
+                        <option value="inline" {% if field.config.settings.label_display == 'inline' %} selected {% endif %}>Inline</option>
+                        <option value="hidden" {% if field.config.settings.label_display == 'hidden' %} selected {% endif %}>Hidden</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <div class="form-grid">
+
+                <!-- Row 1: Required -->
+                <div class="form-item half-width">
+                    <label for="required">Enable/Disable</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input {% if field.config.settings.status == 'top' %} checked {% endif %} type="checkbox" id="required" name="settings[status]">
+                    </div>
+                </div>
+
+                <!-- Row 1: Text Processing -->
+                <div class="form-item half-width">
+                    <label for="text_processing">Text Processing</label>
+                    <select id="text_processing" name="settings[text_processing]">
+                        <option value="plain">Plain text</option>
+                        <option value="link_detect">Detect link</option>
+                        <option value="filtered" selected>Filtered text (allows HTML)</option>
+                    </select>
+                    <div class="help-text">Choose whether to allow formatted HTML content or strictly plain text.</div>
+                </div>
+            </div>
+        </div>
+</div>

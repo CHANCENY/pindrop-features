@@ -1,0 +1,68 @@
+<div class="drupal-range-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Range Slider Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Range Slider') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Range Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Minimum Value -->
+                <div class="form-item half-width">
+                    <label for="min">Minimum Value *</label>
+                    <input type="number" id="min" name="min" value="{{ field.config.min|default('0') }}" required>
+                    <div class="help-text">The minimum value of the range slider.</div>
+                </div>
+
+                <!-- Row 1: Maximum Value -->
+                <div class="form-item half-width">
+                    <label for="max">Maximum Value *</label>
+                    <input type="number" id="max" name="max" value="{{ field.config.max|default('100') }}" required>
+                    <div class="help-text">The maximum value of the range slider.</div>
+                </div>
+
+                <!-- Row 2: Step -->
+                <div class="form-item half-width">
+                    <label for="step">Step *</label>
+                    <input type="number" id="step" name="step" value="{{ field.config.step|default('1') }}" min="any" required>
+                    <div class="help-text">The increment/decrement step. Use "any" for decimal values.</div>
+                </div>
+
+                <!-- Row 2: Default Value -->
+                <div class="form-item half-width">
+                    <label for="default_value">Default Value</label>
+                    <input type="number" id="default_value" name="defaultValue" value="{{ field.config.defaultValue }}">
+                    <div class="help-text">The initial position of the slider.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Required -->
+                <div class="form-item half-width">
+                    <label for="required">Required Field</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="required" name="required" {{ field.config.required == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Users must select a value.</span>
+                    </div>
+                </div>
+
+                <!-- Row 2: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user when using the range slider.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the field on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

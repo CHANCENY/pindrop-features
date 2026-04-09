@@ -1,0 +1,28 @@
+<div class="drupal-tel-form-settings-container">
+        <!-- Field Form Settings -->
+        <div class="form-section">
+            <h3>Form Display Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Label Display -->
+                <div class="form-item half-width">
+                    <label for="label_display">Label Display *</label>
+                    <select id="label_display" name="settings[label_display]" required>
+                        <option value="top" {% if field.config.settings.label_display == 'top' %} selected {% endif %}>Top</option>
+                        <option value="inline" {% if field.config.settings.label_display == 'inline' %} selected {% endif %}>Inline</option>
+                        <option value="hidden" {% if field.config.settings.label_display == 'hidden' %} selected {% endif %}>Hidden</option>
+                    </select>
+                </div>
+
+                <!-- Row 1: Status -->
+                <div class="form-item half-width">
+                    <label for="status">Enable/Disable</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input {% if field.config.settings.status == 1 %} checked {% endif %} type="checkbox" id="status" name="settings[status]">
+                        <span style="font-size: 0.9rem; color: #666;">Enable this field</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+</div>

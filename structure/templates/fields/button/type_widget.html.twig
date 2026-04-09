@@ -1,0 +1,72 @@
+<div class="drupal-button-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Button Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Button') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Button Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Button Text -->
+                <div class="form-item half-width">
+                    <label for="button_text">Button Text *</label>
+                    <input type="text" id="button_text" name="buttonText" value="{{ field.config.buttonText|default('Click me') }}" required>
+                    <div class="help-text">The text displayed on the button.</div>
+                </div>
+
+                <!-- Row 1: Button Type -->
+                <div class="form-item half-width">
+                    <label for="button_type">Button Type</label>
+                    <select id="button_type" name="buttonType">
+                        <option value="button" {% if field.config.buttonType == 'button' %} selected {% endif %}>Button</option>
+                        <option value="submit" {% if field.config.buttonType == 'submit' %} selected {% endif %}>Submit</option>
+                        <option value="reset" {% if field.config.buttonType == 'reset' %} selected {% endif %}>Reset</option>
+                    </select>
+                    <div class="help-text">The HTML button type attribute.</div>
+                </div>
+
+                <!-- Row 2: Button Style -->
+                <div class="form-item half-width">
+                    <label for="button_style">Button Style</label>
+                    <select id="button_style" name="buttonStyle">
+                        <option value="primary" {% if field.config.buttonStyle == 'primary' %} selected {% endif %}>Primary</option>
+                        <option value="secondary" {% if field.config.buttonStyle == 'secondary' %} selected {% endif %}>Secondary</option>
+                        <option value="success" {% if field.config.buttonStyle == 'success' %} selected {% endif %}>Success</option>
+                        <option value="danger" {% if field.config.buttonStyle == 'danger' %} selected {% endif %}>Danger</option>
+                        <option value="warning" {% if field.config.buttonStyle == 'warning' %} selected {% endif %}>Warning</option>
+                        <option value="info" {% if field.config.buttonStyle == 'info' %} selected {% endif %}>Info</option>
+                        <option value="light" {% if field.config.buttonStyle == 'light' %} selected {% endif %}>Light</option>
+                        <option value="dark" {% if field.config.buttonStyle == 'dark' %} selected {% endif %}>Dark</option>
+                    </select>
+                    <div class="help-text">The visual style of the button.</div>
+                </div>
+
+                <!-- Row 2: OnClick -->
+                <div class="form-item half-width">
+                    <label for="onclick">OnClick JavaScript</label>
+                    <input type="text" id="onclick" name="onClick" value="{{ field.config.onClick|default('') }}" placeholder="alert('Hello!')">
+                    <div class="help-text">JavaScript code to execute when button is clicked.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user about this button.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the button on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

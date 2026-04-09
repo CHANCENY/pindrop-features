@@ -1,0 +1,205 @@
+/* Scoped Drupal-like Manage Fields Grid Layout */
+
+.drupal-manage-fields-container {
+    --drupal-border-color: #d3d3d3;
+    --drupal-bg-header: #f1f1f1;
+    --drupal-bg-stripe: #f9f9f9;
+    --drupal-label-weight: 700;
+    --drupal-primary-color: #007bff;
+    --drupal-text-color: #333;
+    --drupal-input-bg: #fff;
+    --drupal-input-border: #ccc;
+    --drupal-input-focus: #007bff;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--drupal-text-color);
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.drupal-manage-fields-container *,
+.drupal-manage-fields-container *::before,
+.drupal-manage-fields-container *::after {
+    box-sizing: inherit;
+}
+
+/* Page Header */
+.drupal-manage-fields-container .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    padding-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drupal-manage-fields-container .page-title h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* VIEW SECTION */
+.drupal-manage-fields-container .view-section {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.drupal-manage-fields-container h3 {
+    background: var(--drupal-bg-header);
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    margin: 0;
+}
+
+/* SEAMLESS TABLE STYLING */
+.drupal-manage-fields-container .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.drupal-manage-fields-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.drupal-manage-fields-container th {
+    background: var(--drupal-bg-stripe);
+    text-align: left;
+    padding: 12px 15px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #555;
+    border-bottom: 2px solid var(--drupal-border-color);
+    border-right: 1px solid var(--drupal-border-color);
+}
+
+.drupal-manage-fields-container td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--drupal-border-color);
+    border-right: 1px solid var(--drupal-border-color);
+    vertical-align: middle;
+}
+
+.drupal-manage-fields-container th:last-child,
+.drupal-manage-fields-container td:last-child {
+    border-right: none;
+}
+
+.drupal-manage-fields-container tr:nth-child(even) {
+    background-color: var(--drupal-bg-stripe);
+}
+
+.drupal-manage-fields-container tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* SEAMLESS FORM GRID */
+.drupal-manage-fields-container .form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+}
+
+.drupal-manage-fields-container .form-item {
+    padding: 15px;
+    border-right: 1px solid var(--drupal-border-color);
+    border-bottom: 1px solid var(--drupal-border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.drupal-manage-fields-container .form-grid > .form-item:nth-child(4n) {
+    border-right: none;
+}
+
+.drupal-manage-fields-container .full-width { grid-column: span 4; border-right: none; }
+.drupal-manage-fields-container .half-width { grid-column: span 2; }
+
+/* INPUT STYLING */
+.drupal-manage-fields-container label {
+    display: block;
+    font-weight: var(--drupal-label-weight);
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: #555;
+    text-transform: uppercase;
+}
+
+.drupal-manage-fields-container input[type="text"],
+.drupal-manage-fields-container select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--drupal-input-border);
+    background-color: var(--drupal-input-bg);
+    border-radius: 2px;
+    font-size: 0.95rem;
+    color: var(--drupal-text-color);
+}
+
+.drupal-manage-fields-container input:focus,
+.drupal-manage-fields-container select:focus {
+    outline: none;
+    border-color: var(--drupal-input-focus);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* BUTTONS */
+.drupal-manage-fields-container .btn {
+    padding: 8px 16px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #333;
+}
+
+.drupal-manage-fields-container .btn-primary {
+    background-color: var(--drupal-primary-color);
+    color: white;
+    border-color: var(--drupal-primary-color);
+}
+
+.drupal-manage-fields-container .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+}
+
+/* BADGES */
+.drupal-manage-fields-container .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 3px;
+    text-transform: uppercase;
+    background: #eee;
+    color: #555;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .drupal-manage-fields-container .form-grid { grid-template-columns: repeat(2, 1fr); }
+    .drupal-manage-fields-container .form-grid > .form-item:nth-child(2n) { border-right: none; }
+    .drupal-manage-fields-container .full-width,
+    .drupal-manage-fields-container .half-width { grid-column: span 2; }
+}
+
+@media (max-width: 576px) {
+    .drupal-manage-fields-container .form-grid { grid-template-columns: 1fr; }
+    .drupal-manage-fields-container .form-item { border-right: none; }
+    .drupal-manage-fields-container .full-width,
+    .drupal-manage-fields-container .half-width { grid-column: span 1; }
+}

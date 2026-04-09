@@ -1,0 +1,16 @@
+{# Submit Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    <button 
+        type="submit"
+        id="{{ name }}"
+        name="{{ name }}"
+        class="btn btn-{{ field.buttonStyle|default('primary') }} submit-field"
+    >
+        {{ field.buttonText|default('Submit') }}
+    </button>
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

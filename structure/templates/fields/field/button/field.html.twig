@@ -1,0 +1,16 @@
+{# Button Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    <button 
+        type="{{ field.buttonType|default('button') }}"
+        id="{{ name }}"
+        name="{{ name }}"
+        class="btn btn-{{ field.buttonStyle|default('primary') }} button-field"
+        {% if field.onClick %}onclick="{{ field.onClick }}"{% endif %}
+    >
+        {{ field.buttonText|default('Click me') }}
+    </button>
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+</div>

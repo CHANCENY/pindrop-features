@@ -1,0 +1,28 @@
+{# Text Field Template #}
+
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.settings.label_display != 'hidden' %}
+        <label for="{{ name }}" class="field-label">
+            {{ field.label }}
+            {% if field.required %}<span class="required">*</span>{% endif %}
+        </label>
+    {% endif %}
+
+    <input 
+        type="text"
+        id="{{ name }}"
+        name="{{ name }}"
+        class="form-control text-field reference-field"
+        data-source="autocomplete.users"
+        data-id="{{ name }}"
+        {% if field.maxLength %}maxlength="{{ field.maxLength }}"{% endif %}
+        {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+        {% if field.required %}required{% endif %}
+        {% if field.cardinality %}data-cardinality="{{ field.cardinality }}"{% endif %}
+    />
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

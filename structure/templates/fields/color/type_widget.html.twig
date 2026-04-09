@@ -1,0 +1,54 @@
+<div class="drupal-color-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Color Picker Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Color Picker') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Color Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Default Color -->
+                <div class="form-item half-width">
+                    <label for="default_color">Default Color</label>
+                    <input type="color" id="default_color" name="defaultColor" value="{{ field.config.defaultColor|default('#000000') }}">
+                    <div class="help-text">The default color value for this field.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Required -->
+                <div class="form-item half-width">
+                    <label for="required">Required Field</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="required" name="required" {{ field.config.required == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Users must select a color.</span>
+                    </div>
+                </div>
+
+                <!-- Row 1: Default Value -->
+                <div class="form-item half-width">
+                    <label for="default_value">Default Value</label>
+                    <input type="text" id="default_value" name="defaultValue" value="{{ field.config.defaultValue }}" placeholder="#000000">
+                    <div class="help-text">A hex color value to be used if the user leaves the field empty.</div>
+                </div>
+
+                <!-- Row 2: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user when selecting a color.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the field on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

@@ -1,0 +1,25 @@
+{# Month Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.settings.label_display != 'hidden' %}
+        <label for="{{ name }}" class="field-label">
+            {{ field.label }}
+            {% if field.required %}<span class="required">*</span>{% endif %}
+        </label>
+    {% endif %}
+    
+    <input 
+        type="month"
+        id="{{ name }}"
+        name="{{ name }}"
+        class="form-control month-field"
+        {% if field.min %}min="{{ field.min }}"{% endif %}
+        {% if field.max %}max="{{ field.max }}"{% endif %}
+        {% if field.required %}required{% endif %}
+{#        value="{{ request.request.get(name, field.defaultValue ) }}"#}
+    />
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

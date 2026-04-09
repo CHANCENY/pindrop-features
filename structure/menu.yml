@@ -1,0 +1,8 @@
+groups:
+  structure:
+    structures:
+      title: Structures
+      route: structure.structures
+      icon: fa fa-puzzle-piece
+      weight: 1
+      roles: [admin, super_admin]

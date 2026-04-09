@@ -1,0 +1,107 @@
+text:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Text\TextType
+  status: true
+
+text_formatted:
+  class: Simp\Pindrop\Modules\structure\src\Fields\TextFormatted\TextFormatted
+  status: true
+
+number:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Number\NumberType
+  status: true
+
+select:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Select\SelectType
+  status: true
+
+checkbox:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Checkbox\CheckboxType
+  status: true
+
+radio:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Radio\RadioType
+  status: true
+
+button:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Button\ButtonType
+  status: true
+
+color:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Color\ColorType
+  status: true
+
+date:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Date\DateType
+  status: true
+
+datetime-local:
+  class: Simp\Pindrop\Modules\structure\src\Fields\DateTimeLocal\DateTimeLocalType
+  status: true
+
+email:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Email\EmailType
+  status: true
+
+file:
+  class: Simp\Pindrop\Modules\structure\src\Fields\File\FileType
+  status: true
+
+hidden:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Hidden\HiddenType
+  status: true
+
+image:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Image\ImageType
+  status: true
+
+month:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Month\MonthType
+  status: true
+
+password:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Password\PasswordType
+  status: true
+
+range:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Range\RangeType
+  status: true
+
+reset:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Reset\ResetType
+  status: true
+
+search:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Search\SearchType
+  status: true
+
+submit:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Submit\SubmitType
+  status: true
+
+tel:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Tel\TelType
+  status: true
+
+time:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Time\TimeType
+  status: true
+
+url:
+  class: Simp\Pindrop\Modules\structure\src\Fields\URL\URLType
+  status: true
+
+week:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Week\WeekType
+  status: true
+
+user:
+  class: Simp\Pindrop\Modules\structure\src\Fields\User\UserType
+  status: true
+
+fieldset:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Fieldset\FieldsetType
+  status: true
+
+detail:
+  class: Simp\Pindrop\Modules\structure\src\Fields\Detail\DetailType
+  status: true

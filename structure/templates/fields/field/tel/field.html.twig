@@ -1,0 +1,27 @@
+{# Telephone Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.settings.label_display != 'hidden' %}
+        <label for="{{ name }}" class="field-label">
+            {{ field.label }}
+            {% if field.required %}<span class="required">*</span>{% endif %}
+        </label>
+    {% endif %}
+    
+    <input 
+        type="tel"
+        id="{{ name }}"
+        name="{{ name }}"
+        class="form-control tel-field"
+        {% if field.maxLength %}maxlength="{{ field.maxLength }}"{% endif %}
+        {% if field.pattern %}pattern="{{ field.pattern }}"{% endif %}
+        {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+        {% if field.required %}required{% endif %}
+{#        value="{{ request.request.get(name, field.defaultValue ) }}"#}
+        {% if field.cardinality %}data-cardinality="{{ field.cardinality }}"{% endif %}
+    />
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

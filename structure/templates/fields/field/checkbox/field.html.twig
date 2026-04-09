@@ -1,0 +1,52 @@
+{# Checkbox Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}">
+    {% if field.options %}
+        {# Multiple checkboxes #}
+        <div class="checkbox-group">
+            {% if field.settings.label_display != 'hidden' %}
+                <div class="field-label">{{ field.label }}
+                    {% if field.required %}<span class="required">*</span>{% endif %}
+                </div>
+            {% endif %}
+
+            {% for option in field.options %}
+                <div class="checkbox-item">
+                    <input 
+                        type="checkbox"
+                        id="{{ name }}_{{ loop.index0 }}"
+                        name="{{ name }}[]"
+                        value="{{ option.value }}"
+                        class="form-check-input checkbox-field"
+{#                        {% if field.defaultValue and option.value in request.request.all(name) %}checked{% endif %}#}
+                        {% if field.cardinality %}data-cardinality="{{ field.cardinality }}"{% endif %}
+                    />
+                    <label for="{{ name }}_{{ loop.index0 }}" class="form-check-label">
+                        {{ option.label }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {# Single checkbox #}
+        <div class="checkbox-item">
+            <input 
+                type="checkbox"
+                id="{{ name }}"
+                name="{{ name }}"
+                value="1"
+                class="form-check-input checkbox-field"
+                {% if field.required %}required{% endif %}
+                {% if request.request.get(name,field.defaultValue) %}checked{% endif %}
+            />
+            <label for="{{ name }}" class="form-check-label">
+                {{ field.label }}
+                {% if field.required %}<span class="required">*</span>{% endif %}
+            </label>
+        </div>
+    {% endif %}
+    
+    {% if field.helpText %}
+        <div class="field-help">{{ field.helpText }}</div>
+    {% endif %}
+
+</div>

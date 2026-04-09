@@ -1,0 +1,11 @@
+{# Hidden Field Template #}
+<div class="field-group field-type-{{ field.struct_type }} {{ field.component|join('-') }}" style="display: none;">
+    <input 
+        type="hidden"
+        id="{{ name }}"
+        name="{{ name }}"
+        value="{{ field.defaultValue|default('') }}"
+        class="hidden-field"
+        {% if field.cardinality %}data-cardinality="{{ field.cardinality }}"{% endif %}
+    />
+</div>

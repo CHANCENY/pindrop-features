@@ -1,0 +1,54 @@
+<div class="drupal-submit-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Submit Button Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Submit Button') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Submit Button Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Button Text -->
+                <div class="form-item half-width">
+                    <label for="button_text">Button Text *</label>
+                    <input type="text" id="button_text" name="buttonText" value="{{ field.config.buttonText|default('Submit') }}" required>
+                    <div class="help-text">The text displayed on the submit button.</div>
+                </div>
+
+                <!-- Row 1: Button Style -->
+                <div class="form-item half-width">
+                    <label for="button_style">Button Style</label>
+                    <select id="button_style" name="buttonStyle">
+                        <option value="primary" {% if field.config.buttonStyle == 'primary' %} selected {% endif %}>Primary</option>
+                        <option value="success" {% if field.config.buttonStyle == 'success' %} selected {% endif %}>Success</option>
+                        <option value="secondary" {% if field.config.buttonStyle == 'secondary' %} selected {% endif %}>Secondary</option>
+                        <option value="info" {% if field.config.buttonStyle == 'info' %} selected {% endif %}>Info</option>
+                        <option value="warning" {% if field.config.buttonStyle == 'warning' %} selected {% endif %}>Warning</option>
+                        <option value="danger" {% if field.config.buttonStyle == 'danger' %} selected {% endif %}>Danger</option>
+                        <option value="light" {% if field.config.buttonStyle == 'light' %} selected {% endif %}>Light</option>
+                        <option value="dark" {% if field.config.buttonStyle == 'dark' %} selected {% endif %}>Dark</option>
+                    </select>
+                    <div class="help-text">The visual style of the submit button.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user about this submit button.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the button on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

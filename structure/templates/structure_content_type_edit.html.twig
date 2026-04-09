@@ -1,0 +1,193 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Admin Wrapper -->
+    <div class="admin-wrapper">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="{{ url('admin.home') }}">Home</a><span>/</span></li>
+                <li><a href="{{ url('admin.dashboard') }}">Administration</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures') }}">Structure</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures.content.types') }}">Content types</a></li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Edit content type</h1>
+        </div>
+
+        <form class="admin-form" method="POST">
+
+            <div class="form-main-content">
+
+                <div class="form-fields">
+
+                    <div class="form-group">
+                        <label for="edit-name">Name <span class="text-red-600">*</span></label>
+                        <input type="text" id="edit-name" name="name" value="{{ type.config.label }}" required placeholder="e.g., Article">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-description">Description</label>
+                        <textarea id="edit-description" name="description" rows="3" placeholder="Describe this content type.">{{ type.config.description }}</textarea>
+                    </div>
+
+                    <!-- Submission Form Settings -->
+                    <div id="tab-submission" class="tab-content active">
+                        <h3 style="font-weight: 700; margin-bottom: 1rem; font-size: 1rem;">Submission form settings</h3>
+                        <div class="form-group">
+                            <label for="edit-title-label">Title field label <span class="text-red-600">*</span></label>
+                            <input type="text" id="edit-title-label" name="title_label" value="{{ type.config.title_label }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-preview">Preview before submitting</label>
+                            <select id="edit-preview" name="preview">
+                                <option value="0" {{ type.config.preview == '0' ? 'selected' }}>Disabled</option>
+                                <option value="1" {{ type.config.preview == '1' ? 'selected' }}>Optional</option>
+                                <option value="2" {{ type.config.preview == '2' ? 'selected' }}>Required</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-help">Explanation or submission guidelines</label>
+                            <textarea id="edit-help" name="help" rows="3">{{ type.config.help }}</textarea>
+                            <div class="form-help">This text will be displayed at the top of the page when creating or editing content of this type.</div>
+                        </div>
+                    </div>
+
+                    <!-- Publishing Options -->
+                    <div id="tab-publishing" class="tab-content">
+                        <h3 style="font-weight: 700; margin-bottom: 1rem; font-size: 1rem;">Publishing options</h3>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="edit-status" name="status" {{ type.config.status ? 'checked' }}>
+                            <label for="edit-status">Published</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="edit-promote" name="promote" {{ type.config.promote ? 'checked' }}>
+                            <label for="edit-promote">Promoted to front page</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="edit-sticky" name="sticky" {{ type.config.sticky ? 'checked' }}>
+                            <label for="edit-sticky">Sticky at top of lists</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="edit-revision" name="revision" {{ type.config.revision ? 'checked' }}>
+                            <label for="edit-revision">Create new revision</label>
+                        </div>
+                    </div>
+
+                    <!-- Display Settings -->
+                    <div id="tab-display" class="tab-content">
+                        <h3 style="font-weight: 700; margin-bottom: 1rem; font-size: 1rem;">Display settings</h3>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="edit-submitted" name="submitted" {{ type.config.submitted ? 'checked' }}>
+                            <label for="edit-submitted">Display author and date information</label>
+                        </div>
+                        <div class="form-help">Author username and publish date will be displayed.</div>
+                    </div>
+
+                    <!-- Menu Settings -->
+                    <div id="tab-menu" class="tab-content">
+                        <h3 style="font-weight: 700; margin-bottom: 1rem; font-size: 1rem;">Menu settings</h3>
+                        <div class="form-group">
+                            <label>Available menus</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="menu-main" name="menus[]" value="main" {{ 'main' in type.config.menus ? 'checked' }}>
+                                <label for="menu-main">Main navigation</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="menu-footer" name="menus[]" value="footer" {{ 'footer' in type.config.menus ? 'checked' }}>
+                                <label for="menu-footer">Footer</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="menu-tools" name="menus[]" value="tools" {{ 'tools' in type.config.menus ? 'checked' }}>
+                                <label for="menu-tools">Tools</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-menu-parent">Default parent item</label>
+                            <select id="edit-menu-parent" name="menu_parent">
+                                <option value="main:0" {{ type.config.menu_parent == 'main:0' ? 'selected' }}>Main navigation</option>
+                                <option value="footer:0" {{ type.config.menu_parent == 'footer:0' ? 'selected' }}>Footer</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Sidebar untouched -->
+                <aside class="vertical-tabs">
+                    <div class="vertical-tab-item">
+                        <a href="#" class="vertical-tab-link active" data-tab="tab-submission">
+                            <div class="vertical-tab-title">Submission form settings</div>
+                            <div class="vertical-tab-summary">Title field label, Preview</div>
+                        </a>
+                    </div>
+                    <div class="vertical-tab-item">
+                        <a href="#" class="vertical-tab-link" data-tab="tab-publishing">
+                            <div class="vertical-tab-title">Publishing options</div>
+                            <div class="vertical-tab-summary">Published, New revision</div>
+                        </a>
+                    </div>
+                    <div class="vertical-tab-item">
+                        <a href="#" class="vertical-tab-link" data-tab="tab-display">
+                            <div class="vertical-tab-title">Display settings</div>
+                            <div class="vertical-tab-summary">Author and date information</div>
+                        </a>
+                    </div>
+                    <div class="vertical-tab-item">
+                        <a href="#" class="vertical-tab-link" data-tab="tab-menu">
+                            <div class="vertical-tab-title">Menu settings</div>
+                            <div class="vertical-tab-summary">Available menus</div>
+                        </a>
+                    </div>
+                </aside>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Save content type</button>
+                <a href="#" class="btn-secondary">Cancel</a>
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching logic
+            const tabLinks = document.querySelectorAll('.vertical-tab-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Remove active class from all links and contents
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to current link and target content
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,289 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Admin Wrapper -->
+    <div class="admin-wrapper">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li>
+                    <a href="{{ url('admin.home') }}">Home</a>
+                    <span>/</span>
+                </li>
+                <li>
+                    <a href="{{ url('admin.dashboard') }}">Administration</a>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Content</h1>
+
+            <a href="{{ url('admin.content.add') }}" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Add content
+            </a>
+        </div>
+
+        <div class="drupal-admin-content-container">
+
+            <!-- Filter Section - Enhanced Grid -->
+            <div class="filter-section">
+                <form method="GET" action="">
+                    <div class="filter-grid">
+                        <div class="filter-item">
+                            <label for="filter_title">Title</label>
+                            <input type="text" id="filter_title" name="title" value="{{ filters.title }}" placeholder="Search by title...">
+                        </div>
+                        <div class="filter-item">
+                            <label for="filter_type">Content Type</label>
+                            <select id="filter_type" name="type">
+                                <option value="all" {{ filters.type == 'all' ? 'selected' : '' }}>- Any -</option>
+                                {% for type in available_types %}
+                                    <option value="{{ type }}" {{ filters.type == type ? 'selected' : '' }}>{{ type|capitalize }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="filter_status">Status</label>
+                            <select id="filter_status" name="status">
+                                <option value="all" {{ filters.status == 'all' ? 'selected' : '' }}>- Any -</option>
+                                <option value="published" {{ filters.status == 'published' ? 'selected' : '' }}>Published</option>
+                                <option value="unpublished" {{ filters.status == 'unpublished' ? 'selected' : '' }}>Unpublished</option>
+                                <option value="deleted" {{ filters.isDeleted ? 'selected' : '' }}>Deleted</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ url('admin.content') }}" class="btn">Reset</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden fields to maintain pagination -->
+                    <input type="hidden" name="order_by" value="{{ order_by }}">
+                    <input type="hidden" name="order_direction" value="{{ order_direction }}">
+                </form>
+            </div>
+
+            <!-- Bulk Operations -->
+            <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+                <select id="action-select" style="width: 200px; padding: 6px; border: 1px solid #ccc; border-radius: 2px;">
+                    <option value="">- Bulk Operations -</option>
+                    <option value="publish">Publish content</option>
+                    <option value="unpublish">Unpublish content</option>
+                    <option value="delete">Delete content</option>
+                </select>
+                <button id="bulk" class="btn-secondary">Apply to selected items</button>
+            </div>
+
+            <!-- Content Table -->
+            <form method="post" class="table-section" id="contents" action="{{ url('admin.content.add.node.new.submitted.data.action',{redirect: request.getRequestUri}) }}">
+                {% if pagination.total_items > 0 %}
+                    <div class="table-info">
+                        Showing {{ ((pagination.current_page - 1) * pagination.items_per_page) + 1 }} 
+                        to {{ min(pagination.current_page * pagination.items_per_page, pagination.total_items) }} 
+                        of {{ pagination.total_items }} items
+                    </div>
+                {% endif %}
+                
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="width: 40px; text-align: center;"><input type="checkbox" id="select_all"></th>
+                        <th>
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, order_by: 'title', order_direction: order_by == 'title' and order_direction == 'ASC' ? 'DESC' : 'ASC'}) }}" 
+                               style="text-decoration: none; color: inherit;">
+                                Title 
+                                {% if order_by == 'title' %}
+                                    {{ order_direction == 'ASC' ? '°' : '°' }}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, order_by: 'type', order_direction: order_by == 'type' and order_direction == 'ASC' ? 'DESC' : 'ASC'}) }}" 
+                               style="text-decoration: none; color: inherit;">
+                                Content Type
+                                {% if order_by == 'type' %}
+                                    {{ order_direction == 'ASC' ? '°' : '°' }}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>Author</th>
+                        <th>
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, order_by: 'status', order_direction: order_by == 'status' and order_direction == 'ASC' ? 'DESC' : 'ASC'}) }}" 
+                               style="text-decoration: none; color: inherit;">
+                                Status
+                                {% if order_by == 'status' %}
+                                    {{ order_direction == 'ASC' ? '°' : '°' }}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, order_by: 'updated_at', order_direction: order_by == 'updated_at' and order_direction == 'ASC' ? 'DESC' : 'ASC'}) }}" 
+                               style="text-decoration: none; color: inherit;">
+                                Updated
+                                {% if order_by == 'updated_at' %}
+                                    {{ order_direction == 'ASC' ? '°' : '°' }}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th style="text-align: right;">Operations</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for node in nodes %}
+                        <tr  class="{{ node.isDeleted ? 'deleted' : '' }}">
+                            <td style="text-align: center;"><input type="checkbox" class="item-select" name="nodes[]" value="{{ node.id }}"></td>
+                            <td>
+                                <a href="{{ url('admin.content.node.view', {nid: node.id}) }}" style="font-weight: 700; color: #007bff; text-decoration: none;">{{ node.title }}</a>
+                                {% if node.alias %}
+                                    <div style="font-size: 0.75rem; color: #888;">/{{ node.alias }}</div>
+                                {% endif %}
+                            </td>
+                            <td>{{ node.type|capitalize }}</td>
+                            <td>{{ node.author.username|default('Admin User') }}</td>
+                            <td>
+                                {% if node.status %}
+                                    <span class="status-badge status-published">Published</span>
+                                {% else %}
+                                    <span class="status-badge status-draft">Unpublished</span>
+                                {% endif %}
+                            </td>
+                            <td style="color: #666; font-size: 0.85rem;">{{ node.updatedAt|date('Y-m-d H:i') }}</td>
+                            <td style="text-align: right;">
+                                <div style="display: flex; justify-content: flex-end; gap: 5px;">
+                                    <a href="{{ url('', {nid: node.id}) }}" class="btn btn-sm">Edit</a>
+                                    <a href="{{ url('', {nid: node.id}) }}" class="btn btn-sm" style="color: #d9534f; border-color: #d43f3a;">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 20px; color: #888;">
+                                {% if filters.title or filters.type != 'all' or filters.status != 'all' or filters.lang != 'all' %}
+                                    No content found matching your filters. <a href="{{ url('admin.content') }}">Clear filters</a>
+                                {% else %}
+                                    No content available. <a href="{{ url('admin.content.add.node') }}">Add content</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <input type="hidden" name="action">
+            </form>
+
+            <!-- Pagination -->
+            {% if pagination.total_pages > 1 %}
+                <div class="pagination-wrapper">
+                    <div class="pagination-info">
+                        Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+                        ({{ pagination.total_items }} total items)
+                    </div>
+                    
+                    <div class="pagination-controls">
+                        <!-- First Page -->
+                        {% if pagination.current_page > 1 %}
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, page: 1, order_by: order_by, order_direction: order_direction}) }}" 
+                               class="btn btn-sm" title="First page">«</a>
+                        {% else %}
+                            <span class="btn btn-sm disabled">«</span>
+                        {% endif %}
+                        
+                        <!-- Previous Page -->
+                        {% if pagination.has_previous %}
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, page: pagination.previous_page, order_by: order_by, order_direction: order_direction}) }}" 
+                               class="btn btn-sm" title="Previous page">«</a>
+                        {% else %}
+                            <span class="btn btn-sm disabled">«</span>
+                        {% endif %}
+                        
+                        <!-- Page Numbers -->
+                        {% set start_page = max(1, pagination.current_page - 2) %}
+                        {% set end_page = min(pagination.total_pages, pagination.current_page + 2) %}
+                        
+                        {% if start_page > 1 %}
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, page: 1, order_by: order_by, order_direction: order_direction}) }}" 
+                               class="btn btn-sm">1</a>
+                            {% if start_page > 2 %}
+                                <span class="btn btn-sm disabled">...</span>
+                            {% endif %}
+                        {% endif %}
+                        
+                        {% for page in range(start_page, end_page) %}
+                            {% if page == pagination.current_page %}
+                                <span class="btn btn-sm btn-primary">{{ page }}</span>
+                            {% else %}
+                                <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, page: page, order_by: order_by, order_direction: order_direction}) }}" 
+                                   class="btn btn-sm">{{ page }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if end_page < pagination.total_pages %}
+                            {% if end_page < pagination.total_pages - 1 %}
+                                <span class="btn btn-sm disabled">...</span>
+                            {% endif %}
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, page: pagination.total_pages, order_by: order_by, order_direction: order_direction}) }}" 
+                               class="btn btn-sm">{{ pagination.total_pages }}</a>
+                        {% endif %}
+                        
+                        <!-- Next Page -->
+                        {% if pagination.has_next %}
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, page: pagination.next_page, order_by: order_by, order_direction: order_direction}) }}" 
+                               class="btn btn-sm" title="Next page">»</a>
+                        {% else %}
+                            <span class="btn btn-sm disabled">»</span>
+                        {% endif %}
+                        
+                        <!-- Last Page -->
+                        {% if pagination.current_page < pagination.total_pages %}
+                            <a href="{{ url('admin.content', {title: filters.title, type: filters.type, status: filters.status, lang: filters.lang, limit: pagination.items_per_page, page: pagination.total_pages, order_by: order_by, order_direction: order_direction}) }}" 
+                               class="btn btn-sm" title="Last page">»</a>
+                        {% else %}
+                            <span class="btn btn-sm disabled">»</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <script>
+            // Simple script to handle 'Select All' checkbox
+            document.getElementById('select_all').addEventListener('change', function() {
+                var checkboxes = document.querySelectorAll('.item-select');
+                for (var checkbox of checkboxes) {
+                    checkbox.checked = this.checked;
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded',()=>{
+                const bulk = document.getElementById('bulk');
+                bulk.addEventListener('click',(e)=>{
+                    e.preventDefault();
+                    const select = document.getElementById('action-select').value;
+                    const form = document.querySelector('#contents');
+                    form.querySelector("input[name='action']").value = select;
+                    form.requestSubmit();
+
+                })
+            })
+        </script>
+
+    </div>
+
+
+{% endblock %}

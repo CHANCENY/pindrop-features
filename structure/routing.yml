@@ -1,0 +1,182 @@
+structure.structures:
+  path: '/admin/structures'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structure'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types:
+  path: '/admin/structures/content-types'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypes'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.create:
+  path: '/admin/structures/content-types/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesCreate'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.edit:
+  path: '/admin/structures/content-types/[id:string]/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesEdit'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.delete:
+  path: '/admin/structures/content-types/[id:string]/delete'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesDelete'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.manage.fields:
+  path: '/admin/structures/content-types/[id:string]/fields'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFields'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.manage.form.display:
+  path: '/admin/structures/content-types/[id:string]/form-display'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFormDisplay'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.manage.fields.add:
+  path: '/admin/structures/content-types/[id:string]/fields/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAdd'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.manage.fields.add.base:
+  path: '/admin/structures/content-types/[id:string]/fields/add/[type:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAddType'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.manage.fields.add.field.setting:
+  path: '/admin/structures/content-types/[id:string]/fields/add/[type:string]/field/[name:string]/settings'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAddTypeSetting'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+structure.structures.content.types.manage.fields.add.field.setting.edit:
+  path: '/admin/structures/content-types/[id:string]/fields/add/[type:string]/field/[name:string]/settings/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAddTypeSettingEdit'
+  requirements:
+    _permission: ['admin', 'super_admin']
+structure.structures.content.types.manage.fields.add.field.setting.delete:
+  path: '/admin/structures/content-types/[id:string]/fields/add/[type:string]/field/[name:string]/settings/delete'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAddTypeSettingDelete'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+admin.content:
+  path: '/admin/content'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::content'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add:
+  path: '/admin/content/add'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add.node:
+  path: '/admin/content/[type:string]/add'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addNewContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add.node.new:
+  path: '/admin/content/[type:string]/submit/new'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addNewContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add.node.new.submitted.data:
+  path: '/admin/content/[type:string]/submit/data/failed'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addNewGetContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add.node.new.submitted.data.action:
+  path: '/admin/content/action'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::handleActions'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add.node.new.submitted.preview:
+  path: '/node/[sessionId:int]/preview'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::previewNodeSubmitted'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add.node.new.submitted.preview.save:
+  path: '/node/[sessionId:int]/preview/save'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::previewNodeSubmittedSave'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add.node.preview.delete:
+  path: '/node/[sessionId:int]/preview/delete'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::previewNodeSubmittedDelete'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.node.view:
+  path: '/node/[nid:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::nodeContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.node.view.alias:
+  path: '/c/[node_alias:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::nodeContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']

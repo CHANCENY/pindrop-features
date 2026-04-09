@@ -1,0 +1,112 @@
+{% extends "templates/base.twig" %}
+
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+    <link rel="stylesheet" href="/modules/structure/assets/type.css">
+
+{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="drupal-select-field-container">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="{{ url('admin.home') }}">Home</a><span>/</span></li>
+                <li><a href="{{ url('admin.dashboard') }}">Administration</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures') }}">Structure</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures.content.types') }}">Content types</a><span>/</span></li>
+                <li><a href="{{ url('structure.structures.content.types.edit',{id: type.config.machine_name }) }}">Edit Content type</a></li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Select a field type</h1>
+            <p>Choose the type of field you want to add to your content type.</p>
+        </div>
+
+        {% for index,group in fieldGroups %}
+
+        {% if index == 'general' %}
+
+        <!-- Category: General -->
+        <div class="field-category">
+            <h3>General</h3>
+            <div class="field-grid">
+                {% for field in group %}
+                <a href="{{ url('structure.structures.content.types.manage.fields.add.base',{id: type.config.machine_name, type: field.getType}) }}" class="field-type-card">
+                    <div class="field-icon">{{ field.svgIcon }}</div>
+                    <div class="field-title">{{ field.getLabel }}</div>
+                    <div class="field-description">{{ field.getDescription }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% elseif index == 'reference' %}
+
+        <!-- Category: Reference -->
+        <div class="field-category">
+            <h3>Reference</h3>
+            <div class="field-grid">
+                {% for field in group %}
+                <a href="{{ url('structure.structures.content.types.manage.fields.add.base',{id: type.config.machine_name, type: field.getType}) }}" class="field-type-card">
+                    <div class="field-icon">{{ field.svgIcon }}</div>
+                    <div class="field-title">{{ field.getLabel }}</div>
+                    <div class="field-description">{{ field.getDescription }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% elseif index == 'media' %}
+
+        <!-- Category: Media -->
+        <div class="field-category">
+            <h3>Media</h3>
+            <div class="field-grid">
+                {% for field in group %}
+                <a href="{{ url('structure.structures.content.types.manage.fields.add.base',{id: type.config.machine_name, type: field.getType}) }}" class="field-type-card">
+                    <div class="field-icon">{{ field.svgIcon }}</div>
+                    <div class="field-title">{{ field.getLabel }}</div>
+                    <div class="field-description">{{ field.getDescription }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% else %}
+
+            <!-- Category: Media -->
+            <div class="field-category">
+                <h3>{{ index|capitalize }}</h3>
+                <div class="field-grid">
+                    {% for field in group %}
+                        <a href="{{ url('structure.structures.content.types.manage.fields.add.base',{id: type.config.machine_name, type: field.getType}) }}" class="field-type-card">
+                            <div class="field-icon">{{ field.svgIcon }}</div>
+                            <div class="field-title">{{ field.getLabel }}</div>
+                            <div class="field-description">{{ field.getDescription }}</div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+        {% endif %}
+        {% endfor %}
+
+        <!-- Actions -->
+        <div class="actions">
+            <a href="#" class="btn btn-secondary">Cancel and return to Manage Fields</a>
+        </div>
+
+    </div>
+
+
+
+{% endblock %}

@@ -1,0 +1,53 @@
+<div class="drupal-reset-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Reset Button Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Reset Button') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Reset Button Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Button Text -->
+                <div class="form-item half-width">
+                    <label for="button_text">Button Text *</label>
+                    <input type="text" id="button_text" name="buttonText" value="{{ field.config.buttonText|default('Reset') }}" required>
+                    <div class="help-text">The text displayed on the reset button.</div>
+                </div>
+
+                <!-- Row 1: Button Style -->
+                <div class="form-item half-width">
+                    <label for="button_style">Button Style</label>
+                    <select id="button_style" name="buttonStyle">
+                        <option value="secondary" {% if field.config.buttonStyle == 'secondary' %} selected {% endif %}>Secondary</option>
+                        <option value="warning" {% if field.config.buttonStyle == 'warning' %} selected {% endif %}>Warning</option>
+                        <option value="danger" {% if field.config.buttonStyle == 'danger' %} selected {% endif %}>Danger</option>
+                        <option value="light" {% if field.config.buttonStyle == 'light' %} selected {% endif %}>Light</option>
+                        <option value="dark" {% if field.config.buttonStyle == 'dark' %} selected {% endif %}>Dark</option>
+                        <option value="outline-secondary" {% if field.config.buttonStyle == 'outline-secondary' %} selected {% endif %}>Outline Secondary</option>
+                        <option value="outline-warning" {% if field.config.buttonStyle == 'outline-warning' %} selected {% endif %}>Outline Warning</option>
+                    </select>
+                    <div class="help-text">The visual style of the reset button.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for the user about this reset button.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the button on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>

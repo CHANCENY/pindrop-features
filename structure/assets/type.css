@@ -1,0 +1,153 @@
+/* Scoped Drupal-like Select Field Type Grid Layout */
+
+.drupal-select-field-container {
+    --drupal-border-color: #d3d3d3;
+    --drupal-bg-header: #f1f1f1;
+    --drupal-bg-stripe: #f9f9f9;
+    --drupal-label-weight: 700;
+    --drupal-primary-color: #007bff;
+    --drupal-text-color: #333;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--drupal-text-color);
+    margin: 20px auto;
+    box-sizing: border-box;
+}
+
+.drupal-select-field-container *,
+.drupal-select-field-container *::before,
+.drupal-select-field-container *::after {
+    box-sizing: inherit;
+}
+
+/* Page Header */
+.drupal-select-field-container .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--drupal-border-color);
+    padding-bottom: 1rem;
+}
+
+.drupal-select-field-container .page-header h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.drupal-select-field-container .page-header p {
+    margin: 5px 0 0 0;
+    color: #666;
+}
+
+/* CATEGORY SECTION */
+.drupal-select-field-container .field-category {
+    border: 1px solid var(--drupal-border-color);
+    background: #fff;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.drupal-select-field-container h3 {
+    background: var(--drupal-bg-header);
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--drupal-border-color);
+    margin: 0;
+    color: #555;
+}
+
+/* SEAMLESS GRID FOR FIELD TYPES */
+.drupal-select-field-container .field-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+}
+
+.drupal-select-field-container .field-type-card {
+    padding: 20px;
+    border-right: 1px solid var(--drupal-border-color);
+    border-bottom: 1px solid var(--drupal-border-color);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    color: inherit;
+}
+
+.drupal-select-field-container .field-type-card:hover {
+    background-color: #f8f9fa;
+}
+
+.drupal-select-field-container .field-type-card:hover .field-title {
+    color: var(--drupal-primary-color);
+    text-decoration: underline;
+}
+
+/* Grid logic for 3-columns */
+.drupal-select-field-container .field-grid > .field-type-card:nth-child(3n) {
+    border-right: none;
+}
+
+/* Remove bottom border for the last row in each category */
+/* Note: This is simplified, in a real dynamic environment you'd use JS or specific row count logic */
+
+/* CARD CONTENT */
+.drupal-select-field-container .field-icon {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: #888;
+}
+
+.drupal-select-field-container .field-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 6px;
+    color: var(--drupal-text-color);
+}
+
+.drupal-select-field-container .field-description {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #666;
+}
+
+/* BUTTONS */
+.drupal-select-field-container .actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.drupal-select-field-container .btn {
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    color: #333;
+}
+
+.drupal-select-field-container .btn-secondary {
+    background: #f1f1f1;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .drupal-select-field-container .field-grid { grid-template-columns: repeat(2, 1fr); }
+    .drupal-select-field-container .field-grid > .field-type-card:nth-child(2n) { border-right: none; }
+    .drupal-select-field-container .field-grid > .field-type-card:nth-child(3n) { border-right: 1px solid var(--drupal-border-color); }
+}
+
+@media (max-width: 576px) {
+    .drupal-select-field-container .field-grid { grid-template-columns: 1fr; }
+    .drupal-select-field-container .field-type-card { border-right: none !important; }
+}

@@ -1,0 +1,56 @@
+<div class="drupal-fieldset-settings-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Fieldset Field Settings</h1>
+        <p>Configure the specific settings for the <strong>{{ field.config.label|default('Fieldset') }}</strong> field.</p>
+    </div>
+
+        <!-- Field Storage Settings -->
+        <div class="form-section">
+            <h3>Fieldset Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Legend -->
+                <div class="form-item full-width">
+                    <label for="legend">Legend/Title</label>
+                    <input type="text" id="legend" name="legend" value="{{ field.config.legend|default('') }}" placeholder="Fieldset Title">
+                    <div class="help-text">The legend or title displayed for this fieldset. Leave empty for no legend.</div>
+                </div>
+
+                <!-- Row 2: Collapsible -->
+                <div class="form-item half-width">
+                    <label for="collapsible">Collapsible</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="collapsible" name="collapsible" {{ field.config.collapsible == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Allow users to collapse/expand this fieldset.</span>
+                    </div>
+                </div>
+
+                <!-- Row 2: Collapsed by Default -->
+                <div class="form-item half-width">
+                    <label for="collapsed">Collapsed by Default</label>
+                    <div style="display: flex; align-items: center; gap: 10px; height: 40px;">
+                        <input type="checkbox" id="collapsed" name="collapsed" {{ field.config.collapsed == true ? 'checked' : '' }}>
+                        <span style="font-size: 0.9rem; color: #666;">Start with the fieldset collapsed (requires collapsible).</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Field Settings -->
+        <div class="form-section">
+            <h3>Field Settings</h3>
+            <div class="form-grid">
+
+                <!-- Row 1: Help Text -->
+                <div class="form-item full-width" style="border-bottom: none;">
+                    <label for="help_text">Help Text</label>
+                    <textarea id="help_text" name="help_text" rows="2" placeholder="Instructions for this fieldset group.">{{ field.config.helpText }}</textarea>
+                    <div class="help-text">This text will be displayed below the fieldset legend on the entry form.</div>
+                </div>
+
+            </div>
+        </div>
+</div>
