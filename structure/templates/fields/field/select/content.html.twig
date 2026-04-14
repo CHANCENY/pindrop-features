@@ -1,0 +1,25 @@
+{# Select Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <div class="field-value field-value-select-{{ settings.name }} {% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                <p>
+                    {% set label_found = false %}
+                    {% for option in settings.options %}
+                        {% if option.value == value %}
+                            {{ option.label|e }}
+                            {% set label_found = true %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if not label_found %}
+                        {{ value|e }}
+                    {% endif %}
+                </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}

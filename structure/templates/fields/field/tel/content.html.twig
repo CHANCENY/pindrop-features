@@ -1,0 +1,71 @@
+{# Tel Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <span class="field-value field-value-tel{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if settings.as_link is defined and settings.as_link %}
+                    <a href="tel:{{ value|e }}" class="tel-link{% if settings.link_class is defined %} {{ settings.link_class }}{% endif %}">
+                        {% if settings.show_icon is defined and settings.show_icon %}
+                            <i class="fas fa-phone"></i> 
+                        {% endif %}
+                        {% if settings.format is defined %}
+                            {{ value|format_phone(settings.format) }}
+                        {% else %}
+                            {{ value|e }}
+                        {% endif %}
+                    </a>
+                {% else %}
+                    {% if settings.show_icon is defined and settings.show_icon %}
+                        <i class="fas fa-phone"></i> 
+                    {% endif %}
+                    {% if settings.format is defined %}
+                        {{ value|format_phone(settings.format) }}
+                    {% else %}
+                        {{ value|e }}
+                    {% endif %}
+                {% endif %}
+            </span>
+            {% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single value #}
+        <span class="field-value field-value-tel{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if settings.as_link is defined and settings.as_link %}
+                <a href="tel:{{ values|e }}" class="tel-link{% if settings.link_class is defined %} {{ settings.link_class }}{% endif %}">
+                    {% if settings.show_icon is defined and settings.show_icon %}
+                        <i class="fas fa-phone"></i> 
+                    {% endif %}
+                    {% if settings.format is defined %}
+                        {{ values|format_phone(settings.format) }}
+                    {% else %}
+                        {{ values|e }}
+                    {% endif %}
+                </a>
+            {% else %}
+                {% if settings.show_icon is defined and settings.show_icon %}
+                    <i class="fas fa-phone"></i> 
+                {% endif %}
+                {% if settings.format is defined %}
+                    {{ values|format_phone(settings.format) }}
+                {% else %}
+                    {{ values|e }}
+                {% endif %}
+            {% endif %}
+        </span>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

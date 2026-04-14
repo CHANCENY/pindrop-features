@@ -1,0 +1,79 @@
+{# File Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple files #}
+        {% for file in values %}
+            <div class="field-value field-value-file{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if file.name is defined %}
+                    {% if file.path is defined and settings.as_link is defined and settings.as_link %}
+                        <a href="{{ file.path|e }}" 
+                           download="{{ file.name|e }}" 
+                           class="file-link{% if settings.link_class is defined %} {{ settings.link_class }}{% endif %}">
+                            {% if settings.show_icon is defined and settings.show_icon %}
+                                <i class="fas fa-file"></i> 
+                            {% endif %}
+                            {{ file.name|e }}
+                            {% if file.size is defined %}
+                                ({{ (file.size / 1024 / 1024)|number_format(2) }} MB)
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        {% if settings.show_icon is defined and settings.show_icon %}
+                            <i class="fas fa-file"></i> 
+                        {% endif %}
+                        {{ file.name|e }}
+                        {% if file.size is defined %}
+                            ({{ (file.size / 1024 / 1024)|number_format(2) }} MB)
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    {{ file|e }}
+                {% endif %}
+            </div>
+            {% if not loop.last %}<br>{% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single file #}
+        <div class="field-value field-value-file{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if values.name is defined %}
+                {% if values.path is defined and settings.as_link is defined and settings.as_link %}
+                    <a href="{{ values.path|e }}" 
+                       download="{{ values.name|e }}" 
+                       class="file-link{% if settings.link_class is defined %} {{ settings.link_class }}{% endif %}">
+                        {% if settings.show_icon is defined and settings.show_icon %}
+                            <i class="fas fa-file"></i> 
+                        {% endif %}
+                        {{ values.name|e }}
+                        {% if values.size is defined %}
+                            ({{ (values.size / 1024 / 1024)|number_format(2) }} MB)
+                        {% endif %}
+                    </a>
+                {% else %}
+                    {% if settings.show_icon is defined and settings.show_icon %}
+                        <i class="fas fa-file"></i> 
+                    {% endif %}
+                    {{ values.name|e }}
+                    {% if values.size is defined %}
+                        ({{ (values.size / 1024 / 1024)|number_format(2) }} MB)
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {{ values|e }}
+            {% endif %}
+        </div>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

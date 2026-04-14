@@ -1,0 +1,19 @@
+{# Color Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <div class="field-value field-value-color-{{ settings.name }} {% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                <p>
+                    {% if settings.show_swatch is defined and settings.show_swatch %}
+                        <span class="color-swatch" style="background-color: {{ value|e }}; {% if settings.swatch_size is defined %}width: {{ settings.swatch_size }}; height: {{ settings.swatch_size }};{% endif %}"></span>
+                    {% endif %}
+                    {{ value|e }}
+                </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}

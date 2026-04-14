@@ -14,7 +14,7 @@
         {% if field.maxLength %}maxlength="{{ field.maxLength }}"{% endif %}
         {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
         {% if field.required %}required{% endif %}
-        {% if field.cardinality %}data-cardinality="{{ field.cardinality }}"{% endif %}
+        data-cardinality="{{ field.cardinality|default(1) }}"
     ></textarea>
     
     {% if field.helpText %}

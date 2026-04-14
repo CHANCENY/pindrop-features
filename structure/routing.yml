@@ -99,7 +99,7 @@ admin.content:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::content'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['admin','super_admin', 'moderator']
 
 admin.content.add:
   path: '/admin/content/add'
@@ -122,6 +122,14 @@ admin.content.add.node.new:
   methods: ['GET', 'POST']
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addNewContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.add.node.edit:
+  path: '/admin/content/[type:string]/submit/[nid:int]/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addEditContent'
   requirements:
     _permission: ['admin', 'super_admin', 'moderator']
 
@@ -178,5 +186,21 @@ admin.content.node.view.alias:
   methods: ['GET', 'POST']
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::nodeContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.node.delete:
+  path: '/admin/node/[nid:int]/delete'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::deleteContent'
+  requirements:
+    _permission: ['admin', 'super_admin', 'moderator']
+
+admin.content.node.edit:
+  path: '/admin/node/[nid:int]/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::editContent'
   requirements:
     _permission: ['admin', 'super_admin', 'moderator']

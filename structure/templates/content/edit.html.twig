@@ -1,0 +1,336 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/structure/assets/styles.css">
+
+    <style>
+        /* Scoped Drupal-like Node Creation Grid Layout */
+
+        .drupal-node-create-container {
+            --drupal-border-color: #d3d3d3;
+            --drupal-bg-header: #f1f1f1;
+            --drupal-bg-stripe: #f9f9f9;
+            --drupal-label-weight: 700;
+            --drupal-primary-color: #007bff;
+            --drupal-text-color: #333;
+            --drupal-input-bg: #fff;
+            --drupal-input-border: #ccc;
+            --drupal-input-focus: #007bff;
+            --drupal-help-text: #666;
+
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--drupal-text-color);
+            margin: 20px auto;
+            box-sizing: border-box;
+        }
+
+        .drupal-node-create-container *,
+        .drupal-node-create-container *::before,
+        .drupal-node-create-container *::after {
+            box-sizing: inherit;
+        }
+
+        /* Page Header */
+        .drupal-node-create-container .page-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--drupal-border-color);
+            padding-bottom: 1rem;
+        }
+
+        .drupal-node-create-container .page-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* MAIN LAYOUT: TWO COLUMNS */
+        .drupal-node-create-container .node-form-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 25px;
+            align-items: start;
+        }
+
+        /* MAIN CONTENT AREA */
+        .drupal-node-create-container .node-main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* SIDEBAR AREA */
+        .drupal-node-create-container .node-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* SECTION BLOCKS */
+        .drupal-node-create-container .node-section {
+            border: 1px solid var(--drupal-border-color);
+            background: #fff;
+        }
+
+        .drupal-node-create-container h3 {
+            background: var(--drupal-bg-header);
+            padding: 10px 15px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--drupal-border-color);
+            margin: 0;
+            color: #555;
+        }
+
+        /* SEAMLESS FORM GRID */
+        .drupal-node-create-container .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            width: 100%;
+        }
+
+        .drupal-node-create-container .form-item {
+            padding: 15px;
+            border-right: 1px solid var(--drupal-border-color);
+            border-bottom: 1px solid var(--drupal-border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drupal-node-create-container .form-grid > .form-item:nth-child(4n) {
+            border-right: none;
+        }
+
+        .drupal-node-create-container .full-width { grid-column: span 4; border-right: none; }
+        .drupal-node-create-container .half-width { grid-column: span 2; }
+
+        /* INPUTS */
+        .drupal-node-create-container label {
+            display: block;
+            font-weight: var(--drupal-label-weight);
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: #444;
+        }
+
+        .drupal-node-create-container input[type="text"],
+        .drupal-node-create-container input[type="datetime-local"],
+        .drupal-node-create-container select,
+        .drupal-node-create-container textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--drupal-input-border);
+            background-color: var(--drupal-input-bg);
+            border-radius: 2px;
+            font-size: 0.95rem;
+        }
+
+        .drupal-node-create-container input[type="text"].title-field {
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 12px;
+        }
+
+        .drupal-node-create-container textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .drupal-node-create-container .help-text {
+            margin-top: 5px;
+            font-size: 0.75rem;
+            color: var(--drupal-help-text);
+        }
+
+        /* BUTTONS */
+        .drupal-node-create-container .actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .drupal-node-create-container .btn {
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            background: #fff;
+            color: #333;
+        }
+
+        .drupal-node-create-container .btn-primary {
+            background-color: var(--drupal-primary-color);
+            color: white;
+            border-color: var(--drupal-primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .drupal-node-create-container .node-form-layout { grid-template-columns: 1fr; }
+            .drupal-node-create-container .form-grid { grid-template-columns: 1fr; }
+            .drupal-node-create-container .form-item { border-right: none !important; }
+            .drupal-node-create-container .full-width,
+            .drupal-node-create-container .half-width { grid-column: span 1; }
+        }
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Admin Wrapper -->
+    <div class="admin-wrapper">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li>
+                    <a href="{{ url('admin.home') }}">Home</a>
+                    <span>/</span>
+                </li>
+                <li>
+                    <a href="{{ url('admin.dashboard') }}">Administration</a>
+                    <span>/</span>
+                </li>
+
+                <li>
+                    <a href="{{ url('admin.content') }}">Content</a>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Add {{ config.label }}</h1>
+        </div>
+
+        <div class="drupal-node-create-container">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Create Article</h1>
+                <p>Define the title, content, and publishing settings for your new article.</p>
+            </div>
+
+            <form action="{{ url('admin.content.add.node.edit',{type: config.machine_name, nid: node.id}) }}"
+                  method="POST" class="drupal-form-container"
+                  novalidate enctype="multipart/form-data"
+                  typeof="{{ config.machine_name }}"
+                  id="node-form"
+
+            >
+                <div class="node-form-layout">
+
+                    <!-- MAIN CONTENT AREA -->
+                    <div class="node-main-content">
+                        <div class="form-grid">
+                            <div class="form-item full-width" style="border-bottom: none; padding-left: 0;">
+                                <label for="node_title">Title *</label>
+                                <input value="{{ request.request.get('title') }}" type="text" id="node_title" name="title" class="form-control" required>
+                            </div>
+                        </div>
+                        <!-- Custom Fields Section (Example for a Product/Article) -->
+                        {% for field in fields %}
+
+                            {{ field.render }}
+
+                        {% endfor %}
+
+                        <!-- Form Actions -->
+                        <div class="actions">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a href="#" class="btn">Preview</a>
+                        </div>
+                    </div>
+
+                    <!-- SIDEBAR AREA -->
+                    <div class="node-sidebar">
+
+                        <!-- Publishing Options -->
+                        <div class="node-section">
+                            <h3>Publishing</h3>
+                            <div class="form-grid" style="grid-template-columns: 1fr;">
+                                <div class="form-item" style="border-right: none;">
+                                    <label>
+                                        <input {% if request.request.get('status', node.getStatus ? 'on' : null) == 'on' %} checked {% endif %} type="checkbox" name="status"> Published
+                                    </label>
+                                </div>
+                                <div class="form-item" style="border-right: none;">
+                                    <label>
+                                        <input {% if request.request.get('promote', node.getPromoted ? 'on' : null) == 'on' %} checked {% endif %} type="checkbox" name="promote"> Promoted to front page
+                                    </label>
+                                </div>
+                                <div class="form-item" style="border-right: none; border-bottom: none;">
+                                    <label>
+                                        <input {% if request.request.get('sticky', node.getSticky ? 'on' : null) == 'on' %} checked {% endif %} type="checkbox" name="sticky"> Sticky at top of lists
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Authoring Information -->
+                        <div class="node-section">
+                            <h3>Authoring</h3>
+                            <div class="form-grid" style="grid-template-columns: 1fr;">
+                                <div class="form-item" style="border-right: none;">
+                                    <label for="node_author">Authored by</label>
+                                    <input type="text"
+                                           id="node_author"
+                                           class="reference-field"
+                                           data-source="autocomplete.users"
+                                           data-id="node_author"
+                                           value="{{ request.request.get('author',node.author) }}"
+                                           name="author">
+                                    <div class="help-text">The username of the content author.</div>
+                                </div>
+                                <div class="form-item" style="border-right: none; border-bottom: none;">
+                                    <label for="node_created">Authored on</label>
+                                    <input
+                                            value="{{ node.getAuthorAt.format('d-m-Y') }}"
+                                           type="datetime-local"
+                                           id="node_created"
+
+                                           name="created">
+                                    <div class="help-text">Leave blank to use the time of form submission.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Menu Settings -->
+                        <div class="node-section">
+                            <h3>Menu settings</h3>
+                            <div class="form-grid" style="grid-template-columns: 1fr;">
+                                <div class="form-item" style="border-right: none; border-bottom: none;">
+                                    <label>
+                                        <input {% if request.request.get('menu_enabled') == 'on' %} checked {% endif %} type="checkbox" name="menu_enabled"> Provide a menu link
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script src="/modules/structure/assets/scripts.js"></script>
+    <script src="/modules/structure/assets/cardinality.js"></script>
+    <script src="/modules/structure/assets/reference-fields.js"></script>
+
+{% endblock %}

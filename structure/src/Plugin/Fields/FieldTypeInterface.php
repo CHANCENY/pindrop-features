@@ -18,4 +18,6 @@ interface FieldTypeInterface
 
     public function group(): string;
 
+    public function valueRenderResolve(): FieldContentInterface;
+
 }

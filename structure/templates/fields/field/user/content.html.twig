@@ -1,0 +1,101 @@
+{# User Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple users #}
+        {% for user in values %}
+            <span class="field-value field-value-user{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if user is iterable %}
+                    {# User is an array with user data #}
+                    {% if settings.as_link is defined and settings.as_link and user.profile_url is defined %}
+                        <a href="{{ user.profile_url|e }}" class="user-link{% if settings.link_class is defined %} {{ settings.link_class }}{% endif %}">
+                            {% if settings.show_avatar is defined and settings.show_avatar and user.avatar is defined %}
+                                <img src="{{ user.avatar|e }}" alt="{{ user.name|default(user.username|default('User'))|e }}" class="user-avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;">
+                            {% endif %}
+                            {% if settings.show_icon is defined and settings.show_icon %}
+                                <i class="fas fa-user"></i> 
+                            {% endif %}
+                            {% if settings.display_name is defined and settings.display_name == 'username' %}
+                                {{ user.username|e }}
+                            {% else %}
+                                {{ user.name|default(user.username|default('User'))|e }}
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        {% if settings.show_avatar is defined and settings.show_avatar and user.avatar is defined %}
+                            <img src="{{ user.avatar|e }}" alt="{{ user.name|default(user.username|default('User'))|e }}" class="user-avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;">
+                        {% endif %}
+                        {% if settings.show_icon is defined and settings.show_icon %}
+                            <i class="fas fa-user"></i> 
+                        {% endif %}
+                        {% if settings.display_name is defined and settings.display_name == 'username' %}
+                            {{ user.username|e }}
+                        {% else %}
+                            {{ user.name|default(user.username|default('User'))|e }}
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    {# User is just a string (username or name) #}
+                    {% if settings.show_icon is defined and settings.show_icon %}
+                        <i class="fas fa-user"></i> 
+                    {% endif %}
+                    {{ user|e }}
+                {% endif %}
+            </span>
+            {% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single user #}
+        <span class="field-value field-value-user{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if values is iterable %}
+                {# User is an array with user data #}
+                {% if settings.as_link is defined and settings.as_link and values.profile_url is defined %}
+                    <a href="{{ values.profile_url|e }}" class="user-link{% if settings.link_class is defined %} {{ settings.link_class }}{% endif %}">
+                        {% if settings.show_avatar is defined and settings.show_avatar and values.avatar is defined %}
+                            <img src="{{ values.avatar|e }}" alt="{{ values.name|default(values.username|default('User'))|e }}" class="user-avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;">
+                        {% endif %}
+                        {% if settings.show_icon is defined and settings.show_icon %}
+                            <i class="fas fa-user"></i> 
+                        {% endif %}
+                        {% if settings.display_name is defined and settings.display_name == 'username' %}
+                            {{ values.username|e }}
+                        {% else %}
+                            {{ values.name|default(values.username|default('User'))|e }}
+                        {% endif %}
+                    </a>
+                {% else %}
+                    {% if settings.show_avatar is defined and settings.show_avatar and values.avatar is defined %}
+                        <img src="{{ values.avatar|e }}" alt="{{ values.name|default(values.username|default('User'))|e }}" class="user-avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;">
+                    {% endif %}
+                    {% if settings.show_icon is defined and settings.show_icon %}
+                        <i class="fas fa-user"></i> 
+                    {% endif %}
+                    {% if settings.display_name is defined and settings.display_name == 'username' %}
+                        {{ values.username|e }}
+                    {% else %}
+                        {{ values.name|default(values.username|default('User'))|e }}
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {# User is just a string (username or name) #}
+                {% if settings.show_icon is defined and settings.show_icon %}
+                    <i class="fas fa-user"></i> 
+                {% endif %}
+                {{ values|e }}
+            {% endif %}
+        </span>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

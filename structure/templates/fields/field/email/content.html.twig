@@ -1,0 +1,28 @@
+{# Email Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <div class="field-value field-value-email-{{ settings.name }} {% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                <p>
+                    {% if settings.link_email is defined and settings.link_email %}
+                        <a href="mailto:{{ value|e }}" class="email-link{% if settings.link_class is defined %} {{ settings.link_class }}{% endif %}">
+                            {% if settings.show_icon is defined and settings.show_icon %}
+                                <i class="fas fa-envelope"></i> 
+                            {% endif %}
+                            {{ value|e }}
+                        </a>
+                    {% else %}
+                        {% if settings.show_icon is defined and settings.show_icon %}
+                            <i class="fas fa-envelope"></i> 
+                        {% endif %}
+                        {{ value|e }}
+                    {% endif %}
+                </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}

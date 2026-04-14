@@ -1,0 +1,77 @@
+{# Fieldset Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple fieldsets #}
+        {% for fieldset in values %}
+            <fieldset class="field-fieldset{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if settings.legend is defined %}
+                    <legend class="field-fieldset-legend">{{ settings.legend|e }}</legend>
+                {% endif %}
+                
+                <div class="field-fieldset-content">
+                    {% if fieldset is iterable %}
+                        {# Render nested field values #}
+                        {% for field_name, field_value in fieldset %}
+                            <div class="field-fieldset-field">
+                                <span class="field-fieldset-label">{{ field_name|e }}:</span>
+                                <span class="field-fieldset-value">
+                                    {% if field_value is iterable %}
+                                        {{ field_value|json_encode }}
+                                    {% else %}
+                                        {{ field_value|e }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {# Simple fieldset value #}
+                        {{ fieldset|raw }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            {% if not loop.last %}<br>{% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single fieldset #}
+        <fieldset class="field-fieldset{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if settings.legend is defined %}
+                <legend class="field-fieldset-legend">{{ settings.legend|e }}</legend>
+            {% endif %}
+            
+            <div class="field-fieldset-content">
+                {% if values is iterable %}
+                    {# Render nested field values #}
+                    {% for field_name, field_value in values %}
+                        <div class="field-fieldset-field">
+                            <span class="field-fieldset-label">{{ field_name|e }}:</span>
+                            <span class="field-fieldset-value">
+                                {% if field_value is iterable %}
+                                    {{ field_value|json_encode }}
+                                {% else %}
+                                    {{ field_value|e }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {# Simple fieldset value #}
+                    {{ values|raw }}
+                {% endif %}
+            </div>
+        </fieldset>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

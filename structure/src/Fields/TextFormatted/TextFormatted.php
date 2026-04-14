@@ -2,6 +2,7 @@
 
 namespace Simp\Pindrop\Modules\structure\src\Fields\TextFormatted;
 
+use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldContentInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeWidgetInterface;
 use Twig\Markup;
@@ -37,5 +38,10 @@ class TextFormatted implements FieldTypeInterface
     public function group(): string
     {
         return "general";
+    }
+
+    public function valueRenderResolve(): FieldContentInterface
+    {
+        return new TextFormattedTypeFieldContent(\getAppContainer()->get('twig'));
     }
 }

@@ -1,0 +1,16 @@
+{# Text Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <div class="field-value field-value-text-{{ settings.name }} {% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                <p>
+                    {{ value }}
+                </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}

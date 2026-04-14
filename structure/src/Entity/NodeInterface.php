@@ -515,4 +515,8 @@ interface NodeInterface
 
     public function setDeleted(bool $deleted): static;
 
+    public function getUuid(): string;
+
+    public function setId(int $id): static;
+
 }

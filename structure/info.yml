@@ -4,3 +4,5 @@ version: 1.0.0
 author: 'Chance Nyasulu'
 website: 'https://articlepulsehub.com'
 license: MIT
+dependencies:
+  - admin

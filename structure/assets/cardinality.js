@@ -105,7 +105,7 @@ $(document).ready(function () {
             const data = response.data;
 
             $.each(data, function (name, values) {
-                console.log(name)
+
                 if (!Array.isArray(values)) {
                     values = [values];
                 }
@@ -131,6 +131,7 @@ $(document).ready(function () {
                 // Assign values to each field
                 if ($fields.length > 1) {
                     $fields.each(function (i) {
+
                         const $field = $(this);
                         const tag = this.tagName.toLowerCase();
                         const type = ($field.attr('type') || '').toLowerCase();
@@ -142,7 +143,13 @@ $(document).ready(function () {
                             $field.prop('checked', values.includes($field.val()));
                         } else if (tag === 'select' && $field.prop('multiple')) {
                             $field.val(values);
-                        } else {
+                        }
+                        else if (tag === 'textarea') {
+                            $field.text(val);
+                            const editor = window.editors[$field.get(0).id];
+                            editor.data.set(val)
+                        }
+                        else {
                             $field.val(val);
                         }
                     });
@@ -152,7 +159,6 @@ $(document).ready(function () {
                     if (!$field.length) return;
                     const tag = $field.get(0).tagName.toLowerCase();
                     const type = ($field.attr('type') || '').toLowerCase();
-
                     const val = values[0] !== undefined ? values[0] : '';
 
                     if (type === 'checkbox') {
@@ -161,7 +167,13 @@ $(document).ready(function () {
                         $field.prop('checked', values.includes($field.val()));
                     } else if (tag === 'select' && $field.prop('multiple')) {
                         $field.val(values);
-                    } else {
+                    }
+                    else if (tag === 'textarea') {
+                        $field.text(val)
+                        const editor = window.editors[$field.get(0).id];
+                        editor.data.set(val)
+                    }
+                    else {
                         $field.val(val);
                     }
                 }

@@ -4,6 +4,7 @@ namespace Simp\Pindrop\Modules\structure\src\Fields\Detail;
 
 use DI\DependencyException;
 use DI\NotFoundException;
+use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldContentInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeWidgetInterface;
 use Twig\Markup;
@@ -43,5 +44,10 @@ class DetailType implements FieldTypeInterface
     public function group(): string
     {
         return "wrapper";
+    }
+
+    public function valueRenderResolve(): FieldContentInterface
+    {
+        return new DetailTypeFieldContent(\getAppContainer()->get('twig'));
     }
 }

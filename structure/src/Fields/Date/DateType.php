@@ -4,6 +4,7 @@ namespace Simp\Pindrop\Modules\structure\src\Fields\Date;
 
 use DI\DependencyException;
 use DI\NotFoundException;
+use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldContentInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeWidgetInterface;
 use Twig\Markup;
@@ -43,5 +44,10 @@ class DateType implements FieldTypeInterface
     public function group(): string
     {
         return "general";
+    }
+
+    public function valueRenderResolve(): FieldContentInterface
+    {
+        return new DateTypeFieldContent(\getAppContainer()->get('twig'));
     }
 }

@@ -1,0 +1,47 @@
+{# Time Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <span class="field-value field-value-time{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if value is not empty %}
+                    {% if settings.time_format is defined %}
+                        {{ value|date(settings.time_format) }}
+                    {% else %}
+                        {{ value|date('H:i') }}
+                    {% endif %}
+                {% else %}
+                    &mdash;
+                {% endif %}
+            </span>
+            {% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single value #}
+        <span class="field-value field-value-time{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if values is not empty %}
+                {% if settings.time_format is defined %}
+                    {{ values|date(settings.time_format) }}
+                {% else %}
+                    {{ values|date('H:i') }}
+                {% endif %}
+            {% else %}
+                &mdash;
+            {% endif %}
+        </span>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

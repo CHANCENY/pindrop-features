@@ -1,0 +1,43 @@
+{# Submit Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <button type="submit" 
+                    class="field-submit{% if settings.button_style is defined %} btn-{{ settings.button_style }}{% endif %}{% if settings.class is defined %} {{ settings.class }}{% endif %}"
+                    {% if settings.disabled is defined and settings.disabled %}disabled{% endif %}
+                    {% if settings.form_id is defined %}form="{{ settings.form_id|e }}"{% endif %}
+                    {% if settings.name is defined %}name="{{ settings.name|e }}"{% endif %}
+                    {% if settings.value is defined %}value="{{ settings.value|e }}"{% endif %}>
+                {% if settings.icon is defined %}<i class="{{ settings.icon }}"></i> {% endif %}
+                {{ value|e }}
+            </button>
+            {% if not loop.last %} {% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single value #}
+        <button type="submit" 
+                class="field-submit{% if settings.button_style is defined %} btn-{{ settings.button_style }}{% endif %}{% if settings.class is defined %} {{ settings.class }}{% endif %}"
+                {% if settings.disabled is defined and settings.disabled %}disabled{% endif %}
+                {% if settings.form_id is defined %}form="{{ settings.form_id|e }}"{% endif %}
+                {% if settings.name is defined %}name="{{ settings.name|e }}"{% endif %}
+                {% if settings.value is defined %}value="{{ settings.value|e }}"{% endif %}>
+            {% if settings.icon is defined %}<i class="{{ settings.icon }}"></i> {% endif %}
+            {{ values|e }}
+        </button>
+    {% endif %}
+{% else %}
+    {# Empty value - use default submit text #}
+    <button type="submit" 
+            class="field-submit{% if settings.button_style is defined %} btn-{{ settings.button_style }}{% endif %}{% if settings.class is defined %} {{ settings.class }}{% endif %}"
+            {% if settings.disabled is defined and settings.disabled %}disabled{% endif %}
+            {% if settings.form_id is defined %}form="{{ settings.form_id|e }}"{% endif %}
+            {% if settings.name is defined %}name="{{ settings.name|e }}"{% endif %}
+            {% if settings.value is defined %}value="{{ settings.value|e }}"{% endif %}>
+        {% if settings.icon is defined %}<i class="{{ settings.icon }}"></i> {% endif %}
+        {{ settings.button_text|default('Submit')|e }}
+    </button>
+{% endif %}

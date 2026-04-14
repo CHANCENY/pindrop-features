@@ -196,4 +196,10 @@ class StorageEntityManager
         $result = $statement->fetchAll();
         return $result;
     }
+
+    public function deleteNodeEntity(NodeInterface $node): bool
+    {
+        $query = 'DELETE FROM `content_data` WHERE `id` = :id';
+        return $this->databaseService->getPdo()->prepare($query)->execute(['id' => $node->id()]);
+    }
 }

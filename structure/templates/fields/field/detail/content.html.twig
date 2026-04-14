@@ -1,0 +1,49 @@
+{# Detail Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <details class="field-detail{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                <summary class="field-detail-summary">
+                    {% if settings.summary is defined %}
+                        {{ settings.summary|e }}
+                    {% else %}
+                        {{ value|slice(0, 50) }}{% if value|length > 50 %}...{% endif %}
+                    {% endif %}
+                </summary>
+                <div class="field-detail-content">
+                    {{ value|raw }}
+                </div>
+            </details>
+            {% if not loop.last %}<br>{% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single value #}
+        <details class="field-detail{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            <summary class="field-detail-summary">
+                {% if settings.summary is defined %}
+                    {{ settings.summary|e }}
+                {% else %}
+                    {{ values|slice(0, 50) }}{% if values|length > 50 %}...{% endif %}
+                {% endif %}
+            </summary>
+            <div class="field-detail-content">
+                {{ values|raw }}
+            </div>
+        </details>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

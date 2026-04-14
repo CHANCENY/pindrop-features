@@ -1,0 +1,87 @@
+{# Image Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple images #}
+        {% for image in values %}
+            <div class="field-value field-value-image{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if image.path is defined %}
+                    {% if settings.thumbnail_size is defined %}
+                        <img src="{{ image.path|e }}" 
+                             alt="{{ image.name|default('Image')|e }}" 
+                             class="image-thumbnail{% if settings.thumbnail_class is defined %} {{ settings.thumbnail_class }}{% endif %}"
+                             style="width: {{ settings.thumbnail_size }}; height: auto; max-height: {{ settings.thumbnail_size }};">
+                    {% elseif settings.full_size is defined and settings.full_size %}
+                        <img src="{{ image.path|e }}" 
+                             alt="{{ image.name|default('Image')|e }}" 
+                             class="image-full{% if settings.image_class is defined %} {{ settings.image_class }}{% endif %}">
+                    {% else %}
+                        <img src="{{ image.path|e }}" 
+                             alt="{{ image.name|default('Image')|e }}" 
+                             class="image-thumbnail{% if settings.image_class is defined %} {{ settings.image_class }}{% endif %}"
+                             style="width: 100px; height: auto; max-height: 100px;">
+                    {% endif %}
+                    
+                    {% if settings.show_info is defined and settings.show_info %}
+                        <div class="image-info">
+                            {% if image.name is defined %}<div class="image-name">{{ image.name|e }}</div>{% endif %}
+                            {% if image.size is defined %}<div class="image-size">{{ (image.size / 1024 / 1024)|number_format(2) }} MB</div>{% endif %}
+                            {% if image.width is defined and image.height is defined %}
+                                <div class="image-dimensions">{{ image.width }}x{{ image.height }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    {{ image|e }}
+                {% endif %}
+            </div>
+            {% if not loop.last %}<br>{% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single image #}
+        <div class="field-value field-value-image{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if values.path is defined %}
+                {% if settings.thumbnail_size is defined %}
+                    <img src="{{ values.path|e }}" 
+                         alt="{{ values.name|default('Image')|e }}" 
+                         class="image-thumbnail{% if settings.thumbnail_class is defined %} {{ settings.thumbnail_class }}{% endif %}"
+                         style="width: {{ settings.thumbnail_size }}; height: auto; max-height: {{ settings.thumbnail_size }};">
+                {% elseif settings.full_size is defined and settings.full_size %}
+                    <img src="{{ values.path|e }}" 
+                         alt="{{ values.name|default('Image')|e }}" 
+                         class="image-full{% if settings.image_class is defined %} {{ settings.image_class }}{% endif %}">
+                {% else %}
+                    <img src="{{ values.path|e }}" 
+                         alt="{{ values.name|default('Image')|e }}" 
+                         class="image-thumbnail{% if settings.image_class is defined %} {{ settings.image_class }}{% endif %}"
+                         style="width: 100px; height: auto; max-height: 100px;">
+                {% endif %}
+                
+                {% if settings.show_info is defined and settings.show_info %}
+                    <div class="image-info">
+                        {% if values.name is defined %}<div class="image-name">{{ values.name|e }}</div>{% endif %}
+                        {% if values.size is defined %}<div class="image-size">{{ (values.size / 1024 / 1024)|number_format(2) }} MB</div>{% endif %}
+                        {% if values.width is defined and values.height is defined %}
+                            <div class="image-dimensions">{{ values.width }}x{{ values.height }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                {{ values|e }}
+            {% endif %}
+        </div>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

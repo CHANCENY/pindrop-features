@@ -208,6 +208,85 @@ class StructureContentController extends ControllerBase
         return $this->renderTwig("@structure/content/add_node.html.twig", $config);
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws ContainerExceptionInterface
+     */
+    public function addEditContent(Request $request, string $route_name, array $options): Response
+    {
+        $type = $request->query->get("type");
+        $nid = $request->query->get("nid");
+        if (empty($nid)) {
+            return $this->redirect(Url::routeByName('admin.content'));
+        }
+        $node = Node::load($nid);
+        $component = ['node', $type];
+        $config = $this->nodeTypeConfiguration->getContentType($component);
+        $config['node'] = $node;
+
+        \appEvents()->invokeEvents(Events::ST_ENTITY_FORM_PRE_FORM_BUILD,['form'=> &$config]);
+
+        // Group the fields per wrapper if exists
+        $wrappers = $config['formDisplay']['config']['parent'] ?? [];
+        foreach ($wrappers as $key=>$wrapper) {
+            if (!empty($wrapper)) {
+                $config['fields'][$wrapper]['fields'][$key] = $config['fields'][$key];
+                unset($config['fields'][$key]);
+            }
+        }
+
+        foreach ($config['fields'] ?? [] as $key=>$field) {
+
+            if (!empty($field['settings']['status'])) {
+                $field = $this->getField($field, $request, $config, $key);
+                $config['fields'][$key] = $field;
+            }
+            else {
+                unset($config['fields'][$key]);
+            }
+
+        }
+
+        \appEvents()->invokeEvents(Events::ST_ENTITY_FORM_POST_BUILD,['form'=> &$config]);
+
+        $action = $request->query->get("action");
+
+        if ($action === 'preview') {
+            return $this->redirect(SessionStorage::get(['sessionId','preview', 'link']));
+        }
+
+        if ($request->isMethod(Request::METHOD_POST)) {
+            $failedata = $request->request->all();
+            unset($failedata['_csrf_token']);
+            SessionStorage::add(['data','failed', $type], $failedata);
+            $failedata['type'] = $type;
+
+            try{
+                $newNode = Node::create($failedata);
+                $newNode->setId($node->id());
+                if ($newNode->optionalPreview === false && !empty($newNode->preview)) {
+                    return $this->redirect($newNode->preview);
+                }
+                elseif ($newNode->optionalPreview === true) {
+                    $options['title'] = "Preview confirmation";
+                    $options['question'] = "Do you want to preview?";
+                    SessionStorage::add(['sessionId','preview', 'link'], $newNode->preview);
+                    return $this->canPreview($request,$route_name, $options);
+                }
+                \appEvents()->invokeEvents(Events::ST_ENTITY_PRE_SAVE, ['node' => &$newNode]);
+                $result = $this->saveNode($newNode);
+                if ($result) {
+                    return $result;
+                }
+            }catch (Throwable $exception){
+                Message::error($exception->getMessage());
+            }
+
+        }
+
+        return $this->renderTwig("@structure/content/edit.html.twig", $config);
+    }
+
     public function canDelete(Request $request, string $route_name, array $options): Response
     {
         $action = $request->query->get("action");
@@ -357,7 +436,7 @@ class StructureContentController extends ControllerBase
         elseif (!empty($alias)) {
             $node = Node::loadByAlias($alias);
         }
-
+      
         return $this->renderTwig("@structure/content/node.html.twig", [
             'node' => $node,
         ]);
@@ -411,17 +490,145 @@ class StructureContentController extends ControllerBase
 
                     if ($action === 'publish') {
                         $nodeEntity->setStatus(1);
+                        $nodeEntity->save();
                     }
                     elseif ($action === 'unpublish') {
                         $nodeEntity->setStatus(0);
+                        $nodeEntity->save();
                     }
                     elseif ($action === 'delete') {
                         $nodeEntity->setDeleted(true);
+                        $nodeEntity->save();
                     }
-                    $nodeEntity->save();
+                    elseif ($action === 'permanent_delete') {
+                        $nodeEntity->delete();
+                    }
+
                 }
             }
         }
         return $this->redirect($request->query->get('redirect'));
     }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws \Exception
+     */
+    public function deleteContent(Request $request, string $route_name, array $options): Response
+    {
+        $options['title'] = "Permanent Deletion confirmation";
+        $options['question'] = "Are you sure you want to do this?";
+        $nid = $request->query->get('nid');
+        if (empty($nid)) {
+            return $this->redirect(Url::routeByName('admin.content'));
+        }
+        $node = Node::load($nid);
+
+        $action = $request->query->get("action");
+
+        if ($action == "delete") {
+            if ($node->delete()->isDeleted()) {
+                Message::info("Node has been deleted");
+                return $this->redirect(Url::routeByName('admin.content'));
+            }
+        }
+        return $this->canDelete($request, $route_name, $options);
+    }
+
+    /**
+     * @throws DatabaseException
+     * @throws ContainerExceptionInterface
+     */
+    public function editContent(Request $request, string $route_name, array $options): Response
+    {
+        $nid = $request->query->get('nid');
+        if (empty($nid)) {
+            return $this->redirect(Url::routeByName('admin.content'));
+        }
+        $node = Node::load($nid);
+
+        $type = $node->getType();
+        $component = ['node', $type];
+
+        $config = $this->nodeTypeConfiguration->getContentType($component);
+        $config['node'] = $node;
+
+        \appEvents()->invokeEvents(Events::ST_ENTITY_FORM_PRE_FORM_BUILD,['form'=> &$config]);
+
+        // Group the fields per wrapper if exists
+        $wrappers = $config['formDisplay']['config']['parent'] ?? [];
+        foreach ($wrappers as $key=>$wrapper) {
+            if (!empty($wrapper)) {
+                $config['fields'][$wrapper]['fields'][$key] = $config['fields'][$key];
+                unset($config['fields'][$key]);
+            }
+        }
+
+        foreach ($config['fields'] ?? [] as $key=>$field) {
+
+            if (!empty($field['settings']['status'])) {
+                $field = $this->getField($field, $request, $config, $key);
+                $config['fields'][$key] = $field;
+            }
+            else {
+                unset($config['fields'][$key]);
+            }
+
+        }
+
+        \appEvents()->invokeEvents(Events::ST_ENTITY_FORM_POST_BUILD,['form'=> &$config]);
+
+        $action = $request->query->get("action");
+
+        if ($action === 'preview') {
+            return $this->redirect(SessionStorage::get(['sessionId','preview', 'link']));
+        }
+
+        if ($request->isMethod(Request::METHOD_POST)) {
+            $failedata = $request->request->all();
+            unset($failedata['_csrf_token']);
+            SessionStorage::add(['data','failed', $type], $failedata);
+
+            $failedata['type'] = $type;
+            try{
+                $newNode = $node;
+                if ($newNode->optionalPreview === false && !empty($newNode->preview)) {
+                    return $this->redirect($newNode->preview);
+                }
+                elseif ($newNode->optionalPreview === true) {
+                    $options['title'] = "Preview confirmation";
+                    $options['question'] = "Do you want to preview?";
+                    SessionStorage::add(['sessionId','preview', 'link'], $newNode->preview);
+                    return $this->canPreview($request,$route_name, $options);
+                }
+                \appEvents()->invokeEvents(Events::ST_ENTITY_PRE_SAVE, ['node' => &$newNode]);
+                $result = $this->saveNode($newNode);
+                if ($result) {
+                    return $result;
+                }
+            }catch (Throwable $exception){
+                Message::error($exception->getMessage());
+            }
+
+        }
+        else {
+            $tempData = $node->toArray();
+            unset($tempData['values']);
+
+            $array = $node->toArray()['values'];
+            foreach ($array as $key=>$value) {
+                $dd = $value['default'];
+                if (isset($dd['values'])) {
+                    $tempData[$key] = $dd['values'];
+                }
+                elseif (isset($dd['value'])) {
+                    $tempData[$key] = $dd['value'];
+                }
+            }
+            SessionStorage::add(['data','failed', $type], $tempData);
+        }
+
+        return $this->renderTwig("@structure/content/edit.html.twig",$config);
+    }
+
 }

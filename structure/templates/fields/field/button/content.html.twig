@@ -1,0 +1,34 @@
+{# Button Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <button type="button" 
+                    class="field-button{% if settings.button_style is defined %} btn-{{ settings.button_style }}{% endif %}{% if settings.class is defined %} {{ settings.class }}{% endif %}"
+                    {% if settings.disabled is defined and settings.disabled %}disabled{% endif %}>
+                {% if settings.icon is defined %}<i class="{{ settings.icon }}"></i> {% endif %}
+                {{ value|e }}
+            </button>
+            {% if not loop.last %} {% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single value #}
+        <button type="button" 
+                class="field-button{% if settings.button_style is defined %} btn-{{ settings.button_style }}{% endif %}{% if settings.class is defined %} {{ settings.class }}{% endif %}"
+                {% if settings.disabled is defined and settings.disabled %}disabled{% endif %}>
+            {% if settings.icon is defined %}<i class="{{ settings.icon }}"></i> {% endif %}
+            {{ values|e }}
+        </button>
+    {% endif %}
+{% else %}
+    {# Empty value - use default button text #}
+    <button type="button" 
+            class="field-button{% if settings.button_style is defined %} btn-{{ settings.button_style }}{% endif %}{% if settings.class is defined %} {{ settings.class }}{% endif %}"
+            {% if settings.disabled is defined and settings.disabled %}disabled{% endif %}>
+        {% if settings.icon is defined %}<i class="{{ settings.icon }}"></i> {% endif %}
+        {{ settings.button_text|default('Click me')|e }}
+    </button>
+{% endif %}

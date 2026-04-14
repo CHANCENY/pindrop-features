@@ -1,0 +1,46 @@
+{# Hidden Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{# Hidden fields typically don't display their content for security reasons #}
+{# But we can show a placeholder or indicator that data exists #}
+
+{% if settings.show_indicator is defined and settings.show_indicator %}
+    {% if values is not empty %}
+        {% if values is iterable %}
+            {# Handle multiple values - show count #}
+            <span class="field-value field-value-hidden{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if settings.indicator_text is defined %}
+                    {{ settings.indicator_text|e }} ({{ values|length }})
+                {% else %}
+                    <i class="fas fa-eye-slash"></i> {{ values|length }} hidden values
+                {% endif %}
+            </span>
+        {% else %}
+            {# Handle single value #}
+            <span class="field-value field-value-hidden{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if settings.indicator_text is defined %}
+                    {{ settings.indicator_text|e }}
+                {% else %}
+                    <i class="fas fa-eye-slash"></i> Hidden value
+                {% endif %}
+            </span>
+        {% endif %}
+    {% else %}
+        {# Empty value #}
+        {% if settings.placeholder is defined %}
+            <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {{ settings.placeholder|e }}
+            </span>
+        {% else %}
+            <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                &mdash;
+            </span>
+        {% endif %}
+    {% endif %}
+{% else %}
+    {# Default behavior: show nothing for hidden fields #}
+    <span class="field-value field-value-hidden{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+        <!-- Hidden field content not displayed -->
+    </span>
+{% endif %}

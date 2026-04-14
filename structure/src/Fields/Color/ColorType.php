@@ -4,6 +4,7 @@ namespace Simp\Pindrop\Modules\structure\src\Fields\Color;
 
 use DI\DependencyException;
 use DI\NotFoundException;
+use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldContentInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeWidgetInterface;
 use Twig\Markup;
@@ -44,4 +45,10 @@ class ColorType implements FieldTypeInterface
     {
         return "general";
     }
+
+    public function valueRenderResolve(): FieldContentInterface
+    {
+        return new ColorTypeFieldContent(\getAppContainer()->get('twig'));
+    }
+
 }

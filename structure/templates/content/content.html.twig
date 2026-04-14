@@ -84,6 +84,7 @@
                     <option value="publish">Publish content</option>
                     <option value="unpublish">Unpublish content</option>
                     <option value="delete">Delete content</option>
+                    <option value="permanent_delete">Permanent delete content</option>
                 </select>
                 <button id="bulk" class="btn-secondary">Apply to selected items</button>
             </div>
@@ -164,8 +165,8 @@
                             <td style="color: #666; font-size: 0.85rem;">{{ node.updatedAt|date('Y-m-d H:i') }}</td>
                             <td style="text-align: right;">
                                 <div style="display: flex; justify-content: flex-end; gap: 5px;">
-                                    <a href="{{ url('', {nid: node.id}) }}" class="btn btn-sm">Edit</a>
-                                    <a href="{{ url('', {nid: node.id}) }}" class="btn btn-sm" style="color: #d9534f; border-color: #d43f3a;">Delete</a>
+                                    <a href="{{ url('admin.content.node.edit', {nid: node.id}) }}" class="btn btn-sm">Edit</a>
+                                    <a href="{{ url('admin.content.node.delete', {nid: node.id}) }}" class="btn btn-sm" style="color: #d9534f; border-color: #d43f3a;">Delete</a>
                                 </div>
                             </td>
                         </tr>
@@ -277,6 +278,12 @@
                     const select = document.getElementById('action-select').value;
                     const form = document.querySelector('#contents');
                     form.querySelector("input[name='action']").value = select;
+
+                    if (select === 'permanent_delete') {
+                        if(!window.confirm("Are you sure you want to permanently delete all selected contents")){
+                            return;
+                        }
+                    }
                     form.requestSubmit();
 
                 })

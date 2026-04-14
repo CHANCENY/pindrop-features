@@ -4,6 +4,7 @@ namespace Simp\Pindrop\Modules\structure\src\Fields\Text;
 
 use DI\DependencyException;
 use DI\NotFoundException;
+use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldContentInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeWidgetInterface;
 use Twig\Markup;
@@ -43,5 +44,14 @@ class TextType implements FieldTypeInterface
     public function group(): string
     {
         return "general";
+    }
+
+    /**
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    public function valueRenderResolve(): FieldContentInterface
+    {
+        return new TextTypeFieldContent(\getAppContainer()->get('twig'));
     }
 }

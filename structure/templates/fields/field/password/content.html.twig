@@ -1,0 +1,65 @@
+{# Password Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <span class="field-value field-value-password{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if settings.show_plain is defined and settings.show_plain %}
+                    {# Show plain password (for admin/debug purposes) #}
+                    <span class="password-plain">{{ value|e }}</span>
+                {% else %}
+                    {# Show masked password #}
+                    <span class="password-masked">
+                        {% if settings.mask_char is defined %}
+                            {{ value|length * settings.mask_char|slice(0, 1) }}
+                        {% else %}
+                            {{ '*****' }}
+                        {% endif %}
+                    </span>
+                    {% if settings.show_toggle is defined and settings.show_toggle %}
+                        <button type="button" class="password-toggle" onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'inline' : 'none'; this.textContent = this.textContent === 'Show' ? 'Hide' : 'Show';">
+                            Show
+                        </button>
+                    {% endif %}
+                {% endif %}
+            </span>
+            {% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single value #}
+        <span class="field-value field-value-password{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if settings.show_plain is defined and settings.show_plain %}
+                {# Show plain password (for admin/debug purposes) #}
+                <span class="password-plain">{{ values|e }}</span>
+            {% else %}
+                {# Show masked password #}
+                <span class="password-masked">
+                    {% if settings.mask_char is defined %}
+                        {{ values|length * settings.mask_char|slice(0, 1) }}
+                    {% else %}
+                        {{ '*****' }}
+                    {% endif %}
+                </span>
+                {% if settings.show_toggle is defined and settings.show_toggle %}
+                    <button type="button" class="password-toggle" onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'inline' : 'none'; this.textContent = this.textContent === 'Show' ? 'Hide' : 'Show';">
+                        Show
+                    </button>
+                {% endif %}
+            {% endif %}
+        </span>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

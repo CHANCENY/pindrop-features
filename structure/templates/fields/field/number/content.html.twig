@@ -1,0 +1,22 @@
+{# Number Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <div class="field-value field-value-number-{{ settings.name }} {% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                <p>
+                    {% if settings.prefix is defined %}{{ settings.prefix|e }}{% endif %}
+                    {% if settings.decimals is defined and settings.decimals > 0 %}
+                        {{ value|number_format(settings.decimals, settings.decimal_separator|default('.'), settings.thousands_separator|default(',')) }}
+                    {% else %}
+                        {{ value|number_format(0, settings.decimal_separator|default('.'), settings.thousands_separator|default(',')) }}
+                    {% endif %}
+                    {% if settings.suffix is defined %}{{ settings.suffix|e }}{% endif %}
+                </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}

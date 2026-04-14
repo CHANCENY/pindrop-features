@@ -1,0 +1,67 @@
+{# Range Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <span class="field-value field-value-range{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if settings.show_bar is defined and settings.show_bar %}
+                    {# Show visual range bar #}
+                    <div class="range-bar" style="width: 100px; height: 8px; background: #ddd; border-radius: 4px; display: inline-block; margin-right: 5px;">
+                        <div class="range-fill" 
+                             style="width: {{ ((value - (settings.min|default(0))) / ((settings.max|default(100)) - (settings.min|default(0))) * 100) }}%; 
+                                    height: 100%; 
+                                    background: #007bff; 
+                                    border-radius: 4px;">
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if settings.prefix is defined %}{{ settings.prefix|e }}{% endif %}
+                {{ value|number_format(settings.decimals|default(0), '.', ',')|e }}
+                {% if settings.suffix is defined %}{{ settings.suffix|e }}{% endif %}
+                
+                {% if settings.show_bounds is defined and settings.show_bounds %}
+                    <span class="range-bounds">({{ settings.min|default(0) }} - {{ settings.max|default(100) }})</span>
+                {% endif %}
+            </span>
+            {% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single value #}
+        <span class="field-value field-value-range{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if settings.show_bar is defined and settings.show_bar %}
+                {# Show visual range bar #}
+                <div class="range-bar" style="width: 100px; height: 8px; background: #ddd; border-radius: 4px; display: inline-block; margin-right: 5px;">
+                    <div class="range-fill" 
+                         style="width: {{ ((values - (settings.min|default(0))) / ((settings.max|default(100)) - (settings.min|default(0))) * 100) }}%; 
+                                height: 100%; 
+                                background: #007bff; 
+                                border-radius: 4px;">
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if settings.prefix is defined %}{{ settings.prefix|e }}{% endif %}
+            {{ values|number_format(settings.decimals|default(0), '.', ',')|e }}
+            {% if settings.suffix is defined %}{{ settings.suffix|e }}{% endif %}
+            
+            {% if settings.show_bounds is defined and settings.show_bounds %}
+                <span class="range-bounds">({{ settings.min|default(0) }} - {{ settings.max|default(100) }})</span>
+            {% endif %}
+        </span>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

@@ -268,10 +268,15 @@ class NodeEntity implements NodeInterface
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     public function delete(): static
     {
-        // TODO: Implement delete() method.
+        if ($this->storage()->deleteNodeEntity($this)) {
+            $this->nid = 0;
+            $this->status = false;
+            $this->deleted = true;
+        }
         return $this;
     }
 
@@ -632,8 +637,9 @@ class NodeEntity implements NodeInterface
         else {
             $uid = substr($data['author'],  strrpos($data['author'], '(') + 1, strlen($data['author']));
             $uid = substr($uid, 0,strrpos($uid, ')'));
-
-            $this->author = User::loadById($uid,\getAppContainer()->get('database')) ?? $this->container->get('current_user')->getUser();
+            if (is_numeric($uid)) {
+                $this->author = User::loadById($uid,\getAppContainer()->get('database')) ?? $this->container->get('current_user')->getUser();
+            }
         }
 
         $this->status = !empty($data['status']);
@@ -1012,6 +1018,17 @@ class NodeEntity implements NodeInterface
         if ($deleted) {
             $this->setStatus(0);
         }
+        return $this;
+    }
+
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->nid = $id;
         return $this;
     }
 }

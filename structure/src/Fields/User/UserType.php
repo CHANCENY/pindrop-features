@@ -2,6 +2,7 @@
 
 namespace Simp\Pindrop\Modules\structure\src\Fields\User;
 
+use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldContentInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeInterface;
 use Simp\Pindrop\Modules\structure\src\Plugin\Fields\FieldTypeWidgetInterface;
 use Twig\Markup;
@@ -37,5 +38,10 @@ class UserType implements FieldTypeInterface
     public function group(): string
     {
         return "reference";
+    }
+
+    public function valueRenderResolve(): FieldContentInterface
+    {
+        return new UserTypeFieldContent(\getAppContainer()->get('twig'));
     }
 }

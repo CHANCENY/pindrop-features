@@ -1,0 +1,49 @@
+{# Search Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <span class="field-value field-value-search{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                {% if settings.show_icon is defined and settings.show_icon %}
+                    <i class="fas fa-search"></i> 
+                {% endif %}
+                {{ value|e }}
+                {% if settings.highlight is defined and settings.highlight %}
+                    <span class="search-highlight">{{ value|e }}</span>
+                {% endif %}
+            </span>
+            {% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {# Handle single value #}
+        <span class="field-value field-value-search{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if settings.show_icon is defined and settings.show_icon %}
+                <i class="fas fa-search"></i> 
+            {% endif %}
+            {{ values|e }}
+            {% if settings.highlight is defined and settings.highlight %}
+                <span class="search-highlight">{{ values|e }}</span>
+            {% endif %}
+        </span>
+    {% endif %}
+{% else %}
+    {# Empty value #}
+    {% if settings.placeholder is defined %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if settings.show_icon is defined and settings.show_icon %}
+                <i class="fas fa-search"></i> 
+            {% endif %}
+            {{ settings.placeholder|e }}
+        </span>
+    {% else %}
+        <span class="field-value field-value-empty{% if settings.class is defined %} {{ settings.class }}{% endif %}">
+            {% if settings.show_icon is defined and settings.show_icon %}
+                <i class="fas fa-search"></i> 
+            {% endif %}
+            &mdash;
+        </span>
+    {% endif %}
+{% endif %}

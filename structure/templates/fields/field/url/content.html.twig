@@ -1,0 +1,44 @@
+{# URL Field Content Template #}
+{# settings: field definition settings array #}
+{# values: array of one or more values #}
+
+{% if values is not empty %}
+    {% if values is iterable %}
+        {# Handle multiple values #}
+        {% for value in values %}
+            <div class="field-value field-value-url-{{ settings.name }} {% if settings.class is defined %} {{ settings.class }}{% endif %}">
+                <p>
+                    {% if settings.link_url is defined and settings.link_url %}
+                        <a href="{{ value|e }}" target="_blank" class="url-link{% if settings.link_class is defined %} {{ settings.link_class }}{% endif %}" {% if settings.no_follow is defined and settings.no_follow %}rel="nofollow"{% endif %}>
+                            {% if settings.show_icon is defined and settings.show_icon %}
+                                <i class="fas fa-external-link-alt"></i> 
+                            {% endif %}
+                            {% if settings.truncate is defined and settings.truncate > 0 %}
+                                {% if value|length > settings.truncate %}
+                                    {{ value|slice(0, settings.truncate) }}...
+                                {% else %}
+                                    {{ value|e }}
+                                {% endif %}
+                            {% else %}
+                                {{ value|e }}
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        {% if settings.show_icon is defined and settings.show_icon %}
+                            <i class="fas fa-link"></i> 
+                        {% endif %}
+                        {% if settings.truncate is defined and settings.truncate > 0 %}
+                            {% if value|length > settings.truncate %}
+                                {{ value|slice(0, settings.truncate) }}...
+                            {% else %}
+                                {{ value|e }}
+                            {% endif %}
+                        {% else %}
+                            {{ value|e }}
+                        {% endif %}
+                    {% endif %}
+                </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}
