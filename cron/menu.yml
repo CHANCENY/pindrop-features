@@ -1,0 +1,8 @@
+groups:
+  cron:
+    dashboard:
+      title: Tasks
+      route: cron.dashboard
+      icon: fa fa-list-check
+      weight: 1
+      roles: [admin, super_admin]

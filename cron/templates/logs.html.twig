@@ -1,0 +1,330 @@
+{% extends "templates/base.twig" %}
+
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/cron/assets/logs.css">
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="main">
+
+        <!-- Meta bar -->
+        <div class="meta-bar">
+            <div class="meta-item">
+                <div class="meta-key">Job</div>
+                <div class="meta-val">{{ schedule.job_name|e }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-key">Run ID</div>
+                <div class="meta-val mono">#{{ schedule.id }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-key">Started</div>
+                <div class="meta-val mono">{{ schedule.last_run|e }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-key">Duration</div>
+                <div class="meta-val mono">{{ schedule.duration_seconds }}s</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-key">Status</div>
+                <div class="meta-val mono" style="color: {% if schedule.status == 'running' %}var(--green2){% elseif schedule.status == 'failed' %}var(--red2){% else %}var(--yellow2){% endif %}">{{ schedule.status|e }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-key">Expression</div>
+                <div class="meta-val mono">{{ schedule.expression|e }}</div>
+            </div>
+            <div class="meta-bar-spacer"></div>
+            <span class="badge {% if schedule.status == 'running' %}running{% elseif schedule.status == 'failed' %}failed{% else %}pending{% endif %}"><span class="badge-dot"></span>{{ schedule.status|e }}</span>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+            <div class="filter-label">Level</div>
+            <a href="#" class="filter-pill active">all</a>
+            <a href="#" class="filter-pill">info</a>
+            <a href="#" class="filter-pill">warn</a>
+            <a href="#" class="filter-pill">error</a>
+            <a href="#" class="filter-pill">debug</a>
+            <div class="filter-sep"></div>
+            <a href="#" class="filter-pill active">timestamps</a>
+            <a href="#" class="filter-pill">line numbers</a>
+            <a href="#" class="filter-pill">wrap</a>
+            <div class="filter-spacer"></div>
+            <div class="search-wrap">
+                <svg width="11" height="11" viewBox="0 0 14 14" fill="none" style="opacity:.4;flex-shrink:0"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                <input type="text" placeholder="search logs…" />
+            </div>
+        </div>
+
+        <!-- Terminal -->
+        <div class="terminal-wrap">
+
+            <!-- Dynamic logs display -->
+            {% if logs is not empty %}
+                {% set current_group = '' %}
+                {% set group_start_time = null %}
+                {% set line_number = 1 %}
+                
+                {% for log in logs %}
+                    {# Determine group based on message type or content #}
+                    {% set log_group = 'general' %}
+                    {% if log.message_type == 'start' %}
+                        {% set log_group = 'startup' %}
+                    {% elseif log.message_type == 'error' %}
+                        {% set log_group = 'error' %}
+                    {% elseif 'Count' in log.message %}
+                        {% set log_group = 'progress' %}
+                    {% endif %}
+
+                    {# Start new group if needed #}
+                    {% if current_group != log_group %}
+                        {% if current_group != '' %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% set current_group = log_group %}
+                        {% set group_start_time = log.created_at %}
+                        
+                        <div class="log-group">
+                            <div class="log-group-header">
+                                <span class="gh-icon {% if log.message_type == 'error' %}err-dot{% else %}ok-dot{% endif %}">.</span>
+                                <span class="gh-label">{{ log_group|title }}</span>
+                                <span class="gh-dur">{% if group_start_time %}{{ log.created_at|date_diff(group_start_time) }}s{% else %}&mdash;{% endif %}</span>
+                            </div>
+                            <div class="log-lines">
+                    {% endif %}
+
+                    {# Parse timestamp from created_at #}
+                    {% set timestamp = log.created_at|date('H:i:s') %}
+                    {% set message_class = log.message_type %}
+                    {% if message_class == 'start' %}
+                        {% set message_class = 'start' %}
+                    {% elseif message_class == 'info' %}
+                        {% set message_class = 'info' %}
+                    {% elseif message_class == 'error' %}
+                        {% set message_class = 'error' %}
+                    {% else %}
+                        {% set message_class = 'debug' %}
+                    {% endif %}
+
+                    <div class="log-line {% if log.message_type == 'error' %}highlight{% endif %}">
+                        <span class="ln">{{ line_number }}</span>
+                        <span class="ts">{{ timestamp }}</span>
+                        <span class="level {{ message_class }}">{{ log.message_type|e }}</span>
+                        <span class="msg {{ message_class }}">{{ log.message|raw }}</span>
+                    </div>
+                    
+                    {% set line_number = line_number + 1 %}
+                {% endfor %}
+
+                {# Close last group #}
+                {% if current_group != '' %}
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="log-group">
+                    <div class="log-group-header">
+                        <span class="gh-icon ok-dot">.</span>
+                        <span class="gh-label">No Logs</span>
+                        <span class="gh-dur">&mdash;</span>
+                    </div>
+                    <div class="log-lines">
+                        <div class="log-line">
+                            <span class="ln">1</span>
+                            <span class="ts">--:--:--</span>
+                            <span class="level info">info</span>
+                            <span class="msg">No logs available for this schedule</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div><!-- /terminal-wrap -->
+
+        <!-- Stats footer -->
+        <div class="stats-footer">
+            {% if logs is not empty %}
+                {{ logs|length }} lines
+                &nbsp;&middot;&nbsp;
+                {% set start_count = logs|filter(log => log.message_type == 'start')|length %}
+                {% if start_count > 0 %}<span class="ok">{{ start_count }} start</span>&nbsp;&middot;&nbsp;{% endif %}
+                {% set info_count = logs|filter(log => log.message_type == 'info')|length %}
+                {% if info_count > 0 %}<span class="inf">{{ info_count }} info</span>&nbsp;&middot;&nbsp;{% endif %}
+                {% set error_count = logs|filter(log => log.message_type == 'error')|length %}
+                {% if error_count > 0 %}<span class="err">{{ error_count }} error</span>&nbsp;&middot;&nbsp;{% endif %}
+                {% set other_count = logs|length - start_count - info_count - error_count %}
+                {% if other_count > 0 %}{{ other_count }} other&nbsp;&middot;&nbsp;{% endif %}
+            {% else %}
+                0 lines
+            {% endif %}
+            <div class="stats-footer-spacer"></div>
+            {% if schedule %}run #{{ schedule.id }} &middot; {{ schedule.job_name|e }} &middot; {{ schedule.last_run|e }}{% endif %}
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all filter pills for message types
+    const levelFilters = document.querySelectorAll('.filter-bar a[href="#"]:not([href*="timestamps"]):not([href*="line"]):not([href*="wrap"])');
+    const searchInput = document.querySelector('.search-wrap input');
+    const logLines = document.querySelectorAll('.log-line');
+    
+    // Current active filters
+    let activeLevelFilter = 'all';
+    let showTimestamps = true;
+    let showLineNumbers = true;
+    let wrapLines = false;
+    
+    // Level filter functionality
+    levelFilters.forEach(filter => {
+        filter.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all level filters
+            levelFilters.forEach(f => f.classList.remove('active'));
+            
+            // Add active class to clicked filter
+            this.classList.add('active');
+            
+            // Update active filter
+            activeLevelFilter = this.textContent.trim();
+            
+            // Apply filters
+            applyFilters();
+        });
+    });
+    
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            applyFilters();
+        });
+    }
+    
+    // Toggle filters functionality
+    const toggleFilters = document.querySelectorAll('.filter-pill[href*="timestamps"], .filter-pill[href*="line"], .filter-pill[href*="wrap"]');
+    toggleFilters.forEach(filter => {
+        filter.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const filterType = this.textContent.trim().toLowerCase();
+            
+            if (filterType === 'timestamps') {
+                showTimestamps = !showTimestamps;
+                this.classList.toggle('active');
+            } else if (filterType === 'line numbers') {
+                showLineNumbers = !showLineNumbers;
+                this.classList.toggle('active');
+            } else if (filterType === 'wrap') {
+                wrapLines = !wrapLines;
+                this.classList.toggle('active');
+                document.querySelector('.terminal-wrap').style.whiteSpace = wrapLines ? 'pre-wrap' : 'pre';
+            }
+            
+            applyFilters();
+        });
+    });
+    
+    function applyFilters() {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+        
+        logLines.forEach(line => {
+            let showLine = true;
+            
+            // Apply level filter
+            if (activeLevelFilter !== 'all') {
+                const levelElement = line.querySelector('.level');
+                if (levelElement) {
+                    const level = levelElement.textContent.trim().toLowerCase();
+                    if (level !== activeLevelFilter) {
+                        showLine = false;
+                    }
+                }
+            }
+            
+            // Apply search filter
+            if (searchTerm && showLine) {
+                const messageElement = line.querySelector('.msg');
+                if (messageElement) {
+                    const message = messageElement.textContent.toLowerCase();
+                    if (!message.includes(searchTerm)) {
+                        showLine = false;
+                    }
+                }
+            }
+            
+            // Show/hide the line
+            line.style.display = showLine ? '' : 'none';
+            
+            // Show/hide timestamps and line numbers
+            if (showLine) {
+                const lnElement = line.querySelector('.ln');
+                const tsElement = line.querySelector('.ts');
+                
+                if (lnElement) {
+                    lnElement.style.display = showLineNumbers ? '' : 'none';
+                }
+                if (tsElement) {
+                    tsElement.style.display = showTimestamps ? '' : 'none';
+                }
+            }
+        });
+        
+        // Update stats
+        updateStats();
+    }
+    
+    function updateStats() {
+        const visibleLines = document.querySelectorAll('.log-line:not([style*="display: none"])');
+        const statsFooter = document.querySelector('.stats-footer');
+        
+        if (statsFooter && visibleLines.length > 0) {
+            // Count message types in visible lines
+            let startCount = 0, infoCount = 0, errorCount = 0, otherCount = 0;
+            
+            visibleLines.forEach(line => {
+                const levelElement = line.querySelector('.level');
+                if (levelElement) {
+                    const level = levelElement.textContent.trim().toLowerCase();
+                    if (level === 'start') startCount++;
+                    else if (level === 'info') infoCount++;
+                    else if (level === 'error') errorCount++;
+                    else otherCount++;
+                }
+            });
+            
+            // Update stats display
+            let statsHTML = `${visibleLines.length} lines &nbsp;&middot;&nbsp;`;
+            if (startCount > 0) statsHTML += `<span class="ok">${startCount} start</span>&nbsp;&middot;&nbsp;`;
+            if (infoCount > 0) statsHTML += `<span class="inf">${infoCount} info</span>&nbsp;&middot;&nbsp;`;
+            if (errorCount > 0) statsHTML += `<span class="err">${errorCount} error</span>&nbsp;&middot;&nbsp;`;
+            if (otherCount > 0) statsHTML += `${otherCount} other&nbsp;&middot;&nbsp;`;
+            
+            // Add schedule info
+            const scheduleInfo = statsFooter.querySelector('.stats-footer-spacer').nextSibling;
+            if (scheduleInfo) {
+                statsHTML += scheduleInfo.textContent;
+            }
+            
+            // Update only the line count part
+            const lineCountPart = statsFooter.innerHTML.split('<div class="stats-footer-spacer">')[0];
+            const schedulePart = statsFooter.innerHTML.split('<div class="stats-footer-spacer">')[1];
+            statsFooter.innerHTML = statsHTML + '<div class="stats-footer-spacer"></div>' + schedulePart;
+        }
+    }
+    
+    // Initialize filters
+    applyFilters();
+});
+</script>
+{% endblock %}

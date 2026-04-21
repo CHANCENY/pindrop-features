@@ -1,0 +1,4 @@
+cron.default:
+  name: "Cron CLI commands"
+  script: "modules/cron/cli/default.php"
+  status: true

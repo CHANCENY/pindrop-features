@@ -1,0 +1,2 @@
+cron.twig:
+  class: Simp\Pindrop\Modules\cron\src\Plugin\Twig\TwigExtension

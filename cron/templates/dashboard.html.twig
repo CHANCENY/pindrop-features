@@ -1,0 +1,132 @@
+{% extends "templates/base.twig" %}
+
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/cron/assets/cron.css">
+
+{% endblock %}
+
+
+
+{% block content %}
+
+    <div class="shell">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-logo">
+                <div class="logo-icon">
+                    <svg width="13" height="13" viewBox="0 0 14 14"><path d="M7 1a6 6 0 100 12A6 6 0 007 1zm.5 3v3.25l2.2 2.2-.7.7L6.5 7.5V4h1z"/></svg>
+                </div>
+                cronctl
+            </div>
+            <div class="topbar-spacer"></div>
+            <div class="topbar-badge active">● 8 active</div>
+            <div class="topbar-badge">production</div>
+        </div>
+
+        <!-- Main -->
+        <div class="main">
+
+            <div class="main-header">
+                <div class="main-title">Scheduled jobs</div>
+                <div class="main-header-spacer"></div>
+                <div class="search-wrap">
+                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    <input type="text" placeholder="search jobs…" />
+                </div>
+                <a href="{{ url('cron.create') }}" id="create" class="btn primary">
+                    <svg width="11" height="11" viewBox="0 0 14 14" fill="currentColor"><path d="M7 2a1 1 0 011 1v3h3a1 1 0 010 2H8v3a1 1 0 01-2 0V8H3a1 1 0 010-2h3V3a1 1 0 011-1z"/></svg>
+                    New job
+                </a>
+                <a href="{{ url('cron.create.schedule') }}" id="create" class="btn primary">
+                    <svg width="11" height="11" viewBox="0 0 14 14" fill="currentColor"><path d="M7 2a1 1 0 011 1v3h3a1 1 0 010 2H8v3a1 1 0 01-2 0V8H3a1 1 0 010-2h3V3a1 1 0 011-1z"/></svg>
+                    New schedule
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Total jobs</div>
+                    <div class="stat-value">{{ schedules|length }}</div>
+                    <div class="stat-sub"><span class="up">+2</span> this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Success rate</div>
+                    <div class="stat-value">98.2%</div>
+                    <div class="stat-sub"><span class="up">+0.4%</span> vs last week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg duration</div>
+                    <div class="stat-value">4.3s</div>
+                    <div class="stat-sub">last 24h</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Next run in</div>
+                    <div class="stat-value" style="font-size:18px;">00:04:12</div>
+                    <div class="stat-sub">db_backup</div>
+                </div>
+            </div>
+
+            <!-- Jobs table -->
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="width:40px;"></th>
+                        <th>Job name</th>
+                        <th>Expression</th>
+                        <th>Status</th>
+                        <th>Last run</th>
+                        <th>Next run</th>
+                        <th>Duration</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for schedule in schedules %}
+
+                    <tr>
+                        <td><div class="toggle {{ schedule.status == 'running' ? 'on' : null }}" data-id="{{ schedule.id }}"></div></td>
+                        <td><span class="job-name">{{ schedule.job_name }}</span></td>
+                        <td><span class="cron-expr">{{ schedule.expression }}</span></td>
+                        {% if schedule.status == 'running' %}
+                            <td><span class="badge running"><span class="badge-dot"></span>running</span></td>
+                        {% elseif schedule.status == 'paused' %}
+                            <td><span class="badge paused"><span class="badge-dot"></span>paused</span></td>
+                        {% elseif schedule.status == 'failed' %}
+                            <td><span class="badge failed"><span class="badge-dot"></span>failed</span></td>
+                        {% elseif schedule.status == 'success' %}
+                            <td><span class="badge running"><span class="badge-dot"></span>success</span></td>
+                        {% endif %}
+                        <td><span class="mono-sm">{{ schedule.last_run|time_ago(cron_job(schedule.job)['timezone']) }}</span></td>
+                        <td><span class="mono-sm next">{{ schedule.next_run }}</span></td>
+                        <td><span class="mono-sm">{{ schedule.duration_seconds }}s</span></td>
+                        <td>
+                            <div class="actions">
+                                <button onclick="window.location.href='{{ url('cron.schedule.run',{id: schedule.id }) }}'" class="btn sm icon" title="Run now">▶</button>
+                                <button onclick="window.location.href='{{ url('cron.schedule.edit', {id: schedule.id }) }}'" class="btn sm icon" title="Edit">✎</button>
+                                <button onclick="window.location.href='{{ url('cron.schedule.logs', {id: schedule.id }) }}'" class="btn sm icon" title="Logs">≡</button>
+                                <button onclick="window.location.href='{{ url('cron.schedule.delete', {id: schedule.id }) }}'" class="btn sm icon" title="Delete" style="color:var(--red-dot)">✕</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script src="/modules/cron/assets/cron.js"></script>
+
+{% endblock %}

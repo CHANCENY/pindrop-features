@@ -1,0 +1,12 @@
+cron.manager:
+  class: Simp\Pindrop\Modules\cron\src\Plugin\Cron\CronManager
+  arguments:
+    - "@plugin.manager"
+  tags:
+    - "plugin_manager"
+cron.scheduler:
+  class: Simp\Pindrop\Modules\cron\src\Plugin\Cron\SchedulerManager
+  arguments:
+    - "@database"
+  tags:
+    - "scheduler"

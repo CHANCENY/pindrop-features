@@ -1,0 +1,144 @@
+{% extends "templates/base.twig" %}
+
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/cron/assets/cron.css">
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="form-shell">
+
+        <!-- Form main -->
+        <form method="post" class="form-main">
+            <div class="form-card">
+                <div class="form-card-title">Create new job</div>
+
+                <!-- Basic info -->
+                <div class="form-row">
+                    <div class="field">
+                        <label>Job name</label>
+                        <input type="text" name="name" placeholder="e.g. daily_report_sync" />
+                    </div>
+                    <div class="field">
+                        <label>Category</label>
+                        <select name="category">
+                            <option>Data sync</option>
+                            <option>Reports</option>
+                            <option>Cleanup</option>
+                            <option>Notifications</option>
+                            <option>Custom</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Description</label>
+                    <textarea name="description" rows="2" placeholder="What does this job do?"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>Timezone</label>
+                        <select name="timezone">
+                            <option>UTC</option>
+                            <option>America/New_York</option>
+                            <option>America/Los_Angeles</option>
+                            <option>Europe/London</option>
+                            <option>Europe/Paris</option>
+                            <option>Asia/Tokyo</option>
+                            <option>Asia/Kolkata</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Environment</label>
+                        <select name="environment">
+                            <option>Production</option>
+                            <option>Staging</option>
+                            <option>Development</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Schedule -->
+                <div class="section-title">Schedule</div>
+
+                <!-- Command -->
+                <div class="section-title">Command</div>
+
+                <div class="field">
+                    <label>Definition</label>
+                    <select name="definition">
+                        <option>Select definition</option>
+                        {% for index, definition in definitions %}
+                            <option value="{{ index }}|{{ definition.key() }}">{{ definition.name()  }} ({{ definition.description() }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>Timeout (seconds)</label>
+                        <input type="number" value="60" />
+                    </div>
+                </div>
+
+                <!-- Retry -->
+                <div class="section-title">Retry &amp; failure</div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>Retry on failure</label>
+                        <select name="retry_on_failed">
+                            <option>No retry</option>
+                            <option>1 retry</option>
+                            <option>3 retries</option>
+                            <option>5 retries</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Retry delay (seconds)</label>
+                        <input name="delay_seconds" type="number" value="30" />
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="section-title">Notifications</div>
+
+                <div class="check-row">
+                    <input name="notify" type="checkbox" id="n1" checked />
+                    <label class="check-label" for="n1">
+                        Email on failure
+                        <small>Send alert email when the job fails or times out</small>
+                    </label>
+                </div>
+                <div class="check-row">
+                    <input  name="notify" type="checkbox" id="n2" />
+                    <label class="check-label" for="n2">
+                        Email on success
+                        <small>Send confirmation after every successful run</small>
+                    </label>
+                </div>
+
+                <div class="field" style="margin-top:14px;">
+                    <label>Notification email</label>
+                    <input name="email" type="email" placeholder="ops@example.com" />
+                </div>
+
+                <div class="form-footer">
+                    <button class="btn primary">Create job</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script src="/modules/cron/assets/cron.js"></script>
+
+{% endblock %}

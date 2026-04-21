@@ -1,0 +1,47 @@
+{% extends "templates/base.twig" %}
+
+
+{% block head %}
+
+    <link rel="stylesheet" href="/modules/cron/assets/cron.css">
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="form-shell">
+
+        <!-- Form main -->
+        <form method="post" class="form-main">
+            <div class="form-card">
+                <div class="form-card-title">Edit schedule</div>
+
+                <!-- Basic info -->
+                <div class="form-row">
+                    <div class="field">
+                        <label>Status</label>
+                        <select name="status">
+                            <option {% if status == 'running'%} selected {% endif %} value="running">Running</option>
+                            <option {% if status == 'failed'%} selected {% endif %} value="failed">Failed</option>
+                            <option {% if status == 'success'%} selected {% endif %} value="success">Success</option>
+                            <option {% if status == 'paused'%} selected {% endif %} value="paused">Paused</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-footer">
+                    <button class="btn primary">Edit schedule</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script src="/modules/cron/assets/cron.js"></script>
+
+{% endblock %}

@@ -1,0 +1,3 @@
+default:
+  class: Simp\Pindrop\Modules\cron\src\Plugin\CronDefinition\DefaultCronDefinition
+  status: true

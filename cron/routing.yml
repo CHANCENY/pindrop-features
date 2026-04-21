@@ -1,0 +1,56 @@
+cron.dashboard:
+  path: '/admin/crons'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::dashboard'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+cron.create:
+  path: '/admin/crons/create'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::createJob'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+cron.create.schedule:
+  path: '/admin/crons/schedule/create'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::createSchedule'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+cron.schedule.edit:
+  path: '/admin/crons/schedule/[id:int]/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::editSchedule'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+cron.schedule.delete:
+  path: '/admin/crons/schedule/[id:int]/delete'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::deleteSchedule'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+
+cron.schedule.run:
+  path: '/admin/crons/schedule/[id:int]/run'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::runSchedule'
+  requirements:
+    _permission: ['admin', 'super_admin']
+
+cron.schedule.logs:
+  path: '/admin/crons/schedule/[id:int]/logs'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::logSchedule'
+  requirements:
+    _permission: ['admin', 'super_admin']
