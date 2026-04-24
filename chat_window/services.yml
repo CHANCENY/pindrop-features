@@ -1,0 +1,24 @@
+chat.customer:
+  class: Simp\Pindrop\Modules\chat_window\src\Customer\Customer
+  arguments:
+    - "@database"
+  tags:
+    - "customer"
+chat.item.manager:
+  class: Simp\Pindrop\Modules\chat_window\src\Chat\ChatItem
+  arguments:
+    - "@database"
+  tags:
+    - "chat_item"
+chat.item.content.manager:
+  class: Simp\Pindrop\Modules\chat_window\src\Chat\ChatItemContent
+  arguments:
+    - "@database"
+  tags:
+    - "chat_item"
+chat.agent:
+  class: Simp\Pindrop\Modules\chat_window\src\Chat\Agent
+  arguments:
+    - "@database"
+  tags:
+    - "chat_item"

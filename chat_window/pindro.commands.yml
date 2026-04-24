@@ -1,0 +1,4 @@
+chat_window.default:
+  name: "Chat Window CLI commands"
+  script: "modules/chat_window/src/WebSocket/server.php"
+  status: true

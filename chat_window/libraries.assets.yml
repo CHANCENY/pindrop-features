@@ -1,0 +1,7 @@
+chat_window.chatbot:
+  theme:
+    css:
+      https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap: {}
+      /modules/chat_window/assets/chatbot.css: {}
+    js:
+      /modules/chat_window/assets/chatbox.js: {}

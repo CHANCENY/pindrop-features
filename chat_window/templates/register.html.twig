@@ -1,0 +1,134 @@
+{% extends "templates/base.twig" %}
+
+{% block head %}
+
+
+    <style>
+        .form-container {
+            background: #fff;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 50px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="form-container">
+        <h2>Add Support Agent</h2>
+
+        <form action="" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input
+                            type="text"
+                            id="first_name"
+                            name="first_name"
+                            value="{{ user.firstName }}"
+                            required>
+                </div>
+
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input
+                            type="text"
+                            id="last_name"
+                            name="last_name"
+                            value="{{ user.lastName }}"
+                            required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ user.email }}"
+                        required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number (Optional)</label>
+                <input
+                        type="tel"
+                        id="phone"
+                        value="{{ user.phone }}"
+                        name="phone">
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Add Agent
+            </button>
+        </form>
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,8 @@
+groups:
+  chat_window:
+    panel:
+      title: Support panel
+      route: chat_window.support.panel
+      icon: fa fa-headset
+      weight: 20
+      roles: [admin, super_admin]
