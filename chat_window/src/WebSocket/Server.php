@@ -78,10 +78,15 @@ class Server
                 }
             }catch (Throwable $exception){
                 foreach ($this->clients as $key=>$client) {
-                    if (empty(socket_read($client, 8192))){
-                        echo "Remote has drop the connection\n";
-                        unset($this->clients[$key]);
-                    }
+                   try{
+                       if (empty(socket_read($client, 8192))){
+                           echo "Remote has drop the connection\n";
+                           unset($this->clients[$key]);
+                       }
+                   }catch (Throwable $exception){
+                       echo "Remote has drop the connection\n";
+                       unset($this->clients[$key]);
+                   }
                 }
             }
         }
