@@ -34,6 +34,7 @@ use Simp\Pindrop\Modules\admin\src\Plugin\Events\Events;
 use Simp\Pindrop\Modules\admin\src\Services\AutoCompleteService;
 use Simp\Pindrop\Plugin\PluginManager;
 use Simp\Pindrop\Routing\RouteManager;
+use Simp\Pindrop\Routing\RouteProvider;
 use Simp\Pindrop\Routing\Url;
 use Simp\Pindrop\Settings\Settings;
 use Simp\Pindrop\Settings\SettingsInterface;
@@ -2344,5 +2345,10 @@ Generated: " . date('Y-m-d H:i:s') . "
         $addressFormatter = new AddressFormatter($code);
 
         return new JsonResponse(['status' => true, 'address' => $addressFormatter->getAddressTemplate($name)]);
+    }
+
+    public function csrfTokenGenerator(Request $request, string $route_name, array $options): Response
+    {
+        return new JsonResponse(['token' => Url::generateToken($request, $_ENV['CSRF_TOKEN_SECRET'])]);
     }
 }

@@ -282,6 +282,13 @@ commerce_store.autocomplete:
     _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::autocomplete'
   requirements:
     _permission:  ['user', 'moderator', 'admin', 'super_admin']
+commerce_store.csrf.token:
+  path: '/internal/csrf-token/generator'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::csrfTokenGenerator'
+  requirements:
+    _permission:  ['user', 'moderator', 'admin', 'super_admin','guest']
 
 commerce_store.address:
   path: '/internal/address/[code:string]/[name:string]'
