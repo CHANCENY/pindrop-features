@@ -1,0 +1,5 @@
+pig_farmer.global:
+  theme:
+    css:
+      /modules/pig_farmer/assets/pig.css: {}
+    js:

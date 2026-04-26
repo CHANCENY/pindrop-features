@@ -1,0 +1,36 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Feeding Logs for {{ pig.tag_number }}{% endblock %}
+
+{% block content %}
+    <div class="pf-content">
+        <div class="feeding-logs-list">
+            <h1>Feeding Logs for {{ pig.tag_number }}</h1>
+            <p><a href="{{ url("pig_farmer.admin_feeding_log_add", {pigId: pig.id}) }}" class="button">Add New Feeding Log</a></p>
+
+            {% if feedingLogs is not empty %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Feed Type</th>
+                        <th>Quantity</th>
+                        <th>Feed Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for log in feedingLogs %}
+                        <tr>
+                            <td>{{ log.feed_type }}</td>
+                            <td>{{ log.quantity }}</td>
+                            <td>{{ log.feed_date }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No feeding logs found for this pig. <a href="{{ url("pig_farmer.admin_feeding_log_add", {pigId: pig.id}) }}">Add a new feeding log</a>.</p>
+            {% endif %}
+            <p><a href="{{ url("pig_farmer.admin_pigs") }}">Back to Pig List</a></p>
+        </div>
+    </div>
+{% endblock %}

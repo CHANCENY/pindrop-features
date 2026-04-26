@@ -1,0 +1,56 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Pig Farmer Dashboard{% endblock %}
+
+{% block content %}
+   <div class="pf-content">
+       <div class="pig-farmer-dashboard">
+           <h1>Pig Farmer Dashboard</h1>
+           <p>Welcome to your Pig Farmer Records Management dashboard. Here you can manage all your pigs, their health records, feeding logs, and finances.</p>
+
+           <h2>Financial Summary</h2>
+           <div class="financial-summary">
+               <p><strong>Total Income:</strong> ${{ financeSummary.total_income|number_format(2, ".", ",") }}</p>
+               <p><strong>Total Expense:</strong> ${{ financeSummary.total_expense|number_format(2, ".", ",") }}</p>
+               <p><strong>Net Profit:</strong> ${{ financeSummary.net_profit|number_format(2, ".", ",") }}</p>
+               <p><a href="{{ url("pig_farmer.admin_finances") }}" class="button">View All Finances</a></p>
+           </div>
+
+           <h2>Recent Pigs</h2>
+           {% if pigs is not empty %}
+               <table>
+                   <thead>
+                   <tr>
+                       <th>Tag Number</th>
+                       <th>Breed</th>
+                       <th>Gender</th>
+                       <th>Birth Date</th>
+                       <th>Status</th>
+                       <th>Actions</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   {% for pig in pigs|slice(0, 5) %}
+                       <tr>
+                           <td>{{ pig.tag_number }}</td>
+                           <td>{{ pig.breed }}</td>
+                           <td>{{ pig.gender }}</td>
+                           <td>{{ pig.birth_date }}</td>
+                           <td>{{ pig.status }}</td>
+                           <td>
+                               <a href="{{ url("pig_farmer.admin_pig_edit", {id: pig.id}) }}">Edit</a> |
+                               <a href="{{ url("pig_farmer.admin_health_records", {pigId: pig.id}) }}">Health</a> |
+                               <a href="{{ url("pig_farmer.admin_feeding_logs", {pigId: pig.id}) }}">Feeding</a>
+                           </td>
+                       </tr>
+                   {% endfor %}
+                   </tbody>
+               </table>
+           {% else %}
+               <p>No pigs recorded yet. <a href="{{ url("pig_farmer.admin_pig_add") }}">Add your first pig</a>.</p>
+           {% endif %}
+
+           <p><a href="{{ url("pig_farmer.admin_pigs") }}" class="button">View All Pigs</a></p>
+       </div>
+   </div>
+{% endblock %}

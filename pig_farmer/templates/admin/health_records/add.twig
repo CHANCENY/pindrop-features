@@ -1,0 +1,27 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Add Health Record for {{ pig.tag_number }}{% endblock %}
+
+{% block content %}
+   <div class="pf-content">
+       <div class="add-health-record-form">
+           <h1>Add Health Record for {{ pig.tag_number }}</h1>
+           <form action="{{ url("pig_farmer.admin_health_record_add", {pigId: pig.id}) }}" method="post">
+               <label for="checkup_date">Checkup Date:</label>
+               <input type="date" id="checkup_date" name="checkup_date" required>
+
+               <label for="condition">Condition:</label>
+               <textarea id="condition" name="condition"></textarea>
+
+               <label for="treatment">Treatment:</label>
+               <textarea id="treatment" name="treatment"></textarea>
+
+               <label for="notes">Notes:</label>
+               <textarea id="notes" name="notes"></textarea>
+
+               <button type="submit">Add Health Record</button>
+           </form>
+           <p><a href="{{ url("pig_farmer.admin_health_records", {pigId: pig.id}) }}">Back to Health Records</a></p>
+       </div>
+   </div>
+{% endblock %}

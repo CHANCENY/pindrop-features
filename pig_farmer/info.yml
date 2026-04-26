@@ -1,0 +1,6 @@
+name: "Pig Farmer Records"
+description: "Manages records for pig farming operations, including pig details, health, and feeding logs."
+version: "1.0.0"
+author: "Manus AI"
+website: "https://manus.im"
+license: "MIT"

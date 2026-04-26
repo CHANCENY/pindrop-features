@@ -1,0 +1,24 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Add Feeding Log for {{ pig.tag_number }}{% endblock %}
+
+{% block content %}
+   <div class="pf-content">
+       <div class="add-feeding-log-form">
+           <h1>Add Feeding Log for {{ pig.tag_number }}</h1>
+           <form action="{{ url("pig_farmer.admin_feeding_log_add", {pigId: pig.id}) }}" method="post">
+               <label for="feed_type">Feed Type:</label>
+               <input type="text" id="feed_type" name="feed_type" required>
+
+               <label for="quantity">Quantity (kg):</label>
+               <input type="number" id="quantity" name="quantity" step="0.01" required>
+
+               <label for="feed_date">Feed Date:</label>
+               <input type="date" id="feed_date" name="feed_date" required>
+
+               <button type="submit">Add Feeding Log</button>
+           </form>
+           <p><a href="{{ url("pig_farmer.admin_feeding_logs", {pigId: pig.id}) }}">Back to Feeding Logs</a></p>
+       </div>
+   </div>
+{% endblock %}

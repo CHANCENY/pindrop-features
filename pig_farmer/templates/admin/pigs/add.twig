@@ -1,0 +1,40 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Add New Pig{% endblock %}
+
+{% block content %}
+   <div class="pf-content">
+       <div class="add-pig-form">
+           <h1>Add New Pig</h1>
+           <form action="{{ url("pig_farmer.admin_pig_add") }}" method="post">
+               <label for="tag_number">Tag Number:</label>
+               <input type="text" id="tag_number" name="tag_number" required>
+
+               <label for="breed">Breed:</label>
+               <input type="text" id="breed" name="breed">
+
+               <label for="gender">Gender:</label>
+               <select id="gender" name="gender" required>
+                   <option value="Male">Male</option>
+                   <option value="Female">Female</option>
+               </select>
+
+               <label for="birth_date">Birth Date:</label>
+               <input type="date" id="birth_date" name="birth_date">
+
+               <label for="weight">Weight (kg):</label>
+               <input type="number" id="weight" name="weight" step="0.01">
+
+               <label for="status">Status:</label>
+               <select id="status" name="status" required>
+                   <option value="Active">Active</option>
+                   <option value="Sold">Sold</option>
+                   <option value="Deceased">Deceased</option>
+               </select>
+
+               <button type="submit">Add Pig</button>
+           </form>
+           <p><a href="{{ url("pig_farmer.admin_pigs") }}">Back to Pig List</a></p>
+       </div>
+   </div>
+{% endblock %}

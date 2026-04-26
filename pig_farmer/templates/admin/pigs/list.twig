@@ -1,0 +1,49 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Manage Pigs{% endblock %}
+
+{% block content %}
+   <div class="pf-content">
+       <div class="pig-list">
+           <h1>Manage Pigs</h1>
+           <p><a href="{{ url("pig_farmer.admin_pig_add") }}" class="button">Add New Pig</a></p>
+           <p><a href="{{ url('pig_farmer.admin_feeding_log_add_bulk') }}">Add Bulk Feeds</a></p>
+
+           {% if pigs is not empty %}
+               <table>
+                   <thead>
+                   <tr>
+                       <th>Tag Number</th>
+                       <th>Breed</th>
+                       <th>Gender</th>
+                       <th>Birth Date</th>
+                       <th>Status</th>
+                       <th>Actions</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   {% for pig in pigs %}
+                       <tr>
+                           <td>{{ pig.tag_number }}</td>
+                           <td>{{ pig.breed }}</td>
+                           <td>{{ pig.gender }}</td>
+                           <td>{{ pig.birth_date }}</td>
+                           <td>{{ pig.status }}</td>
+                           <td>
+                               <a href="{{ url("pig_farmer.admin_pig_edit", {id: pig.id}) }}">Edit</a> |
+                               <a href="{{ url("pig_farmer.admin_health_records", {pigId: pig.id}) }}">Health Records</a> |
+                               <a href="{{ url("pig_farmer.admin_feeding_logs", {pigId: pig.id}) }}">Feeding Logs</a> |
+                               <form action="{{ url("pig_farmer.admin_pig_delete", {id: pig.id}) }}" method="post" style="display:inline;">
+                                   <button type="submit" onclick="return confirm("Are you sure?");">Delete</button>
+                               </form>
+                           </td>
+                       </tr>
+                   {% endfor %}
+                   </tbody>
+               </table>
+           {% else %}
+               <p>No pigs found. <a href="{{ url("pig_farmer.admin_pig_add") }}">Add a new pig</a>.</p>
+           {% endif %}
+       </div>
+   </div>
+{% endblock %}

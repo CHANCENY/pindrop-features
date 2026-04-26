@@ -1,0 +1,40 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Edit Pig: {{ pig.tag_number }}{% endblock %}
+
+{% block content %}
+   <div class="pf-content">
+       <div class="edit-pig-form">
+           <h1>Edit Pig: {{ pig.tag_number }}</h1>
+           <form action="{{ url("pig_farmer.admin_pig_edit", {id: pig.id}) }}" method="post">
+               <label for="tag_number">Tag Number:</label>
+               <input type="text" id="tag_number" name="tag_number" value="{{ pig.tag_number }}" required>
+
+               <label for="breed">Breed:</label>
+               <input type="text" id="breed" name="breed" value="{{ pig.breed }}">
+
+               <label for="gender">Gender:</label>
+               <select id="gender" name="gender" required>
+                   <option value="Male" {% if pig.gender == "Male" %}selected{% endif %}>Male</option>
+                   <option value="Female" {% if pig.gender == "Female" %}selected{% endif %}>Female</option>
+               </select>
+
+               <label for="birth_date">Birth Date:</label>
+               <input type="date" id="birth_date" name="birth_date" value="{{ pig.birth_date|date("Y-m-d") }}">
+
+               <label for="weight">Weight (kg):</label>
+               <input type="number" id="weight" name="weight" step="0.01" value="{{ pig.weight }}">
+
+               <label for="status">Status:</label>
+               <select id="status" name="status" required>
+                   <option value="Active" {% if pig.status == "Active" %}selected{% endif %}>Active</option>
+                   <option value="Sold" {% if pig.status == "Sold" %}selected{% endif %}>Sold</option>
+                   <option value="Deceased" {% if pig.status == "Deceased" %}selected{% endif %}>Deceased</option>
+               </select>
+
+               <button type="submit">Update Pig</button>
+           </form>
+           <p><a href="{{ url("pig_farmer.admin_pigs") }}">Back to Pig List</a></p>
+       </div>
+   </div>
+{% endblock %}

@@ -1,0 +1,119 @@
+/* Scope EVERYTHING to content block only */
+.pf-content {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #222;
+    background: #fff;
+}
+
+/* Headings */
+.pf-content h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.pf-content h2 {
+    font-size: 20px;
+    margin: 25px 0 10px;
+    font-weight: 500;
+}
+
+/* Paragraphs */
+.pf-content p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Tables */
+.pf-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: #fff;
+}
+
+.pf-content th,
+.pf-content td {
+    padding: 10px 12px;
+    text-align: left;
+}
+
+.pf-content thead {
+    border-bottom: 2px solid #eee;
+}
+
+.pf-content tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.pf-content tbody tr:hover {
+    background: #fafafa;
+}
+
+/* Links */
+.pf-content a {
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid transparent;
+}
+
+.pf-content a:hover {
+    border-bottom: 1px solid #999;
+}
+
+/* Forms */
+.pf-content form {
+    margin-top: 20px;
+}
+
+.pf-content label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #444;
+}
+
+.pf-content input,
+.pf-content select,
+.pf-content textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.pf-content input:focus,
+.pf-content select:focus,
+.pf-content textarea:focus {
+    outline: none;
+    border-color: #bbb;
+}
+
+/* Buttons */
+.pf-content button,
+.pf-content input[type="submit"] {
+    background: #222;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.pf-content button:hover,
+.pf-content input[type="submit"]:hover {
+    background: #000;
+}
+
+/* Simple action links spacing */
+.pf-content td a {
+    margin-right: 6px;
+    font-size: 13px;
+}

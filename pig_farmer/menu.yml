@@ -1,0 +1,8 @@
+groups:
+  pig_farmer:
+    center:
+      title: Farm Panel
+      route: pig_farmer.admin_dashboard
+      icon: fa fa-book
+      weight: 21
+      roles: [admin, super_admin]

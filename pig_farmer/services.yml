@@ -1,0 +1,23 @@
+pig_farmer.pig_manager:
+    class: Simp\Pindrop\Modules\pig_farmer\src\Services\PigManager
+    arguments:
+        - "@database"
+        - "@logger"
+
+pig_farmer.health_record_manager:
+    class: Simp\Pindrop\Modules\pig_farmer\src\Services\HealthRecordManager
+    arguments:
+        - "@database"
+        - "@logger"
+
+pig_farmer.feeding_log_manager:
+    class: Simp\Pindrop\Modules\pig_farmer\src\Services\FeedingLogManager
+    arguments:
+        - "@database"
+        - "@logger"
+
+pig_farmer.finance_manager:
+    class: Simp\Pindrop\Modules\pig_farmer\src\Services\FinanceManager
+    arguments:
+        - "@database"
+        - "@logger"

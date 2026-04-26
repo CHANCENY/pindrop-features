@@ -1,0 +1,38 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Health Records for {{ pig.tag_number }}{% endblock %}
+
+{% block content %}
+   <div class="pf-content">
+       <div class="health-records-list">
+           <h1>Health Records for {{ pig.tag_number }}</h1>
+           <p><a href="{{ url("pig_farmer.admin_health_record_add", {pigId: pig.id}) }}" class="button">Add New Health Record</a></p>
+
+           {% if healthRecords is not empty %}
+               <table>
+                   <thead>
+                   <tr>
+                       <th>Checkup Date</th>
+                       <th>Condition</th>
+                       <th>Treatment</th>
+                       <th>Notes</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   {% for record in healthRecords %}
+                       <tr>
+                           <td>{{ record.checkup_date }}</td>
+                           <td>{{ record.condition }}</td>
+                           <td>{{ record.treatment }}</td>
+                           <td>{{ record.notes }}</td>
+                       </tr>
+                   {% endfor %}
+                   </tbody>
+               </table>
+           {% else %}
+               <p>No health records found for this pig. <a href="{{ url("pig_farmer.admin_health_record_add", {pigId: pig.id}) }}">Add a new health record</a>.</p>
+           {% endif %}
+           <p><a href="{{ url("pig_farmer.admin_pigs") }}">Back to Pig List</a></p>
+       </div>
+   </div>
+{% endblock %}

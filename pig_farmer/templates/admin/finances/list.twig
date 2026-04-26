@@ -1,0 +1,54 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Farm Finances{% endblock %}
+
+{% block content %}
+    <div class="pf-content">
+        <div class="farm-finances-list">
+            <h1>Farm Finances</h1>
+            <p><a href="{{ url("pig_farmer.admin_finance_add") }}" class="button">Add New Financial Record</a></p>
+
+            <div class="financial-summary">
+                <h2>Summary</h2>
+                <p><strong>Total Income:</strong> {{ financeSummary.total_income|number_format(2, ".", ",") }} mwk</p>
+                <p><strong>Total Expense:</strong> {{ financeSummary.total_expense|number_format(2, ".", ",") }} mwk</p>
+                <p><strong>Net Profit:</strong> {{ financeSummary.net_profit|number_format(2, ".", ",") }} mwk</p>
+            </div>
+
+            {% if finances is not empty %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Pig Tag</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for record in finances %}
+                        <tr>
+                            <td>{{ record.transaction_date }}</td>
+                            <td>{{ record.type }}</td>
+                            <td>{{ record.category }}</td>
+                            <td>${{ record.amount|number_format(2, ".", ",") }}</td>
+                            <td>{{ record.description }}</td>
+                            <td>
+                                {% if record.pig_id %}
+                                    <a href="{{ url("pig_farmer.admin_pig_edit", {id: record.pig_id}) }}">#{{ record.pig_id }}</a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No financial records found. <a href="{{ url("pig_farmer.admin_finance_add") }}">Add a new financial record</a>.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
