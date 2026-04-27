@@ -126,3 +126,23 @@ pig_farmer.admin_finance_add:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::addFinanceRecord'
     requirements:
         _permission: ['admin', 'super_admin']
+
+pig_farmer.admin_finance_edit:
+    path:
+        '/admin/pig-farmer/finances/[id:int]/edit'
+    methods:
+      ['GET', 'POST']
+    defaults:
+        _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::editFinanceRecord'
+    requirements:
+        _permission: ['admin', 'super_admin']
+
+pig_farmer.admin_finance_delete:
+    path:
+        '/admin/pig-farmer/finances/[id:int]/delete'
+    methods:
+      ['POST']
+    defaults:
+        _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::deleteFinanceRecord'
+    requirements:
+        _permission: ['admin', 'super_admin']

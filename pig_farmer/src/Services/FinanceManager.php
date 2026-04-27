@@ -64,4 +64,37 @@ class FinanceManager
             'net_profit' => ($income['total_income'] ?? 0) - ($expense['total_expense'] ?? 0)
         ];
     }
+
+    /**
+     * @throws DatabaseException
+     */
+    public function updateFinanceRecord(int $id, array $data): bool
+    {
+        $query = "UPDATE pig_farmer_finances SET transaction_date = ?, type = ?, category = ?, amount = ?, description = ?, pig_id = ? WHERE id = ?";
+        return $this->db->query($query, ...$i=[
+            $data["transaction_date"],
+            $data["type"],
+            $data["category"],
+            $data["amount"],
+            $data["description"],
+            $data["pig_id"],
+            $id
+        ])->rowCount() > 0;
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public function deleteFinanceRecord(int $id): bool
+    {
+        return $this->db->query("DELETE FROM pig_farmer_finances WHERE id = ?", ...$i=[$id]);
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public function getFinanceById(int $id): ?array
+    {
+        return $this->db->fetch("SELECT * FROM pig_farmer_finances WHERE id = ?", ...$i=[$id]);
+    }
 }

@@ -47,7 +47,8 @@ class PigFarmerController extends ControllerBase
     public function dashboard(Request $request, string $route_name, array $options): Response
     {
         $pigs = $this->pigManager->getAllPigs();
-        return $this->renderTwig("@pig_farmer/admin/dashboard.twig", ["pigs" => $pigs]);
+        $financeSummary = $this->financeManager->getFinancialSummary();
+        return $this->renderTwig("@pig_farmer/admin/dashboard.twig", ["pigs" => $pigs, "financeSummary" => $financeSummary]);
     }
 
     public function home(Request $request, string $route_name, array $options): Response
@@ -250,4 +251,42 @@ class PigFarmerController extends ControllerBase
         $pigs = $this->pigManager->getAllPigs();
         return $this->renderTwig("@pig_farmer/admin/finances/add.twig", ["pigs" => $pigs]);
     }
+
+    /**
+     * @throws DatabaseException
+     */
+    public function editFinanceRecord(Request $request, string $route_name, array $options): Response
+    {
+        $id = $request->query->get('id');
+        $finance = $this->financeManager->getFinanceById($id);
+        if (!$finance) {
+            return $this->createNotFoundException("pig_farmer.admin_finances");
+        }
+
+        if ($request->isMethod("POST")) {
+            $data = $request->request->all();
+            $data["pig_id"] = $data["pig_id"] === "" ? null : (int)$data["pig_id"];
+            if ($this->financeManager->updateFinanceRecord($id, $data)) {
+                return new RedirectResponse($this->generateUrl("pig_farmer.admin_finances"));
+            }
+        }
+        $pigs = $this->pigManager->getAllPigs();
+        return $this->renderTwig("@pig_farmer/admin/finances/edit.twig", ["finance" => $finance, "pigs" => $pigs]);
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public function deleteFinanceRecord(Request $request, string $route_name, array $options): Response
+    {
+        $id = $request->query->get('id');
+        if ($request->isMethod("POST")) {
+            if ($this->financeManager->deleteFinanceRecord($id)) {
+                return new RedirectResponse($this->generateUrl("pig_farmer.admin_finances"));
+            }
+        }
+        return new RedirectResponse($this->generateUrl("pig_farmer.admin_finances"));
+    }
+
+
 }
