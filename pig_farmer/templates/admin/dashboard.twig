@@ -10,9 +10,9 @@
 
            <h2>Financial Summary</h2>
            <div class="financial-summary">
-               <p><strong>Total Income:</strong> ${{ financeSummary.total_income|number_format(2, ".", ",") }}</p>
-               <p><strong>Total Expense:</strong> ${{ financeSummary.total_expense|number_format(2, ".", ",") }}</p>
-               <p><strong>Net Profit:</strong> ${{ financeSummary.net_profit|number_format(2, ".", ",") }}</p>
+               <p><strong>Total Income:</strong> {{ financeSummary.total_income|number_format(2, ".", ",") }} mwk</p>
+               <p><strong>Total Expense:</strong> {{ financeSummary.total_expense|number_format(2, ".", ",") }} mwk</p>
+               <p><strong>Net Profit:</strong> {{ financeSummary.net_profit|number_format(2, ".", ",") }} mwk</p>
                <p><a href="{{ url("pig_farmer.admin_finances") }}" class="button">View All Finances</a></p>
            </div>
 

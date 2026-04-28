@@ -34,7 +34,7 @@
                             <td>{{ record.transaction_date }}</td>
                             <td>{{ record.type }}</td>
                             <td>{{ record.category }}</td>
-                            <td>${{ record.amount|number_format(2, ".", ",") }}</td>
+                            <td>{{ record.amount|number_format(2, ".", ",") }} mwk</td>
                             <td>{{ record.description }}</td>
                             <td>
                                 {% if record.pig_id %}
