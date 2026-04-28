@@ -87,7 +87,7 @@ class FinanceManager
      */
     public function deleteFinanceRecord(int $id): bool
     {
-        return $this->db->query("DELETE FROM pig_farmer_finances WHERE id = ?", ...$i=[$id]);
+        return $this->db->query("DELETE FROM pig_farmer_finances WHERE id = ?", ...$i=[$id])->rowCount() > 0;
     }
 
     /**
