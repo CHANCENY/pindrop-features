@@ -10,9 +10,9 @@
 
             <div class="financial-summary">
                 <h2>Summary</h2>
-                <p><strong>Total Income:</strong> ${{ financeSummary.total_income|number_format(2, ".", ",") }}</p>
-                <p><strong>Total Expense:</strong> ${{ financeSummary.total_expense|number_format(2, ".", ",") }}</p>
-                <p><strong>Net Profit:</strong> ${{ financeSummary.net_profit|number_format(2, ".", ",") }}</p>
+                <p><strong>Total Income:</strong> {{ financeSummary.total_income|number_format(2, ".", ",") }} mwk</p>
+                <p><strong>Total Expense:</strong> {{ financeSummary.total_expense|number_format(2, ".", ",") }} mwk</p>
+                <p><strong>Net Profit:</strong> {{ financeSummary.net_profit|number_format(2, ".", ",") }} mwk</p>
             </div>
 
             {% if finances is not empty %}
