@@ -1,0 +1,6 @@
+name: "Push  Notification"
+description: "Provides browser push notification functionality."
+version: 1.0.0
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"

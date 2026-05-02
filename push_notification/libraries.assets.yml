@@ -1,0 +1,6 @@
+push_notification.notify:
+  theme:
+    css:
+      /modules/push_notification/assets/push.css: {}
+    js:
+      /modules/push_notification/assets/notify.js: {}

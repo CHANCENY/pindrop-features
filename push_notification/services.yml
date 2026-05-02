@@ -1,0 +1,7 @@
+push_notification.service:
+  class: Simp\Pindrop\Modules\push_notification\src\Plugin\PushNotificationService
+  arguments:
+    - "@database"
+  
+  tags:
+    - "push_notification"

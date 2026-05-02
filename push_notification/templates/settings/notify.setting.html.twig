@@ -1,0 +1,64 @@
+<a href="{{url('push_notification.testing')}}">Test push notification</a>
+
+<div class="admin-form-group">
+    <label for="is_enabled" class="admin-form-label">Enable Notifications</label>
+    <input type="checkbox" id="is_enabled" name="is_enabled" value="1"
+        class="admin-form-input"
+        {{ is_enabled ? 'checked' : '' }}>
+    <p class="admin-form-help">Toggle push notifications on or off</p>
+</div>
+
+
+<div class="admin-form-group">
+    <label for="icon_path" class="admin-form-label">Notification Icon</label>
+
+    {% if icon_path %}
+        <div style="margin-bottom:8px;">
+            <img src="{{ icon_path }}" alt="Current icon" style="max-height:50px;">
+        </div>
+    {% endif %}
+
+    <input type="file" id="icon_path" name="icon_path" class="admin-form-input" accept="image/*">
+    <p class="admin-form-help">Upload notification icon (PNG, JPG, etc.)</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="subscribe_tcs" class="admin-form-label">Notification Icon</label>
+
+    {% if subscribe_tcs %}
+        <div style="margin-bottom:8px;">
+            <a href="{{ subscribe_tcs }}" target="_blank" style="max-height:50px;">{{ subscribe_tcs }}</a>
+        </div>
+    {% endif %}
+
+    <input type="file" id="subscribe_tcs" name="subscribe_tcs" class="admin-form-input" accept="application/pdf">
+    <p class="admin-form-help">Upload subscribe terms and conditions (PDF, etc.)</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="title" class="admin-form-label">Title</label>
+    <input type="text" id="title" name="title" value="{{ title }}" class="admin-form-input">
+    <p class="admin-form-help">Default notification title</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="url" class="admin-form-label">Default URL</label>
+    <input type="text" id="url" name="url" value="{{ url }}" class="admin-form-input">
+    <p class="admin-form-help">Link to open when notification is clicked</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="push_sound" class="admin-form-label">Enable Sound</label>
+    <input type="checkbox" id="push_sound" name="push_sound" value="1"
+        class="admin-form-input"
+        {{ push_sound ? 'checked' : '' }}>
+    <p class="admin-form-help">Play sound on notification</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="vibration" class="admin-form-label">Enable Vibration</label>
+    <input type="checkbox" id="vibration" name="vibration" value="1"
+        class="admin-form-input"
+        {{ vibration ? 'checked' : '' }}>
+    <p class="admin-form-help">Enable vibration for supported devices</p>
+</div>

@@ -1,0 +1,3 @@
+settings:
+  name: Push Notification Settings
+  class: Simp\Pindrop\Modules\push_notification\src\Setting\PushNotificationSetting

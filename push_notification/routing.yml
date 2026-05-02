@@ -1,0 +1,31 @@
+push_notification.token:
+  path: '/push/notifiction/vapid/token'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\push_notification\src\Controller\PushNotificationController::tokenGenerator'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+  
+push_notification.user.setting.save:
+  path: '/push/notifiction/settings/user'
+  methods: ['PUT', 'POST', 'GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\push_notification\src\Controller\PushNotificationController::saveEnabledBrowser'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+push_notification.settings:
+  path: '/push/notifiction/settings/configurations'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\push_notification\src\Controller\PushNotificationController::collectConfiguration'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+
+push_notification.testing:
+  path: '/push/notifiction/testing'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\push_notification\src\Controller\PushNotificationController::testing'
+  requirements:
+    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
