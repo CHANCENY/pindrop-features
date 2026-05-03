@@ -150,6 +150,27 @@ class PigFarmerController extends ControllerBase
         return $this->renderTwig("@pig_farmer/admin/health_records/add.twig", ["pig" => $pig]);
     }
 
+    public function addHealthRecords(Request $request, string $route_name, array $options): Response
+    {
+        $pigs = $this->pigManager->getAllPigs();
+        $pigs = array_filter($pigs, function ($pig) {
+            return $pig['status'] === 'Active';
+        });
+
+        if ($request->isMethod('POST')) {
+            $data = $request->request->all();
+            foreach ($pigs as $pig) {
+                $data['pig_id'] = $pig;
+                if ($this->healthRecordManager->addHealthRecord($data)) {
+                    Message::info('Health record created');
+                }
+            }
+        }
+
+        return $this->renderTwig("@pig_farmer/admin/health_records/add_bulk.twig",
+         ['pigs'=> $pigs]);
+    }
+
     /**
      * @throws DatabaseException
      */

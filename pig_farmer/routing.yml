@@ -77,6 +77,16 @@ pig_farmer.admin_health_record_add:
     requirements: 
         _permission: ['admin', 'super_admin']
 
+pig_farmer.admin_health_record_adds:
+    path: 
+        '/admin/pig-farmer/health-records/add'
+    methods: 
+        ['GET', 'POST']
+    defaults: 
+        _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::addHealthRecords'
+    requirements: 
+        _permission: ['admin', 'super_admin']
+
 pig_farmer.admin_feeding_logs:
     path: 
         '/admin/pig-farmer/feeding-logs/[pigId:int]'
