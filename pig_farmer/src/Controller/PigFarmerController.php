@@ -160,7 +160,7 @@ class PigFarmerController extends ControllerBase
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
             foreach ($pigs as $pig) {
-                $data['pig_id'] = $pig;
+                $data['pig_id'] = $pig['id'];
                 if ($this->healthRecordManager->addHealthRecord($data)) {
                     Message::info('Health record created');
                 }
