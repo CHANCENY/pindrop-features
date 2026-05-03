@@ -18,16 +18,7 @@
 
                <label for="notes">Notes:</label>
                <textarea id="notes" name="notes"></textarea>
-
-                <label for="pigs">Pigs:</label>
-               <select id="pigs" name="pigs[]" multiple>
-                  
-                  {% for pig in pigs %}
-                  <option>{{{ pig.tag_number }}</option>
-                  {% endfor %}
-               </select>
-
-
+               
                <button type="submit">Add Health Record</button>
            </form>
            <p><a href="{{ url("pig_farmer.admin_health_records", {pigId: pig.id}) }}">Back to Health Records</a></p>
