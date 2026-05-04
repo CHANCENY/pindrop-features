@@ -15,7 +15,7 @@ class PushNotificationService
     {
         $this->current_user = \getAppContainer()->get('current_user');
         if (!$this->database_service->tableExists('push_notification_user_allowed')){
-            throw new \Exception('Push notification settings store not found',230);
+           // throw new \Exception('Push notification settings store not found',230);
         }
     }
 
