@@ -309,5 +309,16 @@ class PigFarmerController extends ControllerBase
         return new RedirectResponse($this->generateUrl("pig_farmer.admin_finances"));
     }
 
+    public function analytics(Request $request, string $route_name, array $options): Response
+    {
+        $feedingData = $this->feedingLogManager->getFeedingDataForChart();
+        $financeData = $this->financeManager->getFinanceDataForChart();
+        
+        return $this->renderTwig("@pig_farmer/admin/analytics.twig", [
+            "feedingData" => $feedingData,
+            "financeData" => $financeData
+        ]);
+    }
+
 
 }

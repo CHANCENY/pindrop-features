@@ -14,6 +14,7 @@
                <p><strong>Total Expense:</strong> {{ financeSummary.total_expense|number_format(2, ".", ",") }} mwk</p>
                <p><strong>Net Profit:</strong> {{ financeSummary.net_profit|number_format(2, ".", ",") }} mwk</p>
                <p><a href="{{ url("pig_farmer.admin_finances") }}" class="button">View All Finances</a></p>
+                <p><a href="{{ url("pig_farmer.admin_analytics") }}" class="button">Analytics</a></p>
            </div>
 
            <h2>Recent Pigs</h2>

@@ -97,4 +97,17 @@ class FinanceManager
     {
         return $this->db->fetch("SELECT * FROM pig_farmer_finances WHERE id = ?", ...$i=[$id]);
     }
+
+     public function getFinanceDataForChart(): array
+    {
+        return $this->db->fetchAll("
+            SELECT transaction_date, 
+                   SUM(CASE WHEN type = 'Income' THEN amount ELSE 0 END) as income,
+                   SUM(CASE WHEN type = 'Expense' THEN amount ELSE 0 END) as expense
+            FROM pig_farmer_finances 
+            GROUP BY transaction_date 
+            ORDER BY transaction_date ASC 
+            LIMIT 30
+        ");
+    }
 }

@@ -156,3 +156,13 @@ pig_farmer.admin_finance_delete:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::deleteFinanceRecord'
     requirements:
         _permission: ['admin', 'super_admin']
+
+pig_farmer.admin_analytics:
+    path: 
+        '/admin/pig-farmer/analytics'
+    methods: 
+        ['GET']
+    defaults: 
+        _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::analytics'
+    requirements: 
+        _permission: ['admin', 'super_admin']

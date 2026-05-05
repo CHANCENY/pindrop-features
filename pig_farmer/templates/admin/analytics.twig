@@ -1,0 +1,107 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Farm Analytics{% endblock %}
+
+{% block content %}
+    <div class="farm-analytics">
+        <h1>Farm Analytics</h1>
+
+        <div class="chart-container">
+            <h2>Daily Feed Consumption</h2>
+            <canvas id="feedingChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h2>Daily Income vs. Expense</h2>
+            <canvas id="financeChart"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Feeding Chart
+        const feedingData = {{ feedingData|json_encode|raw }};
+        const feedingLabels = feedingData.map(record => record.feed_date);
+        const feedingQuantities = feedingData.map(record => record.total_quantity);
+
+        const feedingCtx = document.getElementById("feedingChart").getContext("2d");
+        new Chart(feedingCtx, {
+            type: "line",
+            data: {
+                labels: feedingLabels,
+                datasets: [{
+                    label: "Total Feed Quantity (kg)",
+                    data: feedingQuantities,
+                    borderColor: "#3182CE",
+                    backgroundColor: "rgba(49, 130, 206, 0.2)",
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Quantity (kg)"
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Date"
+                        }
+                    }
+                }
+            }
+        });
+
+        // Finance Chart
+        const financeData = {{ financeData|json_encode|raw }};
+        const financeLabels = financeData.map(record => record.transaction_date);
+        const incomeAmounts = financeData.map(record => record.income);
+        const expenseAmounts = financeData.map(record => record.expense);
+
+        const financeCtx = document.getElementById("financeChart").getContext("2d");
+        new Chart(financeCtx, {
+            type: "bar",
+            data: {
+                labels: financeLabels,
+                datasets: [
+                    {
+                        label: "Income",
+                        data: incomeAmounts,
+                        backgroundColor: "#4CAF50"
+                    },
+                    {
+                        label: "Expense",
+                        data: expenseAmounts,
+                        backgroundColor: "#F44336"
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: "Date"
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Amount ($)"
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
