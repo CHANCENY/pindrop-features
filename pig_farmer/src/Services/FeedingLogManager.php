@@ -39,11 +39,11 @@ class FeedingLogManager
      public function getFeedingDataForChart(): array
     {
         return $this->db->fetchAll("
-            SELECT feed_date, SUM(quantity) as total_quantity 
-            FROM pig_farmer_feeding_logs 
-            GROUP BY feed_date 
-            ORDER BY feed_date ASC 
-            LIMIT 30
+           SELECT feed_date, SUM(quantity) / COUNT(DISTINCT pig_id) as total_quantity
+FROM pig_farmer_feeding_logs
+GROUP BY feed_date
+ORDER BY feed_date ASC
+LIMIT 30
         ");
     }
 }
