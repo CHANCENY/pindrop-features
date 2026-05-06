@@ -1,0 +1,5 @@
+pig_farmer.global:
+  theme:
+    css:
+      /modules/admin/assets/modal.css: {}
+    js:
