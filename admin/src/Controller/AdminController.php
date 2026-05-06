@@ -15,8 +15,6 @@ use RuntimeException;
 use Shuchkin\SimpleCSV;
 use Shuchkin\SimpleXLS;
 use Shuchkin\SimpleXLSX;
-use Simp\Pindrop\Content\Storage\ContentEntityInterface;
-use Simp\Pindrop\Content\Storage\StorageEntity;
 use Simp\Pindrop\Controller\ControllerBase;
 use Simp\Pindrop\Database\DatabaseException;
 use Simp\Pindrop\Database\DatabaseService;
@@ -24,19 +22,10 @@ use Simp\Pindrop\Entity\File\File;
 use Simp\Pindrop\Entity\User\User;
 use Simp\Pindrop\Entity\User\CurrentUser;
 use Simp\Pindrop\Entity\User\UserVerification;
-use Simp\Pindrop\Events\EventsManager;
-use Simp\Pindrop\Form\FormBuilder;
-use Simp\Pindrop\Form\FormState;
 use Simp\Pindrop\Message\Message;
 use Simp\Pindrop\Modules\admin\src\Address\AddressFormatter;
-use Simp\Pindrop\Modules\admin\src\Form\ContentEntityForm;
-use Simp\Pindrop\Modules\admin\src\Plugin\Events\Events;
-use Simp\Pindrop\Modules\admin\src\Services\AutoCompleteService;
-use Simp\Pindrop\Plugin\PluginManager;
 use Simp\Pindrop\Routing\RouteManager;
-use Simp\Pindrop\Routing\RouteProvider;
 use Simp\Pindrop\Routing\Url;
-use Simp\Pindrop\Settings\Settings;
 use Simp\Pindrop\Settings\SettingsInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -44,6 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use ZipArchive;
+use CommerceGuys\Addressing\Country\CountryRepository;
 
 /**
  * Admin Controller
@@ -2350,5 +2340,21 @@ Generated: " . date('Y-m-d H:i:s') . "
     public function csrfTokenGenerator(Request $request, string $route_name, array $options): Response
     {
         return new JsonResponse(['token' => Url::generateToken($request, $_ENV['CSRF_TOKEN_SECRET'])]);
+    }
+
+    public function test(Request $request, string $route_name, array $options) {
+        return $this->renderTwig("@admin/test.twig");
+    }
+
+    public function countries(Request $request, string $route_name, array $options){
+        $countryRepository = new CountryRepository();
+        $countries = $countryRepository->getAll();
+        $countriesList = [];
+        foreach ($countries as $code=>$country) {
+            $country = $countryRepository->get($code);
+            $countriesList[$code] = $country->getName();
+
+        }
+        return new JsonResponse($countriesList);
     }
 }

@@ -275,14 +275,21 @@ admin.users.import:
     _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::import'
   requirements:
     _permission: ['admin', 'super_admin']
-commerce_store.autocomplete:
+admin.autocomplete:
   path: '/internal/autocomplete'
   methods: ['GET']
   defaults:
     _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::autocomplete'
   requirements:
     _permission:  ['user', 'moderator', 'admin', 'super_admin']
-commerce_store.csrf.token:
+admin.autocomplete.countries:
+  path: '/internal/countries'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::countries'
+  requirements:
+    _permission:  ['user', 'moderator', 'admin', 'super_admin']
+admin.csrf.token:
   path: '/internal/csrf-token/generator'
   methods: ['GET']
   defaults:
@@ -290,10 +297,42 @@ commerce_store.csrf.token:
   requirements:
     _permission:  ['user', 'moderator', 'admin', 'super_admin','guest']
 
-commerce_store.address:
+admin.address:
   path: '/internal/address/[code:string]/[name:string]'
   methods: ['GET']
   defaults:
     _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::addressFieldBuild'
+  requirements:
+    _permission:  ['user', 'moderator', 'admin', 'super_admin','guest']
+
+commerce_store.address.test:
+  path: '/admin/testing'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::test'
+  requirements:
+    _permission:  ['user', 'moderator', 'admin', 'super_admin','guest']
+
+admin.upload.chunk:
+  path: '/internal/upload/chunk'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\UploadFileController::chunkUpload'
+  requirements:
+    _permission:  ['user', 'moderator', 'admin', 'super_admin','guest']
+
+admin.upload.finished:
+  path: '/internal/upload/session/[id:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\UploadFileController::sessionFile'
+  requirements:
+    _permission:  ['user', 'moderator', 'admin', 'super_admin','guest']
+
+admin.upload.delete:
+  path: '/internal/upload/delete/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\UploadFileController::deleteFile'
   requirements:
     _permission:  ['user', 'moderator', 'admin', 'super_admin','guest']

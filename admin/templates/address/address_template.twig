@@ -3,7 +3,7 @@
         {% if countries is not empty %}
             <div class="form-item full-width">
                 <label for="countryCode">Country</label>
-                <select name="{{ section_name }}_countryCode">
+                <select name="{{ section_name }}">
                     {% for code, name in countries %}
                         <option value="{{ code }}"
                                 {% if code == countryCode %}selected{% endif %}>
