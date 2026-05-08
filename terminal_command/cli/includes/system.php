@@ -11,6 +11,7 @@ return [
     'system:latest-check' => 'checkLatestVersion',
     'system:version'      => 'checkSystemVersion',
     'system:download'     => 'downloadVersion',
+     'system:local-update' => 'localUpdate',
 ];
 
 function systemHelp(\CLIPrinter $printer, ...$values){
@@ -78,5 +79,19 @@ function downloadVersion(\CLIPrinter $printer, ...$values)
     } else {
         $printer->printLine("Failed to download version $version. Please check the version and try again.", RED);
 
+    }
+}
+
+function localUpdate(\CLIPrinter $printer, ...$values)
+{
+    $version = $values[1][2] ?? null;
+    $printer->printLine("Updating system to version $version...");
+    if (!empty($version) && str_starts_with($version, "v") && systemObject($printer)->updateSystem($version)) {
+        $current_version = systemObject($printer)->checkSystemVersion();
+        systemObject($printer)->changeVersion($version);
+        $printer->printLine("System updated from version $current_version to version $version successfully.", GREEN);
+
+    } else {
+        $printer->printLine("Failed to update system to version $version. Please try updating manually.", RED);
     }
 }
