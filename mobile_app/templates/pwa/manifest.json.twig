@@ -1,0 +1,107 @@
+{# ============================================================
+ # pwa/manifest.json.twig
+ # Web App Manifest — served as application/manifest+json
+ #
+ # Route this file through PHP so Twig can render it with
+ # values from mobile.settings.yml
+ #
+ # In your routing.yml:
+ #   pwa_manifest:
+ #     path: /pwa/manifest.json
+ #     controller: Pindrop\MobileEngine\Controller\ManifestController
+ #
+ # ManifestController sets Content-Type: application/manifest+json
+ # and renders this template.
+ #
+ # Twig globals expected:
+ #   mobile_settings  string — raw JSON from MobileSettingsService
+ #   app_name         string — site name fallback
+ # ============================================================ #}
+{%- set _ms = mobile_settings|json_decode -%}
+{%- set _pwa = _ms.pwa ?? {} -%}
+{%- set _theme = _ms.theme ?? {} -%}
+{
+  "name": {{ (_pwa.app_name ?? app_name)|json_encode|raw }},
+  "short_name": {{ (_pwa.short_name ?? app_name)|json_encode|raw }},
+  "description": {{ (_pwa.description ?? '')|json_encode|raw }},
+  "start_url": {{ (_pwa.start_url ?? '/')|json_encode|raw }},
+  "scope": {{ (_pwa.scope ?? '/')|json_encode|raw }},
+  "display": {{ (_pwa.display ?? 'standalone')|json_encode|raw }},
+  "orientation": {{ (_pwa.orientation ?? 'portrait-primary')|json_encode|raw }},
+  "theme_color": {{ (_theme.status_bar_color ?? '#6200ea')|json_encode|raw }},
+  "background_color": {{ (_theme.background_color ?? '#ffffff')|json_encode|raw }},
+  "lang": {{ (language() ?? 'en')|json_encode|raw }},
+  "dir": "ltr",
+  "categories": {{ (_pwa.categories ?? ['utilities'])|json_encode|raw }},
+
+  "icons": [
+    {%- if _pwa.icon is defined -%}
+    {
+      "src": {{ _pwa.icon|json_encode|raw }},
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+    {%- if _pwa.icons is defined and _pwa.icons is not empty -%}
+    ,
+    {%- for icon in _pwa.icons -%}
+    {
+      "src": {{ icon.src|json_encode|raw }},
+      "sizes": {{ icon.sizes|json_encode|raw }},
+      "type": {{ (icon.type ?? 'image/png')|json_encode|raw }},
+      "purpose": {{ (icon.purpose ?? 'any')|json_encode|raw }}
+    }{{ not loop.last ? ',' : '' }}
+    {%- endfor -%}
+    {%- endif -%}
+    {%- else -%}
+    {
+      "src": "/themes/mobile/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/mobile/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+    {%- endif %}
+  ],
+
+  "screenshots": [
+    {%- if _pwa.screenshots is defined and _pwa.screenshots is not empty -%}
+    {%- for shot in _pwa.screenshots -%}
+    {
+      "src": {{ shot.src|json_encode|raw }},
+      "sizes": {{ shot.sizes|json_encode|raw }},
+      "type": {{ (shot.type ?? 'image/png')|json_encode|raw }},
+      "form_factor": {{ (shot.form_factor ?? 'narrow')|json_encode|raw }},
+      "label": {{ (shot.label ?? '')|json_encode|raw }}
+    }{{ not loop.last ? ',' : '' }}
+    {%- endfor -%}
+    {%- endif %}
+  ],
+
+  "shortcuts": [
+    {%- if _pwa.shortcuts is defined and _pwa.shortcuts is not empty -%}
+    {%- for shortcut in _pwa.shortcuts -%}
+    {
+      "name": {{ shortcut.name|json_encode|raw }},
+      "short_name": {{ (shortcut.short_name ?? shortcut.name)|json_encode|raw }},
+      "description": {{ (shortcut.description ?? '')|json_encode|raw }},
+      "url": {{ shortcut.url|json_encode|raw }},
+      "icons": [
+        {
+          "src": {{ (shortcut.icon ?? _pwa.icon ?? '/themes/mobile/assets/icons/icon-192.png')|json_encode|raw }},
+          "sizes": "96x96"
+        }
+      ]
+    }{{ not loop.last ? ',' : '' }}
+    {%- endfor -%}
+    {%- endif %}
+  ],
+
+  "related_applications": [],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,1182 @@
+/* ============================================================
+   mobile.css
+   Pindrop Mobile Theme — base styles for mobile.base.html.twig
+   All values driven by CSS variables so mobile.settings.yml
+   colors flow through cleanly from engine.js injected --pd-* vars.
+   ============================================================ */
+
+/* ── 1. CSS Variables & Theming ─────────────────────────────── */
+
+:root {
+  /* Colors — engine.js overrides these from mobile.settings.yml */
+  --pd-primary:          #6200ea;
+  --pd-primary-light:    #9d46ff;
+  --pd-primary-dark:     #0a00b6;
+  --pd-accent:           #03dac6;
+  --pd-bg:               #ffffff;
+  --pd-bg-2:             #f5f5f5;
+  --pd-bg-3:             #eeeeee;
+  --pd-surface:          #ffffff;
+  --pd-text:             #111111;
+  --pd-text-secondary:   #666666;
+  --pd-text-disabled:    #aaaaaa;
+  --pd-border:           rgba(0, 0, 0, 0.08);
+  --pd-divider:          rgba(0, 0, 0, 0.06);
+  --pd-shadow:           rgba(0, 0, 0, 0.12);
+  --pd-error:            #b00020;
+  --pd-success:          #1b7a3e;
+  --pd-warning:          #e65100;
+  --pd-info:             #0d47a1;
+
+  /* Layout */
+  --pd-header-height:      56px;
+  --pd-bottom-nav-height:  60px;
+  --pd-safe-top:           env(safe-area-inset-top, 0px);
+  --pd-safe-bottom:        env(safe-area-inset-bottom, 0px);
+  --pd-safe-left:          env(safe-area-inset-left, 0px);
+  --pd-safe-right:         env(safe-area-inset-right, 0px);
+  --pd-content-padding:    16px;
+  --pd-radius:             12px;
+  --pd-radius-sm:          8px;
+  --pd-radius-lg:          20px;
+  --pd-radius-full:        9999px;
+
+  /* Typography */
+  --pd-font:        -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  --pd-font-mono:   'SF Mono', 'Fira Code', Consolas, monospace;
+  --pd-text-xs:     11px;
+  --pd-text-sm:     13px;
+  --pd-text-base:   15px;
+  --pd-text-md:     17px;
+  --pd-text-lg:     20px;
+  --pd-text-xl:     24px;
+  --pd-text-2xl:    30px;
+
+  /* Motion */
+  --pd-duration:     300ms;
+  --pd-ease:         cubic-bezier(0.4, 0, 0.2, 1);
+  --pd-ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --pd-ease-out:     cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* ── Dark mode ── */
+[data-pd-theme="dark"] {
+  --pd-bg:               #0f0f0f;
+  --pd-bg-2:             #1a1a1a;
+  --pd-bg-3:             #242424;
+  --pd-surface:          #1e1e1e;
+  --pd-text:             #f0f0f0;
+  --pd-text-secondary:   #a0a0a0;
+  --pd-text-disabled:    #555555;
+  --pd-border:           rgba(255, 255, 255, 0.08);
+  --pd-divider:          rgba(255, 255, 255, 0.06);
+  --pd-shadow:           rgba(0, 0, 0, 0.4);
+}
+
+
+/* ── 2. Reset & Base ─────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  font-size: var(--pd-text-base);
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+  height: 100%;
+}
+
+body.mobile-body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--pd-bg);
+  color: var(--pd-text);
+  font-family: var(--pd-font);
+  font-size: var(--pd-text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+  overflow: hidden; /* body itself never scrolls — content area does */
+}
+
+
+/* ── 3. Mobile Header / App Bar ─────────────────────────────── */
+
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: calc(var(--pd-header-height) + var(--pd-safe-top));
+  padding-top: var(--pd-safe-top);
+  padding-inline: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(var(--pd-bg), 0.92);
+  background: color-mix(in srgb, var(--pd-bg) 92%, transparent);
+  border-bottom: 1px solid var(--pd-border);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* Back button */
+.mobile-header-back {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--pd-primary);
+  border-radius: var(--pd-radius-full);
+  transition: background var(--pd-duration) var(--pd-ease);
+  padding: 0;
+}
+.mobile-header-back:active {
+  background: var(--pd-bg-3);
+}
+
+/* Title */
+.mobile-header-title {
+  flex: 1;
+  font-size: var(--pd-text-md);
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--pd-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-inline: 4px;
+}
+
+/* Right actions */
+.mobile-header-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+/* ── 4. Content Area ─────────────────────────────────────────── */
+
+.mobile-content {
+  position: fixed;
+  top: calc(var(--pd-header-height) + var(--pd-safe-top));
+  left: var(--pd-safe-left);
+  right: var(--pd-safe-right);
+  bottom: calc(var(--pd-bottom-nav-height) + var(--pd-safe-bottom));
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  background: var(--pd-bg);
+  /* smooth scroll for anchor links */
+  scroll-behavior: smooth;
+}
+
+/* inner padding so content doesn't touch edges */
+.mobile-content > * {
+  padding-inline: var(--pd-content-padding);
+}
+
+/* when no bottom nav is present (engine disabled) */
+body:not(:has(#pd-bottom-nav)) .mobile-content {
+  bottom: var(--pd-safe-bottom);
+}
+
+
+/* ── 5. Bottom Navigation (built by engine.js) ───────────────── */
+
+#pd-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: calc(var(--pd-bottom-nav-height) + var(--pd-safe-bottom));
+  padding-bottom: var(--pd-safe-bottom);
+  padding-inline: var(--pd-safe-left) var(--pd-safe-right);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: color-mix(in srgb, var(--pd-bg) 92%, transparent);
+  border-top: 1px solid var(--pd-border);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+}
+
+.pd-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  gap: 3px;
+  color: var(--pd-text-disabled);
+  font-size: var(--pd-text-xs);
+  font-family: var(--pd-font);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--pd-duration) var(--pd-ease);
+  -webkit-user-select: none;
+  user-select: none;
+  letter-spacing: 0.2px;
+  position: relative;
+}
+
+.pd-nav-item svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--pd-duration) var(--pd-ease-spring),
+              stroke-width 0.15s var(--pd-ease);
+}
+
+.pd-nav-item.active {
+  color: var(--pd-primary);
+}
+
+.pd-nav-item.active svg {
+  transform: scale(1.15);
+  stroke-width: 2.5;
+}
+
+/* Active indicator dot */
+.pd-nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--pd-primary);
+  opacity: 0.5;
+}
+
+/* Tap ripple */
+.pd-nav-item:active svg {
+  transform: scale(0.9);
+}
+
+
+/* ── 6. Typography ───────────────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.5em;
+  font-family: var(--pd-font);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--pd-text);
+  letter-spacing: -0.3px;
+}
+
+h1 { font-size: var(--pd-text-2xl); }
+h2 { font-size: var(--pd-text-xl); }
+h3 { font-size: var(--pd-text-lg); }
+h4 { font-size: var(--pd-text-md); }
+h5 { font-size: var(--pd-text-base); }
+h6 { font-size: var(--pd-text-sm); }
+
+p {
+  margin: 0 0 1em;
+  color: var(--pd-text);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--pd-primary);
+  text-decoration: none;
+}
+a:active {
+  opacity: 0.7;
+}
+
+small {
+  font-size: var(--pd-text-sm);
+  color: var(--pd-text-secondary);
+}
+
+strong, b { font-weight: 600; }
+
+code, pre {
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-text-sm);
+  background: var(--pd-bg-2);
+  border-radius: var(--pd-radius-sm);
+}
+code { padding: 2px 6px; }
+pre  { padding: 16px; overflow-x: auto; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--pd-divider);
+  margin: 16px 0;
+}
+
+
+/* ── 7. Page Sections & Layout Helpers ───────────────────────── */
+
+/* Full-bleed section inside content */
+.mobile-section {
+  padding: 20px var(--pd-content-padding);
+}
+
+.mobile-section + .mobile-section {
+  border-top: 1px solid var(--pd-divider);
+}
+
+/* Centered hero area */
+.mobile-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px var(--pd-content-padding) 24px;
+  gap: 12px;
+}
+
+/* Page title shown inside content (below header) */
+.mobile-page-title {
+  font-size: var(--pd-text-xl);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  padding: 20px var(--pd-content-padding) 8px;
+  color: var(--pd-text);
+}
+
+/* Subtitle / caption */
+.mobile-subtitle {
+  font-size: var(--pd-text-sm);
+  color: var(--pd-text-secondary);
+  padding: 0 var(--pd-content-padding) 16px;
+}
+
+/* Row utility */
+.mobile-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Spacer */
+.mobile-spacer { flex: 1; }
+
+
+/* ── 8. Cards ────────────────────────────────────────────────── */
+
+.mobile-card {
+  background: var(--pd-surface);
+  border-radius: var(--pd-radius);
+  border: 1px solid var(--pd-border);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.mobile-card-body {
+  padding: 16px;
+}
+
+.mobile-card-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--pd-divider);
+  font-weight: 600;
+  font-size: var(--pd-text-base);
+}
+
+.mobile-card-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--pd-divider);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Tappable card */
+.mobile-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--pd-duration) var(--pd-ease);
+}
+.mobile-card-link:active {
+  background: var(--pd-bg-2);
+}
+
+
+/* ── 9. List Items (settings-style rows) ─────────────────────── */
+
+.mobile-list {
+  background: var(--pd-surface);
+  border-radius: var(--pd-radius);
+  border: 1px solid var(--pd-border);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.mobile-list-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  min-height: 52px;
+  border-bottom: 1px solid var(--pd-divider);
+  text-decoration: none;
+  color: var(--pd-text);
+  background: var(--pd-surface);
+  transition: background 0.12s var(--pd-ease);
+  cursor: pointer;
+}
+
+.mobile-list-item:last-child {
+  border-bottom: none;
+}
+
+.mobile-list-item:active {
+  background: var(--pd-bg-2);
+}
+
+.mobile-list-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--pd-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+  background: var(--pd-bg-2);
+  color: var(--pd-primary);
+}
+
+.mobile-list-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-list-item-title {
+  font-size: var(--pd-text-base);
+  font-weight: 500;
+  color: var(--pd-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-list-item-subtitle {
+  font-size: var(--pd-text-sm);
+  color: var(--pd-text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-list-item-chevron {
+  color: var(--pd-text-disabled);
+  flex-shrink: 0;
+}
+.mobile-list-item-chevron::after {
+  content: '';
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-top: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+/* List section label */
+.mobile-list-label {
+  font-size: var(--pd-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--pd-text-secondary);
+  padding: 20px 16px 6px;
+}
+
+
+/* ── 10. Buttons ─────────────────────────────────────────────── */
+
+.mobile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 24px;
+  border: none;
+  border-radius: var(--pd-radius-full);
+  font-family: var(--pd-font);
+  font-size: var(--pd-text-base);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.12s var(--pd-ease),
+              opacity 0.12s var(--pd-ease),
+              background 0.15s var(--pd-ease);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.mobile-btn:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+
+/* Primary */
+.mobile-btn-primary {
+  background: var(--pd-primary);
+  color: #fff;
+}
+.mobile-btn-primary:active {
+  background: var(--pd-primary-dark);
+}
+
+/* Secondary */
+.mobile-btn-secondary {
+  background: var(--pd-bg-2);
+  color: var(--pd-text);
+}
+
+/* Outlined */
+.mobile-btn-outline {
+  background: transparent;
+  color: var(--pd-primary);
+  border: 2px solid var(--pd-primary);
+}
+
+/* Ghost / text */
+.mobile-btn-ghost {
+  background: transparent;
+  color: var(--pd-primary);
+  padding: 0 12px;
+}
+
+/* Full width */
+.mobile-btn-block {
+  width: 100%;
+  border-radius: var(--pd-radius);
+}
+
+/* Small */
+.mobile-btn-sm {
+  height: 36px;
+  padding: 0 16px;
+  font-size: var(--pd-text-sm);
+}
+
+/* Icon-only button */
+.mobile-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--pd-text);
+  border-radius: var(--pd-radius-full);
+  transition: background 0.15s var(--pd-ease);
+  padding: 0;
+}
+.mobile-icon-btn:active {
+  background: var(--pd-bg-3);
+}
+
+/* Disabled state */
+.mobile-btn:disabled,
+.mobile-btn[aria-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+
+/* ── 11. Forms ───────────────────────────────────────────────── */
+
+.mobile-form-group {
+  margin-bottom: 16px;
+}
+
+.mobile-label {
+  display: block;
+  font-size: var(--pd-text-sm);
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+.mobile-input,
+.mobile-textarea,
+.mobile-select {
+  display: block;
+  width: 100%;
+  background: var(--pd-bg-2);
+  border: 1.5px solid transparent;
+  border-radius: var(--pd-radius);
+  padding: 12px 14px;
+  font-family: var(--pd-font);
+  font-size: var(--pd-text-base);
+  color: var(--pd-text);
+  outline: none;
+  transition: border-color 0.2s var(--pd-ease),
+              background 0.2s var(--pd-ease);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mobile-input::placeholder,
+.mobile-textarea::placeholder {
+  color: var(--pd-text-disabled);
+}
+
+.mobile-input:focus,
+.mobile-textarea:focus,
+.mobile-select:focus {
+  border-color: var(--pd-primary);
+  background: var(--pd-surface);
+}
+
+.mobile-input.error,
+.mobile-textarea.error {
+  border-color: var(--pd-error);
+}
+
+.mobile-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.mobile-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.mobile-field-error {
+  font-size: var(--pd-text-sm);
+  color: var(--pd-error);
+  margin-top: 4px;
+}
+
+/* Search input */
+.mobile-search-wrap {
+  position: relative;
+}
+.mobile-search-wrap .mobile-input {
+  padding-left: 40px;
+  border-radius: var(--pd-radius-full);
+}
+.mobile-search-wrap::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* Toggle / switch */
+.mobile-toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  flex-shrink: 0;
+}
+.mobile-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+.mobile-toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--pd-bg-3);
+  border-radius: var(--pd-radius-full);
+  cursor: pointer;
+  transition: background 0.25s var(--pd-ease);
+}
+.mobile-toggle-track::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: transform 0.25s var(--pd-ease-spring);
+}
+.mobile-toggle input:checked + .mobile-toggle-track {
+  background: var(--pd-primary);
+}
+.mobile-toggle input:checked + .mobile-toggle-track::after {
+  transform: translateX(22px);
+}
+
+/* Checkbox */
+.mobile-checkbox-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.mobile-checkbox-wrap input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--pd-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+
+/* ── 12. Flash / Alert Messages ─────────────────────────────── */
+
+.mobile-flash-messages {
+  padding: 12px var(--pd-content-padding) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-alert {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--pd-radius);
+  font-size: var(--pd-text-sm);
+  font-weight: 500;
+  animation: pdAlertIn 0.3s var(--pd-ease-spring);
+}
+@keyframes pdAlertIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mobile-alert button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 14px;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+  color: inherit;
+}
+
+.mobile-alert--success { background: #e8f5e9; color: #1b5e20; }
+.mobile-alert--error   { background: #ffebee; color: #b71c1c; }
+.mobile-alert--warning { background: #fff3e0; color: #e65100; }
+.mobile-alert--info    { background: #e3f2fd; color: #0d47a1; }
+
+[data-pd-theme="dark"] .mobile-alert--success { background: #1b3a1f; color: #a5d6a7; }
+[data-pd-theme="dark"] .mobile-alert--error   { background: #3e1010; color: #ef9a9a; }
+[data-pd-theme="dark"] .mobile-alert--warning { background: #3e2010; color: #ffcc80; }
+[data-pd-theme="dark"] .mobile-alert--info    { background: #0d1f3e; color: #90caf9; }
+
+
+/* ── 13. Badges & Tags ───────────────────────────────────────── */
+
+.mobile-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--pd-radius-full);
+  font-size: var(--pd-text-xs);
+  font-weight: 700;
+  background: var(--pd-primary);
+  color: #fff;
+}
+
+.mobile-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--pd-radius-full);
+  font-size: var(--pd-text-xs);
+  font-weight: 600;
+  background: var(--pd-bg-2);
+  color: var(--pd-text-secondary);
+  border: 1px solid var(--pd-border);
+}
+.mobile-tag-primary {
+  background: color-mix(in srgb, var(--pd-primary) 12%, transparent);
+  color: var(--pd-primary);
+  border-color: color-mix(in srgb, var(--pd-primary) 20%, transparent);
+}
+
+
+/* ── 14. Avatar ──────────────────────────────────────────────── */
+
+.mobile-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--pd-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--pd-text-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.mobile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mobile-avatar-sm  { width: 32px; height: 32px; font-size: var(--pd-text-xs); }
+.mobile-avatar-md  { width: 44px; height: 44px; }
+.mobile-avatar-lg  { width: 64px; height: 64px; font-size: var(--pd-text-lg); }
+.mobile-avatar-xl  { width: 88px; height: 88px; font-size: var(--pd-text-xl); }
+
+
+/* ── 15. Images & Media ──────────────────────────────────────── */
+
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mobile-img-cover {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: var(--pd-radius);
+}
+
+.mobile-img-square {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--pd-radius);
+}
+
+
+/* ── 16. Dividers & Spacing ──────────────────────────────────── */
+
+.mobile-divider {
+  height: 1px;
+  background: var(--pd-divider);
+  margin: 0;
+  border: none;
+}
+
+.mobile-divider-thick {
+  height: 8px;
+  background: var(--pd-bg-2);
+  border-top: 1px solid var(--pd-divider);
+  border-bottom: 1px solid var(--pd-divider);
+  margin: 16px 0;
+}
+
+/* Spacing utilities */
+.mt-0  { margin-top: 0; }
+.mt-1  { margin-top: 4px; }
+.mt-2  { margin-top: 8px; }
+.mt-3  { margin-top: 12px; }
+.mt-4  { margin-top: 16px; }
+.mt-6  { margin-top: 24px; }
+.mt-8  { margin-top: 32px; }
+.mb-0  { margin-bottom: 0; }
+.mb-1  { margin-bottom: 4px; }
+.mb-2  { margin-bottom: 8px; }
+.mb-3  { margin-bottom: 12px; }
+.mb-4  { margin-bottom: 16px; }
+.mb-6  { margin-bottom: 24px; }
+.mb-8  { margin-bottom: 32px; }
+.px-0  { padding-inline: 0; }
+.px-4  { padding-inline: 16px; }
+.py-4  { padding-block: 16px; }
+
+
+/* ── 17. Loading States ──────────────────────────────────────── */
+
+/* Spinner */
+.mobile-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid var(--pd-bg-3);
+  border-top-color: var(--pd-primary);
+  border-radius: 50%;
+  animation: pdSpin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.mobile-spinner-lg {
+  width: 40px;
+  height: 40px;
+  border-width: 3.5px;
+}
+@keyframes pdSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Full-page loader */
+.mobile-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+/* Skeleton — engine.js also generates these dynamically */
+.mobile-skeleton-text {
+  height: 14px;
+  background: var(--pd-bg-3);
+  border-radius: var(--pd-radius-sm);
+  margin-bottom: 10px;
+  animation: pdShimmer 1.4s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    var(--pd-bg-3) 25%,
+    var(--pd-bg-2) 50%,
+    var(--pd-bg-3) 75%
+  );
+  background-size: 200% 100%;
+}
+@keyframes pdShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+
+/* ── 18. Empty State ─────────────────────────────────────────── */
+
+.mobile-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px var(--pd-content-padding);
+  gap: 12px;
+  color: var(--pd-text-secondary);
+}
+
+.mobile-empty-icon {
+  font-size: 48px;
+  opacity: 0.4;
+  margin-bottom: 8px;
+}
+
+.mobile-empty-title {
+  font-size: var(--pd-text-lg);
+  font-weight: 600;
+  color: var(--pd-text);
+}
+
+.mobile-empty-text {
+  font-size: var(--pd-text-sm);
+  max-width: 240px;
+  line-height: 1.5;
+}
+
+
+/* ── 19. Bottom Sheet (modal drawer) ─────────────────────────── */
+
+.mobile-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  opacity: 0;
+  transition: opacity var(--pd-duration) var(--pd-ease);
+  pointer-events: none;
+}
+.mobile-sheet-backdrop.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mobile-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 301;
+  background: var(--pd-surface);
+  border-radius: var(--pd-radius-lg) var(--pd-radius-lg) 0 0;
+  padding-bottom: calc(var(--pd-safe-bottom) + 16px);
+  transform: translateY(100%);
+  transition: transform var(--pd-duration) var(--pd-ease-out);
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.mobile-sheet.open {
+  transform: translateY(0);
+}
+
+.mobile-sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--pd-bg-3);
+  margin: 12px auto 0;
+}
+
+.mobile-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--pd-divider);
+  font-weight: 600;
+  font-size: var(--pd-text-md);
+}
+
+.mobile-sheet-body {
+  padding: 16px 20px;
+}
+
+
+/* ── 20. Pull-to-Refresh Indicator (built by engine.js) ──────── */
+
+#pd-pull-indicator {
+  position: fixed;
+  top: calc(var(--pd-header-height) + var(--pd-safe-top) + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--pd-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  z-index: 199;
+  opacity: 0;
+  transition: opacity 0.2s var(--pd-ease),
+              transform 0.2s var(--pd-ease-spring);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+#pd-pull-indicator.visible {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+#pd-pull-indicator.refreshing svg {
+  animation: pdSpin 0.8s linear infinite;
+}
+
+
+/* ── 21. Progress Bar (built by engine.js) ───────────────────── */
+
+#pd-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: var(--pd-primary);
+  z-index: 9999;
+  opacity: 0;
+  transition: width 0.2s var(--pd-ease),
+              opacity 0.3s var(--pd-ease);
+  pointer-events: none;
+}
+#pd-progress.active  { opacity: 1; }
+#pd-progress.complete {
+  width: 100% !important;
+  opacity: 0;
+  transition: width 0.1s var(--pd-ease),
+              opacity 0.4s var(--pd-ease) 0.1s;
+}
+
+
+/* ── 22. Transitions (triggered by engine.js) ────────────────── */
+
+@keyframes pdSlideOutLeft {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(-28%); opacity: 0.3; }
+}
+@keyframes pdSlideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes pdSlideOutRight {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}
+@keyframes pdSlideInLeft {
+  from { transform: translateX(-28%); opacity: 0.3; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes pdFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes pdFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.pd-slide-out-left  { animation: pdSlideOutLeft  var(--pd-duration) var(--pd-ease) forwards; }
+.pd-slide-in-right  { animation: pdSlideInRight  var(--pd-duration) var(--pd-ease) forwards; }
+.pd-slide-out-right { animation: pdSlideOutRight var(--pd-duration) var(--pd-ease) forwards; }
+.pd-slide-in-left   { animation: pdSlideInLeft   var(--pd-duration) var(--pd-ease) forwards; }
+.pd-fade-out        { animation: pdFadeOut       var(--pd-duration) var(--pd-ease) forwards; }
+.pd-fade-in         { animation: pdFadeIn        var(--pd-duration) var(--pd-ease) forwards; }
+
+
+/* ── 23. Accessibility ───────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--pd-primary);
+  outline-offset: 2px;
+}
+
+/* Hide visually but keep for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

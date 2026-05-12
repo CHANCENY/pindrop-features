@@ -1,0 +1,2 @@
+mobile_app.twig.globals:
+  class: Simp\Pindrop\Modules\mobile_app\src\Plugin\Twig\MobileTwigGlobal

@@ -1,0 +1,452 @@
+{# ============================================================
+ # pages/profile.html.twig
+ # Route: /profile
+ #
+ # Global user array keys used:
+ #   id, uuid, username, email, email_verified_at,
+ #   first_name, last_name, full_name, display_name,
+ #   avatar_url, bio, phone, phone_verified_at,
+ #   timezone, language, country, date_of_birth, gender,
+ #   status, role, is_verified, verified_at,
+ #   email_notifications, sms_notifications, push_notifications,
+ #   two_factor_enabled, profile_visibility,
+ #   last_login_at, locked_until, created_at
+ #
+ # PHP variables expected:
+ #   user_content  array  — keyed tabs e.g. { posts: [...], saved: [...], liked: [...] }
+ # ============================================================ #}
+{% extends 'templates/mobile.base.html.twig' %}
+
+{% block title %}
+  {% if user %}
+    {{ user.display_name ?? user.full_name ?? user.username }} — {{ app_name }}
+  {% else %}
+    Profile — {{ app_name }}
+  {% endif %}
+{% endblock %}
+
+{% block header_title %}Profile{% endblock %}
+
+{% block header_actions %}
+  {% if user %}
+    <a href="{{ url('mobile_app.profile.edit') }}" class="mobile-icon-btn" aria-label="Edit profile">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+    </a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% if user %}
+
+    {# ── Resolve best display name from the real user array ── #}
+    {%- set _first_last = (user.first_name ~ ' ' ~ user.last_name)|trim -%}
+    {%- set display_name =
+          user.display_name is not empty ? user.display_name :
+          (user.full_name is not empty    ? user.full_name    :
+          (_first_last is not empty       ? _first_last       :
+           user.username))
+    -%}
+    {%- set avatar_initial = display_name|first|upper -%}
+
+    {# ── Profile Header ── #}
+    <div style="display:flex;flex-direction:column;align-items:center;
+                padding:28px 16px 20px;border-bottom:1px solid var(--pd-divider)">
+
+      {# Avatar #}
+      <div style="position:relative;margin-bottom:14px">
+        {% if user.avatar_url %}
+          <img
+            src="{{ user.avatar_url }}"
+            alt="{{ display_name }}"
+            class="mobile-avatar mobile-avatar-xl"
+          >
+        {% else %}
+          <div class="mobile-avatar mobile-avatar-xl" style="font-size:32px">
+            {{ avatar_initial }}
+          </div>
+        {% endif %}
+
+        {# Verified badge #}
+        {% if user.is_verified %}
+          <span
+            title="Verified account"
+            style="position:absolute;bottom:2px;right:2px;
+                   width:22px;height:22px;border-radius:50%;
+                   background:var(--pd-primary);border:2px solid var(--pd-bg);
+                   display:flex;align-items:center;justify-content:center"
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                 stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </span>
+        {% endif %}
+      </div>
+
+      {# Name #}
+      <h2 style="margin:0 0 3px;font-size:22px;font-weight:700;text-align:center">
+        {{ display_name }}
+      </h2>
+
+      {# Username #}
+      <p style="margin:0 0 6px;color:var(--pd-text-secondary);font-size:14px">
+        @{{ user.username }}
+      </p>
+
+      {# Role badge — only if not plain 'user' #}
+      {% if user.role and user.role != 'user' %}
+        <span class="mobile-tag mobile-tag-primary"
+              style="margin-bottom:8px;text-transform:capitalize">
+          {{ user.role }}
+        </span>
+      {% endif %}
+
+      {# Bio #}
+      {% if user.bio %}
+        <p style="margin:8px 0 0;text-align:center;font-size:14px;
+                  color:var(--pd-text-secondary);max-width:280px;line-height:1.5">
+          {{ user.bio }}
+        </p>
+      {% endif %}
+
+      {# Meta: country · joined · last active #}
+      <div style="display:flex;align-items:center;gap:14px;margin-top:12px;
+                  font-size:13px;color:var(--pd-text-secondary);
+                  flex-wrap:wrap;justify-content:center">
+
+        {% if user.country %}
+          <span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 style="vertical-align:middle;margin-right:3px">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            {{ user.country }}
+          </span>
+        {% endif %}
+
+        {% if user.created_at %}
+          <span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 style="vertical-align:middle;margin-right:3px">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Joined {{ user.created_at|date('M Y') }}
+          </span>
+        {% endif %}
+
+        {% if user.last_login_at %}
+          <span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 style="vertical-align:middle;margin-right:3px">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Active {{ user.last_login_at|date('d M Y') }}
+          </span>
+        {% endif %}
+
+      </div>
+
+      {# Status pills: verified, 2FA, privacy, notifications #}
+      <div style="display:flex;gap:6px;margin-top:12px;
+                  flex-wrap:wrap;justify-content:center">
+
+        {% if user.email_verified_at %}
+          <span class="mobile-tag" style="font-size:11px">✉️ Verified email</span>
+        {% endif %}
+
+        {% if user.two_factor_enabled %}
+          <span class="mobile-tag" style="font-size:11px">🔑 2FA enabled</span>
+        {% endif %}
+
+        {% if user.profile_visibility and user.profile_visibility != 'public' %}
+          <span class="mobile-tag" style="font-size:11px;text-transform:capitalize">
+            🔒 {{ user.profile_visibility }}
+          </span>
+        {% endif %}
+
+        {% if user.push_notifications %}
+          <span class="mobile-tag" style="font-size:11px">🔔 Push on</span>
+        {% endif %}
+
+      </div>
+
+      {# Stats from user_content lengths #}
+      {% if user_content is defined and user_content is not empty %}
+        <div style="display:flex;gap:32px;margin-top:16px">
+          {% for tab_key, tab_items in user_content %}
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+              <span style="font-size:20px;font-weight:700;color:var(--pd-text)">
+                {{ tab_items|length }}
+              </span>
+              <span style="font-size:12px;color:var(--pd-text-secondary);text-transform:capitalize">
+                {{ tab_key }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# Action buttons #}
+      <div style="display:flex;gap:8px;width:100%;max-width:320px;margin-top:16px">
+        <a href="{{ url('mobile_app.profile.edit') }}"
+           class="mobile-btn mobile-btn-primary mobile-btn-block"
+           style="height:40px;font-size:14px">
+          Edit Profile
+        </a>
+        <a href="{{ url('mobile_app.profile.share') }}"
+           class="mobile-btn mobile-btn-secondary"
+           style="height:40px;font-size:14px;flex-shrink:0;padding:0 18px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/>
+            <circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          Share
+        </a>
+      </div>
+
+    </div>
+
+    {# ── Account Info ── #}
+    <div style="padding:0 16px">
+
+      <p class="mobile-list-label">Account Info</p>
+      <div class="mobile-list">
+
+        {# Email #}
+        <div class="mobile-list-item" style="cursor:default">
+          <div class="mobile-list-item-icon">✉️</div>
+          <div class="mobile-list-item-body">
+            <div class="mobile-list-item-title">Email</div>
+            <div class="mobile-list-item-subtitle">
+              {{ user.email }}
+              {% if not user.email_verified_at %}
+                <span style="color:var(--pd-warning,#e65100);font-size:11px;margin-left:4px">
+                  · unverified
+                </span>
+              {% endif %}
+            </div>
+          </div>
+          {% if not user.email_verified_at %}
+            <a href="{{ url('mobile_app.user.verify_email') }}"
+               style="font-size:12px;font-weight:600;color:var(--pd-primary);
+                      flex-shrink:0;white-space:nowrap">
+              Verify
+            </a>
+          {% endif %}
+        </div>
+
+        {# Phone #}
+        {% if user.phone %}
+          <div class="mobile-list-item" style="cursor:default">
+            <div class="mobile-list-item-icon">📱</div>
+            <div class="mobile-list-item-body">
+              <div class="mobile-list-item-title">Phone</div>
+              <div class="mobile-list-item-subtitle">
+                {{ user.phone }}
+                {% if not user.phone_verified_at %}
+                  <span style="color:var(--pd-warning,#e65100);font-size:11px;margin-left:4px">
+                    · unverified
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {# Timezone #}
+        {% if user.timezone %}
+          <div class="mobile-list-item" style="cursor:default">
+            <div class="mobile-list-item-icon">🕐</div>
+            <div class="mobile-list-item-body">
+              <div class="mobile-list-item-title">Timezone</div>
+              <div class="mobile-list-item-subtitle">{{ user.timezone }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        {# Language #}
+        {% if user.language %}
+          <div class="mobile-list-item" style="cursor:default">
+            <div class="mobile-list-item-icon">🌐</div>
+            <div class="mobile-list-item-body">
+              <div class="mobile-list-item-title">Language</div>
+              <div class="mobile-list-item-subtitle">{{ user.language }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        {# Date of birth #}
+        {% if user.date_of_birth %}
+          <div class="mobile-list-item" style="cursor:default">
+            <div class="mobile-list-item-icon">🎂</div>
+            <div class="mobile-list-item-body">
+              <div class="mobile-list-item-title">Birthday</div>
+              <div class="mobile-list-item-subtitle">
+                {{ user.date_of_birth|date('d M Y') }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {# Gender #}
+        {% if user.gender %}
+          <div class="mobile-list-item" style="cursor:default">
+            <div class="mobile-list-item-icon">👤</div>
+            <div class="mobile-list-item-body">
+              <div class="mobile-list-item-title">Gender</div>
+              <div class="mobile-list-item-subtitle" style="text-transform:capitalize">
+                {{ user.gender }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {# Login attempts warning #}
+        {% if user.login_attempts > 0 %}
+          <div class="mobile-list-item" style="cursor:default">
+            <div class="mobile-list-item-icon"
+                 style="background:color-mix(in srgb,var(--pd-error) 10%,transparent)">
+              ⚠️
+            </div>
+            <div class="mobile-list-item-body">
+              <div class="mobile-list-item-title" style="color:var(--pd-error)">
+                Failed Login Attempts
+              </div>
+              <div class="mobile-list-item-subtitle">
+                {{ user.login_attempts }} recent attempt{{ user.login_attempts != 1 ? 's' : '' }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
+
+    </div>
+
+    {# ── Content Tabs ── #}
+    {% if user_content is defined and user_content is not empty %}
+
+      <div style="display:flex;border-bottom:1px solid var(--pd-divider);
+                  position:sticky;top:0;background:var(--pd-bg);z-index:10">
+        {% for tab_key, tab_items in user_content %}
+          <button
+            onclick="switchTab('{{ tab_key }}')"
+            id="tab-{{ tab_key }}"
+            class="profile-tab"
+            style="flex:1;height:44px;border:none;background:none;font-size:14px;
+                   font-weight:600;color:var(--pd-text-secondary);cursor:pointer;
+                   border-bottom:2px solid transparent;transition:all 0.2s;
+                   text-transform:capitalize"
+          >
+            {{ tab_key }}
+            <span style="font-size:12px;opacity:0.6">({{ tab_items|length }})</span>
+          </button>
+        {% endfor %}
+      </div>
+
+      {% for tab_key, tab_items in user_content %}
+        <div id="panel-{{ tab_key }}" class="profile-panel" style="display:none">
+          {% if tab_items is not empty %}
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;padding:3px">
+              {% for item in tab_items %}
+                <a href="{{ item.url }}"
+                   style="aspect-ratio:1;display:block;overflow:hidden;
+                          border-radius:4px;background:var(--pd-bg-2)">
+                  {% if item.image is defined and item.image %}
+                    <img src="{{ item.image }}" alt=""
+                         style="width:100%;height:100%;object-fit:cover;display:block">
+                  {% else %}
+                    <div style="width:100%;height:100%;display:flex;
+                                align-items:center;justify-content:center;font-size:28px">
+                      {{ item.icon|default('📄') }}
+                    </div>
+                  {% endif %}
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="mobile-empty" style="padding:40px 16px">
+              <div class="mobile-empty-icon">📭</div>
+              <div class="mobile-empty-title">Nothing here yet</div>
+              <p class="mobile-empty-text" style="text-transform:capitalize">
+                No {{ tab_key }} to show.
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+    {% endif %}
+
+    {# ── Account locked / suspended warning ── #}
+    {% if user.status and user.status != 'active' %}
+      <div class="mobile-alert mobile-alert--warning" style="margin:16px">
+        <span>
+          Your account status is <strong>{{ user.status }}</strong>.
+          {% if user.locked_until %}
+            Locked until {{ user.locked_until|date('d M Y, H:i') }}.
+          {% endif %}
+        </span>
+      </div>
+    {% endif %}
+
+  {% else %}
+
+    {# ── Guest state ── #}
+    <div class="mobile-empty" style="padding:80px 16px">
+      <div class="mobile-empty-icon">👤</div>
+      <div class="mobile-empty-title">You're not logged in</div>
+      <p class="mobile-empty-text">Sign in to view your profile and activity.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;
+                  width:100%;max-width:260px;margin-top:16px">
+        <a href="{{ url('mobile_app.user.login') }}" class="mobile-btn mobile-btn-primary mobile-btn-block">Log In</a>
+        <a href="{{ url('mobile_app.user.register') }}" class="mobile-btn mobile-btn-outline mobile-btn-block">
+          Create Account
+        </a>
+      </div>
+    </div>
+
+  {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var tabs   = document.querySelectorAll('.profile-tab');
+    var panels = document.querySelectorAll('.profile-panel');
+
+    function switchTab(name) {
+      tabs.forEach(function (t) {
+        var active = t.id === 'tab-' + name;
+        t.style.color       = active ? 'var(--pd-primary)' : 'var(--pd-text-secondary)';
+        t.style.borderColor = active ? 'var(--pd-primary)' : 'transparent';
+      });
+      panels.forEach(function (p) {
+        p.style.display = p.id === 'panel-' + name ? 'block' : 'none';
+      });
+    }
+
+    window.switchTab = switchTab;
+
+    // Activate first tab on load
+    if (tabs.length) switchTab(tabs[0].id.replace('tab-', ''));
+  })();
+</script>
+{% endblock %}

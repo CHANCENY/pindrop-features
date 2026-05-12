@@ -1,0 +1,135 @@
+{# ============================================================
+ # templates/two_factor.html.twig
+ # Route: mobile_app.settings.2fa  /mobile/settings/2fa
+ # ============================================================ #}
+{% extends "templates/mobile.base.html.twig" %}
+
+{% block title %}Two-Factor Auth — {{ app_name }}{% endblock %}
+{% block header_title %}Two-Factor Auth{% endblock %}
+
+{% block content %}
+<div style="padding:24px 16px 48px;max-width:400px;margin:0 auto">
+
+  {% set statusMessages = get_messages() %}
+  {% if statusMessages is not empty %}
+    <div style="margin-bottom:16px">
+      {% for message in statusMessages %}
+        <div class="mobile-alert mobile-alert--{{ message.type }}">
+          {{ message.text }}
+          <button onclick="this.parentElement.remove()">✕</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if user is defined and user %}
+
+    {% if user.two_factor_enabled %}
+
+      {# ── 2FA is ON ── #}
+      <div style="text-align:center;padding:24px 0 32px">
+        <div style="width:72px;height:72px;border-radius:50%;background:color-mix(in srgb,#43a047 15%,transparent);
+                    display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+               stroke="#43a047" stroke-width="2" stroke-linecap="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h2 style="margin:0 0 8px;font-size:20px;font-weight:700">2FA is Active</h2>
+        <p style="margin:0;color:var(--pd-text-secondary);font-size:14px;line-height:1.5">
+          Your account is protected with two-factor authentication.
+        </p>
+      </div>
+
+      <p class="mobile-list-label">Backup Codes</p>
+      <div class="mobile-list" style="margin-inline:0;margin-bottom:24px">
+        <a href="{{ url('mobile_app.settings.2fa') }}?action=backup_codes" class="mobile-list-item">
+          <div class="mobile-list-item-icon">🔑</div>
+          <div class="mobile-list-item-body">
+            <div class="mobile-list-item-title">View Backup Codes</div>
+            <div class="mobile-list-item-subtitle">Use these if you lose your device</div>
+          </div>
+          <div class="mobile-list-item-chevron"></div>
+        </a>
+      </div>
+
+      <form method="POST" action="{{ url('mobile_app.settings.2fa') }}">
+        <input type="hidden" name="_csrf_token" value="{{ mobile_app.__csrf_token }}">
+        <input type="hidden" name="action" value="disable">
+        <button type="submit"
+                class="mobile-btn mobile-btn-block"
+                style="border:1.5px solid var(--pd-error);color:var(--pd-error);
+                       background:none;height:48px;border-radius:var(--pd-radius)"
+                onclick="return confirm('Disable two-factor authentication? This will make your account less secure.')">
+          Disable Two-Factor Auth
+        </button>
+      </form>
+
+    {% else %}
+
+      {# ── 2FA is OFF — setup flow ── #}
+      <div style="text-align:center;padding:24px 0 28px">
+        <div style="width:72px;height:72px;border-radius:50%;
+                    background:color-mix(in srgb,var(--pd-primary) 12%,transparent);
+                    display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+               stroke="var(--pd-primary)" stroke-width="2" stroke-linecap="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h2 style="margin:0 0 8px;font-size:20px;font-weight:700">Add Extra Security</h2>
+        <p style="margin:0;color:var(--pd-text-secondary);font-size:14px;line-height:1.5;max-width:280px;margin-inline:auto">
+          Two-factor authentication adds a second layer of protection to your account.
+        </p>
+      </div>
+
+      {% if qr_code is defined and qr_code %}
+        {# Step 2: scan QR #}
+        <p class="mobile-list-label" style="margin-bottom:8px">Step 1 — Scan with your authenticator app</p>
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="display:inline-block;padding:16px;background:#fff;
+                      border-radius:var(--pd-radius);box-shadow:0 2px 12px rgba(0,0,0,0.08)">
+            <img src="{{ qr_code }}" alt="QR Code" style="width:180px;height:180px;display:block">
+          </div>
+          {% if secret is defined %}
+            <p style="margin:12px 0 0;font-size:12px;color:var(--pd-text-secondary)">
+              Manual code: <code style="font-size:13px;color:var(--pd-text)">{{ secret }}</code>
+            </p>
+          {% endif %}
+        </div>
+
+        <p class="mobile-list-label" style="margin-bottom:8px">Step 2 — Enter the 6-digit code</p>
+        <form method="POST" action="{{ url('mobile_app.settings.2fa') }}">
+          <input type="hidden" name="_csrf_token" value="{{ mobile_app.__csrf_token }}">
+          <input type="hidden" name="action" value="verify">
+          <input type="hidden" name="secret" value="{{ secret }}">
+          <div class="mobile-form-group">
+            <input type="text" name="code" class="mobile-input"
+                   placeholder="000000" maxlength="6" inputmode="numeric"
+                   pattern="[0-9]{6}" autocomplete="one-time-code"
+                   style="text-align:center;font-size:24px;letter-spacing:8px"
+                   autofocus>
+          </div>
+          <button type="submit" class="mobile-btn mobile-btn-primary mobile-btn-block">
+            Verify & Enable
+          </button>
+        </form>
+
+      {% else %}
+        {# Step 1: initiate setup #}
+        <form method="POST" action="{{ url('mobile_app.settings.2fa') }}">
+          <input type="hidden" name="_csrf_token" value="{{ mobile_app.__csrf_token }}">
+          <input type="hidden" name="action" value="setup">
+          <button type="submit" class="mobile-btn mobile-btn-primary mobile-btn-block">
+            Set Up Two-Factor Auth
+          </button>
+        </form>
+      {% endif %}
+
+    {% endif %}
+
+  {% endif %}
+
+</div>
+{% endblock %}
