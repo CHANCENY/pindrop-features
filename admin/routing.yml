@@ -222,6 +222,20 @@ user.login:
     _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::login'
   requirements: {}
 
+admin.twofactor:
+  path: '/auth/2fa/authorize'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::twoFactorAuthorize'
+  requirements: {}
+
+admin.user.twofactor:
+  path: '/auth/2fa/enable'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\admin\src\Controller\AdminController::twoFactorEnable'
+  requirements: {}
+
 user.logout:
   path: '/user/logout'
   methods: ['GET','POST']

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Simp\Pindrop\Modules\admin\src\Controller;
 
+use CommerceGuys\Addressing\Country\CountryRepository;
 use DateInterval;
 use DateTime;
 use DI\DependencyException;
@@ -19,21 +20,28 @@ use Simp\Pindrop\Controller\ControllerBase;
 use Simp\Pindrop\Database\DatabaseException;
 use Simp\Pindrop\Database\DatabaseService;
 use Simp\Pindrop\Entity\File\File;
-use Simp\Pindrop\Entity\User\User;
 use Simp\Pindrop\Entity\User\CurrentUser;
+use Simp\Pindrop\Entity\User\User;
 use Simp\Pindrop\Entity\User\UserVerification;
+use Simp\Pindrop\Events\SystemEvents\Events;
+use Simp\Pindrop\FactorAuthentication\TwoFactorAuthentication;
+use Simp\Pindrop\FactorAuthentication\TwoFactorInterface;
+use Simp\Pindrop\FactorAuthentication\TwoFactorManager;
+use Simp\Pindrop\Mail\MailManager;
 use Simp\Pindrop\Message\Message;
 use Simp\Pindrop\Modules\admin\src\Address\AddressFormatter;
+use Simp\Pindrop\Modules\admin\src\Plugin\TwoFactorSettings;
 use Simp\Pindrop\Routing\RouteManager;
 use Simp\Pindrop\Routing\Url;
+use Simp\Pindrop\Session\SessionStorage;
+use Simp\Pindrop\Settings\Settings;
 use Simp\Pindrop\Settings\SettingsInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use ZipArchive;
-use CommerceGuys\Addressing\Country\CountryRepository;
 
 /**
  * Admin Controller
@@ -43,7 +51,7 @@ use CommerceGuys\Addressing\Country\CountryRepository;
 class AdminController extends ControllerBase
 {
     private DatabaseService $database;
-    
+
     public function __construct()
     {
         $this->database = getAppContainer()->get('database');
@@ -75,13 +83,13 @@ class AdminController extends ControllerBase
                 return call_user_func_array([$controller, $method], [$request, $route_name, $options]);
             }
         }
-        
+
         return $this->renderTwig('admin/admin/home.twig', [
             'page_title' => 'Welcome',
             'is_public_page' => true
         ]);
     }
-    
+
     /**
      * Admin dashboard
      */
@@ -93,7 +101,7 @@ class AdminController extends ControllerBase
             'stats' => $this->getDashboardStats()
         ]);
     }
-    
+
     /**
      * Admin settings
      * @throws DatabaseException
@@ -132,7 +140,7 @@ class AdminController extends ControllerBase
             $site_home = trim($site_home, ')');
 
             $savable = [
-                'site.home.route' => ['site_home'=> $site_home, 'actual' => $request->request->get('site_home')],
+                'site.home.route' => ['site_home' => $site_home, 'actual' => $request->request->get('site_home')],
             ];
 
             foreach ($handlersValidated as $handler) {
@@ -141,7 +149,7 @@ class AdminController extends ControllerBase
                 }
             }
 
-            foreach ($savable as $key=>$value) {
+            foreach ($savable as $key => $value) {
                 $settings->createSetting($key, $value);
             }
             Message::info("Settings saved");
@@ -163,9 +171,9 @@ class AdminController extends ControllerBase
     {
         $page = (int) $request->query->get('page', 1);
         $limit = (int) $request->query->get('limit', 20);
-        
+
         $pagination = User::loadWithPagination($page, $limit, $this->database);
-        
+
         return $this->renderTwig('admin/users.twig', [
             'page_title' => 'Users Management',
             'users' => $pagination['users'],
@@ -181,7 +189,7 @@ class AdminController extends ControllerBase
             ]
         ]);
     }
-    
+
     /**
      * Create user form
      */
@@ -190,24 +198,24 @@ class AdminController extends ControllerBase
         if ($request->isMethod('POST')) {
             // Handle form submission
             $data = $request->request->all();
-            
+
             try {
                 // Validate required fields
                 if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
                     throw new InvalidArgumentException('Username, email, and password are required');
                 }
-                
+
                 // Check if user already exists
                 $existingUser = User::loadByUsername($data['username'], $this->database);
                 if ($existingUser) {
                     throw new InvalidArgumentException('Username already exists');
                 }
-                
+
                 $existingEmail = User::loadByEmail($data['email'], $this->database);
                 if ($existingEmail) {
                     throw new InvalidArgumentException('Email already exists');
                 }
-                
+
                 // Create new user
                 $user = new User([], $this->database);
                 $user->setUsername($data['username']);
@@ -216,13 +224,13 @@ class AdminController extends ControllerBase
                 $user->setRole($data['role'] ?? 'user');
                 $user->setStatus($data['status'] ?? 'active');
                 $user->setCreatedAt(new DateTime());
-                
+
                 if ($user->save()) {
                     return $this->redirect('/admin/users');
                 } else {
                     throw new RuntimeException('Failed to create user');
                 }
-                
+
             } catch (Exception $e) {
                 return $this->renderTwig('admin/users/create.twig', [
                     'page_title' => 'Create User',
@@ -231,7 +239,7 @@ class AdminController extends ControllerBase
                 ]);
             }
         }
-        
+
         return $this->renderTwig('admin/users/create.twig', [
             'page_title' => 'Create User',
             'roles' => [
@@ -248,7 +256,7 @@ class AdminController extends ControllerBase
             ]
         ]);
     }
-    
+
     /**
      * Edit user form
      */
@@ -256,42 +264,42 @@ class AdminController extends ControllerBase
     {
         $user_id = $request->query->get('user_id');
         $user = User::loadById($user_id, $this->database);
-        
+
         if (!$user) {
             return $this->redirect('/admin/users');
         }
-        
+
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
-            
+
             try {
                 // Update user fields
                 if (!empty($data['username'])) {
                     $user->setUsername($data['username']);
                 }
-                
+
                 if (!empty($data['email'])) {
                     $user->setEmail($data['email']);
                 }
-                
+
                 if (!empty($data['password'])) {
                     $user->setPassword($data['password']);
                 }
-                
+
                 if (isset($data['role'])) {
                     $user->setRole($data['role']);
                 }
-                
+
                 if (isset($data['status'])) {
                     $user->setStatus($data['status']);
                 }
-                
+
                 if ($user->save()) {
                     return $this->redirect('/admin/users');
                 } else {
                     throw new RuntimeException('Failed to update user');
                 }
-                
+
             } catch (Exception $e) {
                 return $this->renderTwig('admin/users/edit.twig', [
                     'page_title' => 'Edit User',
@@ -319,7 +327,7 @@ class AdminController extends ControllerBase
             ]
         ]);
     }
-    
+
     /**
      * View user details
      */
@@ -327,17 +335,17 @@ class AdminController extends ControllerBase
     {
         $user_id = $request->query->get('user_id');
         $user = User::loadById($user_id, $this->database);
-        
+
         if (!$user) {
             return $this->redirect('/admin/users');
         }
-        
+
         return $this->renderTwig('admin/users/view.twig', [
             'page_title' => 'User Details',
             'user' => $user
         ]);
     }
-    
+
     /**
      * Delete user
      */
@@ -345,11 +353,11 @@ class AdminController extends ControllerBase
     {
         $user_id = $request->query->get('user_id');
         $user = User::loadById($user_id, $this->database);
-        
+
         if (!$user) {
             return $this->redirect('/admin/users');
         }
-        
+
         if ($request->isMethod('POST')) {
             try {
                 if ($user->delete()) {
@@ -365,13 +373,13 @@ class AdminController extends ControllerBase
                 ]);
             }
         }
-        
+
         return $this->renderTwig('admin/users/delete.twig', [
             'page_title' => 'Delete User',
             'user' => $user
         ]);
     }
-    
+
     /**
      * Toggle user status
      */
@@ -379,16 +387,16 @@ class AdminController extends ControllerBase
     {
         $user_id = $request->query->get('user_id');
         $user = User::loadById($user_id, $this->database);
-        
+
         if (!$user) {
             return $this->json(['success' => false, 'message' => 'User not found']);
         }
-        
+
         try {
             // Toggle between active and inactive
             $newStatus = $user->getStatus() === User::STATUS_ACTIVE ? User::STATUS_INACTIVE : User::STATUS_ACTIVE;
             $user->setStatus($newStatus);
-            
+
             if ($user->save()) {
                 return $this->json([
                     'success' => true,
@@ -398,7 +406,7 @@ class AdminController extends ControllerBase
             } else {
                 throw new RuntimeException('Failed to update user status');
             }
-            
+
         } catch (Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -410,38 +418,38 @@ class AdminController extends ControllerBase
             // Create temporary ZIP file
             $zipFileName = 'user_import_templates_' . date('Y-m-d_H-i-s') . '.zip';
             $tempZipPath = sys_get_temp_dir() . 'AdminController.php/' . $zipFileName;
-            
+
             // Initialize ZIP archive
             $zip = new ZipArchive();
             if ($zip->open($tempZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
                 throw new Exception("Cannot create ZIP file");
             }
-            
+
             // Add template files to ZIP
             $csvTemplate = __DIR__ . "/../../templates/cs_template.csv";
             $xlsxTemplate = __DIR__ . "/../../templates/xlsx_template2.xlsx";
-            
+
             if (file_exists($csvTemplate)) {
                 $zip->addFile($csvTemplate, 'user_import_template.csv');
             }
-            
+
             if (file_exists($xlsxTemplate)) {
                 $zip->addFile($xlsxTemplate, 'user_import_template.xlsx');
             }
-            
+
             // Add README file with instructions
             $readmeContent = $this->generateImportReadme();
             $zip->addFromString('README.txt', $readmeContent);
-            
+
             // Close ZIP archive
             $zip->close();
-            
+
             // Read ZIP file content
             $zipContent = file_get_contents($tempZipPath);
-            
+
             // Clean up temporary file
             unlink($tempZipPath);
-            
+
             // Return ZIP file as download
             return new Response(
                 $zipContent,
@@ -452,20 +460,20 @@ class AdminController extends ControllerBase
                     'Content-Length' => strlen($zipContent)
                 ]
             );
-            
+
         } catch (Exception $e) {
             getAppContainer()->get('logger')->error('Failed to create import template ZIP', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return $this->json([
                 'success' => false,
                 'message' => 'Failed to generate template file: ' . $e->getMessage()
             ]);
         }
     }
-    
+
     /**
      * Generate README content for import templates
      */
@@ -555,7 +563,7 @@ Generated: " . date('Y-m-d H:i:s') . "
 
             // Validate and analyze data
             $preview = $this->analyzeImportData($data);
-            
+
             return $this->json([
                 'success' => true,
                 'preview' => $preview
@@ -597,14 +605,14 @@ Generated: " . date('Y-m-d H:i:s') . "
 
             // Parse file
             $data = $this->parseImportFile($uploadedFile->getPathname(), $fileExtension);
-            
+
             if (empty($data)) {
                 return $this->json(['success' => false, 'message' => 'No data found in file or file is empty']);
             }
 
             // Process import
             $results = $this->processImportData($data, $sendWelcomeEmail, $requirePasswordReset, $skipDuplicates);
-            
+
             return $this->json([
                 'success' => true,
                 'results' => $results
@@ -677,7 +685,7 @@ Generated: " . date('Y-m-d H:i:s') . "
     {
         $data = [];
         $header = null;
-        
+
         if (($handle = fopen($filePath, 'r')) !== FALSE) {
             $rowIndex = 0;
             while (($row = fgetcsv($handle, 1000, ',')) !== FALSE) {
@@ -694,7 +702,7 @@ Generated: " . date('Y-m-d H:i:s') . "
             }
             fclose($handle);
         }
-        
+
         return $data;
     }
 
@@ -705,7 +713,7 @@ Generated: " . date('Y-m-d H:i:s') . "
     {
         $expectedHeaders = ['username', 'email', 'first_name', 'last_name', 'role', 'status'];
         $rowLower = array_map('strtolower', $row);
-        
+
         return count(array_intersect($expectedHeaders, $rowLower)) >= 2; // At least 2 expected headers
     }
 
@@ -722,7 +730,7 @@ Generated: " . date('Y-m-d H:i:s') . "
 
         foreach ($data as $index => $row) {
             $rowNumber = $index + 1;
-            
+
             // Convert associative array to indexed if needed
             if (isset($row['username'])) {
                 $rowData = [
@@ -747,15 +755,15 @@ Generated: " . date('Y-m-d H:i:s') . "
 
             // Validate required fields
             $validation = $this->validateUserData($rowData, $rowNumber);
-            
+
             if ($validation['valid']) {
                 $validUsers++;
-                
+
                 // Check for duplicates
                 if ($this->isDuplicateUser($rowData['username'], $rowData['email'])) {
                     $duplicates++;
                 }
-                
+
                 // Add to sample data (first 5 valid users)
                 if (count($sampleData) < 5) {
                     $sampleData[] = $rowData;
@@ -786,7 +794,7 @@ Generated: " . date('Y-m-d H:i:s') . "
 
         foreach ($data as $index => $row) {
             $rowNumber = $index + 1;
-            
+
             // Convert associative array to indexed if needed
             if (isset($row['username'])) {
                 $userData = [
@@ -923,7 +931,7 @@ Generated: " . date('Y-m-d H:i:s') . "
 
         // Create new user instance
         $user = new User([], $this->database, getAppContainer()->get('logger'));
-        
+
         // Set user data
         $user->setUsername($userData['username']);
         $user->setEmail($userData['email']);
@@ -932,7 +940,7 @@ Generated: " . date('Y-m-d H:i:s') . "
         $user->setLastName($userData['last_name']);
         $user->setRole($userData['role']);
         $user->setStatus($userData['status']);
-        
+
         // Save user to database
         if (!$user->save()) {
             throw new Exception('Failed to save user to database');
@@ -973,25 +981,25 @@ Generated: " . date('Y-m-d H:i:s') . "
     {
         $action = $request->request->get('action');
         $userIds = $request->request->get('user_ids', []);
-        
+
         if (empty($action) || empty($userIds)) {
             return $this->json(['success' => false, 'message' => 'Invalid request']);
         }
-        
+
         try {
             $successCount = 0;
             $errorCount = 0;
             $errors = [];
-            
+
             foreach ($userIds as $userId) {
                 $user = User::loadById((int) $userId, $this->database);
-                
+
                 if (!$user) {
                     $errorCount++;
                     $errors[] = "User ID {$userId} not found";
                     continue;
                 }
-                
+
                 switch ($action) {
                     case 'activate':
                         $user->setStatus(User::STATUS_ACTIVE);
@@ -1007,7 +1015,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     default:
                         throw new InvalidArgumentException('Invalid action');
                 }
-                
+
                 if ($action !== 'delete' && !$user->save()) {
                     $errorCount++;
                     $errors[] = "Failed to update user ID {$userId}";
@@ -1015,7 +1023,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     $successCount++;
                 }
             }
-            
+
             return $this->json([
                 'success' => true,
                 'message' => "Action completed: {$successCount} successful, {$errorCount} failed",
@@ -1023,12 +1031,12 @@ Generated: " . date('Y-m-d H:i:s') . "
                 'error_count' => $errorCount,
                 'errors' => $errors
             ]);
-            
+
         } catch (Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
-    
+
     /**
      * Content management
      */
@@ -1039,7 +1047,7 @@ Generated: " . date('Y-m-d H:i:s') . "
         $type = $request->query->get('type', '');
         $status = $request->query->get('status', '');
         $search = $request->query->get('search', '');
-        
+
         return $this->renderTwig('admin/content.twig', [
             'page_title' => 'Content Management',
             'content' => $this->getContentList($page, $limit, $type, $status, $search),
@@ -1063,48 +1071,48 @@ Generated: " . date('Y-m-d H:i:s') . "
             $container = getAppContainer();
             $repository = $container->get('content.repository');
             $contentTypes = $this->getContentTypes();
-            
+
             return $this->renderTwig('admin/content/create.twig', [
                 'page_title' => 'Create Content',
                 'content_types' => $contentTypes
             ]);
-            
+
         } catch (Exception $e) {
             $container->get('logger')->error('Failed to load content creation page', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return $this->redirect('/admin/content');
         }
     }
-    
+
     /**
      * Add content of specific type
      */
     public function addContent(Request $request, string $route_name, array $options): Response
     {
         $type = $request->query->get('type');
-        
+
         if (empty($type)) {
             return $this->redirect('/admin/content/create');
         }
-        
+
         try {
             $container = getAppContainer();
             $repository = $container->get('content.repository');
-            
+
             // Validate content type
             if (!$repository->has($type)) {
                 return $this->redirect('/admin/content/create');
             }
-            
+
             $contentTypeInfo = $repository->get($type);
             $className = $contentTypeInfo['class'];
 
             /**@var StorageEntity $storageEntity **/
             $storageEntity = $container->get('content.factory')->storage($type);
-           
+
             $formHtml = $storageEntity->getEntityForm();
 
             if ($request->isMethod('POST')) {
@@ -1112,17 +1120,17 @@ Generated: " . date('Y-m-d H:i:s') . "
                     // Get form data and files
                     $formData = $request->request->all();
                     $files = $request->files->all();
-                    
+
                     // Handle file uploads using FileSystem service
                     $fileSystem = $container->get('filesystem');
-                    
+
                     foreach ($files as $fieldName => $file) {
                         if ($file && $file->isValid()) {
                             // Create destination URI using public:// stream wrapper
                             $extension = $file->getClientOriginalExtension();
                             $filename = uniqid() . 'Controller' . $extension;
                             $destinationUri = 'public://content/' . date('Y/m') . '/' . $filename;
-                            
+
                             // Upload file using FileSystem service
                             $uploadResult = $fileSystem->uploadFile([
                                 'name' => $file->getClientOriginalName(),
@@ -1133,7 +1141,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                                 'unique' => true,
                                 'allowed_types' => ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'txt']
                             ]);
-                            
+
                             if ($uploadResult['success']) {
                                 // Create File entity record
                                 $fileEntity = new \Simp\Pindrop\Entity\File\File([
@@ -1149,7 +1157,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                                     'bundle' => $type,
                                     'langcode' => 'en'
                                 ], $container->get('database'), $container->get('logger'));
-                                
+
                                 if ($fileEntity->save()) {
                                     // Store file URI in form data
                                     $formData[$fieldName] = $destinationUri;
@@ -1161,13 +1169,17 @@ Generated: " . date('Y-m-d H:i:s') . "
                             }
                         }
                     }
-                    
+
                     // Set core entity properties using proper setters
-                    if (isset($formData['title'])) $storageEntity->setTitle($formData['title']);
-                    if (isset($formData['slug'])) $storageEntity->setValue('slug', $formData['slug']);
-                    if (isset($formData['content'])) $storageEntity->setContent($formData['content']);
-                    if (isset($formData['excerpt'])) $storageEntity->setValue('excerpt', $formData['excerpt']);
-                    
+                    if (isset($formData['title']))
+                        $storageEntity->setTitle($formData['title']);
+                    if (isset($formData['slug']))
+                        $storageEntity->setValue('slug', $formData['slug']);
+                    if (isset($formData['content']))
+                        $storageEntity->setContent($formData['content']);
+                    if (isset($formData['excerpt']))
+                        $storageEntity->setValue('excerpt', $formData['excerpt']);
+
                     // Set publication status
                     if (isset($formData['status'])) {
                         $storageEntity->setStatus($formData['status']);
@@ -1178,43 +1190,59 @@ Generated: " . date('Y-m-d H:i:s') . "
                             $storageEntity->setPublishedAt(new \DateTime());
                         }
                     }
-                    
+
                     // Set boolean fields
                     $storageEntity->setValue('featured', isset($formData['featured']) ? (bool) $formData['featured'] : false);
                     $storageEntity->setValue('sticky', isset($formData['sticky']) ? (bool) $formData['sticky'] : false);
                     $storageEntity->setValue('allow_comments', isset($formData['allow_comments']) ? (bool) $formData['allow_comments'] : true);
-                    
+
                     // Set metadata fields
                     $storageEntity->setValue('password', $formData['password'] ?? null);
                     $storageEntity->setValue('template', $formData['template'] ?? null);
                     $storageEntity->setValue('language', $formData['language'] ?? 'en');
-                    
+
                     // Set SEO fields
                     $storageEntity->setValue('meta_title', $formData['meta_title'] ?? null);
                     $storageEntity->setValue('meta_description', $formData['meta_description'] ?? null);
                     $storageEntity->setValue('meta_keywords', $formData['meta_keywords'] ?? null);
                     $storageEntity->setValue('canonical_url', $formData['canonical_url'] ?? null);
                     $storageEntity->setValue('redirect_url', $formData['redirect_url'] ?? null);
-                    
+
                     // Set author and timestamps
                     $storageEntity->setAuthorId($container->get('current_user')->getId());
                     $storageEntity->setCreatedAt(new \DateTime());
                     $storageEntity->setUpdatedAt(new \DateTime());
-                    
+
                     // Set dynamic fields (entity-specific fields)
                     $coreFields = [
-                        'entity_type', 'id', 'title', 'slug', 'content', 'excerpt',
-                        'status', 'is_published', 'featured', 'sticky', 'allow_comments',
-                        'password', 'template', 'language', 'meta_title', 'meta_description',
-                        'meta_keywords', 'canonical_url', 'redirect_url', 'submit'
+                        'entity_type',
+                        'id',
+                        'title',
+                        'slug',
+                        'content',
+                        'excerpt',
+                        'status',
+                        'is_published',
+                        'featured',
+                        'sticky',
+                        'allow_comments',
+                        'password',
+                        'template',
+                        'language',
+                        'meta_title',
+                        'meta_description',
+                        'meta_keywords',
+                        'canonical_url',
+                        'redirect_url',
+                        'submit'
                     ];
-                    
+
                     foreach ($formData as $key => $value) {
                         if (!in_array($key, $coreFields)) {
                             $storageEntity->setValue($key, $value);
                         }
                     }
-                    
+
                     // Save the entity
                     if ($storageEntity->save()) {
                         // Update file entities with the new entity ID
@@ -1233,7 +1261,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     } else {
                         throw new \Exception('Failed to save entity');
                     }
-                    
+
                 } catch (\Exception $e) {
                     $container->get('logger')->error('Failed to save content', [
                         'error' => $e->getMessage(),
@@ -1241,10 +1269,10 @@ Generated: " . date('Y-m-d H:i:s') . "
                         'type' => $type,
                         'data' => $request->request->all()
                     ]);
-                    
+
                     // Add error message
                     $container->get('session')->getFlashBag()->add('error', 'Failed to save ' . $type . ': ' . $e->getMessage());
-                    
+
                     // Re-throw exception to let Whoops handle it in development
                     $environment = getenv('APP_ENV') ?: 'development';
                     if ($environment !== 'production') {
@@ -1252,7 +1280,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     }
                 }
             }
-            
+
             return $this->renderTwig('admin/content/add.twig', [
                 'page_title' => 'Create ' . ucfirst($type),
                 'content_type' => ucfirst($type),
@@ -1261,14 +1289,14 @@ Generated: " . date('Y-m-d H:i:s') . "
                 'description' => $contentTypeInfo['config']['description'] ?? "",
                 'entity' => $storageEntity,
             ]);
-            
+
         } catch (\Exception $e) {
             // Re-throw exception to let Whoops handle it in development
             $environment = getenv('APP_ENV') ?: 'development';
             if ($environment !== 'production') {
                 throw $e;
             }
-            
+
             // In production, show generic error and redirect
             $container = getAppContainer();
             $container->get('session')->getFlashBag()->add('error', 'Failed to load content creation page');
@@ -1352,10 +1380,14 @@ Generated: " . date('Y-m-d H:i:s') . "
                     }
 
                     // Set core entity properties using proper setters
-                    if (isset($formData['title'])) $entity->setTitle($formData['title']);
-                    if (isset($formData['slug'])) $entity->setValue('slug', $formData['slug']);
-                    if (isset($formData['content'])) $entity->setContent($formData['content']);
-                    if (isset($formData['excerpt'])) $entity->setValue('excerpt', $formData['excerpt']);
+                    if (isset($formData['title']))
+                        $entity->setTitle($formData['title']);
+                    if (isset($formData['slug']))
+                        $entity->setValue('slug', $formData['slug']);
+                    if (isset($formData['content']))
+                        $entity->setContent($formData['content']);
+                    if (isset($formData['excerpt']))
+                        $entity->setValue('excerpt', $formData['excerpt']);
 
                     // Set publication status
                     if (isset($formData['status'])) {
@@ -1392,10 +1424,26 @@ Generated: " . date('Y-m-d H:i:s') . "
 
                     // Set dynamic fields (entity-specific fields)
                     $coreFields = [
-                        'entity_type', 'id', 'title', 'slug', 'content', 'excerpt',
-                        'status', 'is_published', 'featured', 'sticky', 'allow_comments',
-                        'password', 'template', 'language', 'meta_title', 'meta_description',
-                        'meta_keywords', 'canonical_url', 'redirect_url', 'submit'
+                        'entity_type',
+                        'id',
+                        'title',
+                        'slug',
+                        'content',
+                        'excerpt',
+                        'status',
+                        'is_published',
+                        'featured',
+                        'sticky',
+                        'allow_comments',
+                        'password',
+                        'template',
+                        'language',
+                        'meta_title',
+                        'meta_description',
+                        'meta_keywords',
+                        'canonical_url',
+                        'redirect_url',
+                        'submit'
                     ];
 
                     $fields = $entity->fieldDefinitions();
@@ -1482,7 +1530,7 @@ Generated: " . date('Y-m-d H:i:s') . "
             return $this->redirect('/admin/content');
         }
 
-        try{
+        try {
             $container = getAppContainer();
             $repository = $container->get('content.repository');
 
@@ -1497,13 +1545,13 @@ Generated: " . date('Y-m-d H:i:s') . "
                 'admin_theme' => $addAdminTheme,
 
             ]);
-        }catch (\Throwable $exception) {
+        } catch (\Throwable $exception) {
 
         }
 
         return $this->redirect('/admin/content');
     }
-    
+
     /**
      * Get dashboard statistics
      */
@@ -1516,7 +1564,7 @@ Generated: " . date('Y-m-d H:i:s') . "
             'recent_logins' => UserVerification::currentRecentsCount($this->database),
         ];
     }
-    
+
     /**
      * Get admin settings
      */
@@ -1529,7 +1577,7 @@ Generated: " . date('Y-m-d H:i:s') . "
             'debug_mode' => true
         ];
     }
-    
+
     /**
      * Get users list
      */
@@ -1537,7 +1585,7 @@ Generated: " . date('Y-m-d H:i:s') . "
     {
         try {
             $users = User::loadAll($this->database);
-            
+
             // Convert User objects to arrays for template
             $usersArray = [];
             foreach ($users as $user) {
@@ -1554,14 +1602,14 @@ Generated: " . date('Y-m-d H:i:s') . "
                     'is_admin' => $user->isAdmin()
                 ];
             }
-            
+
             return $usersArray;
         } catch (Exception $e) {
             // Return empty array if there's an error
             return [];
         }
     }
-    
+
     /**
      * Get content list
      */
@@ -1572,44 +1620,46 @@ Generated: " . date('Y-m-d H:i:s') . "
             $factory = $container->get('content.factory');
             $repository = $container->get('content.repository');
             $contentList = [];
-            
+
             // Get all registered entity types
             $allEntities = $repository->getAll();
-            
+
             foreach ($allEntities as $entityName => $entityData) {
                 $className = $entityData['class'];
-                
+
                 // Check if class exists and has the all() method
                 if (class_exists($className) && method_exists($className, 'all')) {
                     try {
                         // Build options for filtering
                         $options = ['limit' => $limit, 'page' => $page];
-                        
+
                         if ($type && strtolower($entityName) !== strtolower($type)) {
                             continue; // Skip if type doesn't match filter
                         }
-                        
+
                         // Load all entities of this type
                         $entities = $className::all($options);
-                        
+
                         foreach ($entities as $entity) {
                             // Apply status filter
                             if ($status && strtolower($entity->getStatus()) !== strtolower($status)) {
                                 continue;
                             }
-                            
+
                             // Apply search filter
                             if ($search) {
                                 $searchLower = strtolower($search);
                                 $titleLower = strtolower($entity->getTitle());
                                 $contentLower = strtolower($entity->getContent());
-                                
-                                if (strpos($titleLower, $searchLower) === false && 
-                                    strpos($contentLower, $searchLower) === false) {
+
+                                if (
+                                    strpos($titleLower, $searchLower) === false &&
+                                    strpos($contentLower, $searchLower) === false
+                                ) {
                                     continue;
                                 }
                             }
-                            
+
                             $contentList[] = [
                                 'id' => $entity->getId(),
                                 'title' => $entity->getTitle(),
@@ -1635,27 +1685,27 @@ Generated: " . date('Y-m-d H:i:s') . "
                     }
                 }
             }
-            
+
             // Sort by created_at descending
-            usort($contentList, function($a, $b) {
+            usort($contentList, function ($a, $b) {
                 return strtotime($b['created_at']) - strtotime($a['created_at']);
             });
-            
+
             // Apply pagination to the combined results
             $offset = ($page - 1) * $limit;
             return array_slice($contentList, $offset, $limit);
-            
+
         } catch (Exception $e) {
             $container->get('logger')->error('Failed to get content list', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             // Return empty array on error
             return [];
         }
     }
-    
+
     /**
      * Get content pagination data
      */
@@ -1666,20 +1716,20 @@ Generated: " . date('Y-m-d H:i:s') . "
             $factory = $container->get('content.factory');
             $repository = $container->get('content.repository');
             $totalCount = 0;
-            
+
             // Get all registered entity types and count total items
             $allEntities = $repository->getAll();
-            
+
             foreach ($allEntities as $entityName => $entityData) {
                 $className = $entityData['class'];
-                
+
                 if (class_exists($className) && method_exists($className, 'count')) {
                     try {
                         // Apply type filter
                         if ($type && strtolower($entityName) !== strtolower($type)) {
                             continue;
                         }
-                        
+
                         // Count entities of this type
                         $count = $className::count();
                         $totalCount += $count;
@@ -1692,9 +1742,9 @@ Generated: " . date('Y-m-d H:i:s') . "
                     }
                 }
             }
-            
+
             $totalPages = ceil($totalCount / $limit);
-            
+
             return [
                 'current_page' => $page,
                 'total_pages' => $totalPages,
@@ -1707,13 +1757,13 @@ Generated: " . date('Y-m-d H:i:s') . "
                 'showing_start' => ($page - 1) * $limit + 1,
                 'showing_end' => min($page * $limit, $totalCount)
             ];
-            
+
         } catch (Exception $e) {
             $container->get('logger')->error('Failed to get content pagination', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return [
                 'current_page' => $page,
                 'total_pages' => 1,
@@ -1728,7 +1778,7 @@ Generated: " . date('Y-m-d H:i:s') . "
             ];
         }
     }
-    
+
     /**
      * Get available content types from repository
      */
@@ -1739,7 +1789,7 @@ Generated: " . date('Y-m-d H:i:s') . "
             $repository = $container->get('content.repository');
             $allEntities = $repository->getAll();
             $contentTypes = [];
-            
+
             foreach ($allEntities as $entityName => $entityData) {
                 $contentTypes[] = [
                     'name' => $entityName,
@@ -1749,24 +1799,24 @@ Generated: " . date('Y-m-d H:i:s') . "
                     'category' => $entityData['config']['category'] ?? 'content'
                 ];
             }
-            
+
             // Sort by label
-            usort($contentTypes, function($a, $b) {
+            usort($contentTypes, function ($a, $b) {
                 return strcmp($a['label'], $b['label']);
             });
-            
+
             return $contentTypes;
-            
+
         } catch (Exception $e) {
             $container->get('logger')->error('Failed to get content types', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return [];
         }
     }
-    
+
     /**
      * Get current user (placeholder)
      */
@@ -1784,7 +1834,7 @@ Generated: " . date('Y-m-d H:i:s') . "
     {
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
-            
+
             try {
                 // Validate required fields
                 $requiredFields = ['username', 'email', 'password', 'password_confirm'];
@@ -1805,7 +1855,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                 }
 
                 // Check if user already exists
-                $existingUser = User::loadByEmail($data['email'],$this->database);
+                $existingUser = User::loadByEmail($data['email'], $this->database);
                 if ($existingUser) {
                     throw new InvalidArgumentException("User with this email already exists");
                 }
@@ -1869,13 +1919,13 @@ Generated: " . date('Y-m-d H:i:s') . "
     }
 
     /**
-     * User login page
+     * User login page 
      */
-    public function login(Request $request, string $route_name, array $options): Response
+    public function login(Request $request, string $route_name, array $options): Response|RedirectResponse
     {
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
-            
+
             try {
                 // Validate required fields
                 if (empty($data['email']) || empty($data['password'])) {
@@ -1883,7 +1933,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                 }
 
                 // Find user by email
-                $user = User::loadByEmail( $data['email'], $this->database);
+                $user = User::loadByEmail($data['email'], $this->database);
                 if (!$user) {
                     throw new InvalidArgumentException("Invalid credentials");
                 }
@@ -1902,6 +1952,28 @@ Generated: " . date('Y-m-d H:i:s') . "
                     throw new InvalidArgumentException("Account suspended");
                 }
 
+                $settings = new Settings($this->database);
+                $twoFactor = $settings->getSetting(new TwoFactorSettings()->settingKey());
+
+                if ($twoFactor && $twoFactor->get('is_enabled') == 1) {
+                    appEvents()->invokeEvents(Events::TWO_FACTOR_AUTHENTICATION_REQUIRED, [
+                        "user" => $user,
+                    ]);
+
+                    $provider = $twoFactor->get('two_factor_key');
+                    if ($provider) {
+                        $providerManager = new TwoFactorManager(getAppContainer()->get('plugin.manager'));
+                        $provider = $providerManager->getTwofactorAuthenticationProvider($provider);
+
+                        SessionStorage::add('two_factor_session', [
+                            'provider' => $provider->key(),
+                            'user' => $user->getId(),
+                        ]);
+
+                        return $this->redirect($provider?->redirectLink());
+                    }
+                }
+
                 // Create session
                 $sessionId = session_id();
                 $session = new CurrentUser($this->database, getAppContainer()->get('logger'));
@@ -1913,7 +1985,7 @@ Generated: " . date('Y-m-d H:i:s') . "
 
                 if ($session->create()) {
                     // Set session cookie
-                    $response = new RedirectResponse(Url::routeByName('users.view.user',['user_id' => $user->getId()]));
+                    $response = new RedirectResponse(Url::routeByName('users.view.user', ['user_id' => $user->getId()]));
                     $response->headers->setCookie(
                         new Cookie(
                             'session_id',
@@ -1980,7 +2052,7 @@ Generated: " . date('Y-m-d H:i:s') . "
 
         $response = new RedirectResponse('/user/login');
         $response->headers->clearCookie('session_id');
-        
+
         return $response;
     }
 
@@ -1991,7 +2063,7 @@ Generated: " . date('Y-m-d H:i:s') . "
     {
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
-            
+
             try {
                 if (empty($data['email'])) {
                     throw new InvalidArgumentException("Email is required");
@@ -2018,7 +2090,24 @@ Generated: " . date('Y-m-d H:i:s') . "
                 );
 
                 if ($verification) {
-                    // TODO: Send password reset email
+
+                    $mailContent = $this->renderTwig('@admin/emails/password_reset.twig', [
+                        'user' => $user->toArray(),
+                        'reset_link' => Url::routeByName('user.reset_password', ['token' => $verification->getToken()], true)
+                    ]);
+
+                    /**
+                     * @var MailManager $mailManager 
+                     * 
+                     */
+                    $mailManager = getAppContainer()->get('mail.manager');
+
+                    $mailManager->sendHtml(
+                        $user->getEmail(),
+                        'Password Reset Request',
+                        $mailContent->getContent()
+                    );
+
                     getAppContainer()->get('logger')->info('Password reset token created', [
                         'user_id' => $user->getId(),
                         'email' => $user->getEmail()
@@ -2056,11 +2145,12 @@ Generated: " . date('Y-m-d H:i:s') . "
     /**
      * Reset password page
      */
-    public function resetPassword(Request $request, string $route_name, array $options, string $token): Response
+    public function resetPassword(Request $request, string $route_name, array $options): Response
     {
         // Find verification token
+        $token = $request->query->get('token');
         $verification = UserVerification::findByToken($this->database, getAppContainer()->get('logger'), $token);
-        
+
         if (!$verification || !$verification->isValid()) {
             return $this->renderTwig('admin/auth/reset-password.twig', [
                 'page_title' => 'Reset Password',
@@ -2071,7 +2161,7 @@ Generated: " . date('Y-m-d H:i:s') . "
 
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
-            
+
             try {
                 // Validate required fields
                 $requiredFields = ['password', 'password_confirm'];
@@ -2093,11 +2183,11 @@ Generated: " . date('Y-m-d H:i:s') . "
                 }
 
                 $user->setPassword($data['password']);
-                
+
                 if ($user->save()) {
                     // Mark token as used
                     $verification->markAsUsed();
-                    
+
                     // Revoke all other sessions for security
                     CurrentUser::revokeAllUserSessions($this->database, getAppContainer()->get('logger'), $user->getId());
 
@@ -2139,11 +2229,12 @@ Generated: " . date('Y-m-d H:i:s') . "
     /**
      * Verify email
      */
-    public function verifyEmail(Request $request, string $route_name, array $options, string $token): Response
+    public function verifyEmail(Request $request, string $route_name, array $options): Response
     {
         // Find verification token
+        $token = $request->query->get('token');
         $verification = UserVerification::findByToken($this->database, getAppContainer()->get('logger'), $token);
-        
+
         if (!$verification || !$verification->isValid()) {
             return $this->renderTwig('admin/auth/verify-email.twig', [
                 'page_title' => 'Verify Email',
@@ -2168,12 +2259,12 @@ Generated: " . date('Y-m-d H:i:s') . "
             }
 
             $user->setEmailVerifiedAt(new DateTime());
-            
+
             // Activate user if status is pending
             if ($user->getStatus() === User::STATUS_PENDING) {
                 $user->setStatus(User::STATUS_ACTIVE);
             }
-            
+
             if ($user->save()) {
                 // Mark token as used
                 $verification->markAsUsed();
@@ -2214,24 +2305,24 @@ Generated: " . date('Y-m-d H:i:s') . "
         $user_id = $request->query->get('user_id');
         $container = getAppContainer();
         $currentUser = $container->get('current_user');
-        
+
         // Security check: user can only view their own profile or admin can view any
         if (!$currentUser || ($currentUser->getUser()->getId() !== $user_id && !in_array($currentUser->getUser()->getRole(), ['admin', 'super_admin']))) {
             return new RedirectResponse('/admin/login?redirect=' . urlencode($request->getRequestUri()));
         }
-        
+
         try {
             // Get user data
             $user = $container->get('user_repository')->findById($user_id);
-            
+
             if (!$user) {
                 return new RedirectResponse('/admin/users');
             }
-            
+
             // Get user's content/posts
             $contentFactory = $container->get('content.repository');
             $userContent = $contentFactory->findBy(['author_id' => $user_id], ['created_at' => 'DESC'], 10);
-            
+
             // Prepare user data for display (security-conscious)
             $userData = [
                 'id' => $user->getId(),
@@ -2242,7 +2333,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                 'updated_at' => $user->getUpdatedAt(),
                 'status' => $user->getStatus() ?? 'active',
                 'content_count' => count($userContent),
-                'recent_content' => array_map(function($content) {
+                'recent_content' => array_map(function ($content) {
                     return [
                         'id' => $content->getId(),
                         'title' => $content->getTitle(),
@@ -2253,7 +2344,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     ];
                 }, $userContent)
             ];
-            
+
             // Add additional admin-only data if current user is admin
             if (in_array($currentUser->getUser()->getRole(), ['admin', 'super_admin'])) {
                 $userData['admin_info'] = [
@@ -2263,7 +2354,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     'is_verified' => $user->isVerified() ?? false
                 ];
             }
-            
+
             return $this->renderTwig('admin/users/view_display.twig', [
                 'page_title' => 'User Profile: ' . $user->getUsername(),
                 'user' => $userData,
@@ -2271,13 +2362,13 @@ Generated: " . date('Y-m-d H:i:s') . "
                 'is_admin' => in_array($currentUser->getUser()->getRole(), ['admin', 'super_admin']),
                 'is_own_profile' => $currentUser->getUser()->getId() === $user_id
             ]);
-            
+
         } catch (\Exception $e) {
             // Log error and show user-friendly message
             if ($container->has('logger')) {
                 $container->get('logger')->error('Error viewing user profile: ' . $e->getMessage());
             }
-            
+
             return new RedirectResponse('/admin/users');
         }
     }
@@ -2301,8 +2392,8 @@ Generated: " . date('Y-m-d H:i:s') . "
 
             $configs = [
                 'source' => $source,
-                'limit'  => $limit,
-                'sort'   => $sort,
+                'limit' => $limit,
+                'sort' => $sort,
                 'sort_by' => $sort_by
             ];
 
@@ -2342,19 +2433,180 @@ Generated: " . date('Y-m-d H:i:s') . "
         return new JsonResponse(['token' => Url::generateToken($request, $_ENV['CSRF_TOKEN_SECRET'])]);
     }
 
-    public function test(Request $request, string $route_name, array $options) {
+    public function test(Request $request, string $route_name, array $options)
+    {
         return $this->renderTwig("@admin/test.twig");
     }
 
-    public function countries(Request $request, string $route_name, array $options){
+    public function countries(Request $request, string $route_name, array $options)
+    {
         $countryRepository = new CountryRepository();
         $countries = $countryRepository->getAll();
         $countriesList = [];
-        foreach ($countries as $code=>$country) {
+        foreach ($countries as $code => $country) {
             $country = $countryRepository->get($code);
             $countriesList[$code] = $country->getName();
 
         }
         return new JsonResponse($countriesList);
     }
+
+    public function twoFactorAuthorize(Request $request, string $route_name, array $options)
+    {
+        $twoFactorSession = SessionStorage::get("two_factor_session");
+
+        if (!$twoFactorSession) {
+            Message::error("Two factor provider is not provided");
+            return $this->redirect("/");
+        }
+
+        $provider = $twoFactorSession['provider'] ?? null;
+        $user = $twoFactorSession['user'] ?? null;
+
+        $providerManager = new TwoFactorManager(getAppContainer()->get('plugin.manager'));
+        $provider = $providerManager->getTwofactorAuthenticationProvider($provider);
+        $user = User::loadById($user, $this->database);
+
+        if ($request->isMethod('POST')) {
+            $data = $request->request->all();
+            if (!empty($data['otp']) && $user) {
+
+                if ($user->twoFactor()?->verifyTotp($data['otp'])) {
+                    // Create session
+                    $sessionId = session_id();
+                    $session = new CurrentUser($this->database, getAppContainer()->get('logger'));
+                    $session->setUserId($user->getId());
+                    $session->setSessionId($sessionId);
+                    $session->setIpAddress($request->getClientIp());
+                    $session->setUserAgent($request->headers->get('User-Agent'));
+                    $session->setExpiresAt((new DateTime())->add(new DateInterval('PT24H')));
+
+                    if ($session->create()) {
+                        // Set session cookie
+                        $response = new RedirectResponse(Url::routeByName('users.view.user', ['user_id' => $user->getId()]));
+                        $response->headers->setCookie(
+                            new Cookie(
+                                'session_id',
+                                $sessionId,
+                                new DateTime('+24 hours'),
+                                '/',
+                                null,
+                                true,
+                                true,
+                            )
+                        );
+                        getAppContainer()->get('logger')->info('User logged in successfully', [
+                            'user_id' => $user->getId(),
+                            'email' => $user->getEmail(),
+                            'ip' => $request->getClientIp()
+                        ]);
+
+                        return $response;
+                    }
+                }
+                
+                Message::error('Failed to login');
+                return $this->redirect(Url::routeByName("user.login"));
+            }
+        }
+
+
+
+        if (!$user->getTwoFactorEnabled()) {
+            return $this->redirect(Url::routeByName('admin.user.twofactor'));
+        }
+
+        if ($provider instanceof TwoFactorInterface && $user instanceof User) {
+            return new Response($provider->form($user)->__tostring());
+        }
+
+        return $this->renderTwig("@admin/twofactor/provider_failed.html.twig");
+    }
+
+    public function twoFactorEnable(Request $request, string $route_name, array $options)
+    {
+        $twoFactorSession = SessionStorage::get("two_factor_session");
+
+        if (!$twoFactorSession) {
+            Message::error("Two factor provider is not provided");
+            return $this->redirect("/");
+        }
+
+        $provider = $twoFactorSession['provider'] ?? null;
+        $user = $twoFactorSession['user'] ?? null;
+
+        $providerManager = new TwoFactorManager(getAppContainer()->get('plugin.manager'));
+        $provider = $providerManager->getTwofactorAuthenticationProvider($provider);
+        $user = User::loadById($user, $this->database);
+
+        /**
+         * @var TwoFactorAuthentication
+         */
+        $twoFactor = $provider->twoFactor();
+
+        if ($request->isMethod(Request::METHOD_POST)) {
+            $data = $request->request->all();
+            $otp = $data['otp'] ?? null;
+            $twoFactor->setSecret($user->getTwoFactorSecret());
+
+            if ($otp) {
+                if ($twoFactor->verifyTotp($otp)) {
+                    $user->setTwoFactorEnabled(true);
+                    $user->save();
+                    Message::info('Code varified successfully');
+
+                    // Create session
+                    $sessionId = session_id();
+                    $session = new CurrentUser($this->database, getAppContainer()->get('logger'));
+                    $session->setUserId($user->getId());
+                    $session->setSessionId($sessionId);
+                    $session->setIpAddress($request->getClientIp());
+                    $session->setUserAgent($request->headers->get('User-Agent'));
+                    $session->setExpiresAt((new DateTime())->add(new DateInterval('PT24H')));
+
+                    if ($session->create()) {
+                        // Set session cookie
+                        $response = new RedirectResponse(Url::routeByName('users.view.user', ['user_id' => $user->getId()]));
+                        $response->headers->setCookie(
+                            new Cookie(
+                                'session_id',
+                                $sessionId,
+                                new DateTime('+24 hours'),
+                                '/',
+                                null,
+                                true,
+                                true,
+                            )
+                        );
+                        getAppContainer()->get('logger')->info('User logged in successfully', [
+                            'user_id' => $user->getId(),
+                            'email' => $user->getEmail(),
+                            'ip' => $request->getClientIp()
+                        ]);
+
+                        return $response;
+                    }
+                    Message::error('Failed to login');
+                    return $this->redirect(Url::routeByName("user.login"));
+                }
+                Message::error("Failed to varify the code");
+            }
+
+        }
+
+
+        $twoFactor->setEmail($user->getEmail());
+        $twoFactor->setAccountName($user->getUsername());
+        $twoFactor->setIssuer($_ENV['APP_NAME'] ?? "Pindrocms");
+        $twoFactor->createSecret();
+        $twoFactor->generateqrCode();
+        $qrcode = $twoFactor->getQrCodeUrl();
+        $twoFactor->saveSecret();
+        return new Response($provider->userEnablingForm($user, [
+            'qr_code' => $qrcode->getDataUri(),
+            'secret_key' => $twoFactor->getSecret(),
+        ])->__tostring());
+    }
+
+
 }

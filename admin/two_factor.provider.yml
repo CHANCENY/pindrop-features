@@ -1,0 +1,2 @@
+twofactor.google.authenticator:
+  class: Simp\Pindrop\Modules\admin\src\TwoFactor\TwoFactorGoogleAuthenticator

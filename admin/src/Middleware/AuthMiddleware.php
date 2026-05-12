@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 class AuthMiddleware implements Middleware
 {
 
+
     public function __invoke(Request $request, Access $access_interface, $next)
     {
         $options = $access_interface->options;

@@ -1,3 +1,6 @@
 settings:
   name: Admin Settings
   class: Simp\Pindrop\Modules\admin\src\Plugin\AdminSettings
+two_factor:
+  name: Two Factor Settings
+  class: Simp\Pindrop\Modules\admin\src\Plugin\TwoFactorSettings

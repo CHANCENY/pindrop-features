@@ -16,7 +16,8 @@ class AdminSettings implements SettingsInterface
      */
     public function formBuild(Request $request, \Simp\Pindrop\Settings\Setting|null $setting): string
     {
-       return \getAppContainer()->get('twig')->render('@admin/settings/form.html.twig', is_null($setting) ? [] : $setting?->getValue());
+       return \getAppContainer()->get('twig')->render('@admin/settings/form.html.twig', 
+       is_null($setting) ? [] : $setting?->getValue());
     }
 
     public function savableValues(Request $request): array

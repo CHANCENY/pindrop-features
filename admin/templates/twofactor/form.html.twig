@@ -1,0 +1,18 @@
+<div class="admin-form-group">
+    <label for="two_factor_key" class="admin-form-label">Two Factor Providers</label>
+    <select id="two_factor_key" name="two_factor_key" value="{{ site_name }}" class="admin-form-input">
+     <option>...</option>
+     {% for two_factor_provider in two_factor_providers %}
+         <option
+          value="{{ two_factor_provider.key() }}" 
+          {% if two_factor_provider.key() == settings.two_factor_key %} selected {% endif %}
+         
+         >{{ two_factor_provider.getName() }}</option>
+     {% endfor %}
+    </select>
+</div>
+
+<div class="admin-form-group">
+    <label for="is_enabled" class="admin-form-label">Enable Two Factor</label>
+    <input type="checkbox" id="is_enabled" value="1" name="is_enabled" {% if settings.is_enabled == '1' %} checked {% endif %} class="admin-form-input">
+</div>

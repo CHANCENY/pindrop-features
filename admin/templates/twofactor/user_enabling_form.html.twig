@@ -1,0 +1,247 @@
+{# templates/user_enabling_form.html.twig #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enable Two-Factor Authentication</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .two-factor-enable-wrapper {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .two-factor-card {
+            width: 100%;
+            max-width: 460px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .two-factor-card h2 {
+            margin: 0 0 10px;
+            text-align: center;
+            color: #222;
+            font-size: 28px;
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .qr-wrapper {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .qr-wrapper img {
+            width: 220px;
+            max-width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 10px;
+            background: #fff;
+        }
+
+        .secret-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .secret-wrapper .label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .secret-wrapper code {
+            display: inline-block;
+            background: #f3f4f6;
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #111827;
+            word-break: break-all;
+        }
+
+        .otp-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .otp-inputs input {
+            width: 52px;
+            height: 58px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 24px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .otp-inputs input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+        }
+
+        .verify-btn {
+            width: 100%;
+            border: none;
+            background: #2563eb;
+            color: #fff;
+            height: 54px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .verify-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .footer-text {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="two-factor-enable-wrapper">
+
+    <div class="two-factor-card">
+
+        <h2>Enable 2FA</h2>
+
+        <p class="description">
+            Scan the QR code below using your authenticator app
+            and enter the verification code.
+        </p>
+
+        <div class="qr-wrapper">
+            <img src="{{ qr_code }}"
+                 alt="2FA QR Code">
+        </div>
+
+        {% if secret_key is defined %}
+            <div class="secret-wrapper">
+                <span class="label">Secret Key</span>
+                <code>{{ secret_key }}</code>
+            </div>
+        {% endif %}
+
+        <form method="POST" id="two-factor-form">
+
+           <input type="hidden" name="_csrf_token" value="{{ __csrf_token }}">
+
+            <div class="otp-inputs">
+                <input type="text" maxlength="1" inputmode="numeric" required>
+                <input type="text" maxlength="1" inputmode="numeric" required>
+                <input type="text" maxlength="1" inputmode="numeric" required>
+                <input type="text" maxlength="1" inputmode="numeric" required>
+                <input type="text" maxlength="1" inputmode="numeric" required>
+                <input type="text" maxlength="1" inputmode="numeric" required>
+            </div>
+
+            <input type="hidden" name="otp" id="otp">
+
+            <button type="submit" class="verify-btn">
+                Enable Two-Factor Authentication
+            </button>
+
+        </form>
+
+        <div class="footer-text">
+            Save your backup secret key securely.
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const inputs = document.querySelectorAll('.otp-inputs input');
+    const otpField = document.getElementById('otp');
+
+    inputs.forEach((input, index) => {
+
+        input.addEventListener('input', function () {
+
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            if (this.value && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+
+            updateOTP();
+        });
+
+        input.addEventListener('keydown', function (e) {
+
+            if (e.key === 'Backspace' && !this.value && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+
+        input.addEventListener('paste', function (e) {
+
+            e.preventDefault();
+
+            const paste = (e.clipboardData || window.clipboardData)
+                .getData('text')
+                .replace(/\D/g, '')
+                .slice(0, 6);
+
+            paste.split('').forEach((char, i) => {
+                if (inputs[i]) {
+                    inputs[i].value = char;
+                }
+            });
+
+            updateOTP();
+        });
+    });
+
+    function updateOTP() {
+        otpField.value = [...inputs]
+            .map(input => input.value)
+            .join('');
+    }
+
+    document.addEventListe
+</script>
+
+</body>
+</html>
