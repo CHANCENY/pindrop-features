@@ -8,6 +8,7 @@ use Simp\Pindrop\Events\SystemEvents\Events;
 use Simp\Pindrop\Message\Message;
 use Simp\Pindrop\Modules\mobile_app\src\Plugin\Events\Events as PluginEvents;
 use Simp\Pindrop\Theme\ThemeManager;
+use Symfony\Component\HttpFoundation\Request;
 
 class EventsSubscriber implements EventsSubscriberInterface
 {
@@ -22,16 +23,18 @@ class EventsSubscriber implements EventsSubscriberInterface
     {
         return [
             Events::PLUGIN_INSTALLED => [$this, "mobilePluginInstalled"],
-            Events::PLUGIN_UNINSTALLED => [$this,"mobilePluginUninstalled"],
-            PluginEvents::MOBILE_ACTIVATED => [$this, "mobilePluginActivated"]
+            Events::PLUGIN_UNINSTALLED => [$this, "mobilePluginUninstalled"],
+            PluginEvents::MOBILE_ACTIVATED => [$this, "mobilePluginActivated"],
+            Events::HOME_PAGE_REQUEST => [$this, "homePageRequest"],
         ];
     }
 
-    public function mobilePluginInstalled(EventEmitter $event) {
+    public function mobilePluginInstalled(EventEmitter $event)
+    {
         $admin_theme = $this->theme_manager->getTheme('admin');
         $container = getAppContainer();
         $pluginId = $event->plugin_id;
-       
+
         if ($pluginId === "mobile_app") {
 
             $filename = $container->get("CONFIG") . DIRECTORY_SEPARATOR . "/mobile.settings.yml";
@@ -60,12 +63,32 @@ class EventsSubscriber implements EventsSubscriberInterface
         }
     }
 
-    public function mobilePluginUninstalled(EventEmitter $event) {
-       $admin_theme = $this->theme_manager->getTheme('admin');
+    public function mobilePluginUninstalled(EventEmitter $event)
+    {
+        $admin_theme = $this->theme_manager->getTheme('admin');
     }
 
-    public function mobilePluginActivated(EventEmitter $event) {
+    public function mobilePluginActivated(EventEmitter $event)
+    {
+
+    }
+
+    public function homePageRequest(EventEmitter $event)
+    {
+        $request = $event->request ?? null;
+     
+        if ($request instanceof Request) {
+            if (!$this->isDesktop($request->headers->get('User-Agent', ''))) {
+                $event->homeRoute = "mobile_app.home";
+            }
+        }
         
+         return $event;
+    }
+
+    private function isDesktop(string $userAgent)
+    {
+        return !preg_match('/Mobile|Android|iPhone|iPad|Tablet|iPod/i', $userAgent);
     }
 
 }
