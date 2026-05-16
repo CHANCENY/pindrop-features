@@ -24,7 +24,6 @@ use Simp\Pindrop\Entity\User\CurrentUser;
 use Simp\Pindrop\Entity\User\User;
 use Simp\Pindrop\Entity\User\UserVerification;
 use Simp\Pindrop\Events\SystemEvents\Events;
-use Simp\Pindrop\FactorAuthentication\TwoFactorAuthentication;
 use Simp\Pindrop\FactorAuthentication\TwoFactorInterface;
 use Simp\Pindrop\FactorAuthentication\TwoFactorManager;
 use Simp\Pindrop\Mail\MailManager;
@@ -72,7 +71,15 @@ class AdminController extends ControllerBase
         // This is the public home page - accessible to anonymous users only
         // Authenticated users will be redirected by middleware
         $homeRoute = \getAppContainer()->get('site.settings')->getSetting('site.home.route')?->get('site_home') ?? "";
-
+       
+        $event = appEvents()->invokeEvents(Events::HOME_PAGE_REQUEST, [
+            'homeRoute' => $homeRoute,
+            'request'  => $request,
+        ]);
+        if (isset($event['homeRoute'])) {
+            $homeRoute = $event['homeRoute'];
+        }
+    
         /**@var RouteManager $routeProvider**/
         $homeRouteArray = RouteManager::getRoute($homeRoute);
         if (!empty($homeRouteArray)) {
