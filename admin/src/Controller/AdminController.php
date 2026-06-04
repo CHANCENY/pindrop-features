@@ -49,11 +49,11 @@ use ZipArchive;
  */
 class AdminController extends ControllerBase
 {
-    private DatabaseService $database;
+   
 
-    public function __construct()
+    public function __construct(protected DatabaseService $database)
     {
-        $this->database = getAppContainer()->get('database');
+       
         parent::__construct();
     }
 
@@ -1127,6 +1127,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     // Get form data and files
                     $formData = $request->request->all();
                     $files = $request->files->all();
+                    unset($formData['_csrf_token']); // Remove CSRF token from form data
 
                     // Handle file uploads using FileSystem service
                     $fileSystem = $container->get('filesystem');
@@ -1250,6 +1251,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                         }
                     }
 
+                
                     // Save the entity
                     if ($storageEntity->save()) {
                         // Update file entities with the new entity ID
@@ -1266,10 +1268,10 @@ Generated: " . date('Y-m-d H:i:s') . "
                         // Redirect to edit page
                         return $this->redirect("/admin/content");
                     } else {
-                        throw new \Exception('Failed to save entity');
+                        throw new Exception('Failed to save entity');
                     }
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $container->get('logger')->error('Failed to save content', [
                         'error' => $e->getMessage(),
                         'trace' => $e->getTraceAsString(),
@@ -1278,7 +1280,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     ]);
 
                     // Add error message
-                    $container->get('session')->getFlashBag()->add('error', 'Failed to save ' . $type . ': ' . $e->getMessage());
+                    Message::error('Failed to save ' . $type . ': ' . $e->getMessage());
 
                     // Re-throw exception to let Whoops handle it in development
                     $environment = getenv('APP_ENV') ?: 'development';
@@ -1306,7 +1308,7 @@ Generated: " . date('Y-m-d H:i:s') . "
 
             // In production, show generic error and redirect
             $container = getAppContainer();
-            $container->get('session')->getFlashBag()->add('error', 'Failed to load content creation page');
+            Message::error('Failed to load content creation page');
             return $this->redirect('/admin/content/create');
         }
     }
