@@ -6,10 +6,7 @@ namespace Simp\Pindrop\Modules\admin\src\Controller;
 
 use Psr\Container\ContainerInterface;
 use Simp\Pindrop\Controller\ControllerBase;
-use Simp\Pindrop\FileSystem\FileSystemService;
 use Simp\Pindrop\Modules\admin\src\Services\AdminService;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ZipArchive;

@@ -1,0 +1,61 @@
+# Admin Plugin — Database Permission Rules
+#
+# Maps permission keys (defined in user.permissions.yml) to specific
+# table + operation combinations.
+#
+# Structure:
+#   <permission_key>:
+#     tables:
+#       <table_name>:
+#         - select
+#         - insert
+#         - update
+#         - delete
+#     owned_by: admin          # which plugin owns these tables
+#     description: 'Human readable explanation'
+#
+# Rules:
+#   - A permission key here MUST also appear in user.permissions.yml
+#   - Tables listed here MUST be defined in this plugin's mysql/*.sql
+#   - Cross-plugin table access is forbidden here; use the plugin API instead
+
+db.accounts.read:
+  description: 'Read access to the accounts table.'
+  owned_by: admin
+  tables:
+    accounts:
+      - select
+
+db.accounts.write:
+  description: 'Write access to the accounts table.'
+  owned_by: admin
+  tables:
+    accounts:
+      - insert
+      - update
+
+db.accounts.delete:
+  description: 'Delete access to the accounts table.'
+  owned_by: admin
+  tables:
+    accounts:
+      - delete
+
+db.accounts.full:
+  description: 'Full access to the accounts table.'
+  owned_by: admin
+  tables:
+    accounts:
+      - select
+      - insert
+      - update
+      - delete
+
+db.system.read:
+  description: 'Read access to system-level tables managed by this plugin.'
+  owned_by: admin
+  tables:
+    site_settings:
+      - select
+    logs:
+      - select

@@ -1,142 +1,56 @@
-# Pindrop Core — Default User Permissions
-#
-# This file defines the built-in permissions for every role the system
-# ships with.  Plugin developers can extend these by placing a
-# user.permissions.yml file in their plugin root directory.
-#
-# Structure:
-#   <role_name>:
-#     <permission_key>:
-#       title: 'Human-readable name'
-#       description: 'What this permission allows.'
-#
-# Permission keys defined here are automatically available in the
-# admin permissions UI.  The system merges all plugin permission files
-# with this file at boot time (plugin permissions are additive — they
-# cannot remove core permissions).
-#
-# Supported roles: super_admin, admin, moderator, user, guest
+# Admin Plugin — User Permission Definitions
+# These permission keys are assigned to roles.
+# db.* keys here are linked to table operations via db.permissions.yml.
 
 super_admin:
-  can_access_admin_panel:
-    title: 'Can access admin panel'
-    description: 'Allow user to access the admin panel.'
-  can_administer_users:
-    title: 'Can administer users'
-    description: 'Allow user to administer other users, including creating, editing, and deleting user accounts.'
-  can_administer_permissions:
-    title: 'Can administer permissions'
-    description: 'Allow user to administer permissions, including assigning and revoking permissions for other users and managing permission groups.'
-  can_administer_content:
-    title: 'Can administer content'
-    description: 'Allow user to administer content, including creating, editing, and deleting content items.'
-  can_administer_settings:
-    title: 'Can administer settings'
-    description: 'Allow user to administer site settings, including changing site configuration and managing modules.'
-  can_administer_plugins:
-    title: 'Can administer plugins'
-    description: 'Allow user to install, enable, disable, and uninstall plugins.'
-  can_administer_themes:
-    title: 'Can administer themes'
-    description: 'Allow user to install and switch active themes.'
-  can_administer_menus:
-    title: 'Can administer menus'
-    description: 'Allow user to create, edit, and delete navigation menus and menu items.'
-  can_administer_files:
-    title: 'Can administer files'
-    description: 'Allow user to manage all uploaded files including files owned by other users.'
-  can_view_reports:
-    title: 'Can view reports'
-    description: 'Allow user to view site reports, logs, and analytics.'
-  can_bypass_content_access:
-    title: 'Can bypass content access'
-    description: 'Allow user to view and edit all content regardless of visibility or ownership.'
-  can_use_two_factor:
-    title: 'Can use two-factor authentication'
-    description: 'Allow user to enable and manage two-factor authentication for their account.'
+  db.accounts.full:
+    title: 'Full accounts database access'
+    description: 'Full select/insert/update/delete on the accounts table.'
+  db.accounts.read:
+    title: 'Read accounts'
+    description: 'Read access to the accounts table.'
+  db.system.read:
+    title: 'Read system tables'
+    description: 'Read access to site_settings and logs.'
+  can_manage_plugin_settings:
+    title: 'Can manage plugin settings'
+    description: 'Configure individual plugin settings from the admin panel.'
+  can_clear_caches:
+    title: 'Can clear caches'
+    description: 'Clear compiled DI, YAML manifest, and Twig caches.'
+  can_view_system_logs:
+    title: 'Can view system logs'
+    description: 'View and download system error and access logs.'
 
 admin:
-  can_access_admin_panel:
-    title: 'Can access admin panel'
-    description: 'Allow user to access the admin panel.'
-  can_administer_users:
-    title: 'Can administer users'
-    description: 'Allow user to administer other users, including creating, editing, and deleting user accounts.'
-  can_administer_permissions:
-    title: 'Can administer permissions'
-    description: 'Allow user to administer permissions, including assigning and revoking permissions for other users and managing permission groups.'
-  can_administer_content:
-    title: 'Can administer content'
-    description: 'Allow user to administer content, including creating, editing, and deleting content items.'
-  can_administer_settings:
-    title: 'Can administer settings'
-    description: 'Allow user to administer site settings, including changing site configuration and managing modules.'
-  can_administer_plugins:
-    title: 'Can administer plugins'
-    description: 'Allow user to install, enable, disable, and uninstall plugins.'
-  can_administer_themes:
-    title: 'Can administer themes'
-    description: 'Allow user to install and switch active themes.'
-  can_administer_menus:
-    title: 'Can administer menus'
-    description: 'Allow user to create, edit, and delete navigation menus and menu items.'
-  can_administer_files:
-    title: 'Can administer files'
-    description: 'Allow user to manage all uploaded files including files owned by other users.'
-  can_view_reports:
-    title: 'Can view reports'
-    description: 'Allow user to view site reports, logs, and analytics.'
-  can_use_two_factor:
-    title: 'Can use two-factor authentication'
-    description: 'Allow user to enable and manage two-factor authentication for their account.'
+  db.accounts.full:
+    title: 'Full accounts database access'
+    description: 'Full select/insert/update/delete on the accounts table.'
+  db.accounts.read:
+    title: 'Read accounts'
+    description: 'Read access to the accounts table.'
+  db.system.read:
+    title: 'Read system tables'
+    description: 'Read access to site_settings and logs.'
+  can_manage_plugin_settings:
+    title: 'Can manage plugin settings'
+    description: 'Configure individual plugin settings from the admin panel.'
+  can_clear_caches:
+    title: 'Can clear caches'
+    description: 'Clear compiled DI, YAML manifest, and Twig caches.'
+  can_view_system_logs:
+    title: 'Can view system logs'
+    description: 'View and download system error and access logs.'
 
 moderator:
-  can_access_admin_panel:
-    title: 'Can access admin panel'
-    description: 'Allow user to access the admin panel.'
-  can_administer_content:
-    title: 'Can administer content'
-    description: 'Allow user to administer content, including creating, editing, and deleting content items.'
-  can_administer_users:
-    title: 'Can administer users'
-    description: 'Allow user to administer other users, including creating, editing, and deleting user accounts.'
-  can_administer_menus:
-    title: 'Can administer menus'
-    description: 'Allow user to create, edit, and delete navigation menus and menu items.'
-  can_view_reports:
-    title: 'Can view reports'
-    description: 'Allow user to view site reports and content analytics.'
-  can_use_two_factor:
-    title: 'Can use two-factor authentication'
-    description: 'Allow user to enable and manage two-factor authentication for their account.'
+  db.accounts.read:
+    title: 'Read accounts'
+    description: 'Read-only access to the accounts table.'
+  can_view_system_logs:
+    title: 'Can view system logs'
+    description: 'View (not download) system logs.'
 
-user:
-  can_create_content:
-    title: 'Can create content'
-    description: 'Allow user to create new content items.'
-  can_edit_own_content:
-    title: 'Can edit own content'
-    description: 'Allow user to edit content items they created.'
-  can_delete_own_content:
-    title: 'Can delete own content'
-    description: 'Allow user to delete content items they created.'
-  can_upload_files:
-    title: 'Can upload files'
-    description: 'Allow user to upload files to the site.'
-  can_manage_own_profile:
-    title: 'Can manage own profile'
-    description: 'Allow user to edit their own profile information.'
-  can_use_two_factor:
-    title: 'Can use two-factor authentication'
-    description: 'Allow user to enable and manage two-factor authentication for their account.'
-
-guest:
-  can_view_public_content:
-    title: 'Can view public content'
-    description: 'Allow anonymous visitors to view publicly published content.'
-  can_register:
-    title: 'Can register'
-    description: 'Allow anonymous visitors to create a new account.'
-  can_request_password_reset:
-    title: 'Can request password reset'
-    description: 'Allow anonymous visitors to request a password reset email.'
+editor:
+  db.accounts.read:
+    title: 'Read accounts'
+    description: 'Read-only access to accounts (for author attribution).'

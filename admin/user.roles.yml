@@ -1,0 +1,13 @@
+# Admin Plugin — Role Definitions
+# Roles defined here are merged with the system roles at boot.
+# A plugin may introduce new roles; it cannot redefine core roles.
+
+editor:
+  label: 'Editor'
+  description: 'Can create and manage content but has no user or system administration access.'
+  parent: 'user'          # inherits all permissions from the user role
+
+content_manager:
+  label: 'Content Manager'
+  description: 'Full control over content and media. No user or system admin access.'
+  parent: 'moderator'

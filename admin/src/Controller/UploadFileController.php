@@ -7,7 +7,6 @@ use Psr\Container\ContainerInterface;
 use Simp\Pindrop\Controller\ControllerBase;
 use Simp\Pindrop\Entity\File\File;
 use Simp\Pindrop\Entity\User\CurrentUser;
-use Simp\Pindrop\FileSystem\FileSystem;
 use Simp\Pindrop\FileSystem\FileSystemService;
 use Simp\Pindrop\Session\SessionStorage;
 use Symfony\Component\HttpFoundation\JsonResponse;

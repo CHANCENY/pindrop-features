@@ -30,6 +30,7 @@ use Simp\Pindrop\Mail\MailManager;
 use Simp\Pindrop\Message\Message;
 use Simp\Pindrop\Modules\admin\src\Address\AddressFormatter;
 use Simp\Pindrop\Modules\admin\src\Plugin\TwoFactorSettings;
+use Simp\Pindrop\Plugin\PluginManager;
 use Simp\Pindrop\Routing\RouteManager;
 use Simp\Pindrop\Routing\Url;
 use Simp\Pindrop\Session\SessionStorage;
@@ -41,6 +42,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ZipArchive;
+
+use function DI\string;
 
 /**
  * Admin Controller
@@ -247,14 +250,17 @@ class AdminController extends ControllerBase
             }
         }
 
+         /**
+         * @var PluginManager $pluginManager
+         */
+        $pluginManager = getAppContainer()->get('plugin.manager');
+
+        $roles = $pluginManager->getAllRoles();
+        dump($roles);
+
         return $this->renderTwig('admin/users/create.twig', [
             'page_title' => 'Create User',
-            'roles' => [
-                'super_admin' => 'Super Administrator',
-                'admin' => 'Administrator',
-                'moderator' => 'Moderator',
-                'user' => 'User'
-            ],
+            'roles' => $roles,
             'statuses' => [
                 'active' => 'Active',
                 'inactive' => 'Inactive',
@@ -1045,523 +1051,6 @@ Generated: " . date('Y-m-d H:i:s') . "
     }
 
     /**
-     * Content management
-     */
-    public function content(Request $request, string $route_name, array $options): Response
-    {
-        $page = (int) $request->query->get('page', 1);
-        $limit = (int) $request->query->get('limit', 20);
-        $type = $request->query->get('type', '');
-        $status = $request->query->get('status', '');
-        $search = $request->query->get('search', '');
-
-        return $this->renderTwig('admin/content.twig', [
-            'page_title' => 'Content Management',
-            'content' => $this->getContentList($page, $limit, $type, $status, $search),
-            'pagination' => $this->getContentPagination($page, $limit, $type, $status, $search),
-            'filters' => [
-                'type' => $type,
-                'status' => $status,
-                'search' => $search,
-                'limit' => $limit
-            ],
-            'content_types' => $this->getContentTypes()
-        ]);
-    }
-
-    /**
-     * Content creation page - show available content types
-     */
-    public function createContent(Request $request, string $route_name, array $options): Response
-    {
-        try {
-            $container = getAppContainer();
-            $repository = $container->get('content.repository');
-            $contentTypes = $this->getContentTypes();
-
-            return $this->renderTwig('admin/content/create.twig', [
-                'page_title' => 'Create Content',
-                'content_types' => $contentTypes
-            ]);
-
-        } catch (Exception $e) {
-            $container->get('logger')->error('Failed to load content creation page', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return $this->redirect('/admin/content');
-        }
-    }
-
-    /**
-     * Add content of specific type
-     */
-    public function addContent(Request $request, string $route_name, array $options): Response
-    {
-        $type = $request->query->get('type');
-
-        if (empty($type)) {
-            return $this->redirect('/admin/content/create');
-        }
-
-        try {
-            $container = getAppContainer();
-            $repository = $container->get('content.repository');
-
-            // Validate content type
-            if (!$repository->has($type)) {
-                return $this->redirect('/admin/content/create');
-            }
-
-            $contentTypeInfo = $repository->get($type);
-            $className = $contentTypeInfo['class'];
-
-            /**@var StorageEntity $storageEntity **/
-            $storageEntity = $container->get('content.factory')->storage($type);
-
-            $formHtml = $storageEntity->getEntityForm();
-
-            if ($request->isMethod('POST')) {
-                try {
-                    // Get form data and files
-                    $formData = $request->request->all();
-                    $files = $request->files->all();
-                    unset($formData['_csrf_token']); // Remove CSRF token from form data
-
-                    // Handle file uploads using FileSystem service
-                    $fileSystem = $container->get('filesystem');
-
-                    foreach ($files as $fieldName => $file) {
-                        if ($file && $file->isValid()) {
-                            // Create destination URI using public:// stream wrapper
-                            $extension = $file->getClientOriginalExtension();
-                            $filename = uniqid() . 'Controller' . $extension;
-                            $destinationUri = 'public://content/' . date('Y/m') . '/' . $filename;
-
-                            // Upload file using FileSystem service
-                            $uploadResult = $fileSystem->uploadFile([
-                                'name' => $file->getClientOriginalName(),
-                                'tmp_name' => $file->getPathname(),
-                                'size' => $file->getSize(),
-                                'error' => $file->getError()
-                            ], $fileSystem->resolvedRealPath($destinationUri), [
-                                'unique' => true,
-                                'allowed_types' => ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'txt']
-                            ]);
-
-                            if ($uploadResult['success']) {
-                                // Create File entity record
-                                $fileEntity = new \Simp\Pindrop\Entity\File\File([
-                                    'filename' => $uploadResult['data'][0]['name'],
-                                    'uri' => $destinationUri,
-                                    'filemime' => $uploadResult['data'][0]['mime_type'],
-                                    'filesize' => $uploadResult['data'][0]['size'],
-                                    'status' => \Simp\Pindrop\Entity\File\File::STATUS_PERMANENT,
-                                    'uid' => $container->get('current_user')->getId(),
-                                    'fieldname' => $fieldName,
-                                    'entity_type' => $type,
-                                    'entity_id' => $storageEntity->getId() ?? 0,
-                                    'bundle' => $type,
-                                    'langcode' => 'en'
-                                ], $container->get('database'), $container->get('logger'));
-
-                                if ($fileEntity->save()) {
-                                    // Store file URI in form data
-                                    $formData[$fieldName] = $destinationUri;
-                                } else {
-                                    throw new \Exception('Failed to save file entity record');
-                                }
-                            } else {
-                                throw new \Exception('File upload failed: ' . $uploadResult['message']);
-                            }
-                        }
-                    }
-
-                    // Set core entity properties using proper setters
-                    if (isset($formData['title']))
-                        $storageEntity->setTitle($formData['title']);
-                    if (isset($formData['slug']))
-                        $storageEntity->setValue('slug', $formData['slug']);
-                    if (isset($formData['content']))
-                        $storageEntity->setContent($formData['content']);
-                    if (isset($formData['excerpt']))
-                        $storageEntity->setValue('excerpt', $formData['excerpt']);
-
-                    // Set publication status
-                    if (isset($formData['status'])) {
-                        $storageEntity->setStatus($formData['status']);
-                    }
-                    if (isset($formData['is_published'])) {
-                        $storageEntity->setPublished((bool) $formData['is_published']);
-                        if ($formData['is_published']) {
-                            $storageEntity->setPublishedAt(new \DateTime());
-                        }
-                    }
-
-                    // Set boolean fields
-                    $storageEntity->setValue('featured', isset($formData['featured']) ? (bool) $formData['featured'] : false);
-                    $storageEntity->setValue('sticky', isset($formData['sticky']) ? (bool) $formData['sticky'] : false);
-                    $storageEntity->setValue('allow_comments', isset($formData['allow_comments']) ? (bool) $formData['allow_comments'] : true);
-
-                    // Set metadata fields
-                    $storageEntity->setValue('password', $formData['password'] ?? null);
-                    $storageEntity->setValue('template', $formData['template'] ?? null);
-                    $storageEntity->setValue('language', $formData['language'] ?? 'en');
-
-                    // Set SEO fields
-                    $storageEntity->setValue('meta_title', $formData['meta_title'] ?? null);
-                    $storageEntity->setValue('meta_description', $formData['meta_description'] ?? null);
-                    $storageEntity->setValue('meta_keywords', $formData['meta_keywords'] ?? null);
-                    $storageEntity->setValue('canonical_url', $formData['canonical_url'] ?? null);
-                    $storageEntity->setValue('redirect_url', $formData['redirect_url'] ?? null);
-
-                    // Set author and timestamps
-                    $storageEntity->setAuthorId($container->get('current_user')->getId());
-                    $storageEntity->setCreatedAt(new \DateTime());
-                    $storageEntity->setUpdatedAt(new \DateTime());
-
-                    // Set dynamic fields (entity-specific fields)
-                    $coreFields = [
-                        'entity_type',
-                        'id',
-                        'title',
-                        'slug',
-                        'content',
-                        'excerpt',
-                        'status',
-                        'is_published',
-                        'featured',
-                        'sticky',
-                        'allow_comments',
-                        'password',
-                        'template',
-                        'language',
-                        'meta_title',
-                        'meta_description',
-                        'meta_keywords',
-                        'canonical_url',
-                        'redirect_url',
-                        'submit'
-                    ];
-
-                    foreach ($formData as $key => $value) {
-                        if (!in_array($key, $coreFields)) {
-                            $storageEntity->setValue($key, $value);
-                        }
-                    }
-
-                
-                    // Save the entity
-                    if ($storageEntity->save()) {
-                        // Update file entities with the new entity ID
-                        foreach ($files as $fieldName => $file) {
-                            if ($file && $file->isValid() && isset($formData[$fieldName])) {
-                                $fileEntity = \Simp\Pindrop\Entity\File\File::loadByUri($formData[$fieldName], $container->get('database'));
-                                if ($fileEntity) {
-                                    $fileEntity->setEntityId($storageEntity->getId());
-                                    $fileEntity->save();
-                                }
-                            }
-                        }
-
-                        // Redirect to edit page
-                        return $this->redirect("/admin/content");
-                    } else {
-                        throw new Exception('Failed to save entity');
-                    }
-
-                } catch (Exception $e) {
-                    $container->get('logger')->error('Failed to save content', [
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                        'type' => $type,
-                        'data' => $request->request->all()
-                    ]);
-
-                    // Add error message
-                    Message::error('Failed to save ' . $type . ': ' . $e->getMessage());
-
-                    // Re-throw exception to let Whoops handle it in development
-                    $environment = getenv('APP_ENV') ?: 'development';
-                    if ($environment !== 'production') {
-                        throw $e;
-                    }
-                }
-            }
-
-            return $this->renderTwig('admin/content/add.twig', [
-                'page_title' => 'Create ' . ucfirst($type),
-                'content_type' => ucfirst($type),
-                'type' => $type,
-                'form_html' => $formHtml,
-                'description' => $contentTypeInfo['config']['description'] ?? "",
-                'entity' => $storageEntity,
-            ]);
-
-        } catch (\Exception $e) {
-            // Re-throw exception to let Whoops handle it in development
-            $environment = getenv('APP_ENV') ?: 'development';
-            if ($environment !== 'production') {
-                throw $e;
-            }
-
-            // In production, show generic error and redirect
-            $container = getAppContainer();
-            Message::error('Failed to load content creation page');
-            return $this->redirect('/admin/content/create');
-        }
-    }
-
-    public function editContent(Request $request, string $route_name, array $options)
-    {
-        $id = $request->query->get('id');
-
-        if (empty($id)) {
-            return $this->redirect('/admin/content');
-        }
-
-        try {
-            $container = getAppContainer();
-            $repository = $container->get('content.repository');
-
-            /**@var ContentEntityInterface $entity **/
-            $entity = $repository->find($id);
-
-            $contentTypeInfo = $repository->get($entity->getNodeType());
-            $className = $contentTypeInfo['class'];
-
-            $formHtml = $entity->getEntityForm();
-
-            if ($request->isMethod('POST')) {
-                try {
-                    // Get form data and files
-                    $formData = $request->request->all();
-                    $files = $request->files->all();
-
-                    // Handle file uploads using FileSystem service
-                    $fileSystem = $container->get('filesystem');
-
-                    foreach ($files as $fieldName => $file) {
-                        if ($file && $file->isValid()) {
-                            // Create destination URI using public:// stream wrapper
-                            $extension = $file->getClientOriginalExtension();
-                            $filename = uniqid() . 'Controller' . $extension;
-                            $destinationUri = 'public://content/' . date('Y/m') . '/' . $filename;
-
-                            // Upload file using FileSystem service
-                            $uploadResult = $fileSystem->uploadFile([
-                                'name' => $file->getClientOriginalName(),
-                                'tmp_name' => $file->getPathname(),
-                                'size' => $file->getSize(),
-                                'error' => $file->getError()
-                            ], $fileSystem->resolvedRealPath($destinationUri), [
-                                'unique' => true,
-                                'allowed_types' => ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'txt']
-                            ]);
-
-                            if ($uploadResult['success']) {
-                                // Create File entity record
-                                $fileEntity = new \Simp\Pindrop\Entity\File\File([
-                                    'filename' => $uploadResult['data'][0]['name'],
-                                    'uri' => $destinationUri,
-                                    'filemime' => $uploadResult['data'][0]['mime_type'],
-                                    'filesize' => $uploadResult['data'][0]['size'],
-                                    'status' => \Simp\Pindrop\Entity\File\File::STATUS_PERMANENT,
-                                    'uid' => $container->get('current_user')->getId(),
-                                    'fieldname' => $fieldName,
-                                    'entity_type' => $entity->getNodeType(),
-                                    'entity_id' => $entity->getId() ?? 0,
-                                    'bundle' => $entity->getNodeType(),
-                                    'langcode' => 'en'
-                                ], $container->get('database'), $container->get('logger'));
-
-                                if ($fileEntity->save()) {
-                                    // Store file URI in form data
-                                    $formData[$fieldName] = $destinationUri;
-                                } else {
-                                    throw new \Exception('Failed to save file entity record');
-                                }
-                            } else {
-                                throw new \Exception('File upload failed: ' . $uploadResult['message']);
-                            }
-                        }
-                    }
-
-                    // Set core entity properties using proper setters
-                    if (isset($formData['title']))
-                        $entity->setTitle($formData['title']);
-                    if (isset($formData['slug']))
-                        $entity->setValue('slug', $formData['slug']);
-                    if (isset($formData['content']))
-                        $entity->setContent($formData['content']);
-                    if (isset($formData['excerpt']))
-                        $entity->setValue('excerpt', $formData['excerpt']);
-
-                    // Set publication status
-                    if (isset($formData['status'])) {
-                        $entity->setStatus($formData['status']);
-                    }
-                    if (isset($formData['is_published'])) {
-                        $entity->setPublished((bool) $formData['is_published']);
-                        if ($formData['is_published']) {
-                            $entity->setPublishedAt(new \DateTime());
-                        }
-                    }
-
-                    // Set boolean fields
-                    $entity->setValue('featured', isset($formData['featured']) ? (bool) $formData['featured'] : false);
-                    $entity->setValue('sticky', isset($formData['sticky']) ? (bool) $formData['sticky'] : false);
-                    $entity->setValue('allow_comments', isset($formData['allow_comments']) ? (bool) $formData['allow_comments'] : true);
-
-                    // Set metadata fields
-                    $entity->setValue('password', $formData['password'] ?? null);
-                    $entity->setValue('template', $formData['template'] ?? null);
-                    $entity->setValue('language', $formData['language'] ?? 'en');
-
-                    // Set SEO fields
-                    $entity->setValue('meta_title', $formData['meta_title'] ?? null);
-                    $entity->setValue('meta_description', $formData['meta_description'] ?? null);
-                    $entity->setValue('meta_keywords', $formData['meta_keywords'] ?? null);
-                    $entity->setValue('canonical_url', $formData['canonical_url'] ?? null);
-                    $entity->setValue('redirect_url', $formData['redirect_url'] ?? null);
-
-                    // Set author and timestamps
-                    $entity->setAuthorId($container->get('current_user')->getId());
-                    $entity->setCreatedAt(new \DateTime());
-                    $entity->setUpdatedAt(new \DateTime());
-
-                    // Set dynamic fields (entity-specific fields)
-                    $coreFields = [
-                        'entity_type',
-                        'id',
-                        'title',
-                        'slug',
-                        'content',
-                        'excerpt',
-                        'status',
-                        'is_published',
-                        'featured',
-                        'sticky',
-                        'allow_comments',
-                        'password',
-                        'template',
-                        'language',
-                        'meta_title',
-                        'meta_description',
-                        'meta_keywords',
-                        'canonical_url',
-                        'redirect_url',
-                        'submit'
-                    ];
-
-                    $fields = $entity->fieldDefinitions();
-
-                    foreach ($formData as $key => $value) {
-                        if (!in_array($key, $coreFields) && array_key_exists($key, $fields['fields'])) {
-                            $field = $fields['fields'][$key];
-                            if (!empty($field['type'])) {
-                                switch ($field['type']) {
-                                    case 'array':
-                                        $value = json_decode($value, true);
-                                }
-                            }
-                            $entity->setValue($key, $value);
-                        }
-                    }
-
-                    // Save the entity
-                    if ($entity->save()) {
-                        // Update file entities with the new entity ID
-                        foreach ($files as $fieldName => $file) {
-                            if ($file && $file->isValid() && isset($formData[$fieldName])) {
-                                $fileEntity = \Simp\Pindrop\Entity\File\File::loadByUri($formData[$fieldName], $container->get('database'));
-                                if ($fileEntity) {
-                                    $fileEntity->setEntityId($entity->getId());
-                                    $fileEntity->save();
-                                }
-                            }
-                        }
-
-                        // Redirect to edit page
-                        return $this->redirect("/admin/content");
-                    } else {
-                        throw new \Exception('Failed to save entity');
-                    }
-
-                } catch (\Exception $e) {
-                    $container->get('logger')->error('Failed to save content', [
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                        'type' => $entity->getNodeType(),
-                        'data' => $request->request->all()
-                    ]);
-
-                    // Add error message
-                    $container->get('session')->getFlashBag()->add('error', 'Failed to save ' . $entity->getNodeType() . ': ' . $e->getMessage());
-
-                    // Re-throw exception to let Whoops handle it in development
-                    $environment = getenv('APP_ENV') ?: 'development';
-                    if ($environment !== 'production') {
-                        throw $e;
-                    }
-                }
-            }
-
-            return $this->renderTwig('admin/content/add.twig', [
-                'page_title' => 'Edit ' . ucfirst($entity->getNodeType()),
-                'content_type' => ucfirst($entity->getNodeType()),
-                'type' => $entity->getNodeType(),
-                'form_html' => $formHtml,
-                'description' => $contentTypeInfo['config']['description'] ?? "",
-                'entity' => $entity,
-            ]);
-
-        } catch (\Exception $e) {
-            // Re-throw exception to let Whoops handle it in development
-            $environment = getenv('APP_ENV') ?: 'development';
-            if ($environment !== 'production') {
-                throw $e;
-            }
-
-            // In production, show generic error and redirect
-            $container = getAppContainer();
-            $container->get('session')->getFlashBag()->add('error', 'Failed to load content creation page');
-            return $this->redirect('/admin/content/create');
-        }
-    }
-
-    public function viewContent(Request $request, string $route_name, array $options)
-    {
-        $id = $request->query->get('id');
-
-        if (empty($id)) {
-            return $this->redirect('/admin/content');
-        }
-
-        try {
-            $container = getAppContainer();
-            $repository = $container->get('content.repository');
-
-            $addAdminTheme = in_array($this->getCurrentUser()['role'], ['super_admin', 'admin', 'moderator']);
-
-            $theme = $addAdminTheme ? "admin/content/view_admin.twig" : "admin/content/view.twig";
-
-            /**@var ContentEntityInterface $entity **/
-            $entity = $repository->find($id);
-            return $this->renderTwig($theme, [
-                'entity' => $entity,
-                'admin_theme' => $addAdminTheme,
-
-            ]);
-        } catch (\Throwable $exception) {
-
-        }
-
-        return $this->redirect('/admin/content');
-    }
-
-    /**
      * Get dashboard statistics
      */
     private function getDashboardStats(): array
@@ -1585,245 +1074,6 @@ Generated: " . date('Y-m-d H:i:s') . "
             'maintenance_mode' => false,
             'debug_mode' => true
         ];
-    }
-
-    /**
-     * Get users list
-     */
-    private function getUsersList(): array
-    {
-        try {
-            $users = User::loadAll($this->database);
-
-            // Convert User objects to arrays for template
-            $usersArray = [];
-            foreach ($users as $user) {
-                $usersArray[] = [
-                    'id' => $user->getId(),
-                    'username' => $user->getUsername(),
-                    'email' => $user->getEmail(),
-                    'display_name' => $user->getDisplayName(),
-                    'role' => $user->getRole(),
-                    'status' => $user->getStatus(),
-                    'created_at' => $user->getCreatedAt() ? $user->getCreatedAt()->format('Y-m-d H:i:s') : null,
-                    'last_login_at' => $user->getLastLoginAt() ? $user->getLastLoginAt()->format('Y-m-d H:i:s') : null,
-                    'email_verified' => $user->isEmailVerified(),
-                    'is_admin' => $user->isAdmin()
-                ];
-            }
-
-            return $usersArray;
-        } catch (Exception $e) {
-            // Return empty array if there's an error
-            return [];
-        }
-    }
-
-    /**
-     * Get content list
-     */
-    private function getContentList(int $page = 1, int $limit = 20, string $type = '', string $status = '', string $search = ''): array
-    {
-        try {
-            $container = getAppContainer();
-            $factory = $container->get('content.factory');
-            $repository = $container->get('content.repository');
-            $contentList = [];
-
-            // Get all registered entity types
-            $allEntities = $repository->getAll();
-
-            foreach ($allEntities as $entityName => $entityData) {
-                $className = $entityData['class'];
-
-                // Check if class exists and has the all() method
-                if (class_exists($className) && method_exists($className, 'all')) {
-                    try {
-                        // Build options for filtering
-                        $options = ['limit' => $limit, 'page' => $page];
-
-                        if ($type && strtolower($entityName) !== strtolower($type)) {
-                            continue; // Skip if type doesn't match filter
-                        }
-
-                        // Load all entities of this type
-                        $entities = $className::all($options);
-
-                        foreach ($entities as $entity) {
-                            // Apply status filter
-                            if ($status && strtolower($entity->getStatus()) !== strtolower($status)) {
-                                continue;
-                            }
-
-                            // Apply search filter
-                            if ($search) {
-                                $searchLower = strtolower($search);
-                                $titleLower = strtolower($entity->getTitle());
-                                $contentLower = strtolower($entity->getContent());
-
-                                if (
-                                    strpos($titleLower, $searchLower) === false &&
-                                    strpos($contentLower, $searchLower) === false
-                                ) {
-                                    continue;
-                                }
-                            }
-
-                            $contentList[] = [
-                                'id' => $entity->getId(),
-                                'title' => $entity->getTitle(),
-                                'type' => ucfirst($entityName),
-                                'status' => ucfirst($entity->getStatus()),
-                                'slug' => $entity->getSlug(),
-                                'created_at' => $entity->getCreatedAt()->format('Y-m-d H:i:s'),
-                                'updated_at' => $entity->getUpdatedAt()->format('Y-m-d H:i:s'),
-                                'author' => $entity->getAuthor() ? $entity->getAuthor()->getUsername() : 'Unknown',
-                                'published' => $entity->isPublished() ? 'Yes' : 'No',
-                                'entity_class' => $className,
-                                'entity_name' => $entityName,
-                                'excerpt' => substr(strip_tags($entity->getContent()), 0, 150) . '...'
-                            ];
-                        }
-                    } catch (Exception $e) {
-                        // Log error for this entity type but continue with others
-                        $container->get('logger')->warning("Failed to load entities of type: {$entityName}", [
-                            'error' => $e->getMessage(),
-                            'class' => $className
-                        ]);
-                        continue;
-                    }
-                }
-            }
-
-            // Sort by created_at descending
-            usort($contentList, function ($a, $b) {
-                return strtotime($b['created_at']) - strtotime($a['created_at']);
-            });
-
-            // Apply pagination to the combined results
-            $offset = ($page - 1) * $limit;
-            return array_slice($contentList, $offset, $limit);
-
-        } catch (Exception $e) {
-            $container->get('logger')->error('Failed to get content list', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            // Return empty array on error
-            return [];
-        }
-    }
-
-    /**
-     * Get content pagination data
-     */
-    private function getContentPagination(int $page = 1, int $limit = 20, string $type = '', string $status = '', string $search = ''): array
-    {
-        try {
-            $container = getAppContainer();
-            $factory = $container->get('content.factory');
-            $repository = $container->get('content.repository');
-            $totalCount = 0;
-
-            // Get all registered entity types and count total items
-            $allEntities = $repository->getAll();
-
-            foreach ($allEntities as $entityName => $entityData) {
-                $className = $entityData['class'];
-
-                if (class_exists($className) && method_exists($className, 'count')) {
-                    try {
-                        // Apply type filter
-                        if ($type && strtolower($entityName) !== strtolower($type)) {
-                            continue;
-                        }
-
-                        // Count entities of this type
-                        $count = $className::count();
-                        $totalCount += $count;
-                    } catch (Exception $e) {
-                        $container->get('logger')->warning("Failed to count entities of type: {$entityName}", [
-                            'error' => $e->getMessage(),
-                            'class' => $className
-                        ]);
-                        continue;
-                    }
-                }
-            }
-
-            $totalPages = ceil($totalCount / $limit);
-
-            return [
-                'current_page' => $page,
-                'total_pages' => $totalPages,
-                'total_items' => $totalCount,
-                'per_page' => $limit,
-                'has_previous' => $page > 1,
-                'has_next' => $page < $totalPages,
-                'previous_page' => $page > 1 ? $page - 1 : null,
-                'next_page' => $page < $totalPages ? $page + 1 : null,
-                'showing_start' => ($page - 1) * $limit + 1,
-                'showing_end' => min($page * $limit, $totalCount)
-            ];
-
-        } catch (Exception $e) {
-            $container->get('logger')->error('Failed to get content pagination', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return [
-                'current_page' => $page,
-                'total_pages' => 1,
-                'total_items' => 0,
-                'per_page' => $limit,
-                'has_previous' => false,
-                'has_next' => false,
-                'previous_page' => null,
-                'next_page' => null,
-                'showing_start' => 0,
-                'showing_end' => 0
-            ];
-        }
-    }
-
-    /**
-     * Get available content types from repository
-     */
-    private function getContentTypes(): array
-    {
-        try {
-            $container = getAppContainer();
-            $repository = $container->get('content.repository');
-            $allEntities = $repository->getAll();
-            $contentTypes = [];
-
-            foreach ($allEntities as $entityName => $entityData) {
-                $contentTypes[] = [
-                    'name' => $entityName,
-                    'label' => ucfirst($entityName),
-                    'class' => $entityData['class'],
-                    'description' => $entityData['config']['description'] ?? '',
-                    'category' => $entityData['config']['category'] ?? 'content'
-                ];
-            }
-
-            // Sort by label
-            usort($contentTypes, function ($a, $b) {
-                return strcmp($a['label'], $b['label']);
-            });
-
-            return $contentTypes;
-
-        } catch (Exception $e) {
-            $container->get('logger')->error('Failed to get content types', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return [];
-        }
     }
 
     /**
@@ -1991,6 +1241,8 @@ Generated: " . date('Y-m-d H:i:s') . "
                 $session->setIpAddress($request->getClientIp());
                 $session->setUserAgent($request->headers->get('User-Agent'));
                 $session->setExpiresAt((new DateTime())->add(new DateInterval('PT24H')));
+                $session->setUser($user);
+                $session->setUserData($user->toArray());
 
                 if ($session->create()) {
                     // Set session cookie
@@ -2382,6 +1634,106 @@ Generated: " . date('Y-m-d H:i:s') . "
         }
     }
 
+    public function manageUserPermissions(Request $request, string $route_name, array $options): Response
+    {
+        $user_id = $request->query->get('user_id');
+        $container = getAppContainer();
+        $currentUser = $container->get('current_user');
+
+        try {
+            /**
+             * @var User $user
+             */
+            $user = $container->get('user_repository')->findById($user_id);
+
+            if (!$user) {
+                return new RedirectResponse('/admin/users');
+            }
+            
+            $roles = $user->getRole();
+
+             if ($request->isMethod('POST'))
+            {
+                $submitted_data = $request->request->all();
+                $permissions = $submitted_data['permissions'][$roles] ?? [];
+
+                $user->setPermissions($permissions);
+                if ($user->save())
+                {
+                    Message::info("User permissions saved");
+                    return $this->redirect(Url::routeByName('admin.users.permissions',['user_id'=> $user->getId()]));
+                }
+            }
+
+            
+            /**
+             * @var PluginManager $pluginManager
+             */ 
+            $pluginManager = getAppContainer()->get('plugin.manager');
+            $permissions   = $pluginManager->getAllPermissions();
+            $all_permissions = [];
+            foreach($permissions as $permission) {
+                $all_permissions = array_merge($all_permissions, $permission);
+            }
+            
+            $user_permissions = $user->getPermissions() ?? [];
+           
+            return $this->renderTwig('admin/users/permissions.twig', [
+                'page_title' => 'Manage Permissions: ' . $user->getUsername(),
+                'roles'      => [$roles],
+                'all_permissions' => $all_permissions,
+                'role_permissions' => [
+                    $roles => $user_permissions
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            // Log error and show user-friendly message
+            if ($container->has('logger')) {
+                $container->get('logger')->error('Error managing user permissions: ' . $e->getMessage());
+            }
+
+            return new RedirectResponse('/admin/users');
+        }
+    }
+
+    public function manageUserPermissionsAll(Request $request, string $route_name, array $options): Response
+    {
+       $user_id = $request->query->get('user_id');
+        $container = getAppContainer();
+        
+        try {
+           
+            /**
+             * @var PluginManager $pluginManager
+             */ 
+            $pluginManager = getAppContainer()->get('plugin.manager');
+
+            $roles = $pluginManager->getAllRoles();
+            $roles = array_keys($roles);
+
+            $permissions   = $pluginManager->getAllPermissions();
+            $all_permissions = [];
+            foreach($permissions as $permission) {
+                $all_permissions = array_merge($all_permissions, $permission);
+            }
+            
+            return $this->renderTwig('admin/users/permissions_all.twig', [
+                'page_title' => 'Manage Permissions',
+                'roles'      => $roles,
+                'all_permissions' => $all_permissions,
+            ]);
+
+        } catch (\Exception $e) {
+            // Log error and show user-friendly message
+            if ($container->has('logger')) {
+                $container->get('logger')->error('Error managing user permissions: ' . $e->getMessage());
+            }
+
+            return new RedirectResponse('/admin/users');
+        }
+    }
+
     /**
      * Handle autocomplete requests
      */
@@ -2453,7 +1805,7 @@ Generated: " . date('Y-m-d H:i:s') . "
         $countries = $countryRepository->getAll();
         $countriesList = [];
         foreach ($countries as $code => $country) {
-            $country = $countryRepository->get($code);
+            $country = $countryRepository->get((string)$code);
             $countriesList[$code] = $country->getName();
 
         }
