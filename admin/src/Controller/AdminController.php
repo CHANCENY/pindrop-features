@@ -256,8 +256,7 @@ class AdminController extends ControllerBase
         $pluginManager = getAppContainer()->get('plugin.manager');
 
         $roles = $pluginManager->getAllRoles();
-        dump($roles);
-
+       
         return $this->renderTwig('admin/users/create.twig', [
             'page_title' => 'Create User',
             'roles' => $roles,
@@ -684,7 +683,6 @@ Generated: " . date('Y-m-d H:i:s') . "
                     break;
             }
         } catch (Exception $e) {
-            dump($e);
             throw new Exception("Failed to parse {$extension} file: " . $e->getMessage());
         }
 
@@ -1580,10 +1578,6 @@ Generated: " . date('Y-m-d H:i:s') . "
                 return new RedirectResponse('/admin/users');
             }
 
-            // Get user's content/posts
-            $contentFactory = $container->get('content.repository');
-            $userContent = $contentFactory->findBy(['author_id' => $user_id], ['created_at' => 'DESC'], 10);
-
             // Prepare user data for display (security-conscious)
             $userData = [
                 'id' => $user->getId(),
@@ -1593,7 +1587,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                 'created_at' => $user->getCreatedAt(),
                 'updated_at' => $user->getUpdatedAt(),
                 'status' => $user->getStatus() ?? 'active',
-                'content_count' => count($userContent),
+                'content_count' => 0,
                 'recent_content' => array_map(function ($content) {
                     return [
                         'id' => $content->getId(),
@@ -1603,7 +1597,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                         'created_at' => $content->getCreatedAt(),
                         'url' => '/admin/content/edit/' . $content->getId()
                     ];
-                }, $userContent)
+                }, [])
             ];
 
             // Add additional admin-only data if current user is admin

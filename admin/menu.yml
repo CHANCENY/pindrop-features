@@ -1,28 +1,30 @@
 groups:
   admin:
     dashboard:
-      title: Dashboard
-      route: admin.dashboard
       icon: fa fa-dashboard
+      permissions:
+      - can_administer_menus
+      route: admin.dashboard
+      title: Dashboard
       weight: 1
-      roles: [admin, super_admin]
-       
-    users:
-      title: Users
-      route: admin.users
-      icon: fa fa-users
-      weight: 3
-      roles: [admin, super_admin, moderator]
-    
     plugins:
-      title: Plugins
-      route: admin.plugins
       icon: fa fa-plug
+      permissions:
+      - can_administer_menus
+      route: admin.plugins
+      title: Plugins
       weight: 4
-      roles: [admin, super_admin]
     settings:
-      title: Settings
-      route: admin.settings
       icon: fa fa-gear
+      permissions:
+      - can_administer_menus
+      route: admin.settings
+      title: Settings
       weight: 5
-      roles: [ admin, super_admin ]
+    users:
+      icon: fa fa-users
+      permissions:
+      - can_administer_menus
+      route: admin.users
+      title: Users
+      weight: 3
