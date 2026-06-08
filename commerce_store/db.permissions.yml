@@ -1,0 +1,147 @@
+# Commerce Store Plugin — Database Permission Rules
+# Maps permission keys to specific table + operation combinations.
+# All tables listed here are defined in this plugin's mysql/*.sql files.
+
+db.commerce.store.read:
+  description: 'Read access to store and category tables.'
+  owned_by: commerce_store
+  tables:
+    commerce_stores:
+      - select
+    commerce_store_categories:
+      - select
+    commerce_store_staff:
+      - select
+
+db.commerce.store.write:
+  description: 'Write access to store tables.'
+  owned_by: commerce_store
+  tables:
+    commerce_stores:
+      - insert
+      - update
+    commerce_store_categories:
+      - insert
+      - update
+    commerce_store_staff:
+      - insert
+      - update
+
+db.commerce.store.delete:
+  description: 'Delete access to store tables.'
+  owned_by: commerce_store
+  tables:
+    commerce_stores:
+      - delete
+    commerce_store_categories:
+      - delete
+    commerce_store_staff:
+      - delete
+
+db.commerce.products.read:
+  description: 'Read access to product and variation tables.'
+  owned_by: commerce_store
+  tables:
+    commerce_products:
+      - select
+    commerce_product_variations:
+      - select
+    commerce_variation_attributes:
+      - select
+    commerce_variation_images:
+      - select
+
+db.commerce.products.write:
+  description: 'Create and update products and variations.'
+  owned_by: commerce_store
+  tables:
+    commerce_products:
+      - insert
+      - update
+    commerce_product_variations:
+      - insert
+      - update
+    commerce_variation_attributes:
+      - insert
+      - update
+    commerce_variation_images:
+      - insert
+      - update
+
+db.commerce.products.delete:
+  description: 'Delete products and variations.'
+  owned_by: commerce_store
+  tables:
+    commerce_products:
+      - delete
+    commerce_product_variations:
+      - delete
+    commerce_variation_attributes:
+      - delete
+    commerce_variation_images:
+      - delete
+
+db.commerce.orders.read:
+  description: 'Read access to order, customer and payment tables.'
+  owned_by: commerce_store
+  tables:
+    commerce_orders:
+      - select
+    commerce_order_item:
+      - select
+    commerce_payment:
+      - select
+    commerce_order_activity:
+      - select
+    commerce_customer:
+      - select
+
+db.commerce.orders.write:
+  description: 'Create and update orders, payments and customer records.'
+  owned_by: commerce_store
+  tables:
+    commerce_orders:
+      - insert
+      - update
+    commerce_order_item:
+      - insert
+      - update
+    commerce_payment:
+      - insert
+      - update
+    commerce_order_activity:
+      - insert
+      - update
+    commerce_customer:
+      - insert
+      - update
+
+db.commerce.orders.delete:
+  description: 'Delete order records.'
+  owned_by: commerce_store
+  tables:
+    commerce_orders:
+      - delete
+    commerce_order_item:
+      - delete
+    commerce_payment:
+      - delete
+    commerce_order_activity:
+      - delete
+
+db.commerce.full:
+  description: 'Full access to all commerce store tables.'
+  owned_by: commerce_store
+  tables:
+    commerce_stores:           [select, insert, update, delete]
+    commerce_store_categories: [select, insert, update, delete]
+    commerce_store_staff:      [select, insert, update, delete]
+    commerce_products:         [select, insert, update, delete]
+    commerce_product_variations: [select, insert, update, delete]
+    commerce_variation_attributes: [select, insert, update, delete]
+    commerce_variation_images: [select, insert, update, delete]
+    commerce_orders:           [select, insert, update, delete]
+    commerce_order_item:       [select, insert, update, delete]
+    commerce_payment:          [select, insert, update, delete]
+    commerce_order_activity:   [select, insert, update, delete]
+    commerce_customer:         [select, insert, update, delete]

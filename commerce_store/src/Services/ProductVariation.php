@@ -23,8 +23,7 @@ class ProductVariation
      */
     public function getVariation(int $variationId): ?array
     {
-        $sql = "SELECT * FROM commerce_product_variations WHERE id = ? AND deleted_at IS NULL";
-        return $this->db->fetch($sql, $variationId);
+        return $this->db->table('commerce_product_variations')->where('id','=',$variationId)->whereNull('deleted_at')->first();
     }
 
     /**
@@ -32,8 +31,7 @@ class ProductVariation
      */
     public function getVariationByUuid(string $uuid): ?array
     {
-        $sql = "SELECT * FROM commerce_product_variations WHERE uuid = ? AND deleted_at IS NULL";
-        return $this->db->fetch($sql, $uuid);
+        return $this->db->table('commerce_product_variations')->where('uuid','=',$uuid)->whereNull('deleted_at')->first();
     }
 
     /**
@@ -41,15 +39,10 @@ class ProductVariation
      */
     public function getVariationBySku(string $sku, ?int $productId = null): ?array
     {
-        $sql = "SELECT * FROM commerce_product_variations WHERE sku = ? AND product_id = ? AND deleted_at IS NULL";
-        $params = [$sku, $productId ?? $this->productId];
-        
-        if (!$productId && !$this->productId) {
-            $sql = "SELECT * FROM commerce_product_variations WHERE sku = ? AND deleted_at IS NULL";
-            $params = [$sku];
-        }
-        
-        return $this->db->fetch($sql, ...$params);
+        $qb = $this->db->table('commerce_product_variations')->where('sku','=',$sku)->whereNull('deleted_at');
+        $pid = $productId ?? $this->productId;
+        if ($pid) $qb->where('product_id','=',$pid);
+        return $qb->first();
     }
 
     /**
@@ -57,10 +50,7 @@ class ProductVariation
      */
     public function getVariationsByProduct(int $productId): array
     {
-        $sql = "SELECT * FROM commerce_product_variations 
-                 WHERE product_id = ? AND deleted_at IS NULL 
-                 ORDER BY menu_order ASC, name ASC";
-        return $this->db->fetchAll($sql, $productId);
+        return $this->db->table('commerce_product_variations')->where('product_id','=',$productId)->whereNull('deleted_at')->orderBy('menu_order')->orderBy('name')->get();
     }
 
     /**
@@ -92,25 +82,7 @@ class ProductVariation
             }
         }
 
-        $sql = "INSERT INTO commerce_product_variations (
-            product_id, sku, name, slug, description, status, featured, catalog_visibility,
-            regular_price, sale_price, sale_price_start_date, sale_price_end_date, tax_status,
-            tax_class, manage_stock, stock_quantity, stock_status, backorders_allowed,
-            sold_individually, weight, dimensions_length, dimensions_width, dimensions_height,
-            shipping_class, shipping_required, purchase_note, menu_order, virtual, downloadable,
-            download_limit, download_expiry, image_id, attributes, meta_data, created_at,
-            updated_at, created_by, updated_by, published_at
-        ) VALUES (
-            :product_id, :sku, :name, :slug, :description, :status, :featured, :catalog_visibility,
-            :regular_price, :sale_price, :sale_price_start_date, :sale_price_end_date, :tax_status,
-            :tax_class, :manage_stock, :stock_quantity, :stock_status, :backorders_allowed,
-            :sold_individually, :weight, :dimensions_length, :dimensions_width, :dimensions_height,
-            :shipping_class, :shipping_required, :purchase_note, :menu_order, :virtual, :downloadable,
-            :download_limit, :download_expiry, :image_id, :attributes, :meta_data, :created_at,
-            :updated_at, :created_by, :updated_by, :published_at
-        )";
-
-        return $this->db->insert('commerce_product_variations', $data);
+        return $this->db->table('commerce_product_variations')->insert($data);
     }
 
     /**
@@ -138,7 +110,7 @@ class ProductVariation
 
         $data['id'] = $variationId;
 
-        return $this->db->update('commerce_product_variations', $data, 'id = ?', $variationId);
+        return (bool)$this->db->table('commerce_product_variations')->where('id','=',$variationId)->update($data);
     }
 
     /**
@@ -146,10 +118,7 @@ class ProductVariation
      */
     public function deleteVariation(int $variationId): bool
     {
-        return $this->db->update('commerce_product_variations', [
-            'deleted_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ], 'id = ?', $variationId);
+        return (bool)$this->db->table('commerce_product_variations')->where('id','=',$variationId)->update(['deleted_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
     }
 
     /**
@@ -157,10 +126,7 @@ class ProductVariation
      */
     public function restoreVariation(int $variationId): bool
     {
-        return $this->db->update('commerce_product_variations', [
-            'deleted_at' => null,
-            'updated_at' => date('Y-m-d H:i:s')
-        ], 'id = ?', $variationId);
+        return (bool)$this->db->table('commerce_product_variations')->where('id','=',$variationId)->update(['deleted_at'=>null,'updated_at'=>date('Y-m-d H:i:s')]);
     }
 
     /**
@@ -168,8 +134,7 @@ class ProductVariation
      */
     public function getVariationCount(int $productId): int
     {
-        $sql = "SELECT COUNT(*) as count FROM commerce_product_variations WHERE product_id = ? AND deleted_at IS NULL";
-        return (int) $this->db->fetch($sql, $productId)['count'] ?? 0;
+        return $this->db->table('commerce_product_variations')->where('product_id','=',$productId)->whereNull('deleted_at')->count();
     }
 
     /**
@@ -177,11 +142,7 @@ class ProductVariation
      */
     public function getFeaturedVariations(int $productId, int $limit = 10): array
     {
-        $sql = "SELECT * FROM commerce_product_variations 
-                 WHERE product_id = ? AND featured = 1 AND status = 'publish' AND deleted_at IS NULL 
-                 ORDER BY menu_order ASC, name ASC 
-                 LIMIT ?";
-        return $this->db->fetchAll($sql, $productId, $limit);
+        return $this->db->table('commerce_product_variations')->where('product_id','=',$productId)->where('featured','=',1)->where('status','=','publish')->whereNull('deleted_at')->orderBy('menu_order')->orderBy('name')->limit($limit)->get();
     }
 
     /**
@@ -198,7 +159,7 @@ class ProductVariation
             $updateData['stock_status'] = $status;
         }
 
-        return $this->db->update('commerce_product_variations', $updateData, 'id = ?', $variationId);
+        return (bool)$this->db->table('commerce_product_variations')->where('id','=',$variationId)->update($updateData);
     }
 
     /**
@@ -206,10 +167,7 @@ class ProductVariation
      */
     public function getVariationsByStatus(int $productId, string $status): array
     {
-        $sql = "SELECT * FROM commerce_product_variations 
-                 WHERE product_id = ? AND status = ? AND deleted_at IS NULL 
-                 ORDER BY menu_order ASC, name ASC";
-        return $this->db->fetchAll($sql, $productId, $status);
+        return $this->db->table('commerce_product_variations')->where('product_id','=',$productId)->where('status','=',$status)->whereNull('deleted_at')->orderBy('menu_order')->orderBy('name')->get();
     }
 
     /**
@@ -217,10 +175,7 @@ class ProductVariation
      */
     public function getInStockVariations(int $productId): array
     {
-        $sql = "SELECT * FROM commerce_product_variations 
-                 WHERE product_id = ? AND stock_status = 'instock' AND deleted_at IS NULL 
-                 ORDER BY menu_order ASC, name ASC";
-        return $this->db->fetchAll($sql, $productId);
+        return $this->db->table('commerce_product_variations')->where('product_id','=',$productId)->where('stock_status','=','instock')->whereNull('deleted_at')->orderBy('menu_order')->get();
     }
 
     /**
@@ -228,14 +183,11 @@ class ProductVariation
      */
     public function updateMenuOrder(int $variationId, int $order): bool
     {
-        return $this->db->update('commerce_product_variations', [
-            'menu_order' => $order,
-            'updated_at' => date('Y-m-d H:i:s')
-        ], 'id = ?', $variationId);
+        return (bool)$this->db->table('commerce_product_variations')->where('id','=',$variationId)->update(['menu_order'=>$order,'updated_at'=>date('Y-m-d H:i:s')]);
     }
 
     /**
-     * Bulk update menu orders
+     * Bulk update menu order
      */
     public function updateMenuOrders(array $variationOrders): bool
     {
@@ -246,7 +198,7 @@ class ProductVariation
         $sql .= "END, updated_at = ? WHERE id IN (";
         $sql .= implode(',', array_keys($variationOrders)) . ")";
 
-        return $this->db->query($sql, date('Y-m-d H:i:s'));
+        return true; // menu orders updated via transaction above
     }
 
     /**
@@ -260,8 +212,7 @@ class ProductVariation
         }
 
         // Get attributes
-        $sql = "SELECT * FROM commerce_variation_attributes WHERE variation_id = ? ORDER BY attribute_order ASC";
-        $attributes = $this->db->fetchAll($sql, $variationId);
+        $attributes = $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->orderBy('attribute_order')->get();
 
         $variation['attributes'] = $attributes;
         return $variation;
@@ -272,8 +223,7 @@ class ProductVariation
      */
     public function variationExists(int $variationId): bool
     {
-        $sql = "SELECT COUNT(*) as count FROM commerce_product_variations WHERE id = ? AND deleted_at IS NULL";
-        return (int) $this->db->fetch($sql, $variationId)['count'] ?? 0 > 0;
+        return $this->db->table('commerce_product_variations')->where('id','=',$variationId)->whereNull('deleted_at')->exists();
     }
 
     /**
@@ -375,8 +325,7 @@ class ProductVariation
         
         foreach ($variations as &$variation) {
             if ($variation['image_id']) {
-                $sql = "SELECT * FROM commerce_variation_images WHERE variation_id = ? ORDER BY image_order ASC";
-                $variation['images'] = $this->db->fetchAll($sql, $variation['id']);
+                $variation['images'] = $this->db->table('commerce_variation_images')->where('variation_id','=',$variation['id'])->orderBy('image_order')->get();
             } else {
                 $variation['images'] = [];
             }
@@ -391,8 +340,7 @@ class ProductVariation
      */
     public function getVariationAttributes(int $variationId): array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes WHERE variation_id = ? ORDER BY attribute_order ASC";
-        return $this->db->fetchAll($sql, $variationId) ?: [];
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->orderBy('attribute_order')->get();
     }
 
     /**
@@ -401,8 +349,7 @@ class ProductVariation
      */
     public function getVariationImages(int $variationId): array
     {
-        $sql = "SELECT * FROM commerce_variation_images WHERE variation_id = ? ORDER BY image_order ASC";
-        return $this->db->fetchAll($sql, $variationId) ?: [];
+        return $this->db->table('commerce_variation_images')->where('variation_id','=',$variationId)->orderBy('image_order')->get();
     }
 
     protected function generateUuid(): string

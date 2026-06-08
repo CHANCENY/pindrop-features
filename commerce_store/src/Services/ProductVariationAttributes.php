@@ -23,8 +23,7 @@ class ProductVariationAttributes
      */
     public function getAttribute(int $attributeId): ?array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes WHERE id = ?";
-        return $this->db->fetchRow($sql, [$attributeId]);
+        return $this->db->table('commerce_variation_attributes')->where('id','=',$attributeId)->first();
     }
 
     /**
@@ -32,9 +31,7 @@ class ProductVariationAttributes
      */
     public function getAttributesByVariation(int $variationId): array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes 
-                 WHERE variation_id = ? ORDER BY attribute_order ASC, attribute_name ASC";
-        return $this->db->fetchAll($sql, [$variationId]);
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->orderBy('attribute_order')->orderBy('attribute_name')->get();
     }
 
     /**
@@ -42,9 +39,7 @@ class ProductVariationAttributes
      */
     public function getAttributesByVariationAndType(int $variationId, string $type): array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes 
-                 WHERE variation_id = ? AND attribute_type = ? ORDER BY attribute_order ASC, attribute_name ASC";
-        return $this->db->fetchAll($sql, [$variationId, $type]);
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->where('attribute_type','=',$type)->orderBy('attribute_order')->orderBy('attribute_name')->get();
     }
 
     /**
@@ -52,9 +47,7 @@ class ProductVariationAttributes
      */
     public function getVisibleAttributesByVariation(int $variationId): array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes 
-                 WHERE variation_id = ? AND is_visible = 1 ORDER BY attribute_order ASC, attribute_name ASC";
-        return $this->db->fetchAll($sql, [$variationId]);
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->where('is_visible','=',1)->orderBy('attribute_order')->orderBy('attribute_name')->get();
     }
 
     /**
@@ -62,9 +55,7 @@ class ProductVariationAttributes
      */
     public function getVariationAttributes(int $variationId): array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes 
-                 WHERE variation_id = ? AND is_variation = 1 ORDER BY attribute_order ASC, attribute_name ASC";
-        return $this->db->fetchAll($sql, [$variationId]);
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->where('is_variation','=',1)->orderBy('attribute_order')->orderBy('attribute_name')->get();
     }
 
     /**
@@ -92,8 +83,7 @@ class ProductVariationAttributes
             :is_visible, :is_variation, :created_at, :updated_at
         )";
 
-        $this->db->query($sql, ...$data);
-        return $this->db->lastInsertId();
+        return $this->db->table('commerce_variation_attributes')->insert($data);
     }
 
     /**
@@ -109,13 +99,8 @@ class ProductVariationAttributes
 
         $data['id'] = $attributeId;
 
-        $sql = "UPDATE commerce_variation_attributes SET 
-            variation_id = :variation_id, attribute_name = :attribute_name, attribute_value = :attribute_value,
-            attribute_type = :attribute_type, attribute_order = :attribute_order, is_visible = :is_visible,
-            is_variation = :is_variation, updated_at = :updated_at
-        WHERE id = :id";
-
-        $this->db->query($sql, $data);
+        $id = $data['id']; unset($data['id']);
+        $this->db->table('commerce_variation_attributes')->where('id','=',$id)->update($data);
         return true;
     }
 
@@ -124,8 +109,7 @@ class ProductVariationAttributes
      */
     public function deleteAttribute(int $attributeId): bool
     {
-        $sql = "DELETE FROM commerce_variation_attributes WHERE id = ?";
-        $this->db->query($sql, [$attributeId]);
+        $this->db->table('commerce_variation_attributes')->where('id','=',$attributeId)->delete();
         return true;
     }
 
@@ -134,8 +118,7 @@ class ProductVariationAttributes
      */
     public function deleteAttributesByVariation(int $variationId): bool
     {
-        $sql = "DELETE FROM commerce_variation_attributes WHERE variation_id = ?";
-        $this->db->query($sql, [$variationId]);
+        $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->delete();
         return true;
     }
 
@@ -144,9 +127,7 @@ class ProductVariationAttributes
      */
     public function getAttributeCount(int $variationId): int
     {
-        $sql = "SELECT COUNT(*) as count FROM commerce_variation_attributes WHERE variation_id = ?";
-        $result = $this->db->fetch($sql, [$variationId]);
-        return (int) ($result['count'] ?? 0);
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->count();
     }
 
     /**
@@ -154,9 +135,7 @@ class ProductVariationAttributes
      */
     public function getAttributeCountByVariationAndType(int $variationId, string $type): int
     {
-        $sql = "SELECT COUNT(*) as count FROM commerce_variation_attributes WHERE variation_id = ? AND attribute_type = ?";
-        $result = $this->db->fetch($sql, [$variationId, $type]);
-        return (int) ($result['count'] ?? 0);
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->where('attribute_type','=',$type)->count();
     }
 
     /**
@@ -164,8 +143,7 @@ class ProductVariationAttributes
      */
     public function updateAttributeOrder(int $attributeId, int $order): bool
     {
-        $sql = "UPDATE commerce_variation_attributes SET attribute_order = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, [$order, date('Y-m-d H:i:s'), $attributeId]);
+        $this->db->table('commerce_variation_attributes')->where('id','=',$attributeId)->update(['attribute_order'=>$order,'updated_at'=>date('Y-m-d H:i:s')]);
         return true;
     }
 
@@ -174,14 +152,13 @@ class ProductVariationAttributes
      */
     public function updateAttributeOrders(array $attributeOrders): bool
     {
-        $sql = "UPDATE commerce_variation_attributes SET attribute_order = CASE id ";
-        foreach ($attributeOrders as $attributeId => $order) {
-            $sql .= "WHEN {$attributeId} THEN {$order} ";
-        }
-        $sql .= "END, updated_at = ? WHERE id IN (";
-        $sql .= implode(',', array_keys($attributeOrders)) . ")";
-
-        $this->db->query($sql, [date('Y-m-d H:i:s')]);
+        $this->db->beginTransaction();
+        try {
+            foreach ($attributeOrders as $aid => $ord) {
+                $this->db->table('commerce_variation_attributes')->where('id','=',$aid)->update(['attribute_order'=>(int)$ord,'updated_at'=>date('Y-m-d H:i:s')]);
+            }
+            $this->db->commit();
+        } catch (\Throwable $e) { $this->db->rollback(); return false; }
         return true;
     }
 
@@ -190,9 +167,7 @@ class ProductVariationAttributes
      */
     public function getAttributeByNameAndVariation(int $variationId, string $attributeName): ?array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes 
-                 WHERE variation_id = ? AND attribute_name = ? ORDER BY attribute_order ASC";
-        return $this->db->fetch($sql, [$variationId, $attributeName]);
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->where('attribute_name','=',$attributeName)->orderBy('attribute_order')->first();
     }
 
     /**
@@ -200,9 +175,7 @@ class ProductVariationAttributes
      */
     public function attributeExists(int $attributeId): bool
     {
-        $sql = "SELECT COUNT(*) as count FROM commerce_variation_attributes WHERE id = ?";
-        $result = $this->db->fetch($sql, [$attributeId]);
-        return (int) ($result['count'] ?? 0) > 0;
+        return $this->db->table('commerce_variation_attributes')->where('id','=',$attributeId)->exists();
     }
 
     /**
@@ -210,9 +183,7 @@ class ProductVariationAttributes
      */
     public function attributeNameExists(int $variationId, string $attributeName): bool
     {
-        $sql = "SELECT COUNT(*) as count FROM commerce_variation_attributes WHERE variation_id = ? AND attribute_name = ?";
-        $result = $this->db->fetch($sql, [$variationId, $attributeName]);
-        return (int) ($result['count'] ?? 0) > 0;
+        return $this->db->table('commerce_variation_attributes')->where('variation_id','=',$variationId)->where('attribute_name','=',$attributeName)->exists();
     }
 
     /**
@@ -220,8 +191,7 @@ class ProductVariationAttributes
      */
     public function getUniqueAttributeNames(int $variationId): array
     {
-        $sql = "SELECT DISTINCT attribute_name FROM commerce_variation_attributes WHERE variation_id = ? ORDER BY attribute_name ASC";
-        return $this->db->fetchAll($sql, [$variationId]);
+        return $this->db->table('commerce_variation_attributes')->select(['attribute_name'])->where('variation_id','=',$variationId)->orderBy('attribute_name')->pluck('attribute_name');
     }
 
     /**
@@ -229,8 +199,7 @@ class ProductVariationAttributes
      */
     public function getAttributesByType(string $type): array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes WHERE attribute_type = ? ORDER BY attribute_name ASC";
-        return $this->db->fetchAll($sql, [$type]);
+        return $this->db->table('commerce_variation_attributes')->where('attribute_type','=',$type)->orderBy('attribute_name')->get();
     }
 
     /**
@@ -329,13 +298,10 @@ class ProductVariationAttributes
      */
     public function searchAttributes(string $query, int $limit = 20): array
     {
-        $sql = "SELECT * FROM commerce_variation_attributes 
-                 WHERE attribute_value LIKE ? OR attribute_name LIKE ? 
-                 ORDER BY attribute_name ASC 
-                 LIMIT ?";
+    
         $searchTerm = "%{$query}%";
 
-        return $this->db->fetchAll($sql, [$searchTerm, $searchTerm, $limit]);
+        return $this->db->table('commerce_variation_attributes')->whereRaw('attribute_value LIKE ? OR attribute_name LIKE ?',[$searchTerm,$searchTerm])->orderBy('attribute_name')->limit($limit)->get();
     }
 
     /**
@@ -343,16 +309,6 @@ class ProductVariationAttributes
      */
     public function getAttributesForFiltering(int $variationId): array
     {
-        $sql = "SELECT 
-            attribute_name, 
-            attribute_type, 
-            COUNT(*) as attribute_count,
-            GROUP_CONCAT(DISTINCT attribute_value ORDER BY attribute_order ASC SEPARATOR '|') as attribute_values
-        FROM commerce_variation_attributes 
-        WHERE variation_id = ? AND is_visible = 1 
-        GROUP BY attribute_name, attribute_type 
-        ORDER BY attribute_order ASC";
-
-        return $this->db->fetchAll($sql, [$variationId]);
+        return $this->db->table('commerce_variation_attributes')->select(["attribute_name","attribute_type","COUNT(*) as attribute_count","GROUP_CONCAT(DISTINCT attribute_value ORDER BY attribute_order ASC SEPARATOR '|') as attribute_values"])->where('variation_id','=',$variationId)->where('is_visible','=',1)->groupBy('attribute_name','attribute_type')->orderBy('attribute_order')->get();
     }
 }

@@ -1,0 +1,88 @@
+# Commerce Store Plugin — User Permission Definitions
+
+super_admin:
+  db.commerce.full:
+    title: 'Full commerce database access'
+    description: 'Full access to all commerce store database tables.'
+  can_administer_store:
+    title: 'Can administer store'
+    description: 'Full store administration including settings and billing.'
+
+admin:
+  db.commerce.full:
+    title: 'Full commerce database access'
+    description: 'Full access to all commerce store database tables.'
+  can_administer_store:
+    title: 'Can administer store'
+    description: 'Full store administration.'
+
+moderator:
+  db.commerce.products.read:
+    title: 'Read products'
+    description: 'Read-only access to product tables.'
+  db.commerce.orders.read:
+    title: 'Read orders'
+    description: 'Read-only access to order tables.'
+  db.commerce.store.read:
+    title: 'Read store'
+    description: 'Read-only access to store tables.'
+
+store_owner:
+  db.commerce.store.read:
+    title: 'Read store data'
+    description: 'Read store configuration and staff.'
+  db.commerce.store.write:
+    title: 'Write store data'
+    description: 'Update store configuration.'
+  db.commerce.products.read:
+    title: 'Read products'
+    description: 'Read products and variations.'
+  db.commerce.products.write:
+    title: 'Write products'
+    description: 'Create and update products and variations.'
+  db.commerce.products.delete:
+    title: 'Delete products'
+    description: 'Delete products and variations.'
+  db.commerce.orders.read:
+    title: 'Read orders'
+    description: 'Read orders, payments and customer records.'
+  db.commerce.orders.write:
+    title: 'Write orders'
+    description: 'Create and update orders.'
+  can_manage_store:
+    title: 'Can manage store'
+    description: 'Manage own store products and orders.'
+
+store_manager:
+  db.commerce.products.read:
+    title: 'Read products'
+    description: 'Read products and variations.'
+  db.commerce.products.write:
+    title: 'Write products'
+    description: 'Create and update products and variations.'
+  db.commerce.orders.read:
+    title: 'Read orders'
+    description: 'Read orders and customer records.'
+  db.commerce.orders.write:
+    title: 'Write orders'
+    description: 'Update order status and payments.'
+  can_manage_store:
+    title: 'Can manage store'
+    description: 'Manage store products and orders.'
+
+user:
+  db.commerce.products.read:
+    title: 'Read products'
+    description: 'Browse public product listings.'
+  db.commerce.orders.read:
+    title: 'Read own orders'
+    description: 'View own order history.'
+  db.commerce.orders.write:
+    title: 'Place orders'
+    description: 'Create new orders during checkout.'
+  can_place_orders:
+    title: 'Can place orders'
+    description: 'Place new orders in the store.'
+  can_view_own_orders:
+    title: 'Can view own orders'
+    description: 'View personal order history.'

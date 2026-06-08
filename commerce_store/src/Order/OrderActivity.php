@@ -59,8 +59,7 @@ class OrderActivity
             :user_id, :customer_visible, :ip_address, :user_agent, :metadata, :created_at
         )";
 
-        $this->db->query($sql, ...$data);
-        $activityId = $this->db->lastInsertId();
+        $activityId = $this->db->table('commerce_order_activity')->insert($data);
         
         $this->logger->info('Activity added', ['activity_id' => $activityId, 'order_id' => $orderId, 'type' => $data['activity_type']]);
         
@@ -188,8 +187,7 @@ class OrderActivity
      */
     public function getActivitiesByOrder(int $orderId, int $limit = 50): array
     {
-        $sql = "SELECT * FROM commerce_order_activity WHERE order_id = ? ORDER BY created_at DESC LIMIT ?";
-        $activities = $this->db->fetchAll($sql, $orderId, $limit);
+        $activities = $this->db->table('commerce_order_activity')->where('order_id','=',$orderId)->latest()->limit($limit)->get();
         
         // Decode JSON fields
         foreach ($activities as &$activity) {
@@ -206,11 +204,8 @@ class OrderActivity
      */
     public function getCustomerVisibleActivities(int $orderId, int $limit = 50): array
     {
-        $sql = "SELECT * FROM commerce_order_activity 
-                 WHERE order_id = ? AND customer_visible = 1 
-                 ORDER BY created_at DESC 
-                 LIMIT ?";
-        $activities = $this->db->fetchAll($sql, $orderId, $limit);
+        $activities = $this->db->table('commerce_order_activity')
+            ->where('order_id','=',$orderId)->where('customer_visible','=',1)->latest()->limit($limit)->get();
         
         // Decode JSON fields
         foreach ($activities as &$activity) {
@@ -227,11 +222,8 @@ class OrderActivity
      */
     public function getActivitiesByType(string $activityType, int $limit = 50): array
     {
-        $sql = "SELECT * FROM commerce_order_activity 
-                 WHERE activity_type = ? 
-                 ORDER BY created_at DESC 
-                 LIMIT ?";
-        $activities = $this->db->fetchAll($sql, $activityType, $limit);
+        $activities = $this->db->table('commerce_order_activity')
+            ->where('activity_type','=',$activityType)->latest()->limit($limit)->get();
         
         // Decode JSON fields
         foreach ($activities as &$activity) {
@@ -248,11 +240,8 @@ class OrderActivity
      */
     public function getActivitiesByUser(int $userId, int $limit = 50): array
     {
-        $sql = "SELECT * FROM commerce_order_activity 
-                 WHERE user_id = ? 
-                 ORDER BY created_at DESC 
-                 LIMIT ?";
-        $activities = $this->db->fetchAll($sql, $userId, $limit);
+        $activities = $this->db->table('commerce_order_activity')
+            ->where('user_id','=',$userId)->latest()->limit($limit)->get();
         
         // Decode JSON fields
         foreach ($activities as &$activity) {
@@ -269,8 +258,7 @@ class OrderActivity
      */
     public function getActivity(int $activityId): ?array
     {
-        $sql = "SELECT * FROM commerce_order_activity WHERE id = ?";
-        $activity = $this->db->fetch($sql, $activityId);
+        $activity = $this->db->table('commerce_order_activity')->where('id','=',$activityId)->first();
         
         if ($activity && $activity['metadata']) {
             $activity['metadata'] = json_decode($activity['metadata'], true);
@@ -307,7 +295,10 @@ class OrderActivity
             COUNT(CASE WHEN oa.activity_type = 'admin_action' THEN 1 END) as admin_actions
         FROM commerce_order_activity oa {$whereClause}";
 
-        return $this->db->fetch($sql, ...$params);
+        $qb = $this->db->table('commerce_order_activity')->where('store_id','=',$storeId);
+        if ($startDate) $qb->where('created_at','>=',(string)$startDate);
+        if ($endDate)   $qb->where('created_at','<=',(string)$endDate);
+        return $qb->first();
     }
 
     /**
@@ -315,17 +306,11 @@ class OrderActivity
      */
     public function getActivityTimeline(int $orderId): array
     {
-        $sql = "SELECT 
-            oa.*,
-            u.email as user_email,
-            u.first_name as user_first_name,
-            u.last_name as user_last_name
-        FROM commerce_order_activity oa
-        LEFT JOIN users u ON oa.user_id = u.id
-        WHERE oa.order_id = ?
-        ORDER BY oa.created_at ASC";
-        
-        $activities = $this->db->fetchAll($sql, $orderId);
+        $activities = $this->db->table('commerce_order_activity')
+            ->leftJoin('users', 'commerce_order_activity.user_id', '=', 'users.id')
+            ->where('commerce_order_activity.order_id', '=', $orderId)
+            ->oldest('commerce_order_activity.created_at')
+            ->get();
         
         // Decode JSON fields
         foreach ($activities as &$activity) {
@@ -342,18 +327,13 @@ class OrderActivity
      */
     public function getRecentActivities(int $storeId, int $limit = 20): array
     {
-        $sql = "SELECT 
-            oa.*,
-            o.order_number,
-            c.email as customer_email
-        FROM commerce_order_activity oa
-        JOIN commerce_orders o ON oa.order_id = o.id
-        LEFT JOIN commerce_customer c ON o.customer_id = c.id
-        WHERE o.store_id = ?
-        ORDER BY oa.created_at DESC
-        LIMIT ?";
-        
-        $activities = $this->db->fetchAll($sql, $storeId, $limit);
+        $activities = $this->db->table('commerce_order_activity')
+            ->join('commerce_orders', 'commerce_order_activity.order_id', '=', 'commerce_orders.id')
+            ->leftJoin('commerce_customer', 'commerce_orders.customer_id', '=', 'commerce_customer.id')
+            ->where('commerce_orders.store_id', '=', $storeId)
+            ->latest('commerce_order_activity.created_at')
+            ->limit($limit)
+            ->get();
         
         // Decode JSON fields
         foreach ($activities as &$activity) {
@@ -386,7 +366,11 @@ class OrderActivity
         $sql .= " ORDER BY oa.created_at DESC LIMIT ?";
         $params[] = $limit;
 
-        $activities = $this->db->fetchAll($sql, ...$params);
+        $qb = $this->db->table('commerce_order_activity')->where('order_id','=',$orderId);
+        if ($activityType) $qb->where('activity_type','=',$activityType);
+        if ($startDate)    $qb->where('created_at','>=',(string)$startDate);
+        if ($endDate)      $qb->where('created_at','<=',(string)$endDate);
+        $activities = $qb->latest()->get();
         
         // Decode JSON fields
         foreach ($activities as &$activity) {
@@ -403,10 +387,9 @@ class OrderActivity
      */
     public function deleteOldActivities(int $daysOld = 365): int
     {
-        $sql = "DELETE FROM commerce_order_activity WHERE created_at < DATE_SUB(NOW(), INTERVAL ? DAY)";
-        $this->db->query($sql, [$daysOld]);
-        
-        $deletedCount = $this->db->fetch("SELECT ROW_COUNT() as deleted_count")['deleted_count'];
+        $deletedCount = $this->db->table('commerce_order_activity')
+            ->whereRaw('created_at < DATE_SUB(NOW(), INTERVAL ? DAY)', [$daysOld])
+            ->delete();
         
         $this->logger->info('Old activities deleted', ['days_old' => $daysOld, 'deleted_count' => $deletedCount]);
         

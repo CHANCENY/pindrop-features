@@ -22,14 +22,10 @@ class Store
      */
     public function getStore(int $storeId): ?array
     {
-        try {
-            $query = "SELECT * FROM commerce_stores WHERE id = :id AND deleted_at IS NULL";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute(['id' => $storeId]);
-            return $stmt->fetch() ?: null;
-        } catch (DatabaseException $e) {
-            throw new Exception("Failed to fetch store: " . $e->getMessage());
-        }
+        return $this->database->table('commerce_stores')
+            ->where('id', '=', $storeId)
+            ->whereNull('deleted_at')
+            ->first();
     }
 
     /**
@@ -37,14 +33,10 @@ class Store
      */
     public function getStoreByUserId(int $userId): ?array
     {
-        try {
-            $query = "SELECT * FROM commerce_stores WHERE user_id = :user_id AND deleted_at IS NULL";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute(['user_id' => $userId]);
-            return $stmt->fetch() ?: null;
-        } catch (DatabaseException $e) {
-            throw new Exception("Failed to fetch store by user: " . $e->getMessage());
-        }
+        return $this->database->table('commerce_stores')
+            ->where('user_id', '=', $userId)
+            ->whereNull('deleted_at')
+            ->first();
     }
 
     /**
@@ -52,14 +44,10 @@ class Store
      */
     public function getStoreBySlug(string $slug): ?array
     {
-        try {
-            $query = "SELECT * FROM commerce_stores WHERE store_slug = :slug AND deleted_at IS NULL";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute(['slug' => $slug]);
-            return $stmt->fetch() ?: null;
-        } catch (DatabaseException $e) {
-            throw new Exception("Failed to fetch store by slug: " . $e->getMessage());
-        }
+        return $this->database->table('commerce_stores')
+            ->where('store_slug', '=', $slug)
+            ->whereNull('deleted_at')
+            ->first();
     }
 
     /**
@@ -103,15 +91,7 @@ class Store
                 unset($data['store_banner']);
             }
 
-            // Build query
-            $columns = implode(', ', array_keys($data));
-            $placeholders = ':' . implode(', :', array_keys($data));
-            
-            $query = "INSERT INTO commerce_stores ($columns) VALUES ($placeholders)";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute($data);
-
-            return (int) $this->database->lastInsertId();
+            return $this->database->table('commerce_stores')->insert($data);
         } catch (DatabaseException $e) {
             throw new Exception("Failed to create store: " . $e->getMessage());
         }
@@ -160,18 +140,9 @@ class Store
                 unset($data['store_banner']);
             }
 
-            // Build SET clause
-            $setClause = [];
-            foreach ($data as $key => $value) {
-                $setClause[] = "$key = :$key";
-            }
-            $setClause = implode(', ', $setClause);
-
-            $query = "UPDATE commerce_stores SET $setClause WHERE id = :id";
-            $data['id'] = $storeId;
-            
-            $stmt = $this->database->getPdo()->prepare($query);
-            return $stmt->execute($data);
+            return (bool) $this->database->table('commerce_stores')
+                ->where('id', '=', $storeId)
+                ->update($data);
         } catch (DatabaseException $e) {
             throw new Exception("Failed to update store: " . $e->getMessage());
         }
@@ -182,16 +153,9 @@ class Store
      */
     public function deleteStore(int $storeId): bool
     {
-        try {
-            $query = "UPDATE commerce_stores SET deleted_at = :deleted_at WHERE id = :id";
-            $stmt = $this->database->getPdo()->prepare($query);
-            return $stmt->execute([
-                'id' => $storeId,
-                'deleted_at' => date('Y-m-d H:i:s')
-            ]);
-        } catch (DatabaseException $e) {
-            throw new Exception("Failed to delete store: " . $e->getMessage());
-        }
+        return (bool) $this->database->table('commerce_stores')
+            ->where('id', '=', $storeId)
+            ->update(['deleted_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')]);
     }
 
     /**
@@ -199,14 +163,12 @@ class Store
      */
     public function getStoreCategories(int $storeId): array
     {
-        try {
-            $query = "SELECT * FROM commerce_store_categories WHERE store_id = :store_id AND deleted_at IS NULL ORDER BY sort_order, category_name";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute(['store_id' => $storeId]);
-            return $stmt->fetchAll();
-        } catch (DatabaseException $e) {
-            throw new Exception("Failed to fetch store categories: " . $e->getMessage());
-        }
+        return $this->database->table('commerce_store_categories')
+            ->where('store_id', '=', $storeId)
+            ->whereNull('deleted_at')
+            ->orderBy('sort_order')
+            ->orderBy('category_name')
+            ->get();
     }
 
     /**
@@ -228,14 +190,7 @@ class Store
             // Ensure unique slug within store
             $data['category_slug'] = $this->ensureUniqueCategorySlug($storeId, $data['category_slug']);
 
-            $columns = implode(', ', array_keys($data));
-            $placeholders = ':' . implode(', :', array_keys($data));
-            
-            $query = "INSERT INTO commerce_store_categories ($columns) VALUES ($placeholders)";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute($data);
-
-            return (int) $this->database->lastInsertId();
+            return $this->database->table('commerce_store_categories')->insert($data);
         } catch (DatabaseException $e) {
             throw new Exception("Failed to add category: " . $e->getMessage());
         }
@@ -246,18 +201,15 @@ class Store
      */
     public function getStoreStaff(int $storeId): array
     {
-        try {
-            $query = "SELECT ss.*, u.username, u.email, u.first_name, u.last_name 
-                     FROM commerce_store_staff ss 
-                     JOIN users u ON ss.user_id = u.id 
-                     WHERE ss.store_id = :store_id AND ss.deleted_at IS NULL 
-                     ORDER BY ss.role, ss.created_at";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute(['store_id' => $storeId]);
-            return $stmt->fetchAll();
-        } catch (DatabaseException $e) {
-            throw new Exception("Failed to fetch store staff: " . $e->getMessage());
-        }
+        // JOIN with users table — users is a core table, readable by admin+
+        return $this->database->table('commerce_store_staff')
+            ->select(['commerce_store_staff.*'])
+            ->leftJoin('users', 'commerce_store_staff.user_id', '=', 'users.id')
+            ->where('commerce_store_staff.store_id', '=', $storeId)
+            ->whereNull('commerce_store_staff.deleted_at')
+            ->orderBy('commerce_store_staff.role')
+            ->orderBy('commerce_store_staff.created_at')
+            ->get();
     }
 
     /**
@@ -276,14 +228,7 @@ class Store
                 'updated_at' => date('Y-m-d H:i:s')
             ];
 
-            $columns = implode(', ', array_keys($data));
-            $placeholders = ':' . implode(', :', array_keys($data));
-            
-            $query = "INSERT INTO commerce_store_staff ($columns) VALUES ($placeholders)";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute($data);
-
-            return (int) $this->database->lastInsertId();
+            return $this->database->table('commerce_store_staff')->insert($data);
         } catch (DatabaseException $e) {
             throw new Exception("Failed to add staff: " . $e->getMessage());
         }
@@ -309,11 +254,16 @@ class Store
                 return true;
             }
 
-            $setClause[] = "updated_at = :updated_at";
-            $query = "UPDATE commerce_stores SET " . implode(', ', $setClause) . " WHERE id = :id";
-            
-            $stmt = $this->database->getPdo()->prepare($query);
-            return $stmt->execute($data);
+            $updateData = [];
+            foreach ($stats as $k => $v) {
+                if (in_array($k, ['total_sales', 'total_orders', 'rating_count', 'rating_average'])) {
+                    $updateData[$k] = $v;
+                }
+            }
+            $updateData['updated_at'] = date('Y-m-d H:i:s');
+            return (bool) $this->database->table('commerce_stores')
+                ->where('id', '=', $storeId)
+                ->update($updateData);
         } catch (DatabaseException $e) {
             throw new Exception("Failed to update store stats: " . $e->getMessage());
         }
@@ -411,22 +361,16 @@ class Store
         $counter = 1;
 
         while (true) {
-            $query = "SELECT id FROM commerce_stores WHERE store_slug = :slug AND deleted_at IS NULL";
-            $params = ['slug' => $slug];
-
+            $qb = $this->database->table('commerce_stores')
+                ->select(['id'])
+                ->where('store_slug', '=', $slug)
+                ->whereNull('deleted_at');
             if ($excludeId) {
-                $query .= " AND id != :exclude_id";
-                $params['exclude_id'] = $excludeId;
+                $qb->where('id', '!=', $excludeId);
             }
-
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute($params);
-            $existing = $stmt->fetch();
-
-            if (!$existing) {
+            if (!$qb->exists()) {
                 break;
             }
-
             $slug = $originalSlug . '-' . $counter;
             $counter++;
         }
@@ -443,22 +387,17 @@ class Store
         $counter = 1;
 
         while (true) {
-            $query = "SELECT id FROM commerce_store_categories WHERE store_id = :store_id AND category_slug = :slug AND deleted_at IS NULL";
-            $params = ['store_id' => $storeId, 'slug' => $slug];
-
+            $qb = $this->database->table('commerce_store_categories')
+                ->select(['id'])
+                ->where('store_id', '=', $storeId)
+                ->where('category_slug', '=', $slug)
+                ->whereNull('deleted_at');
             if ($excludeId) {
-                $query .= " AND id != :exclude_id";
-                $params['exclude_id'] = $excludeId;
+                $qb->where('id', '!=', $excludeId);
             }
-
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute($params);
-            $existing = $stmt->fetch();
-
-            if (!$existing) {
+            if (!$qb->exists()) {
                 break;
             }
-
             $slug = $originalSlug . '-' . $counter;
             $counter++;
         }
@@ -489,14 +428,11 @@ class Store
      */
     public function userOwnsStore(int $userId, int $storeId): bool
     {
-        try {
-            $query = "SELECT id FROM commerce_stores WHERE id = :store_id AND user_id = :user_id AND deleted_at IS NULL";
-            $stmt = $this->database->getPdo()->prepare($query);
-            $stmt->execute(['store_id' => $storeId, 'user_id' => $userId]);
-            return (bool) $stmt->fetch();
-        } catch (DatabaseException $e) {
-            return false;
-        }
+        return $this->database->table('commerce_stores')
+            ->where('id', '=', $storeId)
+            ->where('user_id', '=', $userId)
+            ->whereNull('deleted_at')
+            ->exists();
     }
 
     /**

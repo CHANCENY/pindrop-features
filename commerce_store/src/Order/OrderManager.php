@@ -4,6 +4,7 @@ namespace Simp\Pindrop\Modules\commerce_store\src\Order;
 
 use Simp\Pindrop\Database\DatabaseService;
 use Simp\Pindrop\Logger\LoggerInterface;
+use Simp\Pindrop\Modules\commerce_store\src\Order\OrderActivity;
 use Simp\Pindrop\Modules\commerce_store\src\Shipment\ShipmentMethodManager;
 
 class OrderManager
@@ -76,7 +77,7 @@ class OrderManager
     {
         try {
             // Start transaction
-            $this->db->query("START TRANSACTION");
+            $this->db->beginTransaction();
 
             // Create or get customer
             $customerId = $orderData['customer_id'];
@@ -116,7 +117,7 @@ class OrderManager
             ]);
 
             // Commit transaction
-            $this->db->query("COMMIT");
+            $this->db->commit();
 
             $this->logger->info('Complete order created', [
                 'order_id' => $orderId,
@@ -134,7 +135,7 @@ class OrderManager
 
         } catch (\Exception $e) {
             // Rollback on error
-            $this->db->query("ROLLBACK");
+            $this->db->rollback();
             $this->logger->error('Order creation failed', ['error' => $e->getMessage()]);
             throw $e;
         }
@@ -147,7 +148,7 @@ class OrderManager
     {
         try {
             // Start transaction
-            $this->db->query("START TRANSACTION");
+            $this->db->beginTransaction();
 
             // Create payment
             $paymentData['order_id'] = $orderId;
@@ -160,7 +161,7 @@ class OrderManager
             $this->orderActivity->addPaymentUpdate($orderId, 'processing', null, 'Payment initiated');
 
             // Commit transaction
-            $this->db->query("COMMIT");
+            $this->db->commit();
 
             $this->logger->info('Order payment processed', [
                 'order_id' => $orderId,
@@ -171,7 +172,7 @@ class OrderManager
 
         } catch (\Exception $e) {
             // Rollback on error
-            $this->db->query("ROLLBACK");
+            $this->db->rollback();
             $this->logger->error('Payment processing failed', ['error' => $e->getMessage()]);
             throw $e;
         }
@@ -184,7 +185,7 @@ class OrderManager
     {
         try {
             // Start transaction
-            $this->db->query("START TRANSACTION");
+            $this->db->beginTransaction();
 
             // Get order details
             $order = $this->order->getOrder($orderId);
@@ -216,7 +217,7 @@ class OrderManager
             ]);
 
             // Commit transaction
-            $this->db->query("COMMIT");
+            $this->db->commit();
 
             $this->logger->info('Order completed with payment', ['order_id' => $orderId]);
 
@@ -224,7 +225,7 @@ class OrderManager
 
         } catch (\Exception $e) {
             // Rollback on error
-            $this->db->query("ROLLBACK");
+            $this->db->rollback();
             $this->logger->error('Order completion failed', ['error' => $e->getMessage()]);
             throw $e;
         }
@@ -237,7 +238,7 @@ class OrderManager
     {
         try {
             // Start transaction
-            $this->db->query("START TRANSACTION");
+            $this->db->beginTransaction();
 
             // Get order details
             $order = $this->order->getOrder($orderId);
@@ -267,7 +268,7 @@ class OrderManager
             ]);
 
             // Commit transaction
-            $this->db->query("COMMIT");
+            $this->db->commit();
 
             $this->logger->info('Order cancelled with refund', ['order_id' => $orderId, 'reason' => $reason]);
 
@@ -275,7 +276,7 @@ class OrderManager
 
         } catch (\Exception $e) {
             // Rollback on error
-            $this->db->query("ROLLBACK");
+            $this->db->rollback();
             $this->logger->error('Order cancellation failed', ['error' => $e->getMessage()]);
             throw $e;
         }
@@ -381,7 +382,7 @@ class OrderManager
         GROUP BY DATE(o.created_at)
         ORDER BY date DESC";
 
-        return $this->db->fetchAll($sql, $storeId, $startDate, $endDate);
+        return $this->db->table('commerce_orders')->where('store_id','=',$storeId)->whereBetween('created_at',$startDate,$endDate)->latest()->get();
     }
 
     /**

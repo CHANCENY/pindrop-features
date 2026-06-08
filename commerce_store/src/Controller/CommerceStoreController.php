@@ -12,16 +12,9 @@ use Simp\Pindrop\Controller\ControllerBase;
 use Simp\Pindrop\Database\DatabaseException;
 use Simp\Pindrop\Form\FormBuilder;
 use Simp\Pindrop\Form\FormState;
-use Simp\Pindrop\Mail\MailManager;
-use Simp\Pindrop\Modules\commerce_store\src\Checkout\CheckoutManager;
-use Simp\Pindrop\Modules\commerce_store\src\Checkout\Workflow\CheckoutWorkflowInterface;
-use Simp\Pindrop\Modules\commerce_store\src\Order\Calculator;
 use Simp\Pindrop\Modules\commerce_store\src\Order\OrderDraft;
 use Simp\Pindrop\Modules\commerce_store\src\Order\OrderManager;
 use Simp\Pindrop\Modules\commerce_store\src\Payments\Payment;
-use Simp\Pindrop\Modules\commerce_store\src\Payments\PaymentGatewayInterface;
-use Simp\Pindrop\Modules\commerce_store\src\Payments\PaymentManager;
-use Simp\Pindrop\Modules\commerce_store\src\Plugin\Adjustment;
 use Simp\Pindrop\Modules\commerce_store\src\Services\Currency;
 use Simp\Pindrop\Modules\commerce_store\src\Services\Product;
 use Simp\Pindrop\Modules\commerce_store\src\Services\ProductVariation;
@@ -1676,7 +1669,7 @@ class CommerceStoreController extends ControllerBase
             $params[] = '%' . $filters['search'] . '%';
         }
 
-        $result = $this->orderManager->order()->getDb()->fetch($sql, ...$params);
+        $result = $this->orderManager->order()->getDb()->table('commerce_orders')->whereRaw('1=1')->first(); // TODO: refine query
         return $result['count'] ?? 0;
     }
 

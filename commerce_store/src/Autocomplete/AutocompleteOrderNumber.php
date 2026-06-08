@@ -82,7 +82,10 @@ WHERE commerce_products.name LIKE :q1
 
        $queryLine .= " LIMIT {$limit}";
 
-        $results = $this->databaseService->fetchAll($queryLine, ...$g = ['q1' => "%{$query}%"]);
+        $results = $this->databaseService->table('commerce_orders')
+                ->select(['order_number','id'])
+                ->whereRaw('order_number LIKE ?', ["%{$query}%"])
+                ->limit(10)->get();
 
         try {
             return $this->formatResponse($results);

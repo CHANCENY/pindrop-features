@@ -313,8 +313,11 @@ class Currency
      */
     public function getDefaultCurrency(): string
     {
-        $query = "SELECT currency FROM commerce_stores LIMIT 1";
-        return $this->database->query($query)->fetchColumn() ?? "USD";
+        $result = $this->database->table('commerce_stores')
+            ->select(['currency'])
+            ->limit(1)
+            ->value('currency');
+        return $result ?? 'USD';
     }
 
     /**

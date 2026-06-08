@@ -63,8 +63,7 @@ class Payment
             :failure_reason, :notes, :created_at, :updated_at
         )";
 
-        $this->db->query($sql, $data);
-        $paymentId = $this->db->lastInsertId();
+        $paymentId = $this->db->table('commerce_payment')->insert($data);
         
         $this->logger->info('Payment created', ['payment_id' => $paymentId, 'order_id' => $data['order_id'], 'amount' => $data['amount']]);
         
@@ -76,8 +75,7 @@ class Payment
      */
     public function getPayment(int $paymentId): ?array
     {
-        $sql = "SELECT * FROM commerce_payment WHERE id = ?";
-        $payment = $this->db->fetch($sql, $paymentId);
+        $payment = $this->db->table('commerce_payment')->where('id','=',$paymentId)->first();
         
         if ($payment && $payment['gateway_response']) {
             $payment['gateway_response'] = json_decode($payment['gateway_response'], true);
@@ -91,8 +89,7 @@ class Payment
      */
     public function getPaymentsByOrder(int $orderId): array
     {
-        $sql = "SELECT * FROM commerce_payment WHERE order_id = ? ORDER BY created_at ASC";
-        $payments = $this->db->fetchAll($sql, $orderId);
+        $payments = $this->db->table('commerce_payment')->where('order_id','=',$orderId)->oldest()->get();
         
         // Decode JSON fields
         foreach ($payments as &$payment) {
@@ -109,8 +106,7 @@ class Payment
      */
     public function getPaymentsByStatus(string $status, int $limit = 50): array
     {
-        $sql = "SELECT * FROM commerce_payment WHERE status = ? ORDER BY created_at DESC LIMIT ?";
-        $payments = $this->db->fetchAll($sql, $status, $limit);
+        $payments = $this->db->table('commerce_payment')->where('status','=',$status)->latest()->limit($limit)->get();
         
         // Decode JSON fields
         foreach ($payments as &$payment) {
@@ -127,8 +123,7 @@ class Payment
      */
     public function getPaymentsByMethod(string $paymentMethod, int $limit = 50): array
     {
-        $sql = "SELECT * FROM commerce_payment WHERE payment_method = ? ORDER BY created_at DESC LIMIT ?";
-        $payments = $this->db->fetchAll($sql, $paymentMethod, $limit);
+        $payments = $this->db->table('commerce_payment')->where('payment_method','=',$paymentMethod)->latest()->limit($limit)->get();
         
         // Decode JSON fields
         foreach ($payments as &$payment) {
@@ -150,8 +145,7 @@ class Payment
             throw new \InvalidArgumentException("Invalid status: {$status}");
         }
 
-        $sql = "UPDATE commerce_payment SET status = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, $status, date('Y-m-d H:i:s'), $paymentId);
+        $this->db->table('commerce_payment')->where('id','=',$paymentId)->update(['status'=>$status,'updated_at'=>date('Y-m-d H:i:s')]);
         
         $this->logger->info('Payment status updated', ['payment_id' => $paymentId, 'status' => $status]);
         
@@ -170,8 +164,7 @@ class Payment
             'gateway_response' => json_encode($gatewayResponse)
         ];
 
-        $sql = "UPDATE commerce_payment SET status = ?, processed_at = ?, gateway_response = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, $data['status'], $data['processed_at'], $data['gateway_response'], $data['updated_at'], $paymentId);
+        $this->db->table('commerce_payment')->where('id','=',$paymentId)->update($data);
         
         $this->logger->info('Payment processed', ['payment_id' => $paymentId, 'gateway_response' => $gatewayResponse]);
         
@@ -190,8 +183,7 @@ class Payment
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
-        $sql = "UPDATE commerce_payment SET status = ?, failure_reason = ?, gateway_response = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, $data['status'], $data['failure_reason'], $data['gateway_response'], $data['updated_at'], $paymentId);
+        $this->db->table('commerce_payment')->where('id','=',$paymentId)->update($data);
         
         $this->logger->error('Payment failed', ['payment_id' => $paymentId, 'reason' => $failureReason]);
         
@@ -219,8 +211,7 @@ class Payment
             'notes' => ($payment['notes'] ?? '') . "\nRefunded: {$reason} ({$refundAmount})"
         ];
 
-        $sql = "UPDATE commerce_payment SET status = ?, refunded_at = ?, notes = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, $data['status'], $data['refunded_at'], $data['notes'], $data['updated_at'], $paymentId);
+        $this->db->table('commerce_payment')->where('id','=',$paymentId)->update($data);
         
         $this->logger->info('Payment refunded', ['payment_id' => $paymentId, 'amount' => $refundAmount, 'reason' => $reason]);
         
@@ -239,8 +230,7 @@ class Payment
             'notes' => ($this->getPayment($paymentId)['notes'] ?? '') . "\nVoided: {$reason}"
         ];
 
-        $sql = "UPDATE commerce_payment SET status = ?, payment_type = ?, notes = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, $data['status'], $data['payment_type'], $data['notes'], $data['updated_at'], $paymentId);
+        $this->db->table('commerce_payment')->where('id','=',$paymentId)->update($data);
         
         $this->logger->info('Payment voided', ['payment_id' => $paymentId, 'reason' => $reason]);
         

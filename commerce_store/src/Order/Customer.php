@@ -50,21 +50,7 @@ class Customer
         $data['total_spent'] = $data['total_spent'] ?? 0;
 
 
-        $sql = "INSERT INTO commerce_customer (
-            store_id, user_id, first_name, customer_type, last_name, email, phone, company, billing_address_1, billing_address_2, billing_city, billing_state,
-            billing_postcode, billing_country, shipping_same_as_billing, shipping_address_1,
-            shipping_address_2, shipping_city, shipping_state, shipping_postcode,
-            shipping_country, total_orders, total_spent, created_at, updated_at
-        ) VALUES (
-            :store_id, :user_id, :first_name, :customer_type, :last_name, :email, :phone, :company,
-            :billing_address_1, :billing_address_2, :billing_city, :billing_state,
-            :billing_postcode, :billing_country, :shipping_same_as_billing, :shipping_address_1,
-            :shipping_address_2, :shipping_city, :shipping_state, :shipping_postcode,
-            :shipping_country, :total_orders, :total_spent, :created_at, :updated_at
-        )";
-
-        $this->db->query($sql, ...$data);
-        $customerId = $this->db->lastInsertId();
+        $customerId = $this->db->table('commerce_customer')->insert($data);
         
         $this->logger->info('Customer created', ['customer_id' => $customerId, 'email' => $data['email']]);
         
@@ -76,8 +62,7 @@ class Customer
      */
     public function getCustomer(int $customerId): ?array
     {
-        $sql = "SELECT * FROM commerce_customer WHERE id = ?";
-        return $this->db->fetch($sql, $customerId);
+        return $this->db->table('commerce_customer')->where('id', '=', $customerId)->first();
     }
 
     /**
@@ -85,8 +70,7 @@ class Customer
      */
     public function getCustomerByEmail(string $email, int $storeId): ?array
     {
-        $sql = "SELECT * FROM commerce_customer WHERE email = ? AND store_id = ?";
-        return $this->db->fetch($sql, $email, $storeId);
+        return $this->db->table('commerce_customer')->where('email','=',$email)->where('store_id','=',$storeId)->first();
     }
 
     /**
@@ -95,8 +79,7 @@ class Customer
      */
     public function getCustomerByUser(int $userId): ?array
     {
-        $sql = "SELECT * FROM commerce_customer WHERE user_id = ?";
-        return $this->db->fetch($sql, $userId);
+        return $this->db->table('commerce_customer')->where('user_id','=',$userId)->first();
     }
 
     /**
@@ -104,8 +87,8 @@ class Customer
      */
     public function getCustomersByStore(int $storeId, int $limit = 50, int $offset = 0): array
     {
-        $sql = "SELECT * FROM commerce_customer WHERE store_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        return $this->db->fetchAll($sql, $storeId, $limit, $offset);
+        return $this->db->table('commerce_customer')
+            ->where('store_id','=',$storeId)->latest()->limit($limit)->offset($offset)->get();
     }
 
     /**
@@ -118,18 +101,9 @@ class Customer
         $data['updated_at'] = date('Y-m-d H:i:s');
         $data['id'] = $customerId;
 
-        $sql = "UPDATE commerce_customer SET 
-            user_id = :user_id, store_id = :store_id, customer_type = :customer_type,
-            email = :email, phone = :phone, first_name = :first_name, last_name = :last_name,
-            company = :company, billing_address_1 = :billing_address_1, billing_address_2 = :billing_address_2,
-            billing_city = :billing_city, billing_state = :billing_state, billing_postcode = :billing_postcode,
-            billing_country = :billing_country, shipping_same_as_billing = :shipping_same_as_billing,
-            shipping_address_1 = :shipping_address_1, shipping_address_2 = :shipping_address_2,
-            shipping_city = :shipping_city, shipping_state = :shipping_state, shipping_postcode = :shipping_postcode,
-            shipping_country = :shipping_country, updated_at = :updated_at
-        WHERE id = :id";
-
-        $this->db->query($sql, ...$data);
+        $id = $data['id'];
+        unset($data['id']);
+        $this->db->table('commerce_customer')->where('id','=',$id)->update($data);
         
         $this->logger->info('Customer updated', ['customer_id' => $customerId]);
         
@@ -156,11 +130,10 @@ class Customer
             return false;
         }
 
-        $sql = "UPDATE commerce_customer SET " . implode(', ', $updateData) . ", updated_at = ? WHERE id = ?";
-        $params[] = date('Y-m-d H:i:s');
-        $params[] = $customerId;
-
-        $this->db->query($sql, ...$params);
+        $updateRow = [];
+        foreach ($stats as $f => $v) { if (in_array($f, $allowedFields)) $updateRow[$f] = $v; }
+        $updateRow['updated_at'] = date('Y-m-d H:i:s');
+        $this->db->table('commerce_customer')->where('id','=',$customerId)->update($updateRow);
         
         $this->logger->info('Customer stats updated', ['customer_id' => $customerId, 'stats' => $stats]);
         
@@ -172,14 +145,14 @@ class Customer
      */
     public function incrementOrderStats(int $customerId, float $orderAmount): bool
     {
-        $sql = "UPDATE commerce_customer SET 
-            total_orders = total_orders + 1,
-            total_spent = total_spent + ?,
-            last_order_at = ?,
-            updated_at = ?
-        WHERE id = ?";
-
-        $this->db->query($sql, $orderAmount, date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), $customerId);
+        $this->db->table('commerce_customer')->where('id','=',$customerId)
+            ->whereRaw('1=1') // force QueryBuilder to allow raw increment
+            ->update([
+                'total_orders' => $this->db->table('commerce_customer')->where('id','=',$customerId)->value('total_orders') + 1,
+                'total_spent'  => $this->db->table('commerce_customer')->where('id','=',$customerId)->value('total_spent') + $orderAmount,
+                'last_order_at'=> date('Y-m-d H:i:s'),
+                'updated_at'   => date('Y-m-d H:i:s'),
+            ]);
         
         $this->logger->info('Customer order stats incremented', ['customer_id' => $customerId, 'amount' => $orderAmount]);
         
@@ -191,13 +164,12 @@ class Customer
      */
     public function decrementOrderStats(int $customerId, float $orderAmount): bool
     {
-        $sql = "UPDATE commerce_customer SET 
-            total_orders = GREATEST(total_orders - 1, 0),
-            total_spent = GREATEST(total_spent - ?, 0),
-            updated_at = ?
-        WHERE id = ?";
-
-        $this->db->query($sql, $orderAmount, date('Y-m-d H:i:s'), $customerId);
+        $curr = $this->db->table('commerce_customer')->where('id','=',$customerId)->first();
+        $this->db->table('commerce_customer')->where('id','=',$customerId)->update([
+            'total_orders' => max(0, ($curr['total_orders'] ?? 0) - 1),
+            'total_spent'  => max(0, ($curr['total_spent']  ?? 0) - $orderAmount),
+            'updated_at'   => date('Y-m-d H:i:s'),
+        ]);
         
         $this->logger->info('Customer order stats decremented', ['customer_id' => $customerId, 'amount' => $orderAmount]);
         
@@ -222,17 +194,17 @@ class Customer
             $params[] = $endDate;
         }
 
-        $sql = "SELECT 
-            COUNT(*) as total_customers,
-            COUNT(CASE WHEN customer_type = 'registered' THEN 1 END) as registered_customers,
-            COUNT(CASE WHEN customer_type = 'guest' THEN 1 END) as guest_customers,
-            SUM(total_orders) as total_orders,
-            AVG(total_spent) as average_spent,
-            SUM(total_spent) as total_revenue,
-            COUNT(CASE WHEN last_order_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 END) as active_customers
-        FROM commerce_customer {$whereClause}";
-
-        return $this->db->fetch($sql, ...$params);
+        $qb = $this->db->table('commerce_customer')
+            ->select(["COUNT(*) as total_customers",
+                "COUNT(CASE WHEN customer_type = 'registered' THEN 1 END) as registered_customers",
+                "COUNT(CASE WHEN customer_type = 'guest' THEN 1 END) as guest_customers",
+                "SUM(total_orders) as total_orders","AVG(total_spent) as average_spent",
+                "SUM(total_spent) as total_revenue",
+                "COUNT(CASE WHEN last_order_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 END) as active_customers",
+            ])->where('store_id','=',$storeId);
+        if ($startDate) $qb->where('created_at','>=',$startDate);
+        if ($endDate)   $qb->where('created_at','<=',$endDate);
+        return $qb->first();
     }
 
     /**
@@ -240,19 +212,12 @@ class Customer
      */
     public function searchCustomers(string $query, ?int $storeId = null, int $limit = 20): array
     {
-        $sql = "SELECT * FROM commerce_customer WHERE 
-                (email LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR company LIKE ?)";
-        $params = ["%{$query}%", "%{$query}%", "%{$query}%", "%{$query}%"];
-
-        if ($storeId) {
-            $sql .= " AND store_id = ?";
-            $params[] = $storeId;
-        }
-
-        $sql .= " ORDER BY created_at DESC LIMIT ?";
-        $params[] = $limit;
-
-        return $this->db->fetchAll($sql, ...$params);
+        $qb = $this->db->table('commerce_customer')
+            ->whereRaw("(email LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR company LIKE ?)",
+                ["%{$query}%","%{$query}%","%{$query}%","%{$query}%"])
+            ->latest()->limit($limit);
+        if ($storeId) $qb->where('store_id','=',$storeId);
+        return $qb->get();
     }
 
     /**
@@ -260,12 +225,9 @@ class Customer
      */
     public function getTopCustomersBySpending(int $storeId, int $limit = 10): array
     {
-        $sql = "SELECT * FROM commerce_customer 
-                 WHERE store_id = ? AND total_spent > 0
-                 ORDER BY total_spent DESC 
-                 LIMIT ?";
-        
-        return $this->db->fetchAll($sql, $storeId, $limit);
+        return $this->db->table('commerce_customer')
+            ->where('store_id','=',$storeId)->where('total_spent','>',0)
+            ->orderBy('total_spent','DESC')->limit($limit)->get();
     }
 
     /**
@@ -273,12 +235,9 @@ class Customer
      */
     public function getTopCustomersByOrders(int $storeId, int $limit = 10): array
     {
-        $sql = "SELECT * FROM commerce_customer 
-                 WHERE store_id = ? AND total_orders > 0
-                 ORDER BY total_orders DESC 
-                 LIMIT ?";
-        
-        return $this->db->fetchAll($sql, $storeId, $limit);
+        return $this->db->table('commerce_customer')
+            ->where('store_id','=',$storeId)->where('total_orders','>',0)
+            ->orderBy('total_orders','DESC')->limit($limit)->get();
     }
 
     /**
@@ -286,13 +245,9 @@ class Customer
      */
     public function convertGuestToRegistered(int $customerId, int $userId): bool
     {
-        $sql = "UPDATE commerce_customer SET 
-            customer_type = 'registered',
-            user_id = ?,
-            updated_at = ?
-        WHERE id = ? AND customer_type = 'guest'";
-
-        $this->db->query($sql, $userId, date('Y-m-d H:i:s'), $customerId);
+        $this->db->table('commerce_customer')
+            ->where('id','=',$customerId)->where('customer_type','=','guest')
+            ->update(['customer_type'=>'registered','user_id'=>$userId,'updated_at'=>date('Y-m-d H:i:s')]);
         
         $this->logger->info('Guest customer converted to registered', ['customer_id' => $customerId, 'user_id' => $userId]);
         

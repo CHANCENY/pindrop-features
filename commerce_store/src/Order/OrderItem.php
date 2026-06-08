@@ -64,22 +64,7 @@ class OrderItem
             $itemData['item_attributes'] = null;
         }
 
-        $sql = "INSERT INTO commerce_order_item (
-    order_id, product_id, variation_id, quantity, unit_price, total_price,
-    tax_amount, discount_amount, item_name, item_sku, item_attributes,
-    weight, dimensions_length, dimensions_width, dimensions_height,
-    shipping_class, `virtual`, downloadable, `status`, notes,
-    created_at, updated_at
-) VALUES (
-    :order_id, :product_id, :variation_id, :quantity, :unit_price, :total_price,
-    :tax_amount, :discount_amount, :item_name, :item_sku, :item_attributes,
-    :weight, :dimensions_length, :dimensions_width, :dimensions_height,
-    :shipping_class, :virtual, :downloadable, :status, :notes,
-    :created_at, :updated_at
-);
-";
-        $this->db->query($sql, ...$itemData);
-        $itemId = $this->db->lastInsertId();
+        $itemId = $this->db->table('commerce_order_item')->insert($itemData);
         
         $this->logger->info('Order item added', ['order_id' => $orderId, 'item_id' => $itemId, 'product_id' => $itemData['product_id']]);
         
@@ -91,16 +76,13 @@ class OrderItem
      */
     public function getOrderItems(int $orderId): array
     {
-        $sql = "SELECT * FROM commerce_order_item WHERE order_id = ? ORDER BY created_at ASC";
-        $items = $this->db->fetchAll($sql, $orderId);
-        
-        // Decode JSON fields
+        $items = $this->db->table('commerce_order_item')
+            ->where('order_id', '=', $orderId)
+            ->oldest('created_at')
+            ->get();
         foreach ($items as &$item) {
-            if ($item['item_attributes']) {
-                $item['item_attributes'] = json_decode($item['item_attributes'], true);
-            }
+            if ($item['item_attributes']) $item['item_attributes'] = json_decode($item['item_attributes'], true);
         }
-        
         return $items;
     }
 
@@ -109,13 +91,8 @@ class OrderItem
      */
     public function getOrderItem(int $itemId): ?array
     {
-        $sql = "SELECT * FROM commerce_order_item WHERE id = ?";
-        $item = $this->db->fetch($sql, $itemId);
-        
-        if ($item && $item['item_attributes']) {
-            $item['item_attributes'] = json_decode($item['item_attributes'], true);
-        }
-        
+        $item = $this->db->table('commerce_order_item')->where('id', '=', $itemId)->first();
+        if ($item && $item['item_attributes']) $item['item_attributes'] = json_decode($item['item_attributes'], true);
         return $item;
     }
 
@@ -129,8 +106,8 @@ class OrderItem
             throw new \InvalidArgumentException("Invalid status: {$status}");
         }
 
-        $sql = "UPDATE commerce_order_item SET status = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, $status, date('Y-m-d H:i:s'), $itemId);
+        $this->db->table('commerce_order_item')->where('id', '=', $itemId)
+            ->update(['status' => $status, 'updated_at' => date('Y-m-d H:i:s')]);
         
         $this->logger->info('Order item status updated', ['item_id' => $itemId, 'status' => $status]);
         
@@ -152,10 +129,10 @@ class OrderItem
 
             if (!empty($productVariation['stock_status']) && $productVariation['stock_status'] === 'instock') {
                 if (!empty($productVariation['stock_quantity']) && $productVariation['stock_quantity'] >= $count) {
-                    $sql = "UPDATE commerce_order_item SET quantity = ?, updated_at = ? WHERE id = ?";
-                    $r = $this->db->query($sql, $count, date('Y-m-d H:i:s'), $itemId);
+                    $updated = $this->db->table('commerce_order_item')->where('id', '=', $itemId)
+                        ->update(['quantity' => $count, 'updated_at' => date('Y-m-d H:i:s')]);
                     $this->logger->info('Order item quantity updated', ['item_id' => $itemId, 'count' => $count]);
-                    return $r instanceof \PDOStatement ? $r->rowCount() : 0;
+                    return $updated;
                 }
             }
 
@@ -168,8 +145,7 @@ class OrderItem
      */
     public function deleteOrderItem(int $itemId): bool
     {
-        $sql = "DELETE FROM commerce_order_item WHERE id = ?";
-        $this->db->query($sql, $itemId);
+        $this->db->table('commerce_order_item')->where('id', '=', $itemId)->delete();
         
         $this->logger->info('Order item deleted', ['item_id' => $itemId]);
         
@@ -181,8 +157,7 @@ class OrderItem
      */
     public function deleteItems(int $orderId): int
     {
-        $sql = "DELETE FROM commerce_order_item WHERE order_id = ?";
-        return $this->db->query($sql, $orderId)->rowCount();
+        return $this->db->table('commerce_order_item')->where('order_id', '=', $orderId)->delete();
     }
 
     /**
@@ -190,8 +165,8 @@ class OrderItem
      */
     public function getItemsByProduct(int $productId, int $limit = 50): array
     {
-        $sql = "SELECT * FROM commerce_order_item WHERE product_id = ? ORDER BY created_at DESC LIMIT ?";
-        $items = $this->db->fetchAll($sql, $productId, $limit);
+        $items = $this->db->table('commerce_order_item')
+            ->where('product_id', '=', $productId)->latest()->limit($limit)->get();
         
         // Decode JSON fields
         foreach ($items as &$item) {
@@ -208,8 +183,8 @@ class OrderItem
      */
     public function getItemsByVariation(int $variationId, int $limit = 50): array
     {
-        $sql = "SELECT * FROM commerce_order_item WHERE variation_id = ? ORDER BY created_at DESC LIMIT ?";
-        $items = $this->db->fetchAll($sql, $variationId, $limit);
+        $items = $this->db->table('commerce_order_item')
+            ->where('variation_id', '=', $variationId)->latest()->limit($limit)->get();
         
         // Decode JSON fields
         foreach ($items as &$item) {
@@ -239,17 +214,20 @@ class OrderItem
             $params[] = $endDate;
         }
 
-        $sql = "SELECT 
-            COUNT(*) as total_items,
-            SUM(oi.quantity) as total_quantity,
-            SUM(oi.total_price) as total_revenue,
-            AVG(oi.unit_price) as average_price,
-            COUNT(DISTINCT oi.product_id) as unique_products,
-            COUNT(CASE WHEN oi.virtual = 1 THEN 1 END) as virtual_items,
-            COUNT(CASE WHEN oi.downloadable = 1 THEN 1 END) as downloadable_items
-        FROM commerce_order_item oi {$whereClause}";
-
-        return $this->db->fetch($sql, ...$params);
+        $qb = $this->db->table('commerce_order_item')
+            ->select([
+                'COUNT(*) as total_items',
+                'SUM(quantity) as total_quantity',
+                'SUM(total_price) as total_revenue',
+                'AVG(unit_price) as average_price',
+                'COUNT(DISTINCT product_id) as unique_products',
+                'COUNT(CASE WHEN virtual = 1 THEN 1 END) as virtual_items',
+                'COUNT(CASE WHEN downloadable = 1 THEN 1 END) as downloadable_items',
+            ])
+            ->whereRaw('order_id IN (SELECT id FROM commerce_orders WHERE store_id = ?)', [$storeId]);
+        if ($startDate) $qb->where('created_at', '>=', $startDate);
+        if ($endDate)   $qb->where('created_at', '<=', $endDate);
+        return $qb->first();
     }
 
     /**
@@ -257,21 +235,21 @@ class OrderItem
      */
     public function getTopSellingProducts(int $storeId, int $limit = 10): array
     {
-        $sql = "SELECT 
-            oi.product_id,
-            oi.item_name,
-            SUM(oi.quantity) as total_sold,
-            SUM(oi.total_price) as total_revenue,
-            AVG(oi.unit_price) as average_price,
-            COUNT(*) as order_count
-        FROM commerce_order_item oi
-        JOIN commerce_orders o ON oi.order_id = o.id
-        WHERE o.store_id = ?
-        GROUP BY oi.product_id, oi.item_name
-        ORDER BY total_sold DESC
-        LIMIT ?";
-        
-        return $this->db->fetchAll($sql, $storeId, $limit);
+        return $this->db->table('commerce_order_item')
+            ->select([
+                'commerce_order_item.product_id',
+                'commerce_order_item.item_name',
+                'SUM(commerce_order_item.quantity) as total_sold',
+                'SUM(commerce_order_item.total_price) as total_revenue',
+                'AVG(commerce_order_item.unit_price) as average_price',
+                'COUNT(*) as order_count',
+            ])
+            ->join('commerce_orders', 'commerce_order_item.order_id', '=', 'commerce_orders.id')
+            ->where('commerce_orders.store_id', '=', $storeId)
+            ->groupBy('commerce_order_item.product_id', 'commerce_order_item.item_name')
+            ->orderBy('total_sold', 'DESC')
+            ->limit($limit)
+            ->get();
     }
 
     /**
@@ -290,7 +268,7 @@ class OrderItem
         GROUP BY DATE(oi.created_at)
         ORDER BY date DESC";
         
-        return $this->db->fetchAll($sql, $storeId, $startDate, $endDate);
+        return $this->db->table('commerce_order_item')->join('commerce_orders','commerce_order_item.order_id','=','commerce_orders.id')->where('commerce_orders.store_id','=',$storeId)->whereBetween('commerce_orders.created_at',$startDate,$endDate)->latest('commerce_order_item.created_at')->get();
     }
 
     /**
@@ -319,19 +297,20 @@ class OrderItem
      */
     public function getLowStockItems(int $storeId, int $threshold = 10): array
     {
-        $sql = "SELECT 
-            oi.product_id,
-            oi.item_name,
-            SUM(oi.quantity) as total_ordered,
-            COUNT(*) as order_frequency
-        FROM commerce_order_item oi
-        JOIN commerce_orders o ON oi.order_id = o.id
-        WHERE o.store_id = ? AND o.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-        GROUP BY oi.product_id, oi.item_name
-        HAVING total_ordered >= ?
-        ORDER BY total_ordered DESC";
-        
-        return $this->db->fetchAll($sql, $storeId, $threshold);
+        return $this->db->table('commerce_order_item')
+            ->select([
+                'commerce_order_item.product_id',
+                'commerce_order_item.item_name',
+                'SUM(commerce_order_item.quantity) as total_ordered',
+                'COUNT(*) as order_frequency',
+            ])
+            ->join('commerce_orders', 'commerce_order_item.order_id', '=', 'commerce_orders.id')
+            ->where('commerce_orders.store_id', '=', $storeId)
+            ->whereRaw('commerce_orders.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)')
+            ->groupBy('commerce_order_item.product_id', 'commerce_order_item.item_name')
+            ->having('total_ordered', '>=', $threshold)
+            ->orderBy('total_ordered', 'DESC')
+            ->get();
     }
 
     /**

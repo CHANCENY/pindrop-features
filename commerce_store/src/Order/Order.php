@@ -45,13 +45,12 @@ class Order
      */
     public function getOrder(int $orderId): ?array
     {
-        $sql = "SELECT * FROM commerce_orders WHERE id = ?";
-        $order = $this->db->fetch($sql, $orderId);
-        
+        $order = $this->db->table('commerce_orders')
+            ->where('id', '=', $orderId)
+            ->first();
         if ($order && $order['adjustments']) {
             $order['adjustments'] = json_decode($order['adjustments'], true);
         }
-        
         return $order;
     }
 
@@ -60,13 +59,12 @@ class Order
      */
     public function getOrderByNumber(string $orderNumber): ?array
     {
-        $sql = "SELECT * FROM commerce_orders WHERE order_number = ?";
-        $order = $this->db->fetch($sql, $orderNumber);
-        
+        $order = $this->db->table('commerce_orders')
+            ->where('order_number', '=', $orderNumber)
+            ->first();
         if ($order && $order['adjustments']) {
             $order['adjustments'] = json_decode($order['adjustments'], true);
         }
-        
         return $order;
     }
 
@@ -75,15 +73,14 @@ class Order
      */
     public function getOrdersByCustomer(int $customerId, int $limit = 50, int $offset = 0): array
     {
-        $sql = "SELECT * FROM commerce_orders WHERE customer_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        $orders = $this->db->fetchAll($sql, $customerId, $limit, $offset);
-        
+        $orders = $this->db->table('commerce_orders')
+            ->where('customer_id', '=', $customerId)
+            ->latest('created_at')
+            ->limit($limit)->offset($offset)
+            ->get();
         foreach ($orders as &$order) {
-            if ($order['adjustments']) {
-                $order['adjustments'] = json_decode($order['adjustments'], true);
-            }
+            if ($order['adjustments']) $order['adjustments'] = json_decode($order['adjustments'], true);
         }
-        
         return $orders;
     }
 
@@ -121,21 +118,7 @@ class Order
             $data['adjustments'] = null;
         }
 
-        $sql = "INSERT INTO commerce_orders (
-            store_id, customer_id, order_number, status, payment_status,
-            subtotal, tax_amount, shipping_amount, discount_amount, total_amount,
-            refund_amount, currency, notes, admin_notes, adjustments,
-            created_at, updated_at
-        ) VALUES (
-            :store_id, :customer_id, :order_number, :status, :payment_status,
-            :subtotal, :tax_amount, :shipping_amount, :discount_amount, :total_amount,
-            :refund_amount, :currency, :notes, :admin_notes, :adjustments,
-            :created_at, :updated_at
-        )";
-        
-        $this->db->query($sql, ...$data);
-        
-        $orderId = $this->db->lastInsertId();
+        $orderId = $this->db->table('commerce_orders')->insert($data);
         
         $this->logger->info('Order created', [
             'order_id' => $orderId,
@@ -152,41 +135,29 @@ class Order
      */
     public function getOrdersByStore(int $storeId, int $limit = 50, int $offset = 0): array
     {
-        $sql = "SELECT * FROM commerce_orders WHERE store_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        $orders = $this->db->fetchAll($sql, $storeId, $limit, $offset);
-        
+        $orders = $this->db->table('commerce_orders')
+            ->where('store_id', '=', $storeId)
+            ->latest('created_at')
+            ->limit($limit)->offset($offset)
+            ->get();
         foreach ($orders as &$order) {
-            if ($order['adjustments']) {
-                $order['adjustments'] = json_decode($order['adjustments'], true);
-            }
+            if ($order['adjustments']) $order['adjustments'] = json_decode($order['adjustments'], true);
         }
-        
         return $orders;
     }
 
     public function searchByFields(array $fields, int $limit = 50, int $offset = 0, string $extraWhereConnector = "AND", string $extraWhereClause = ""): array
     {
-        $columns = array_keys($fields);
-
-        $sql = "SELECT * FROM commerce_orders WHERE ";
-        $placeholders = array_map(function ($field) {
-            return "$field = :$field";
-        }, $columns);
-        $sql .= implode(" AND ", $placeholders);
-
-        if (!empty($extraWhereClause) && !empty($extraWhereConnector)) {
-            $sql .= " $extraWhereConnector $extraWhereClause";
+        $qb = $this->db->table('commerce_orders')->latest('created_at')->limit($limit)->offset($offset);
+        foreach ($fields as $col => $val) {
+            $qb->where($col, '=', $val);
         }
-
-        $sql .= " ORDER BY created_at DESC LIMIT :l OFFSET :o";
-        $fields['l'] = $limit;
-        $fields['o'] = $offset;
-
-        $orders = $this->db->fetchAll($sql, ...$fields);
+        if (!empty($extraWhereClause)) {
+            $qb->whereRaw($extraWhereClause);
+        }
+        $orders = $qb->get();
         foreach ($orders as &$order) {
-            if ($order['adjustments']) {
-                $order['adjustments'] = json_decode($order['adjustments'], true);
-            }
+            if ($order['adjustments']) $order['adjustments'] = json_decode($order['adjustments'], true);
         }
         return $orders;
     }
@@ -201,8 +172,8 @@ class Order
             throw new \InvalidArgumentException("Invalid status: {$status}");
         }
 
-        $sql = "UPDATE commerce_orders SET status = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, $status, date('Y-m-d H:i:s'), $orderId);
+        $this->db->table('commerce_orders')->where('id', '=', $orderId)
+            ->update(['status' => $status, 'updated_at' => date('Y-m-d H:i:s')]);
         
         $this->logger->info('Order status updated', ['order_id' => $orderId, 'status' => $status]);
         
@@ -219,8 +190,8 @@ class Order
             throw new \InvalidArgumentException("Invalid payment status: {$paymentStatus}");
         }
 
-        $sql = "UPDATE commerce_orders SET payment_status = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, $paymentStatus, date('Y-m-d H:i:s'), $orderId);
+        $this->db->table('commerce_orders')->where('id', '=', $orderId)
+            ->update(['payment_status' => $paymentStatus, 'updated_at' => date('Y-m-d H:i:s')]);
         
         $this->logger->info('Payment status updated', ['order_id' => $orderId, 'payment_status' => $paymentStatus]);
         
@@ -247,11 +218,12 @@ class Order
             return false;
         }
 
-        $sql = "UPDATE commerce_orders SET " . implode(', ', $updateData) . ", updated_at = ? WHERE id = ?";
-        $params[] = date('Y-m-d H:i:s');
-        $params[] = $orderId;
-
-        $this->db->query($sql, ...$params);
+        $updateRow = [];
+        foreach ($totals as $field => $value) {
+            if (in_array($field, $allowedFields)) $updateRow[$field] = $value;
+        }
+        $updateRow['updated_at'] = date('Y-m-d H:i:s');
+        $this->db->table('commerce_orders')->where('id', '=', $orderId)->update($updateRow);
         
         $this->logger->info('Order totals updated', ['order_id' => $orderId, 'totals' => $totals]);
         return true;
@@ -312,8 +284,8 @@ class Order
         $sql = "UPDATE commerce_orders SET " . implode(', ', $updateData) . " WHERE id = :order_id";
         $params['order_id'] = $orderId;
 
-        // Execute query with named parameters
-        $this->db->query($sql, ...$params);
+        // Execute update via QueryBuilder
+        $this->db->table('commerce_orders')->where('id', '=', $orderId)->update($params);
         
         // Handle order items if provided
         if (isset($data['items']) && is_array($data['items'])) {
@@ -342,8 +314,8 @@ class Order
         $adjustments = $order['adjustments'] ?? [];
         $adjustments[] = $adjustment;
 
-        $sql = "UPDATE commerce_orders SET adjustments = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, serialize($adjustments), date('Y-m-d H:i:s'), $orderId);
+        $this->db->table('commerce_orders')->where('id', '=', $orderId)
+            ->update(['adjustments' => json_encode($adjustments), 'updated_at' => date('Y-m-d H:i:s')]);
         
         $this->logger->info('Adjustment added', ['order_id' => $orderId, 'adjustment' => $adjustment]);
         
@@ -358,8 +330,10 @@ class Order
         $this->updateOrderStatus($orderId, 'cancelled');
         
         if ($reason) {
-            $sql = "UPDATE commerce_orders SET admin_notes = CONCAT(IFNULL(admin_notes, ''), '\nCancelled: ', ?), updated_at = ? WHERE id = ?";
-            $this->db->query($sql, $reason, date('Y-m-d H:i:s'), $orderId);
+            $existing = $this->db->table('commerce_orders')->select(['admin_notes'])->where('id','=',$orderId)->value('admin_notes');
+            $this->db->table('commerce_orders')->where('id', '=', $orderId)
+                ->update(['admin_notes' => ($existing ?? '') . "
+Cancelled: " . $reason, 'updated_at' => date('Y-m-d H:i:s')]);
         }
         
         $this->logger->info('Order cancelled', ['order_id' => $orderId, 'reason' => $reason]);
@@ -372,8 +346,8 @@ class Order
      */
     public function completeOrder(int $orderId): bool
     {
-        $sql = "UPDATE commerce_orders SET status = 'completed', completed_at = ?, updated_at = ? WHERE id = ?";
-        $this->db->query($sql, date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), $orderId);
+        $this->db->table('commerce_orders')->where('id', '=', $orderId)
+            ->update(['status' => 'completed', 'completed_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')]);
         
         $this->logger->info('Order completed', ['order_id' => $orderId]);
         
@@ -394,18 +368,22 @@ class Order
             $params[] = $endDate;
         }
 
-        $sql = "SELECT 
-            COUNT(*) as total_orders,
-            SUM(total_amount) as total_revenue,
-            AVG(total_amount) as average_order_value,
-            COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_orders,
-            COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_orders,
-            COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as paid_orders,
-            COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_orders,
-            SUM(refund_amount) as total_refunds
-        FROM commerce_orders {$whereClause}";
-
-        return $this->db->fetch($sql, ...$params);
+        $qb = $this->db->table('commerce_orders')
+            ->select([
+                'COUNT(*) as total_orders',
+                'SUM(total_amount) as total_revenue',
+                'AVG(total_amount) as average_order_value',
+                "COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_orders",
+                "COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_orders",
+                "COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as paid_orders",
+                "COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_orders",
+                'SUM(refund_amount) as total_refunds',
+            ])
+            ->where('store_id', '=', $storeId);
+        if ($startDate && $endDate) {
+            $qb->whereBetween('created_at', $startDate, $endDate);
+        }
+        return $qb->first();
     }
 
     /**
@@ -413,20 +391,14 @@ class Order
      */
     public function searchOrders(string $query, ?int $storeId = null, int $limit = 20): array
     {
-        $sql = "SELECT o.* FROM commerce_orders o 
-                 LEFT JOIN commerce_customer c ON o.customer_id = c.id
-                 WHERE (o.order_number LIKE ? OR c.email LIKE ? OR o.notes LIKE ?)";
-        $params = ["%{$query}%", "%{$query}%", "%{$query}%"];
-
-        if ($storeId) {
-            $sql .= " AND o.store_id = ?";
-            $params[] = $storeId;
-        }
-
-        $sql .= " ORDER BY o.created_at DESC LIMIT ?";
-        $params[] = $limit;
-
-        $orders = $this->db->fetchAll($sql, ...$params);
+        $qb = $this->db->table('commerce_orders')
+            ->leftJoin('commerce_customer', 'commerce_orders.customer_id', '=', 'commerce_customer.id')
+            ->whereRaw("(commerce_orders.order_number LIKE ? OR commerce_customer.email LIKE ? OR commerce_orders.notes LIKE ?)",
+                ["%{$query}%", "%{$query}%", "%{$query}%"])
+            ->latest('commerce_orders.created_at')
+            ->limit($limit);
+        if ($storeId) $qb->where('commerce_orders.store_id', '=', $storeId);
+        $orders = $qb->get();
         
         foreach ($orders as &$order) {
             if ($order['adjustments']) {

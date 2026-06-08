@@ -1,0 +1,11 @@
+# Commerce Store Plugin — Role Definitions
+
+store_owner:
+  label: 'Store Owner'
+  description: 'Owns and manages a commerce store, products, and orders.'
+  parent: 'user'
+
+store_manager:
+  label: 'Store Manager'
+  description: 'Manages store operations but cannot change store settings or billing.'
+  parent: 'user'
