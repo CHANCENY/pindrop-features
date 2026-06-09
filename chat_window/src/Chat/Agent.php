@@ -2,7 +2,6 @@
 
 namespace Simp\Pindrop\Modules\chat_window\src\Chat;
 
-use Simp\Pindrop\Database\DatabaseException;
 use Simp\Pindrop\Database\DatabaseService;
 
 class Agent
@@ -11,85 +10,58 @@ class Agent
     {
     }
 
-    /**
-     * @throws DatabaseException
-     */
     public function addAgent(string $first_name, string $last_name, string $email, int $uid, ?string $phone): false|int
     {
-        $data = [
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'email' => $email,
-            'phone' => $phone,
-            'uid' => $uid,
-            'status' => 'inactive'
-        ];
-
         if ($agent = $this->getAgent($uid)) {
             return $agent['id'];
         }
 
-        $query = "INSERT INTO support_team_member (first_name, last_name, email, phone, uid, status) VALUES(:first_name, :last_name, :email, :phone, :uid, :status)";
-
-        $st = $this->databaseService->query($query, ...$data);
-
-        if($st){
-            return $this->databaseService->lastInsertId();
-        }
-        return false;
+        return $this->databaseService->table('support_team_member')->insert([
+            'first_name' => $first_name,
+            'last_name'  => $last_name,
+            'email'      => $email,
+            'phone'      => $phone,
+            'uid'        => $uid,
+            'status'     => 'inactive',
+        ]);
     }
 
-    /**
-     * @throws DatabaseException
-     */
-    public function getAgent(int $uid)
+    public function getAgent(int $uid): array|false
     {
-        $query = "SELECT * FROM support_team_member WHERE uid = :uid";
-        $st = $this->databaseService->query($query, $uid);
-        if($st){
-            return $st->fetch();
-        }
-        return false;
+        $row = $this->databaseService->table('support_team_member')
+            ->where('uid', '=', $uid)
+            ->first();
+        return $row ?: false;
     }
 
-    /**
-     * @throws DatabaseException
-     */
-    public function updateStatus(int $id, string $status): false|int
+    public function getAgentById(int $id): array|false
     {
-        $query = "UPDATE support_team_member SET status = :status WHERE id = :id";
-        $data = [
-            'status' => $status,
-            'id' => $id
-        ];
-        $st = $this->databaseService->query($query, ...$data);
-        if($st){
-            return $st->rowCount();
-        }
-        return false;
+        $row = $this->databaseService->table('support_team_member')
+            ->where('id', '=', $id)
+            ->first();
+        return $row ?: false;
     }
 
-    /**
-     * @throws DatabaseException
-     */
-    public function getAgentSummary(int $id): array
+    public function updateStatus(int $id, string $status): int
     {
-        $summary['agent'] = $this->getAgent($id);
+        return $this->databaseService->table('support_team_member')
+            ->where('id', '=', $id)
+            ->update(['status' => $status]);
+    }
 
-        $chatItem = new ChatItem($this->databaseService);
-
-        $summary['tickets'] = $chatItem->getChatItemsByAgent($id, 3);
-
+    public function getAgentSummary(int $uid): array
+    {
+        $summary['agent']   = $this->getAgent($uid);
+        $chatItem           = new ChatItem($this->databaseService);
+        $agent              = $this->getAgent($uid);
+        $summary['tickets'] = $agent
+            ? $chatItem->getChatItemsByAgent((int)$agent['id'], 3)
+            : [];
         return $summary;
     }
 
-    /**
-     * @throws DatabaseException
-     */
     public function getAgents(): array
     {
-        $query = "SELECT * FROM support_team_member";
-        $st = $this->databaseService->query($query);
-        return $st->fetchAll();
+        return $this->databaseService->table('support_team_member')->get();
     }
 }

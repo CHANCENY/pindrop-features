@@ -5,4 +5,5 @@ groups:
       route: chat_window.support.panel
       icon: fa fa-headset
       weight: 20
-      roles: [admin, super_admin]
+      permissions:
+        - can_access_chat_panel

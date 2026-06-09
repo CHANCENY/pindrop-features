@@ -1,0 +1,4 @@
+support_agent:
+  label: 'Support Agent'
+  description: 'Can access the chat support panel and manage chat tickets.'
+  parent: 'user'

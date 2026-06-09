@@ -1,0 +1,80 @@
+super_admin:
+  db.chat.full:
+    title: 'Full chat database access'
+    description: 'Full access to all chat window tables.'
+  can_manage_chat_support:
+    title: 'Can manage chat support'
+    description: 'Full chat support panel access.'
+
+admin:
+  db.chat.full:
+    title: 'Full chat database access'
+    description: 'Full access to all chat window tables.'
+  can_manage_chat_support:
+    title: 'Can manage chat support'
+    description: 'Full chat support panel access.'
+
+moderator:
+  db.chat.item.read:
+    title: 'Read chat items'
+    description: 'Read chat items and messages.'
+  db.chat.item.write:
+    title: 'Write chat items'
+    description: 'Respond to and update chat items.'
+  db.chat.customer.read:
+    title: 'Read chat customers'
+    description: 'View chat customer information.'
+  db.chat.agent.read:
+    title: 'Read agents'
+    description: 'View support team members.'
+  db.chat.agent.write:
+    title: 'Register as agent'
+    description: 'Register as a support team member.'
+  can_manage_chat_support:
+    title: 'Can manage chat support'
+    description: 'Access the chat support panel.'
+
+support_agent:
+  db.chat.item.read:
+    title: 'Read chat items'
+    description: 'Read assigned chat items and messages.'
+  db.chat.item.write:
+    title: 'Write chat items'
+    description: 'Respond to chat messages.'
+  db.chat.customer.read:
+    title: 'Read chat customers'
+    description: 'View customer information.'
+  db.chat.agent.read:
+    title: 'Read own agent profile'
+    description: 'View own agent profile.'
+  can_access_chat_panel:
+    title: 'Can access chat panel'
+    description: 'Access the chat support panel.'
+
+user:
+  db.chat.customer.write:
+    title: 'Create chat customer'
+    description: 'Register as a chat customer.'
+  db.chat.item.write:
+    title: 'Send chat messages'
+    description: 'Send messages in a chat session.'
+  db.chat.item.read:
+    title: 'Read own chat'
+    description: 'Read messages in own chat session.'
+  can_start_chat:
+    title: 'Can start chat'
+    description: 'Initiate a chat support session.'
+
+anonymous:
+  db.chat.customer.write:
+    title: 'Create chat customer'
+    description: 'Register as a guest chat customer.'
+  db.chat.item.write:
+    title: 'Send chat messages'
+    description: 'Send messages as a guest.'
+  db.chat.item.read:
+    title: 'Read own chat'
+    description: 'Read messages in own chat session.'
+  can_start_chat:
+    title: 'Can start chat'
+    description: 'Initiate a chat session as a guest.'

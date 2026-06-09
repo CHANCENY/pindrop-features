@@ -2,130 +2,81 @@
 
 namespace Simp\Pindrop\Modules\chat_window\src\Customer;
 
-use Simp\Pindrop\Database\DatabaseException;
 use Simp\Pindrop\Database\DatabaseService;
 
 class Customer
 {
-    protected string $first_name;
-    protected string $last_name;
-    protected string $email;
-    protected ?string $phone;
-    protected int $id;
+    protected string $first_name = '';
+    protected string $last_name  = '';
+    protected string $email      = '';
+    protected ?string $phone     = null;
+    protected int $id            = 0;
     protected ?string $created_at = null;
 
     public function __construct(protected DatabaseService $database)
     {
     }
 
-    /**
-     * @throws DatabaseException
-     */
     public function createCustomer(string $first_name, string $last_name, string $email, ?string $phone): bool
     {
         $this->first_name = $first_name;
-        $this->last_name = $last_name;
-        $this->email = $email;
-        $this->phone = $phone;
+        $this->last_name  = $last_name;
+        $this->email      = $email;
+        $this->phone      = $phone;
 
-        $query = "SELECT * FROM customer WHERE email = :email";
-        $st = $this->database->query($query, $email);
-        $result = $st->fetch();
+        // Return existing customer if email already registered
+        $existing = $this->database->table('customer')
+            ->where('email', '=', $email)
+            ->first();
 
-        if ($result) {
-           $this->id = $result['id'];
-           $this->created_at = $result['created_at'];
-           return true;
+        if ($existing) {
+            $this->id         = (int) $existing['id'];
+            $this->created_at = $existing['created_at'];
+            return true;
         }
 
-        $query = "INSERT INTO customer (first_name, last_name, email, phone) VALUES (:first_name, :last_name, :email, :phone)";
-        $st = $this->database->query($query, ...$i=[
+        $id = $this->database->table('customer')->insert([
             'first_name' => $first_name,
-            'last_name' => $last_name,
-            'email' => $email,
-            'phone' => $phone,
+            'last_name'  => $last_name,
+            'email'      => $email,
+            'phone'      => $phone,
         ]);
-        if ($st) {
-            $this->id = $this->database->lastInsertId();
 
+        if ($id) {
+            $this->id = $id;
             return true;
         }
         return false;
     }
 
-    public function getFirstName(): string
+    public function load(int $id): bool
     {
-        return $this->first_name;
-    }
+        $row = $this->database->table('customer')
+            ->where('id', '=', $id)
+            ->first();
 
-    public function setFirstName(string $first_name): void
-    {
-        $this->first_name = $first_name;
-    }
-
-    public function getLastName(): string
-    {
-        return $this->last_name;
-    }
-
-    public function setLastName(string $last_name): void
-    {
-        $this->last_name = $last_name;
-    }
-
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): void
-    {
-        $this->email = $email;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(?string $phone): void
-    {
-        $this->phone = $phone;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @throws DatabaseException
-     */
-    public function load(int $id)
-    {
-        $query = "SELECT * FROM customer WHERE id = :id";
-        $st = $this->database->query($query, $id);
-        $result = $st->fetch();
-        if ($result) {
-            $this->id = $result['id'];
-            $this->first_name = $result['first_name'];
-            $this->last_name = $result['last_name'];
-            $this->email = $result['email'];
-            $this->phone = $result['phone'];
-            $this->created_at = $result['created_at'];
+        if ($row) {
+            $this->id         = (int) $row['id'];
+            $this->first_name = $row['first_name'];
+            $this->last_name  = $row['last_name'];
+            $this->email      = $row['email'];
+            $this->phone      = $row['phone'];
+            $this->created_at = $row['created_at'];
             return true;
         }
         return false;
     }
 
-    public function getCreated()
-    {
-        return $this->created_at ?? null;
-    }
+    public function getFirstName(): string  { return $this->first_name; }
+    public function getLastName(): string   { return $this->last_name; }
+    public function getEmail(): string      { return $this->email; }
+    public function getPhone(): ?string     { return $this->phone; }
+    public function getId(): int            { return $this->id; }
+    public function getCreated(): ?string   { return $this->created_at; }
 
+    public function setFirstName(string $v): void  { $this->first_name = $v; }
+    public function setLastName(string $v): void   { $this->last_name  = $v; }
+    public function setEmail(string $v): void      { $this->email      = $v; }
+    public function setPhone(?string $v): void     { $this->phone      = $v; }
+    public function setId(int $v): void            { $this->id         = $v; }
 }

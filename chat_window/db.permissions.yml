@@ -1,0 +1,53 @@
+db.chat.customer.read:
+  description: 'Read access to the chat customer table.'
+  owned_by: chat_window
+  tables:
+    customer: [select]
+
+db.chat.customer.write:
+  description: 'Create and update chat customers.'
+  owned_by: chat_window
+  tables:
+    customer: [insert, update]
+
+db.chat.agent.read:
+  description: 'Read access to support team member table.'
+  owned_by: chat_window
+  tables:
+    support_team_member: [select]
+
+db.chat.agent.write:
+  description: 'Create and update support team members.'
+  owned_by: chat_window
+  tables:
+    support_team_member: [insert, update]
+
+db.chat.item.read:
+  description: 'Read access to chat items and messages.'
+  owned_by: chat_window
+  tables:
+    chat_item: [select]
+    chat_item_data: [select]
+
+db.chat.item.write:
+  description: 'Create and update chat items and messages.'
+  owned_by: chat_window
+  tables:
+    chat_item: [insert, update]
+    chat_item_data: [insert, update]
+
+db.chat.item.delete:
+  description: 'Delete chat items and messages.'
+  owned_by: chat_window
+  tables:
+    chat_item: [delete]
+    chat_item_data: [delete]
+
+db.chat.full:
+  description: 'Full access to all chat window tables.'
+  owned_by: chat_window
+  tables:
+    customer: [select, insert, update, delete]
+    support_team_member: [select, insert, update, delete]
+    chat_item: [select, insert, update, delete]
+    chat_item_data: [select, insert, update, delete]

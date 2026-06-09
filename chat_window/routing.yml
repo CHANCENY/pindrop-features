@@ -3,15 +3,15 @@ chat_window.api.collector:
   methods: ['GET', 'POST']
   defaults:
     _controller: 'Simp\Pindrop\Modules\chat_window\src\Controller\ChatWidowController::startChat'
-  requirements:
-    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+  requirements: {}
 chat_window.support.panel:
   path: '/chat/panel'
   methods: ['GET', 'POST']
   defaults:
     _controller: 'Simp\Pindrop\Modules\chat_window\src\Controller\ChatWidowController::chatSupportPanel'
   requirements:
-    _permission: ['moderator', 'admin', 'super_admin']
+    _permission:
+      - can_access_chat_panel
 
 chat_window.support.panel.agent.form:
   path: '/chat/panel/agent/register'
@@ -19,4 +19,5 @@ chat_window.support.panel.agent.form:
   defaults:
     _controller: 'Simp\Pindrop\Modules\chat_window\src\Controller\ChatWidowController::chatSupportRegister'
   requirements:
-    _permission: ['moderator', 'admin', 'super_admin']
+    _permission: 
+      - can_manage_chat_support

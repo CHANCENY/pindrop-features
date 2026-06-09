@@ -347,7 +347,7 @@ class ChatWidget {
 
     async submitUserData() {
 
-       const response = await send('/api/chat/customer', {
+       const response = await window.behaviour.send('/api/chat/customer', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: this.userData
