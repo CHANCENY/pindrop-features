@@ -1,0 +1,15 @@
+super_admin:
+  db.cron.full:
+    title: 'Full cron database access'
+    description: 'Full access to all cron scheduler tables.'
+  can_manage_cron:
+    title: 'Can manage cron'
+    description: 'Create, edit, delete and run cron schedules.'
+
+admin:
+  db.cron.full:
+    title: 'Full cron database access'
+    description: 'Full access to all cron scheduler tables.'
+  can_manage_cron:
+    title: 'Can manage cron'
+    description: 'Create, edit, delete and run cron schedules.'

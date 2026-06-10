@@ -1,0 +1,31 @@
+db.cron.read:
+  description: 'Read access to cron scheduler tables.'
+  owned_by: cron
+  tables:
+    schedulers:       [select]
+    scheduler_jobs:   [select]
+    scheduler_logs:   [select]
+
+db.cron.write:
+  description: 'Write access to cron scheduler tables.'
+  owned_by: cron
+  tables:
+    schedulers:       [insert, update]
+    scheduler_jobs:   [insert, update]
+    scheduler_logs:   [insert, update]
+
+db.cron.delete:
+  description: 'Delete access to cron scheduler tables.'
+  owned_by: cron
+  tables:
+    schedulers:       [delete]
+    scheduler_jobs:   [delete]
+    scheduler_logs:   [delete]
+
+db.cron.full:
+  description: 'Full access to all cron tables.'
+  owned_by: cron
+  tables:
+    schedulers:       [select, insert, update, delete]
+    scheduler_jobs:   [select, insert, update, delete]
+    scheduler_logs:   [select, insert, update, delete]

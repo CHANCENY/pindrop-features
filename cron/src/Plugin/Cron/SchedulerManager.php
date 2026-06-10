@@ -3,7 +3,6 @@
 namespace Simp\Pindrop\Modules\cron\src\Plugin\Cron;
 
 use Exception;
-use Simp\Pindrop\Database\DatabaseException;
 use Simp\Pindrop\Database\DatabaseService;
 use Simp\Pindrop\Modules\cron\src\Plugin\Cron\interface\CronDefinitionSubscriberInterface;
 
@@ -14,113 +13,97 @@ class SchedulerManager
     }
 
     /**
+     * Create a cron job definition.
      * @throws Exception
      */
     public function create(array $definition): bool|int
     {
-        $mandatories = ['name', 'category', 'timezone', 'environment', 'definition'];
-
-        foreach ($mandatories as $mandatory) {
-            if (!isset($definition[$mandatory])) {
-                throw new Exception("Mandatory parameter '$mandatory' is missing");
+        foreach (['name', 'category', 'timezone', 'environment', 'definition'] as $key) {
+            if (!isset($definition[$key])) {
+                throw new Exception("Mandatory parameter '$key' is missing");
             }
         }
 
         if (isset($definition['notify'])) {
-            $definition['notify'] = !empty($definition['notify']);
+            $definition['notify'] = (int) !empty($definition['notify']);
         }
 
-        $placeholder = array_keys($definition);
-        $placeholderNamed = array_map(function ($value) {
-            return ":{$value}";
-        }, $placeholder);
-
-        $sql = "INSERT INTO schedulers (".implode(', ', $placeholder).") VALUES (".implode(', ', $placeholderNamed).")";
-
-        $result = $this->databaseService->query($sql, ...$definition);
-
-        return is_bool($result) ? false : $this->databaseService->lastInsertId();
+        return $this->databaseService->table('schedulers')->insert($definition);
     }
 
     /**
+     * Add a schedule for a cron job.
      * @throws Exception
      */
     public function addSchedule(array $definition): bool|int
     {
-        $mandatories = ['job_name', 'expression', 'status'];
-        foreach ($mandatories as $mandatory) {
-            if (!isset($definition[$mandatory])) {
-                throw new Exception("Mandatory parameter '$mandatory' is missing");
+        foreach (['job_name', 'expression', 'status'] as $key) {
+            if (!isset($definition[$key])) {
+                throw new Exception("Mandatory parameter '$key' is missing");
             }
         }
 
-        $placeholder = array_keys($definition);
-        $placeholderNamed = array_map(function ($value) {
-            return ":{$value}";
-        },$placeholder);
-
-        $sql = "INSERT INTO scheduler_jobs (".implode(', ', $placeholder).") VALUES (".implode(', ', $placeholderNamed).")";
-
-        $result = $this->databaseService->query($sql, ...$definition);
-        return is_bool($result) ? false : $this->databaseService->lastInsertId();
+        return $this->databaseService->table('scheduler_jobs')->insert($definition);
     }
 
     /**
-     * @throws DatabaseException
+     * Update a schedule by ID.
      */
-    public function updateSchedule(array $definition, int $id): bool|int
+    public function updateSchedule(array $definition, int $id): int
     {
-        $placeholderNamed = array_map(function ($value) {
-            return "{$value} = :{$value}";
-        }, array_keys($definition));
-
-        $sql = "UPDATE scheduler_jobs SET ".implode(', ', $placeholderNamed)." WHERE id = :id";
-        $definition['id'] = $id;
-        return $this->databaseService->query($sql, ...$definition)?->rowCount();
+        return $this->databaseService->table('scheduler_jobs')
+            ->where('id', '=', $id)
+            ->update($definition);
     }
 
+    /**
+     * Fetch a single schedule by ID.
+     */
     public function getSchedule(int $id): ?Schedule
     {
-        $sql = "SELECT * FROM scheduler_jobs WHERE id = :id";
-        $definition['id'] = $id;
-        $result = $this->databaseService->query($sql, ...$definition);
-        $job = $result->fetch();
-        if ($job) {
-            return new Schedule(...$job);
-        }
-        return null;
+        $row = $this->databaseService->table('scheduler_jobs')
+            ->where('id', '=', $id)
+            ->first();
+
+        return $row ? new Schedule(...$row) : null;
     }
 
     /**
-     * @throws DatabaseException
+     * Delete a schedule by ID.
      */
     public function deleteSchedule(int $id): bool
     {
-        $sql = "DELETE FROM scheduler_jobs WHERE id = :id";
-        $definition['id'] = $id;
-        return $this->databaseService->query($sql, ...$definition)?->rowCount();
-    }
-
-    public function getSchedules(): array
-    {
-        $dbConnection = $this->databaseService->getPdo();
-        $sql = 'SELECT * FROM scheduler_jobs';
-        $statement = $dbConnection->prepare($sql);
-        $statement->execute();
-        return array_map(function ($job) { return new Schedule(...$job); }, $statement->fetchAll());
+        return $this->databaseService->table('scheduler_jobs')
+            ->where('id', '=', $id)
+            ->delete() > 0;
     }
 
     /**
-     * @param CronDefinitionSubscriberInterface $subscriber
-     * @return array<Schedule>
-     * @throws DatabaseException
+     * Fetch all schedules.
+     * @return Schedule[]
+     */
+    public function getSchedules(): array
+    {
+        return array_map(
+            fn($row) => new Schedule(...$row),
+            $this->databaseService->table('scheduler_jobs')->get()
+        );
+    }
+
+    /**
+     * Fetch all running schedules for a given subscriber.
+     * @return Schedule[]
      */
     public function getSchedulesBySubscriber(CronDefinitionSubscriberInterface|string $subscriber): array
     {
-        $query = 'SELECT * FROM scheduler_jobs WHERE `status` = :status AND `subscriber` = :subscriber';
-        $data['status'] = 'running';
-        $data['subscriber'] = is_string($subscriber) ? $subscriber : $subscriber->id();
-        $result = $this->databaseService->query($query, ...$data)->fetchAll();
-        return array_map(function ($job) { return new Schedule(...$job); }, $result);
+        $subscriberId = is_string($subscriber) ? $subscriber : $subscriber->id();
+
+        return array_map(
+            fn($row) => new Schedule(...$row),
+            $this->databaseService->table('scheduler_jobs')
+                ->where('status', '=', 'running')
+                ->where('subscriber', '=', $subscriberId)
+                ->get()
+        );
     }
 }

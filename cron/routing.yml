@@ -4,7 +4,7 @@ cron.dashboard:
   defaults:
     _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::dashboard'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_settings', 'can_administer_plugins']
 
 cron.create:
   path: '/admin/crons/create'
@@ -12,7 +12,7 @@ cron.create:
   defaults:
     _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::createJob'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_settings', 'can_administer_plugins']
 
 cron.create.schedule:
   path: '/admin/crons/schedule/create'
@@ -20,7 +20,7 @@ cron.create.schedule:
   defaults:
     _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::createSchedule'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_settings', 'can_administer_plugins']
 
 cron.schedule.edit:
   path: '/admin/crons/schedule/[id:int]/edit'
@@ -28,7 +28,7 @@ cron.schedule.edit:
   defaults:
     _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::editSchedule'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_settings', 'can_administer_plugins']
 
 cron.schedule.delete:
   path: '/admin/crons/schedule/[id:int]/delete'
@@ -36,8 +36,7 @@ cron.schedule.delete:
   defaults:
     _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::deleteSchedule'
   requirements:
-    _permission: ['admin', 'super_admin']
-
+    _permission: ['can_administer_settings', 'can_administer_plugins']
 
 cron.schedule.run:
   path: '/admin/crons/schedule/[id:int]/run'
@@ -45,7 +44,7 @@ cron.schedule.run:
   defaults:
     _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::runSchedule'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_settings', 'can_administer_plugins']
 
 cron.schedule.logs:
   path: '/admin/crons/schedule/[id:int]/logs'
@@ -53,4 +52,4 @@ cron.schedule.logs:
   defaults:
     _controller: 'Simp\Pindrop\Modules\cron\src\Controller\CronManagerController::logSchedule'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_settings', 'can_administer_plugins', 'can_view_reports']
