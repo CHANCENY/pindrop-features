@@ -4,7 +4,9 @@ languages.switcher:
     _controller: 'Simp\Pindrop\Modules\languages\src\Controller\LangController::switchLanguage'
   methods: [POST]
   requirements:
-    _permission: ['admin', 'super_admin', 'user', 'moderator', 'guest']
+    # Language switching is a utility available to all authenticated users.
+    # Uses $_SESSION only — no DB, no permission guard involved.
+    _permission: ['can_manage_own_profile', 'can_view_public_content', 'can_create_content', 'can_access_admin_panel']
 
 languages.default:
   path: '/internal/lang/support/default'
@@ -12,4 +14,4 @@ languages.default:
     _controller: 'Simp\Pindrop\Modules\languages\src\Controller\LangController::language'
   methods: [GET]
   requirements:
-    _permission: ['admin', 'super_admin', 'user', 'moderator', 'guest']
+    _permission: ['can_manage_own_profile', 'can_view_public_content', 'can_create_content', 'can_access_admin_panel']

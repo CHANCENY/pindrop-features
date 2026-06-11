@@ -5,7 +5,10 @@ document.addEventListener('DOMContentLoaded',async ()=>{
             const value = e.target.value;
             const response = await fetch('/internal/lang/switch',{
                 method: "POST",
-                body: JSON.stringify({lang: value, path: window.location.pathname})
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({lang: value, path: window.location.pathname, _csrf_token: await window.behaviour.createCsrfToken()})
             });
             const results = await response.json()
             alert("Switch language to "+ results.lang);
