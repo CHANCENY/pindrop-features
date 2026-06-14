@@ -19,19 +19,26 @@ class AutocompleteInternal
     /**
      * @throws DatabaseException
      */
-    public function matchUsers(string $query, int $limit = 10, $sort = 'DESC', $sort_by = null): array
+    public function matchUsers(string $query, int $limit = 10, $sort = 'DESC', $sort_by = "created_at"): array
     {
-        $queryString = "SELECT * FROM users WHERE username LIKE :q1 OR email LIKE :q2 ";
-        if ($sort_by) {
-            $queryString .= " ORDER BY $sort_by $sort";
-        }
-        if ($sort) {
-            $queryString .= " ORDER BY created_at $sort";
+
+        if (empty($limit)) {
+            $limit = 10;
         }
 
-        $queryString .= " LIMIT $limit";
+        if (empty($sort)) {
+            $sort = "DESC";
+        }
+        if (empty($sort_by)) {
+            $sort_by = "created_at";
+        }
+        $results = $this->database->table("users")->whereRaw("username LIKE :q1 OR email LIKE :q2", [
+            'q1' => "%$query%",
+            'q2' => "%$query%"
+        ])->orderBy($sort_by, $sort)->limit($limit)->get();
 
-        $results = $this->database->fetchAll($queryString, ...$d = ['q1' => "%$query%", 'q2' => "%$query%"]);
+
+
         return array_map(function ($result) {
             return [
                 'value' => "{$result['email']} ({$result['id']})",

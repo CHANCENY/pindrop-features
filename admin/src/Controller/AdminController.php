@@ -30,6 +30,7 @@ use Simp\Pindrop\Mail\MailManager;
 use Simp\Pindrop\Message\Message;
 use Simp\Pindrop\Modules\admin\src\Address\AddressFormatter;
 use Simp\Pindrop\Modules\admin\src\Plugin\TwoFactorSettings;
+use Simp\Pindrop\Permission\Permission;
 use Simp\Pindrop\Plugin\PluginManager;
 use Simp\Pindrop\Routing\RouteManager;
 use Simp\Pindrop\Routing\Url;
@@ -346,12 +347,13 @@ class AdminController extends ControllerBase
     public function viewUser(Request $request, string $route_name, array $options): Response
     {
         $user_id = $request->query->get('user_id');
-        $user = User::loadById($user_id, $this->database);
+        $user = User::loadById((int)$user_id, $this->database);
 
         if (!$user) {
             return $this->redirect('/admin/users');
         }
 
+    
         return $this->renderTwig('admin/users/view.twig', [
             'page_title' => 'User Details',
             'user' => $user
@@ -1142,7 +1144,24 @@ Generated: " . date('Y-m-d H:i:s') . "
                     );
 
                     if ($verification) {
-                        // TODO: Send verification email
+                       
+                        $content = $this->renderTwig("@admin/emails/verify_email.twig",[
+                            'user' => $user,
+                            'verification_link' => $request->getSchemeAndHttpHost(). Url::routeByName('user.verify_email',[
+                                'token' => $verification->getToken()
+                            ])
+                        ]);
+
+                        /**
+                         * @var MailManager
+                         */
+                        $mailManager = getAppContainer()->get('mail.manager');
+                        $mailManager->sendHtml(
+                            $verification->getEmail(),
+                            $_ENV['MAIL_VERIFICATION_SUBJECT'] ?? "Verify your email",
+                            $content->getContent()
+                        );
+
                         getAppContainer()->get('logger')->info('Registration successful, verification email sent', [
                             'user_id' => $user->getId(),
                             'email' => $user->getEmail()
@@ -1711,11 +1730,31 @@ Generated: " . date('Y-m-d H:i:s') . "
             foreach($permissions as $permission) {
                 $all_permissions = array_merge($all_permissions, $permission);
             }
+             
+            $permissionManager = getAppContainer()->get(Permission::class);
+
+             if ($request->isMethod('POST'))
+            {
+                $submitted_data = $request->request->all();
+                $permissions = $submitted_data['permissions'] ?? [];
+                
+                foreach($permissions as $key=>$permission)
+                {
+                    $r = $permissionManager->create($key, $permission);
+                }
+
+                Message::info("Permissions saved");
+                return $this->redirect(Url::routeByName('admin.users.permissions.all'));
+
+            }
+
+            $general_permissions = $permissionManager->getPermissions();
             
             return $this->renderTwig('admin/users/permissions_all.twig', [
                 'page_title' => 'Manage Permissions',
                 'roles'      => $roles,
                 'all_permissions' => $all_permissions,
+                'general_permissions' => $general_permissions
             ]);
 
         } catch (\Exception $e) {
