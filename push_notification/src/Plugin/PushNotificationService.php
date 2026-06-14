@@ -8,59 +8,61 @@ use Simp\Pindrop\Entity\User\CurrentUser;
 
 class PushNotificationService
 {
-
     protected ?CurrentUser $current_user;
 
     public function __construct(protected DatabaseService $database_service)
     {
         $this->current_user = \getAppContainer()->get('current_user');
-        if (!$this->database_service->tableExists('push_notification_user_allowed')){
-           // throw new \Exception('Push notification settings store not found',230);
-        }
     }
 
-    public function addBrowserEnabled(array $data, ?int $user_id = null){
+    public function addBrowserEnabled(array $data, ?int $user_id = null): bool
+    {
         $uid = empty($user_id) ? $this->current_user?->id() : $user_id;
 
-        $query = "select * from push_notification_user_allowed where user_id = :uid";
-        $results = $this->database_service->query($query, $uid)->fetch();
-        if (empty($results)){
+        $exists = $this->database_service->table('push_notification_user_allowed')
+            ->where('user_id', '=', $uid)
+            ->exists();
+
+        if (!$exists) {
             return false;
         }
 
-        $data = json_encode($data);
-
-        $query = "update push_notification_user_allowed set google_json = :data where user_id = :uid";
-        return $this->database_service->query($query, $data, $uid)->rowCount() > 0;
-
+        return $this->database_service->table('push_notification_user_allowed')
+            ->where('user_id', '=', $uid)
+            ->update(['google_json' => json_encode($data)]) > 0;
     }
 
-    public function createVapidToken(?int $user_id = null): array|bool {
+    public function createVapidToken(?int $user_id = null): array|bool
+    {
         $tokens = VAPID::createVapidKeys();
+        $uid    = empty($user_id) ? $this->current_user?->id() : $user_id;
 
-        // Save the Vapid
-        $uid = empty($user_id) ? $this->current_user?->id() : $user_id;
+        $existing = $this->database_service->table('push_notification_user_allowed')
+            ->where('user_id', '=', $uid)
+            ->first();
 
-        $query = "select * from push_notification_user_allowed where user_id = :uid";
-        $results = $this->database_service->query($query,$uid)->fetch();
-        if (!empty($results)) {
+        if (!empty($existing)) {
             return [
-                'publicKey' => $results['public_key'],
-                'privateKey' => $results['private_key'],
+                'publicKey'  => $existing['public_key'],
+                'privateKey' => $existing['private_key'],
             ];
         }
 
-        $query = "INSERT INTO `push_notification_user_allowed` (user_id, public_key, private_key) VALUES (:user_id, :public_key, :private_key)";
-        $result = $this->database_service->query($query, ...$i=[
-            'user_id' => $uid,
-            'public_key' => $tokens['publicKey'],
+        $insertId = $this->database_service->table('push_notification_user_allowed')->insert([
+            'user_id'     => $uid,
+            'public_key'  => $tokens['publicKey'],
             'private_key' => $tokens['privateKey'],
-        ])->rowCount() > 0;
-        return $result ? $tokens : false;
+        ]);
+
+        return $insertId > 0 ? $tokens : false;
     }
 
-    public function getUserSetting(int $uid): array|bool {
-        $query = "select * from push_notification_user_allowed where user_id = :uid";
-        return $this->database_service->query($query, $uid)->fetch();
+    public function getUserSetting(?int $uid): array|bool
+    {
+        $row = $this->database_service->table('push_notification_user_allowed')
+            ->where('user_id', '=', $uid)
+            ->first();
+
+        return $row ?: false;
     }
 }

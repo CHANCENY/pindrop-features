@@ -4,15 +4,15 @@ push_notification.token:
   defaults:
     _controller: 'Simp\Pindrop\Modules\push_notification\src\Controller\PushNotificationController::tokenGenerator'
   requirements:
-    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
-  
+    _permission: ['can_manage_own_profile', 'can_view_public_content', 'can_access_admin_panel', 'can_manage_push_notifications']
+
 push_notification.user.setting.save:
   path: '/push/notifiction/settings/user'
   methods: ['PUT', 'POST', 'GET']
   defaults:
     _controller: 'Simp\Pindrop\Modules\push_notification\src\Controller\PushNotificationController::saveEnabledBrowser'
   requirements:
-    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+    _permission: ['can_manage_own_profile', 'can_view_public_content', 'can_access_admin_panel', 'can_manage_push_notifications']
 
 push_notification.settings:
   path: '/push/notifiction/settings/configurations'
@@ -20,7 +20,7 @@ push_notification.settings:
   defaults:
     _controller: 'Simp\Pindrop\Modules\push_notification\src\Controller\PushNotificationController::collectConfiguration'
   requirements:
-    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+    _permission: ['can_manage_own_profile', 'can_view_public_content', 'can_access_admin_panel', 'can_manage_push_notifications']
 
 push_notification.testing:
   path: '/push/notifiction/testing'
@@ -28,4 +28,4 @@ push_notification.testing:
   defaults:
     _controller: 'Simp\Pindrop\Modules\push_notification\src\Controller\PushNotificationController::testing'
   requirements:
-    _permission: ['user', 'moderator', 'admin', 'super_admin', 'guest']
+    _permission: ['can_administer_settings', 'can_manage_push_notifications']

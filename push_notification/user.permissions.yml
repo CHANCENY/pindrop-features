@@ -1,0 +1,36 @@
+super_admin:
+  db.push_notification.full:
+    title: 'Full push notification database access'
+    description: 'Full access to all push notification tables.'
+  can_manage_push_notifications:
+    title: 'Can manage push notifications'
+    description: 'Configure and send push notifications.'
+
+admin:
+  db.push_notification.full:
+    title: 'Full push notification database access'
+    description: 'Full access to all push notification tables.'
+  can_manage_push_notifications:
+    title: 'Can manage push notifications'
+    description: 'Configure and send push notifications.'
+
+moderator:
+  db.push_notification.read:
+    title: 'Read push notification subscriptions'
+    description: 'Read push notification subscriptions and history.'
+  db.push_notification.write:
+    title: 'Write push notification subscriptions'
+    description: 'Create push notification subscriptions and queue notifications.'
+
+user:
+  db.push_notification.own.read:
+    title: 'Read own push notification subscription'
+    description: 'Read own browser push notification subscription.'
+  db.push_notification.own.write:
+    title: 'Manage own push notification subscription'
+    description: 'Enable or update own browser push notification subscription.'
+
+anonymous:
+  db.push_notification.own.write:
+    title: 'Manage own push notification subscription'
+    description: 'Enable browser push notifications as a guest.'

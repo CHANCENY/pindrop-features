@@ -1,0 +1,32 @@
+db.push_notification.own.read:
+  description: "Read own push notification subscription row (user_id = current user)."
+  owned_by: push_notification
+  tables:
+    push_notification_user_allowed: [select]
+
+db.push_notification.own.write:
+  description: "Create/update own push notification subscription row."
+  owned_by: push_notification
+  tables:
+    push_notification_user_allowed: [insert, update]
+
+db.push_notification.read:
+  description: "Read access to push notification tables."
+  owned_by: push_notification
+  tables:
+    push_notification_user_allowed: [select]
+    push_notifications: [select]
+
+db.push_notification.write:
+  description: "Create push notification subscriptions and queue notifications."
+  owned_by: push_notification
+  tables:
+    push_notification_user_allowed: [insert, update]
+    push_notifications: [insert]
+
+db.push_notification.full:
+  description: "Full access to all push notification tables."
+  owned_by: push_notification
+  tables:
+    push_notification_user_allowed: [select, insert, update, delete]
+    push_notifications: [select, insert, update, delete]
