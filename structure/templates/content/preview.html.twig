@@ -71,11 +71,11 @@
                                             {% if field_data.values is defined %}
                                                 <ul>
                                                     {% for val in field_data.values %}
-                                                        <li>{{ val }}</li>
+                                                        <li>{{ val|raw }}</li>
                                                     {% endfor %}
                                                 </ul>
                                             {% elseif field_data.value is defined %}
-                                                {{ field_data.value }}
+                                                {{ field_data.value|raw }}
                                             {% else %}
                                                 <span style="color: #999; font-style: italic;">No value</span>
                                             {% endif %}

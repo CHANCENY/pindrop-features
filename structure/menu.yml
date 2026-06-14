@@ -1,5 +1,11 @@
 groups:
   structure:
+    content:
+      title: Content
+      route: admin.content
+      icon: fa fa-list
+      weight: 1
+      roles: [admin, super_admin]
     structures:
       title: Structures
       route: structure.structures

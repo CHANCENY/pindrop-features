@@ -1,0 +1,42 @@
+db.structure.config.read:
+  description: 'Read access to structure configuration table.'
+  owned_by: structure
+  tables:
+    structure_configuration: [select]
+
+db.structure.config.write:
+  description: 'Write access to structure configuration table.'
+  owned_by: structure
+  tables:
+    structure_configuration: [insert, update]
+
+db.structure.config.delete:
+  description: 'Delete access to structure configuration table.'
+  owned_by: structure
+  tables:
+    structure_configuration: [delete]
+
+db.structure.content.read:
+  description: 'Read access to content_data table.'
+  owned_by: structure
+  tables:
+    content_data: [select]
+
+db.structure.content.write:
+  description: 'Write access to content_data table.'
+  owned_by: structure
+  tables:
+    content_data: [insert, update]
+
+db.structure.content.delete:
+  description: 'Delete access to content_data table.'
+  owned_by: structure
+  tables:
+    content_data: [delete]
+
+db.structure.full:
+  description: 'Full access to all structure tables.'
+  owned_by: structure
+  tables:
+    structure_configuration: [select, insert, update, delete]
+    content_data: [select, insert, update, delete]

@@ -411,6 +411,7 @@ class StructureContentController extends ControllerBase
             Message::error("No preview session found");
         }
         $node = Node::fromArray($node);
+       
         \appEvents()->invokeEvents(Events::ST_ENTITY_PRE_SAVE, ['node' => &$node]);
         $result = $this->saveNode($node);
         if ($result) {

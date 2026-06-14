@@ -4,7 +4,7 @@ structure.structures:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structure'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types:
   path: '/admin/structures/content-types'
@@ -12,7 +12,7 @@ structure.structures.content.types:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypes'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.create:
   path: '/admin/structures/content-types/add'
@@ -20,7 +20,7 @@ structure.structures.content.types.create:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesCreate'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.edit:
   path: '/admin/structures/content-types/[id:string]/edit'
@@ -28,7 +28,7 @@ structure.structures.content.types.edit:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesEdit'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.delete:
   path: '/admin/structures/content-types/[id:string]/delete'
@@ -36,7 +36,7 @@ structure.structures.content.types.delete:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesDelete'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.manage.fields:
   path: '/admin/structures/content-types/[id:string]/fields'
@@ -44,7 +44,7 @@ structure.structures.content.types.manage.fields:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFields'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.manage.form.display:
   path: '/admin/structures/content-types/[id:string]/form-display'
@@ -52,7 +52,7 @@ structure.structures.content.types.manage.form.display:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFormDisplay'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.manage.fields.add:
   path: '/admin/structures/content-types/[id:string]/fields/add'
@@ -60,7 +60,7 @@ structure.structures.content.types.manage.fields.add:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAdd'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.manage.fields.add.base:
   path: '/admin/structures/content-types/[id:string]/fields/add/[type:string]'
@@ -68,7 +68,7 @@ structure.structures.content.types.manage.fields.add.base:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAddType'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.manage.fields.add.field.setting:
   path: '/admin/structures/content-types/[id:string]/fields/add/[type:string]/field/[name:string]/settings'
@@ -76,7 +76,7 @@ structure.structures.content.types.manage.fields.add.field.setting:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAddTypeSetting'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 structure.structures.content.types.manage.fields.add.field.setting.edit:
   path: '/admin/structures/content-types/[id:string]/fields/add/[type:string]/field/[name:string]/settings/edit'
@@ -84,14 +84,15 @@ structure.structures.content.types.manage.fields.add.field.setting.edit:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAddTypeSettingEdit'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
+
 structure.structures.content.types.manage.fields.add.field.setting.delete:
   path: '/admin/structures/content-types/[id:string]/fields/add/[type:string]/field/[name:string]/settings/delete'
   methods: ['GET', 'POST']
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureController::structureContentTypesFieldsAddTypeSettingDelete'
   requirements:
-    _permission: ['admin', 'super_admin']
+    _permission: ['can_administer_content', 'can_administer_settings']
 
 admin.content:
   path: '/admin/content'
@@ -99,7 +100,7 @@ admin.content:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::content'
   requirements:
-    _permission: ['admin','super_admin', 'moderator']
+    _permission: ['can_administer_content']
 
 admin.content.add:
   path: '/admin/content/add'
@@ -107,7 +108,7 @@ admin.content.add:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content']
 
 admin.content.add.node:
   path: '/admin/content/[type:string]/add'
@@ -115,7 +116,7 @@ admin.content.add.node:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addNewContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content']
 
 admin.content.add.node.new:
   path: '/admin/content/[type:string]/submit/new'
@@ -123,7 +124,7 @@ admin.content.add.node.new:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addNewContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content']
 
 admin.content.add.node.edit:
   path: '/admin/content/[type:string]/submit/[nid:int]/edit'
@@ -131,7 +132,7 @@ admin.content.add.node.edit:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addEditContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_edit_own_content']
 
 admin.content.add.node.new.submitted.data:
   path: '/admin/content/[type:string]/submit/data/failed'
@@ -139,7 +140,7 @@ admin.content.add.node.new.submitted.data:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::addNewGetContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content']
 
 admin.content.add.node.new.submitted.data.action:
   path: '/admin/content/action'
@@ -147,7 +148,7 @@ admin.content.add.node.new.submitted.data.action:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::handleActions'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content', 'can_edit_own_content']
 
 admin.content.add.node.new.submitted.preview:
   path: '/node/[sessionId:int]/preview'
@@ -155,7 +156,7 @@ admin.content.add.node.new.submitted.preview:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::previewNodeSubmitted'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content']
 
 admin.content.add.node.new.submitted.preview.save:
   path: '/node/[sessionId:int]/preview/save'
@@ -163,7 +164,7 @@ admin.content.add.node.new.submitted.preview.save:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::previewNodeSubmittedSave'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content']
 
 admin.content.add.node.preview.delete:
   path: '/node/[sessionId:int]/preview/delete'
@@ -171,7 +172,7 @@ admin.content.add.node.preview.delete:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::previewNodeSubmittedDelete'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_delete_own_content']
 
 admin.content.node.view:
   path: '/node/[nid:int]'
@@ -179,7 +180,7 @@ admin.content.node.view:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::nodeContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content', 'can_view_public_content']
 
 admin.content.node.view.alias:
   path: '/c/[node_alias:string]'
@@ -187,7 +188,7 @@ admin.content.node.view.alias:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::nodeContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_create_content', 'can_view_public_content']
 
 admin.content.node.delete:
   path: '/admin/node/[nid:int]/delete'
@@ -195,7 +196,7 @@ admin.content.node.delete:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::deleteContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_delete_own_content']
 
 admin.content.node.edit:
   path: '/admin/node/[nid:int]/edit'
@@ -203,4 +204,4 @@ admin.content.node.edit:
   defaults:
     _controller: 'Simp\Pindrop\Modules\structure\src\Controller\StructureContentController::editContent'
   requirements:
-    _permission: ['admin', 'super_admin', 'moderator']
+    _permission: ['can_administer_content', 'can_edit_own_content']

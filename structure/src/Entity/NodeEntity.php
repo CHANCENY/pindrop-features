@@ -288,11 +288,8 @@ class NodeEntity implements NodeInterface
     {
         try{
 
-            $query = "SELECT * FROM `content_data` WHERE id = :id";
-            $statement = \getAppContainer()->get('database')->getPdo()->prepare($query);
-            $statement->bindParam("id", $nid);
-            $statement->execute();
-            $result = $statement->fetch(\PDO::FETCH_ASSOC);
+            $stmt = \getAppContainer()->get('database')->queryRaw("SELECT * FROM `content_data` WHERE id = ?", $nid);
+            $result = $stmt instanceof \PDOStatement ? $stmt->fetch(\PDO::FETCH_ASSOC) : false;
             if ($result) {
                 $this->nid = $result['id'];
                 $this->title = $result['title'];
@@ -326,11 +323,8 @@ class NodeEntity implements NodeInterface
     {
         try{
 
-            $query = "SELECT * FROM `content_data` WHERE slug = :slug";
-            $statement = \getAppContainer()->get('database')->getPdo()->prepare($query);
-            $statement->bindParam("slug", $alias);
-            $statement->execute();
-            $result = $statement->fetch(\PDO::FETCH_ASSOC);
+            $stmt = \getAppContainer()->get('database')->queryRaw("SELECT * FROM `content_data` WHERE slug = ?", $alias);
+            $result = $stmt instanceof \PDOStatement ? $stmt->fetch(\PDO::FETCH_ASSOC) : false;
             if ($result) {
                 $this->nid = $result['id'];
                 $this->title = $result['title'];
@@ -365,11 +359,8 @@ class NodeEntity implements NodeInterface
     {
         try{
 
-            $query = "SELECT id FROM `content_data` WHERE bundle = :bd";
-            $statement = \getAppContainer()->get('database')->getPdo()->prepare($query);
-            $statement->bindParam("bd", $type);
-            $statement->execute();
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = \getAppContainer()->get('database')->queryRaw("SELECT id FROM `content_data` WHERE bundle = ?", $type);
+            $result = $stmt instanceof \PDOStatement ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
             return  array_column($result, 'id');
         }
         catch (Throwable $exception){
@@ -385,11 +376,8 @@ class NodeEntity implements NodeInterface
     {
         try{
 
-            $query = "SELECT * FROM `content_data` WHERE uid = :uid";
-            $statement = \getAppContainer()->get('database')->getPdo()->prepare($query);
-            $statement->bindParam("uid", $uid);
-            $statement->execute();
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = \getAppContainer()->get('database')->queryRaw("SELECT id FROM `content_data` WHERE uid = ?", $uid);
+            $result = $stmt instanceof \PDOStatement ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
             return  array_column($result, 'id');
 
         }
@@ -406,11 +394,8 @@ class NodeEntity implements NodeInterface
     {
         try{
 
-            $query = "SELECT id FROM `content_data` WHERE status = :st";
-            $statement = \getAppContainer()->get('database')->getPdo()->prepare($query);
-            $statement->bindParam("st", $status);
-            $statement->execute();
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = \getAppContainer()->get('database')->queryRaw("SELECT id FROM `content_data` WHERE status = ?", $status);
+            $result = $stmt instanceof \PDOStatement ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
             return  array_column($result, 'id');
         }
         catch (Throwable $exception){
@@ -434,13 +419,8 @@ class NodeEntity implements NodeInterface
 
             $query = "SELECT id FROM `content_data` WHERE uid IN ($placeholders)";
 
-            $pdo = \getAppContainer()->get('database')->getPdo();
-            $statement = $pdo->prepare($query);
-
-            // Execute with values directly
-            $statement->execute($uids);
-
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = \getAppContainer()->get('database')->queryRaw($query, ...$uids);
+            $result = $stmt instanceof \PDOStatement ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
 
             return array_column($result, 'id');
         }
@@ -465,13 +445,8 @@ class NodeEntity implements NodeInterface
 
             $query = "SELECT id FROM `content_data` WHERE bundle IN ($placeholders)";
 
-            $pdo = \getAppContainer()->get('database')->getPdo();
-            $statement = $pdo->prepare($query);
-
-            // Execute with values directly
-            $statement->execute($types);
-
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = \getAppContainer()->get('database')->queryRaw($query, ...$types);
+            $result = $stmt instanceof \PDOStatement ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
 
             return array_column($result, 'id');
         }
@@ -496,13 +471,8 @@ class NodeEntity implements NodeInterface
 
             $query = "SELECT id FROM `content_data` WHERE id IN ($placeholders)";
 
-            $pdo = \getAppContainer()->get('database')->getPdo();
-            $statement = $pdo->prepare($query);
-
-            // Execute with values directly
-            $statement->execute($ids);
-
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = \getAppContainer()->get('database')->queryRaw($query, ...$ids);
+            $result = $stmt instanceof \PDOStatement ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
 
             return array_column($result, 'id');
         }
@@ -877,42 +847,24 @@ class NodeEntity implements NodeInterface
     private function collectAllDataGrouped(int $nid): array
     {
         $references = $this->storage()->entityReferences();
-        $pdo = \getAppContainer()->get('database')->getPdo();
-
         $queries = [];
-        $params = [];
+        $params  = [];
+        $db      = \getAppContainer()->get('database');
 
         foreach ($references as $ref) {
-            $table = $ref['TABLE_NAME'];
-            $entityColumn = $ref['COLUMN_NAME']; // entity_id
+            $table       = $ref['TABLE_NAME'];
+            $entityColumn = $ref['COLUMN_NAME'];
+            $parts       = explode('__field_', $table);
+            $fieldName   = end($parts);
 
-            // Extract field name
-            $parts = explode('__field_', $table);
-            $fieldName = end($parts);
-
-            // Build SELECT for this table
-            $queries[] = "
-            SELECT 
-                cd.id,
-                '{$table}' AS source_table,
-                '{$fieldName}' AS field_name,
-                t.`{$fieldName}` AS value
-            FROM content_data cd
-            LEFT JOIN `{$table}` t 
-                ON t.`{$entityColumn}` = cd.id
-            WHERE cd.id = ?
-        ";
-
-            $params[] = $nid;
+            $queries[] = "SELECT cd.id, '{$table}' AS source_table, '{$fieldName}' AS field_name, t.`{$fieldName}` AS value FROM content_data cd LEFT JOIN `{$table}` t ON t.`{$entityColumn}` = cd.id WHERE cd.id = ?";
+            $params[]  = $nid;
         }
 
-        // Combine all queries
-        $sql = implode(" UNION ALL ", $queries);
-
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (empty($queries)) return [];
+        $sql  = implode(' UNION ALL ', $queries);
+        $stmt = $db->queryRaw($sql, ...$params);
+        $rows = $stmt instanceof \PDOStatement ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
 
         // Group results
         $grouped = [];
@@ -968,32 +920,19 @@ class NodeEntity implements NodeInterface
         $limit = isset($others['limit']) ? (int)$others['limit'] : 25;
         $offset = isset($others['offset']) ? (int)$others['offset'] : 0;
 
-        // --- TOTAL COUNT QUERY ---
-        $countSql = "SELECT COUNT(*) as total FROM content_data {$whereSql}";
-        $countStmt = \getAppContainer()->get('database')->getPdo()->prepare($countSql);
-        $countStmt->execute($params);
-        $total = (int) $countStmt->fetchColumn();
+        // --- TOTAL COUNT ---
+        $db         = \getAppContainer()->get('database');
+        $countSql   = "SELECT COUNT(*) as total FROM content_data {$whereSql}";
+        $countStmt  = $db->queryRaw($countSql, ...array_values($params));
+        $total      = (int)($countStmt instanceof \PDOStatement ? $countStmt->fetchColumn() : 0);
 
-        // --- MAIN QUERY ---
-        $sql = "SELECT id 
-            FROM content_data 
-            {$whereSql} 
-            ORDER BY changed DESC 
-            LIMIT :limit OFFSET :offset";
-
-        $stmt = \getAppContainer()->get('database')->getPdo()->prepare($sql);
-
-        // Bind filters
-        foreach ($params as $key => $value) {
-            $stmt->bindValue(":{$key}", $value);
-        }
-
-        // Bind pagination separately (important: integers)
-        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
-
-        $stmt->execute();
-        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        // --- PAGINATED QUERY ---
+        $sql   = "SELECT id FROM content_data {$whereSql} ORDER BY changed DESC LIMIT ? OFFSET ?";
+        $bindings = array_values($params);
+        $bindings[] = $limit;
+        $bindings[] = $offset;
+        $stmt  = $db->queryRaw($sql, ...$bindings);
+        $rows  = $stmt instanceof \PDOStatement ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
 
         // Load full nodes
         $nodes = array_map(function ($row) {

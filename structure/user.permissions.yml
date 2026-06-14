@@ -1,0 +1,37 @@
+super_admin:
+  db.structure.full:
+    title: 'Full structure database access'
+    description: 'Full access to all structure plugin tables.'
+  can_manage_structure:
+    title: 'Can manage structure'
+    description: 'Create and manage content types and field definitions.'
+
+admin:
+  db.structure.full:
+    title: 'Full structure database access'
+    description: 'Full access to all structure plugin tables.'
+  can_manage_structure:
+    title: 'Can manage structure'
+    description: 'Create and manage content types and field definitions.'
+
+moderator:
+  db.structure.config.read:
+    title: 'Read structure configuration'
+    description: 'Read structure and field configuration.'
+  db.structure.content.read:
+    title: 'Read content data'
+    description: 'Read published content nodes.'
+  db.structure.content.write:
+    title: 'Write content data'
+    description: 'Create and edit content nodes.'
+  db.structure.content.delete:
+    title: 'Delete content data'
+    description: 'Delete content nodes.'
+
+user:
+  db.structure.content.read:
+    title: 'Read content data'
+    description: 'Read published content nodes.'
+  db.structure.content.write:
+    title: 'Write content data'
+    description: 'Create content nodes.'

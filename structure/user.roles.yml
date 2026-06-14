@@ -1,0 +1,6 @@
+# Structure plugin introduces no new roles.
+# content_editor is provided as an optional convenience role.
+content_editor:
+  label: 'Content Editor'
+  description: 'Can create and edit content nodes. No structural administration access.'
+  parent: 'user'
