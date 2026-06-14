@@ -1241,12 +1241,14 @@ Generated: " . date('Y-m-d H:i:s') . "
                         $providerManager = new TwoFactorManager(getAppContainer()->get('plugin.manager'));
                         $provider = $providerManager->getTwofactorAuthenticationProvider($provider);
 
-                        SessionStorage::add('two_factor_session', [
-                            'provider' => $provider->key(),
+                        if (!empty($provider)) {
+                            SessionStorage::add('two_factor_session', [
+                            'provider' => $provider?->key(),
                             'user' => $user->getId(),
                         ]);
 
                         return $this->redirect($provider?->redirectLink());
+                        }
                     }
                 }
 
