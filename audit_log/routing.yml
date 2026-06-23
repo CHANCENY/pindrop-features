@@ -1,0 +1,29 @@
+# Admin audit log dashboard
+audit_log.list:
+  path: '/admin/audit-log'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\audit_log\src\Controller\AuditLogController::list'
+  requirements:
+    _permission:
+      - can_access_audit_log
+
+# Purge old entries (POST only, same permission level as list)
+audit_log.purge:
+  path: '/admin/audit-log/purge'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\audit_log\src\Controller\AuditLogController::purge'
+  requirements:
+    _permission:
+      - can_access_audit_log
+
+# Internal JSON API (for live-refresh / mobile client)
+audit_log.api.entries:
+  path: '/internal/audit-log/entries'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\audit_log\src\Controller\AuditLogController::apiEntries'
+  requirements:
+    _permission:
+      - can_access_internal_api

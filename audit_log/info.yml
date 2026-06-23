@@ -1,0 +1,6 @@
+name: "Audit Log"
+description: "Automatically records security-relevant events (logins, logouts, failed auth, user lifecycle, plugin installs) and exposes a filterable admin dashboard with configurable log retention."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"

@@ -1,0 +1,6 @@
+can_access_audit_log:
+  label: "Access Audit Log"
+  description: "View and purge the security audit log entries in the admin panel."
+  roles:
+    - super_admin
+    - admin
