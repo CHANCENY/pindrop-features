@@ -1,0 +1,9 @@
+groups:
+  audit_log:
+    audit_log.admin.link:
+      icon: fa fa-shield-check
+      permissions:
+      - can_access_audit_log
+      route: audit_log.list
+      title: Audit Log
+      weight: 89

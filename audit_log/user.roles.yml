@@ -1,0 +1,3 @@
+# audit_log does not introduce new roles.
+# It grants can_access_audit_log to super_admin and admin
+# via user.permissions.yml above.

@@ -1,0 +1,2 @@
+audit_log_entries:
+  audit_log: [read, write, delete]

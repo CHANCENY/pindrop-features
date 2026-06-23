@@ -1,0 +1,7 @@
+audit_log.service:
+  class: Simp\Pindrop\Modules\audit_log\src\Service\AuditLogService
+  arguments:
+    - "@database"
+  tags:
+    - "audit_log"
+    - "security"

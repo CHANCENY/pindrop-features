@@ -1,0 +1,253 @@
+{% extends 'templates/base.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<div class="audit-log-page">
+
+    {# ── Header ────────────────────────────────────────────────────── #}
+    <div class="audit-log-header">
+
+        <div class="audit-log-title">
+            <h1>Audit Log</h1>
+            <p>{{ pagination.count }} entries recorded</p>
+        </div>
+
+        <div class="audit-log-actions">
+            <form method="post" action="{{ url('audit_log.purge') }}"
+                  onsubmit="return confirm('Purge all entries older than the configured retention period? This cannot be undone.')">
+                <button type="submit" class="audit-btn audit-btn-danger">
+                    Purge old entries
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    {# ── Filters ───────────────────────────────────────────────────── #}
+    <div class="audit-log-filters">
+        <form method="get" class="audit-filter-form">
+
+            <input
+                type="text"
+                name="action"
+                placeholder="Action (e.g. user.login)"
+                value="{{ filters.action|default('') }}"
+            >
+
+            <select name="severity">
+                <option value="">All severities</option>
+                {% for s in ['info', 'warning', 'critical'] %}
+                    <option value="{{ s }}"
+                        {% if filters.severity|default('') == s %}selected{% endif %}
+                    >{{ s|capitalize }}</option>
+                {% endfor %}
+            </select>
+
+            <input
+                type="date"
+                name="date_from"
+                value="{{ filters.date_from|default('') }}"
+                title="From date"
+            >
+
+            <input
+                type="date"
+                name="date_to"
+                value="{{ filters.date_to|default('') }}"
+                title="To date"
+            >
+
+            <input
+                type="number"
+                name="user_id"
+                placeholder="User ID"
+                value="{{ filters.user_id|default('') }}"
+                min="1"
+                style="width:110px"
+            >
+
+            <button type="submit" class="audit-btn">Filter</button>
+
+            {% if filters is not empty %}
+                <a href="{{ url('audit_log.list') }}" class="audit-btn audit-btn-ghost">Clear</a>
+            {% endif %}
+
+        </form>
+    </div>
+
+    {# ── Table ─────────────────────────────────────────────────────── #}
+    <div class="audit-table-wrapper">
+        <table class="audit-table">
+            <thead>
+                <tr>
+                    <th width="60">ID</th>
+                    <th width="120">Severity</th>
+                    <th>Action</th>
+                    <th>User</th>
+                    <th>Resource</th>
+                    <th width="130">IP</th>
+                    <th width="170">Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% if entries is not empty %}
+
+                    {% for entry in entries %}
+
+                        <tr class="audit-row audit-severity-{{ entry.severity }}">
+
+                            <td class="audit-id">{{ entry.id }}</td>
+
+                            <td>
+                                <span class="audit-badge audit-badge-{{ entry.severity }}">
+                                    {{ entry.severity }}
+                                </span>
+                            </td>
+
+                            <td class="audit-action">
+                                <code>{{ entry.action }}</code>
+                                {% if entry.payload %}
+                                    <details class="audit-payload">
+                                        <summary>payload</summary>
+                                        <pre>{{ entry.payload }}</pre>
+                                    </details>
+                                {% endif %}
+                            </td>
+
+                            <td class="audit-user">
+                                {% if entry.username %}
+                                    {{ entry.username }}
+                                    {% if entry.user_id %}
+                                        <span class="audit-meta">#{{ entry.user_id }}</span>
+                                    {% endif %}
+                                {% elseif entry.user_id %}
+                                    <span class="audit-meta">#{{ entry.user_id }}</span>
+                                {% else %}
+                                    <span class="audit-anon">anonymous</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="audit-resource">
+                                {% if entry.resource_type %}
+                                    <span class="audit-resource-type">{{ entry.resource_type }}</span>
+                                    {% if entry.resource_id %}
+                                        <span class="audit-meta">{{ entry.resource_id }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td class="audit-ip">
+                                {{ entry.ip_address ?? '—' }}
+                            </td>
+
+                            <td class="audit-date">
+                                {{ entry.created_at|date('M d, Y') }}<br>
+                                <span class="audit-meta">{{ entry.created_at|date('H:i:s') }}</span>
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="7">
+                            <div class="audit-empty">
+                                No log entries match your filters.
+                            </div>
+                        </td>
+                    </tr>
+
+                {% endif %}
+
+            </tbody>
+        </table>
+    </div>
+
+    {# ── Pagination ────────────────────────────────────────────────── #}
+    {% if pagination.total > 1 %}
+        <div class="audit-pagination">
+
+            {% if pagination.current > 1 %}
+                <a href="?{{ app.request.queryString }}&page={{ pagination.current - 1 }}"
+                   class="audit-btn audit-btn-ghost">
+                    &lsaquo; Prev
+                </a>
+            {% endif %}
+
+            <span class="audit-page-info">
+                Page {{ pagination.current }} of {{ pagination.total }}
+            </span>
+
+            {% if pagination.current < pagination.total %}
+                <a href="?{{ app.request.queryString }}&page={{ pagination.current + 1 }}"
+                   class="audit-btn audit-btn-ghost">
+                    Next &rsaquo;
+                </a>
+            {% endif %}
+
+        </div>
+    {% endif %}
+
+</div>
+
+<style>
+/* ── Audit Log Styles ──────────────────────────────────────────────── */
+.audit-log-page          { padding: 2rem; }
+.audit-log-header        { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; }
+.audit-log-title h1      { margin:0 0 .25rem; font-size:1.5rem; }
+.audit-log-title p       { margin:0; color:#6b7280; font-size:.875rem; }
+
+.audit-log-filters       { margin-bottom:1rem; }
+.audit-filter-form       { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+.audit-filter-form input,
+.audit-filter-form select { padding:.375rem .75rem; border:1px solid #d1d5db; border-radius:.375rem; font-size:.875rem; }
+
+.audit-btn               { padding:.375rem .875rem; border-radius:.375rem; border:1px solid #d1d5db; background:#fff; cursor:pointer; font-size:.875rem; text-decoration:none; color:#374151; }
+.audit-btn:hover         { background:#f3f4f6; }
+.audit-btn-danger        { border-color:#fca5a5; background:#fee2e2; color:#dc2626; }
+.audit-btn-danger:hover  { background:#fecaca; }
+.audit-btn-ghost         { border-color:transparent; background:transparent; }
+.audit-btn-ghost:hover   { background:#f3f4f6; }
+
+.audit-table-wrapper     { overflow-x:auto; border:1px solid #e5e7eb; border-radius:.5rem; }
+.audit-table             { width:100%; border-collapse:collapse; font-size:.875rem; }
+.audit-table thead th    { background:#f9fafb; padding:.75rem 1rem; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb; white-space:nowrap; }
+.audit-table tbody tr    { border-bottom:1px solid #f3f4f6; }
+.audit-table tbody tr:hover { background:#fafafa; }
+.audit-table td          { padding:.625rem 1rem; vertical-align:top; }
+
+.audit-severity-warning  { border-left:3px solid #f59e0b; }
+.audit-severity-critical { border-left:3px solid #ef4444; }
+.audit-severity-info     { border-left:3px solid transparent; }
+
+.audit-badge             { display:inline-block; padding:.125rem .5rem; border-radius:.25rem; font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.025em; }
+.audit-badge-info        { background:#dbeafe; color:#1d4ed8; }
+.audit-badge-warning     { background:#fef3c7; color:#b45309; }
+.audit-badge-critical    { background:#fee2e2; color:#dc2626; }
+
+.audit-action code       { font-family:monospace; background:#f3f4f6; padding:.1rem .3rem; border-radius:.2rem; font-size:.8rem; }
+.audit-payload           { margin-top:.4rem; }
+.audit-payload summary   { font-size:.75rem; color:#6b7280; cursor:pointer; }
+.audit-payload pre       { font-size:.75rem; background:#f9fafb; padding:.5rem; border-radius:.25rem; margin:.25rem 0 0; overflow:auto; max-height:200px; }
+
+.audit-meta              { font-size:.75rem; color:#9ca3af; }
+.audit-anon              { font-size:.75rem; color:#d1d5db; font-style:italic; }
+.audit-resource-type     { background:#f3f4f6; padding:.1rem .35rem; border-radius:.2rem; font-size:.75rem; }
+
+.audit-id                { color:#9ca3af; font-size:.8rem; }
+.audit-date              { white-space:nowrap; }
+
+.audit-empty             { padding:3rem; text-align:center; color:#9ca3af; }
+.audit-pagination        { display:flex; align-items:center; gap:.75rem; padding:1rem 0; }
+.audit-page-info         { font-size:.875rem; color:#6b7280; }
+</style>
+
+{% endblock %}

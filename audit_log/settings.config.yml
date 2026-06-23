@@ -1,0 +1,3 @@
+audit_log:
+  name: Audit Log Settings
+  class: Simp\Pindrop\Modules\audit_log\src\Plugin\AuditLogSettings
