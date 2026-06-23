@@ -235,6 +235,7 @@ class AdminService
                 return ['success' => false, 'message' => 'Plugin already disabled: ' . $pluginName];
             }
             
+           
             $result = $this->pluginManager->disablePlugin($pluginName);
             
             if ($result) {

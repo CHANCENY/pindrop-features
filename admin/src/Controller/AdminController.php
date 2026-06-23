@@ -1283,8 +1283,11 @@ Generated: " . date('Y-m-d H:i:s') . "
                         'ip' => $request->getClientIp()
                     ]);
 
+                    appEvents()->invokeEvents(Events::AUTH_LOGIN,['session_id'=> $sessionId]);
+
                     return $response;
                 } else {
+                    appEvents()->invokeEvents(Events::AUTH_LOGIN_FAILED,[]);
                     throw new RuntimeException("Failed to create session");
                 }
 
@@ -1327,6 +1330,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     'user_id' => $session->getUserId(),
                     'session_id' => $sessionId
                 ]);
+                appEvents()->invokeEvents(Events::AUTH_LOGOUT,['user_id'=>$session->getUserId()]);
             }
         }
 
