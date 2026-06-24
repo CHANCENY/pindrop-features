@@ -1,0 +1,6 @@
+can_manage_signals_slots:
+  label: "Manage Signals & Slots"
+  description: "Create, toggle, and delete signal-to-slot connections and view the delivery log."
+  roles:
+    - super_admin
+    - admin

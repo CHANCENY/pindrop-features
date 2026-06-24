@@ -1,0 +1,3 @@
+# signals_slots introduces no new roles.
+# can_manage_signals_slots is granted to super_admin and admin
+# via user.permissions.yml.

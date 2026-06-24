@@ -1,0 +1,83 @@
+{% extends 'templates/base.twig' %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="ss-page">
+
+  <h1>{{ page_title }}</h1>
+
+  <form method="post" class="ss-form">
+
+    <div class="ss-form-group">
+      <label for="signal_key">Signal</label>
+      <select id="signal_key" name="signal_key" required>
+        <option value="">— choose a signal —</option>
+        {% for key, sig in signals %}
+          <option value="{{ key }}">{{ sig.name }} ({{ key }})</option>
+        {% endfor %}
+      </select>
+      <p class="ss-hint">The event that will trigger the slot.</p>
+    </div>
+
+    <div class="ss-arrow">↓</div>
+
+    <div class="ss-form-group">
+      <label for="slot_id">Slot</label>
+      <select id="slot_id" name="slot_id" required>
+        <option value="">— choose a slot —</option>
+        {% for id, slot in slots %}
+          <option value="{{ id }}">{{ slot.name }} ({{ id }})</option>
+        {% endfor %}
+      </select>
+      <p class="ss-hint">The handler that will run when the signal fires.</p>
+    </div>
+
+    <div class="ss-form-group">
+      <label>Delivery mode</label>
+      <div class="ss-radio-group">
+        <label class="ss-radio">
+          <input type="radio" name="mode" value="sync" checked>
+          <span>
+            <strong>Sync</strong>
+            <em>Slot runs immediately in the same HTTP request.</em>
+          </span>
+        </label>
+        <label class="ss-radio">
+          <input type="radio" name="mode" value="async">
+          <span>
+            <strong>Async</strong>
+            <em>Payload is queued; slot runs on the next cron tick. Requires the cron plugin with <code>signals_slots.queue.subscriber</code> scheduled.</em>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="ss-form-actions">
+      <button type="submit" class="ss-btn ss-btn-primary">Create Connection</button>
+      <a href="{{ url('signals_slots.dashboard') }}" class="ss-btn">Cancel</a>
+    </div>
+
+  </form>
+
+</div>
+
+<style>
+.ss-form             { max-width:520px; margin-top:1.5rem; }
+.ss-form-group       { margin-bottom:1.5rem; }
+.ss-form-group label { display:block; font-weight:600; margin-bottom:.375rem; font-size:.875rem; }
+.ss-form-group select{ width:100%; padding:.5rem .75rem; border:1px solid #d1d5db; border-radius:.375rem; font-size:.875rem; }
+.ss-hint             { margin:.375rem 0 0; font-size:.8rem; color:#6b7280; }
+.ss-hint code        { background:#f3f4f6; padding:.1rem .3rem; border-radius:.2rem; }
+.ss-arrow            { text-align:center; font-size:1.5rem; color:#9ca3af; margin:-0.5rem 0; }
+
+.ss-radio-group      { display:flex; flex-direction:column; gap:.75rem; }
+.ss-radio            { display:flex; gap:.75rem; padding:.75rem; border:1px solid #e5e7eb; border-radius:.375rem; cursor:pointer; }
+.ss-radio:hover      { border-color:#6366f1; background:#fafafa; }
+.ss-radio input      { margin-top:.25rem; flex-shrink:0; }
+.ss-radio strong     { display:block; font-size:.875rem; }
+.ss-radio em         { display:block; font-size:.8rem; color:#6b7280; font-style:normal; margin-top:.2rem; }
+.ss-radio em code    { background:#f3f4f6; padding:.1rem .3rem; border-radius:.2rem; }
+
+.ss-form-actions     { display:flex; gap:.5rem; margin-top:1.5rem; }
+</style>
+{% endblock %}

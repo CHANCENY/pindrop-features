@@ -1,0 +1,31 @@
+db.signals_slots.read:
+  description: 'Read access to signals & slots tables.'
+  owned_by: signals_slots
+  tables:
+    signal_connections:  [select]
+    signal_queue:        [select]
+    signal_delivery_log: [select]
+
+db.signals_slots.write:
+  description: 'Write access to signals & slots tables.'
+  owned_by: signals_slots
+  tables:
+    signal_connections:  [insert, update]
+    signal_queue:        [insert, update]
+    signal_delivery_log: [insert, update]
+
+db.signals_slots.delete:
+  description: 'Delete access to signals & slots tables.'
+  owned_by: signals_slots
+  tables:
+    signal_connections:  [delete]
+    signal_queue:        [delete]
+    signal_delivery_log: [delete]
+
+db.signals_slots.full:
+  description: 'Full access to all signals & slots tables.'
+  owned_by: signals_slots
+  tables:
+    signal_connections:  [select, insert, update, delete]
+    signal_queue:        [select, insert, update, delete]
+    signal_delivery_log: [select, insert, update, delete]

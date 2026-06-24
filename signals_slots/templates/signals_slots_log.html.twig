@@ -1,0 +1,90 @@
+{% extends 'templates/base.twig' %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="ss-page">
+
+  <div class="ss-header">
+    <div>
+      <h1>Delivery Log</h1>
+      <p>{{ pagination.count }} total entries</p>
+    </div>
+    <a href="{{ url('signals_slots.dashboard') }}" class="ss-btn">← Dashboard</a>
+  </div>
+
+  <div class="ss-filters">
+    <form method="get" class="ss-filter-form">
+      <input type="text" name="signal_key" placeholder="Signal key" value="{{ filters.signal_key|default('') }}">
+      <input type="text" name="slot_id"    placeholder="Slot id"    value="{{ filters.slot_id|default('') }}">
+      <select name="success">
+        <option value="">All results</option>
+        <option value="1" {% if filters.success is defined and filters.success == '1' %}selected{% endif %}>Success</option>
+        <option value="0" {% if filters.success is defined and filters.success == '0' %}selected{% endif %}>Failed</option>
+      </select>
+      <button type="submit" class="ss-btn">Filter</button>
+      {% if filters is not empty %}
+        <a href="{{ url('signals_slots.log') }}" class="ss-btn">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="ss-table-wrapper">
+    <table class="ss-table">
+      <thead>
+        <tr>
+          <th>Signal</th>
+          <th>Slot</th>
+          <th width="80">Mode</th>
+          <th width="80">Result</th>
+          <th>Error</th>
+          <th width="160">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if entries is not empty %}
+          {% for entry in entries %}
+            <tr>
+              <td><code class="ss-key">{{ entry.signal_key }}</code></td>
+              <td><code class="ss-key">{{ entry.slot_id }}</code></td>
+              <td><span class="ss-mode ss-mode-{{ entry.mode }}">{{ entry.mode }}</span></td>
+              <td>
+                {% if entry.success %}
+                  <span class="ss-badge ss-badge-active">ok</span>
+                {% else %}
+                  <span class="ss-badge ss-badge-fail">fail</span>
+                {% endif %}
+              </td>
+              <td class="ss-meta">{{ entry.error ?? '—' }}</td>
+              <td class="ss-meta">{{ entry.created_at|date('M d H:i:s') }}</td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr><td colspan="6"><div class="ss-empty">No log entries match your filters.</div></td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if pagination.total > 1 %}
+    <div class="ss-pagination">
+      {% if pagination.current > 1 %}
+        <a href="?page={{ pagination.current - 1 }}" class="ss-btn">← Prev</a>
+      {% endif %}
+      <span class="ss-meta">Page {{ pagination.current }} of {{ pagination.total }}</span>
+      {% if pagination.current < pagination.total %}
+        <a href="?page={{ pagination.current + 1 }}" class="ss-btn">Next →</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+
+<style>
+.ss-filters          { margin-bottom:1rem; }
+.ss-filter-form      { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+.ss-filter-form input,
+.ss-filter-form select { padding:.375rem .75rem; border:1px solid #d1d5db; border-radius:.375rem; font-size:.875rem; }
+.ss-badge-fail       { background:#fee2e2; color:#dc2626; display:inline-block; padding:.125rem .5rem; border-radius:.25rem; font-size:.7rem; font-weight:600; text-transform:uppercase; }
+.ss-pagination       { display:flex; align-items:center; gap:.75rem; padding:1rem 0; }
+</style>
+{% endblock %}

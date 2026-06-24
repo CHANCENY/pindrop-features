@@ -1,0 +1,10 @@
+groups:
+  signals_slots:
+    signals_slots.admin.link:
+      title: "Signals & Slots"
+      route: "signals_slots.dashboard"
+      parent: "admin.menu"
+      weight: 90
+      icon: "fa fa-zap"
+      _permission:
+        - can_manage_signals_slots

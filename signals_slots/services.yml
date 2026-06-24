@@ -1,0 +1,15 @@
+signals_slots.registry:
+  class: Simp\Pindrop\Modules\signals_slots\src\Service\SignalRegistry
+  arguments:
+    - "@plugin.manager"
+  tags:
+    - "signals_slots"
+
+signals_slots.bus:
+  class: Simp\Pindrop\Modules\signals_slots\src\Service\SignalBus
+  arguments:
+    - "@database"
+    - "@signals_slots.registry"
+    - "@logger"
+  tags:
+    - "signals_slots"

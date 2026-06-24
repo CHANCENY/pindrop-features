@@ -1,0 +1,8 @@
+name: "Signals & Slots"
+description: "Qt-style runtime signal/slot wiring for Pindrop. Plugins declare signals they emit and slots they handle. Admins connect them via the UI — sync (in-request) or async (queued, drained by cron)."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"
+dependencies:
+  - cron

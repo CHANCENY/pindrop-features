@@ -1,0 +1,53 @@
+signals_slots.dashboard:
+  path: '/admin/signals'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\signals_slots\src\Controller\SignalsController::dashboard'
+  requirements:
+    _permission:
+      - can_manage_signals_slots
+
+signals_slots.connect:
+  path: '/admin/signals/connect'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\signals_slots\src\Controller\SignalsController::connect'
+  requirements:
+    _permission:
+      - can_manage_signals_slots
+
+signals_slots.toggle:
+  path: '/admin/signals/[id:int]/toggle'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\signals_slots\src\Controller\SignalsController::toggle'
+  requirements:
+    _permission:
+      - can_manage_signals_slots
+
+signals_slots.delete:
+  path: '/admin/signals/[id:int]/delete'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\signals_slots\src\Controller\SignalsController::delete'
+  requirements:
+    _permission:
+      - can_manage_signals_slots
+
+signals_slots.log:
+  path: '/admin/signals/log'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\signals_slots\src\Controller\SignalsController::log'
+  requirements:
+    _permission:
+      - can_manage_signals_slots
+
+signals_slots.emit_test:
+  path: '/admin/signals/emit-test'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\signals_slots\src\Controller\SignalsController::emitTest'
+  requirements:
+    _permission:
+      - can_manage_signals_slots
