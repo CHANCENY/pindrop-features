@@ -9,6 +9,7 @@ use Simp\Pindrop\Modules\cron\src\Plugin\Cron\SchedulerManager;
 
 return [
     'cron:run' => "runScheduler",
+    'cron:dev-cron' => "deveCronRunner"
 ];
 
 /**
@@ -36,13 +37,12 @@ function runScheduler(CLIPrinter $printer, ...$values): void
     $subscribers = $cronManager->getSubscribers();
     foreach ($subscribers as $subscriber) {
         $serialized = base64_encode(serialize($subscriber->id()));
-        $command = 'php '.$backgroundScript.' "' . $serialized . '" > /dev/null 2>&1 &';
+        $command = 'php ' . $backgroundScript . ' "' . $serialized . '" > /dev/null 2>&1 &';
 
         if (isFunctionEnabled('exec')) {
             exec($command);
             $printer->printLine("Schedules dispatched!", GREEN);
-        }
-        else {
+        } else {
             $printer->printLine("exec php function is disabled.");
         }
     }
@@ -55,4 +55,27 @@ function isFunctionEnabled(string $function): bool
     $disabled = array_map('trim', $disabled);
 
     return function_exists($function) && !in_array($function, $disabled);
+}
+
+
+function deveCronRunner(CLIPrinter $printer, ...$values): void
+{
+    set_time_limit(0);
+
+    $printer->printLine("Dev cron has started...", GREEN);
+
+    $start = microtime(true);
+
+    while (true) {
+        $elapsed = microtime(true) - $start;
+
+        if ($elapsed >= 30) {
+            runScheduler($printer, ...$values);
+
+            // Reset timer
+            $start = microtime(true);
+        }
+
+        usleep(100000); // 100ms
+    }
 }
