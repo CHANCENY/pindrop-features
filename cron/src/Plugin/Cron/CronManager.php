@@ -28,9 +28,9 @@ class CronManager
         // Load subscriber definitions from cron.subscriber.yml across all plugins
         $list = $pluginManager->getPluginsYamlContent('cron.subscriber');
         foreach ($list as $plugin) {
-            foreach ($plugin as $name => $class) {
+            foreach ($plugin as $name => $class) {               
                 if (in_array(CronDefinitionSubscriberInterface::class, class_implements($class) ?? [])) {
-                    $this->subscribers[$name] = new $class(\getAppContainer()->get('database'));
+                    $this->subscribers[] = new $class(\getAppContainer()->get('database'));
                 }
             }
         }
