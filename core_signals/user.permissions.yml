@@ -1,0 +1,3 @@
+# core_signals has no admin UI and introduces no permissions.
+# All signals and slots are declared in signals.yml and slots.yml
+# and are visible to the signals_slots admin at /admin/signals.

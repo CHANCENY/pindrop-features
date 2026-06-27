@@ -1,0 +1,219 @@
+# =============================================================================
+# CORE SIGNALS
+# =============================================================================
+# These signals are emitted by the core_signals EventsSubscriber, which
+# bridges framework system events into the signals_slots bus.
+#
+# Commerce signals (core.order.*, core.product.*) are declarative only —
+# they must be emitted explicitly by commerce plugins via SignalBus::emit().
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Auth
+# -----------------------------------------------------------------------------
+
+core.user.login:
+  name: "User Login"
+  description: "Emitted after a user successfully authenticates."
+  plugin: core_signals
+  payload:
+    session_id: "int — the new session row ID"
+
+core.user.logout:
+  name: "User Logout"
+  description: "Emitted when a user explicitly logs out."
+  plugin: core_signals
+  payload:
+    user_id: "int — the user who logged out"
+
+core.user.login_failed:
+  name: "Login Failed"
+  description: "Emitted on every failed authentication attempt."
+  plugin: core_signals
+  payload:
+    ip: "string — remote IP of the attempt"
+
+core.user.password_reset:
+  name: "Password Reset Requested"
+  description: "Emitted when a password reset is triggered."
+  plugin: core_signals
+  payload: {}
+
+# -----------------------------------------------------------------------------
+# User lifecycle
+# -----------------------------------------------------------------------------
+
+core.user.registered:
+  name: "User Registered"
+  description: "Emitted after a new user account is created."
+  plugin: core_signals
+  payload:
+    user: "array — the full user data array as stored"
+
+core.user.updated:
+  name: "User Updated"
+  description: "Emitted after a user account is updated."
+  plugin: core_signals
+  payload:
+    user: "array — the updated user data array"
+
+core.user.deleted:
+  name: "User Deleted"
+  description: "Emitted after a user account is permanently deleted."
+  plugin: core_signals
+  payload:
+    user_id: "int — uid of the deleted user"
+
+# -----------------------------------------------------------------------------
+# Entity (content) lifecycle
+# -----------------------------------------------------------------------------
+
+core.entity.creating:
+  name: "Entity Creating"
+  description: "Emitted just before a content entity is inserted."
+  plugin: core_signals
+  payload:
+    entity: "array — the entity data (mutable at event level, snapshot here)"
+
+core.entity.created:
+  name: "Entity Created"
+  description: "Emitted after a content entity is successfully inserted."
+  plugin: core_signals
+  payload:
+    entity: "array — the saved entity data"
+
+core.entity.updating:
+  name: "Entity Updating"
+  description: "Emitted just before a content entity is updated."
+  plugin: core_signals
+  payload:
+    entity: "array — the new entity data"
+
+core.entity.updated:
+  name: "Entity Updated"
+  description: "Emitted after a content entity is successfully updated."
+  plugin: core_signals
+  payload:
+    entity: "array — the updated entity data"
+
+core.entity.deleted:
+  name: "Entity Deleted"
+  description: "Emitted after a content entity is deleted."
+  plugin: core_signals
+  payload:
+    entity_id: "int — ID of the deleted entity"
+
+core.entity.saved:
+  name: "Entity Saved"
+  description: "Emitted after any entity save (create or update). Prefer core.entity.created / core.entity.updated when you need to distinguish."
+  plugin: core_signals
+  payload:
+    entity_id: "int — entity ID if resolvable"
+    entity_type: "string — class name of the entity"
+
+# -----------------------------------------------------------------------------
+# System
+# -----------------------------------------------------------------------------
+
+core.plugin.installed:
+  name: "Plugin Installed"
+  description: "Emitted after a plugin is successfully installed."
+  plugin: core_signals
+  payload:
+    plugin_id: "string — machine name of the installed plugin"
+
+core.plugin.uninstalled:
+  name: "Plugin Uninstalled"
+  description: "Emitted after a plugin is uninstalled."
+  plugin: core_signals
+  payload:
+    plugin_id: "string — machine name of the uninstalled plugin"
+
+core.request.received:
+  name: "Request Received"
+  description: "Emitted at the very start of every HTTP request cycle."
+  plugin: core_signals
+  payload:
+    method: "string — HTTP method"
+    path: "string — request path"
+
+# -----------------------------------------------------------------------------
+# Commerce  (declarative — emitted by commerce plugins, not this subscriber)
+# -----------------------------------------------------------------------------
+
+core.order.placed:
+  name: "Order Placed"
+  description: "Emit this from your commerce plugin when a customer places an order."
+  plugin: core_signals
+  payload:
+    order_id: "int"
+    user_id: "int"
+    total: "float"
+    currency: "string"
+
+core.order.paid:
+  name: "Order Paid"
+  description: "Emit this when payment is confirmed for an order."
+  plugin: core_signals
+  payload:
+    order_id: "int"
+    user_id: "int"
+    total: "float"
+
+core.order.shipped:
+  name: "Order Shipped"
+  description: "Emit this when an order is dispatched."
+  plugin: core_signals
+  payload:
+    order_id: "int"
+    tracking_number: "string|null"
+
+core.order.cancelled:
+  name: "Order Cancelled"
+  description: "Emit this when an order is cancelled."
+  plugin: core_signals
+  payload:
+    order_id: "int"
+    reason: "string|null"
+
+core.order.refunded:
+  name: "Order Refunded"
+  description: "Emit this when a refund is issued."
+  plugin: core_signals
+  payload:
+    order_id: "int"
+    amount: "float"
+
+core.product.created:
+  name: "Product Created"
+  description: "Emit this when a new product is added to the catalogue."
+  plugin: core_signals
+  payload:
+    product_id: "int"
+    name: "string"
+
+core.product.updated:
+  name: "Product Updated"
+  description: "Emit this when a product is modified."
+  plugin: core_signals
+  payload:
+    product_id: "int"
+    name: "string"
+
+core.product.low_stock:
+  name: "Product Low Stock"
+  description: "Emit this when a product's stock falls below a threshold."
+  plugin: core_signals
+  payload:
+    product_id: "int"
+    name: "string"
+    quantity: "int"
+    threshold: "int"
+
+core.product.out_of_stock:
+  name: "Product Out of Stock"
+  description: "Emit this when a product's stock reaches zero."
+  plugin: core_signals
+  payload:
+    product_id: "int"
+    name: "string"

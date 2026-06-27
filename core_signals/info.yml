@@ -1,0 +1,8 @@
+name: "Core Signals"
+description: "Built-in signal declarations and slot implementations for the Pindrop ecosystem. Bridges all framework system events (auth, user lifecycle, entity, plugin) into the signals_slots bus, and provides ready-to-use slots for logging, email, webhooks, and cache management. Requires: signals_slots."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"
+dependencies:
+  - signals_slots

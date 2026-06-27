@@ -1,0 +1,98 @@
+# =============================================================================
+# CORE SLOTS
+# =============================================================================
+# Every class listed here implements SlotInterface and is ready to be
+# connected to any signal via the Signals & Slots admin UI.
+#
+# Payload requirements are noted per slot — slots are defensive and
+# will do nothing (or log a warning) when required keys are missing.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Logging
+# -----------------------------------------------------------------------------
+
+core.slot.log_info:
+  name: "Log — Info"
+  description: "Writes the signal payload to the framework logger at INFO level. Useful for tracing signal flow during development."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\LogInfoSlot
+  plugin: core_signals
+  payload_required: []
+
+core.slot.log_warning:
+  name: "Log — Warning"
+  description: "Writes the signal payload to the framework logger at WARNING level."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\LogWarningSlot
+  plugin: core_signals
+  payload_required: []
+
+core.slot.log_error:
+  name: "Log — Error"
+  description: "Writes the signal payload to the framework logger at ERROR level. Connect to failure signals (login_failed, out_of_stock, etc.)."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\LogErrorSlot
+  plugin: core_signals
+  payload_required: []
+
+core.slot.log_to_file:
+  name: "Log — Append to File"
+  description: "Appends a JSON line to var/logs/signal_activity.log. No external dependencies. Good default for any signal."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\LogToFileSlot
+  plugin: core_signals
+  payload_required: []
+
+core.slot.log_to_audit:
+  name: "Log — Write Audit Entry"
+  description: "Writes an entry to the audit_log plugin's table. Gracefully does nothing if the audit_log plugin is not installed. Payload key 'action' is used as the audit action string; falls back to the signal key."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\LogToAuditSlot
+  plugin: core_signals
+  payload_required: []
+
+# -----------------------------------------------------------------------------
+# Email
+# -----------------------------------------------------------------------------
+
+core.slot.send_email:
+  name: "Send Email"
+  description: "Sends an email via the framework mailer (SMTP). Requires payload keys: 'to' (string), 'subject' (string), 'body' (string). Optional: 'html' (bool, default false)."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\SendEmailSlot
+  plugin: core_signals
+  payload_required:
+    - to
+    - subject
+    - body
+
+core.slot.notify_admin:
+  name: "Notify Admin by Email"
+  description: "Emails the address set in the ADMIN_EMAIL environment variable with the signal name and payload as a summary. No required payload keys — works with any signal."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\NotifyAdminSlot
+  plugin: core_signals
+  payload_required: []
+
+# -----------------------------------------------------------------------------
+# Integration
+# -----------------------------------------------------------------------------
+
+core.slot.dispatch_webhook:
+  name: "Dispatch Webhook"
+  description: "Relays the signal to all registered webhook endpoints via the webhooks plugin. Gracefully does nothing if the webhooks plugin is not installed. Payload key 'event' overrides the dispatched event name."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\DispatchWebhookSlot
+  plugin: core_signals
+  payload_required: []
+
+# -----------------------------------------------------------------------------
+# Cache
+# -----------------------------------------------------------------------------
+
+core.slot.clear_twig_cache:
+  name: "Clear Twig Cache"
+  description: "Deletes all compiled Twig templates under var/cache/twig/. Safe to connect to plugin install/uninstall or content update signals."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\ClearTwigCacheSlot
+  plugin: core_signals
+  payload_required: []
+
+core.slot.clear_plugin_cache:
+  name: "Clear Plugin Cache"
+  description: "Deletes the plugin manifest cache under var/cache/plugins/. Connect to plugin install/uninstall signals."
+  class: Simp\Pindrop\Modules\core_signals\src\Slot\ClearPluginCacheSlot
+  plugin: core_signals
+  payload_required: []
