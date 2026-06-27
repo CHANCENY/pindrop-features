@@ -231,7 +231,7 @@ class SignalsController extends ControllerBase
             $conds[]              = 'slot_id = :f_slot';
             $params[':f_slot']    = $filters['slot_id'];
         }
-        if ($filters['success'] !== null && $filters['success'] !== '') {
+        if (!empty($filters['success']) && $filters['success'] !== null && $filters['success'] !== '') {
             $conds[]              = 'success = :f_ok';
             $params[':f_ok']      = (int) $filters['success'];
         }
