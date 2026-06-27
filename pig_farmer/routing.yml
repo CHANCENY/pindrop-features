@@ -1,12 +1,13 @@
 pig_farmer.admin_dashboard:
-    path: 
+    path:
         '/admin/pig-farmer'
-    methods: 
+    methods:
         ['GET']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::dashboard'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
+
 pig_farmer.home:
     path:
         '/admin/pig-farmer/home'
@@ -15,97 +16,97 @@ pig_farmer.home:
     defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::home'
     requirements:
-        _permission: ['admin', 'super_admin', 'user', 'guest', 'moderator']
+        _permission: ['can_manage_pig_farmer', 'can_view_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_pigs:
-    path: 
+    path:
         '/admin/pig-farmer/pigs'
-    methods: 
+    methods:
         ['GET']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::listPigs'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_pig_add:
-    path: 
+    path:
         '/admin/pig-farmer/pigs/add'
-    methods: 
+    methods:
         ['GET', 'POST']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::addPig'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_pig_edit:
-    path: 
+    path:
         '/admin/pig-farmer/pigs/[id:int]/edit'
-    methods: 
+    methods:
         ['GET', 'POST']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::editPig'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_pig_delete:
-    path: 
+    path:
         '/admin/pig-farmer/pigs/[id:int]/delete'
-    methods: 
+    methods:
         ['POST']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::deletePig'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_health_records:
-    path: 
+    path:
         '/admin/pig-farmer/health-records/[pigId:int]'
-    methods: 
+    methods:
         ['GET']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::listHealthRecords'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_health_record_add:
-    path: 
+    path:
         '/admin/pig-farmer/health-records/[pigId:int]/add'
-    methods: 
+    methods:
         ['GET', 'POST']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::addHealthRecord'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_health_record_adds:
-    path: 
+    path:
         '/admin/pig-farmer/health-records/add'
-    methods: 
+    methods:
         ['GET', 'POST']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::addHealthRecords'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_feeding_logs:
-    path: 
+    path:
         '/admin/pig-farmer/feeding-logs/[pigId:int]'
-    methods: 
+    methods:
         ['GET']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::listFeedingLogs'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_feeding_log_add:
-    path: 
+    path:
         '/admin/pig-farmer/feeding-logs/[pigId:int]/add'
-    methods: 
+    methods:
         ['GET', 'POST']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::addFeedingLog'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_feeding_log_add_bulk:
     path:
@@ -115,7 +116,7 @@ pig_farmer.admin_feeding_log_add_bulk:
     defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::addFeedingLogBulk'
     requirements:
-        _permission: ['admin', 'super_admin']
+        _permission: ['can_manage_pig_farmer', 'can_administer_settings']
 
 pig_farmer.admin_finances:
     path:
@@ -125,7 +126,7 @@ pig_farmer.admin_finances:
     defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::listFinances'
     requirements:
-        _permission: ['admin', 'super_admin']
+        _permission: ['can_manage_pig_farmer_finances', 'can_administer_settings']
 
 pig_farmer.admin_finance_add:
     path:
@@ -135,7 +136,7 @@ pig_farmer.admin_finance_add:
     defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::addFinanceRecord'
     requirements:
-        _permission: ['admin', 'super_admin']
+        _permission: ['can_manage_pig_farmer_finances', 'can_administer_settings']
 
 pig_farmer.admin_finance_edit:
     path:
@@ -145,7 +146,7 @@ pig_farmer.admin_finance_edit:
     defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::editFinanceRecord'
     requirements:
-        _permission: ['admin', 'super_admin']
+        _permission: ['can_manage_pig_farmer_finances', 'can_administer_settings']
 
 pig_farmer.admin_finance_delete:
     path:
@@ -155,14 +156,14 @@ pig_farmer.admin_finance_delete:
     defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::deleteFinanceRecord'
     requirements:
-        _permission: ['admin', 'super_admin']
+        _permission: ['can_manage_pig_farmer_finances', 'can_administer_settings']
 
 pig_farmer.admin_analytics:
-    path: 
+    path:
         '/admin/pig-farmer/analytics'
-    methods: 
+    methods:
         ['GET']
-    defaults: 
+    defaults:
         _controller: 'Simp\Pindrop\Modules\pig_farmer\src\Controller\PigFarmerController::analytics'
-    requirements: 
-        _permission: ['admin', 'super_admin']
+    requirements:
+        _permission: ['can_manage_pig_farmer', 'can_view_pig_farmer_analytics', 'can_administer_settings']

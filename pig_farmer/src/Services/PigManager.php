@@ -22,7 +22,9 @@ class PigManager
      */
     public function getAllPigs(): array
     {
-        return $this->db->fetchAll("SELECT * FROM pig_farmer_pigs ORDER BY created_at DESC");
+        return $this->db->table('pig_farmer_pigs')
+            ->latest('created_at')
+            ->get();
     }
 
     /**
@@ -30,7 +32,9 @@ class PigManager
      */
     public function getPigById(int $id): ?array
     {
-        return $this->db->fetch("SELECT * FROM pig_farmer_pigs WHERE id = ?", ...$i=[$id]);
+        return $this->db->table('pig_farmer_pigs')
+            ->where('id', '=', $id)
+            ->first();
     }
 
     /**
@@ -38,15 +42,15 @@ class PigManager
      */
     public function addPig(array $data): bool
     {
-        $query = "INSERT INTO pig_farmer_pigs (tag_number, breed, gender, birth_date, status, weight) VALUES (?, ?, ?, ?, ?, ?)";
-        return $this->db->query($query, ...$i=[
-            $data['tag_number'],
-            $data['breed'],
-            $data['gender'],
-            $data['birth_date'],
-            $data['status'] ?? 'Active',
-            $data['weight']
-        ])->rowCount() > 0;
+        $id = $this->db->table('pig_farmer_pigs')->insert([
+            'tag_number' => $data['tag_number'],
+            'breed'      => $data['breed'],
+            'gender'     => $data['gender'],
+            'birth_date' => $data['birth_date'],
+            'status'     => $data['status'] ?? 'Active',
+            'weight'     => $data['weight'],
+        ]);
+        return $id > 0;
     }
 
     /**
@@ -54,16 +58,16 @@ class PigManager
      */
     public function updatePig(int $id, array $data): bool
     {
-        $query = "UPDATE pig_farmer_pigs SET tag_number = ?, breed = ?, gender = ?, birth_date = ?, status = ?, weight = ? WHERE id = ?";
-        return $this->db->query($query, ...$i=[
-            $data['tag_number'],
-            $data['breed'],
-            $data['gender'],
-            $data['birth_date'],
-            $data['status'],
-            $data['weight'],
-            $id
-        ])->rowCount() > 0;
+        return $this->db->table('pig_farmer_pigs')
+            ->where('id', '=', $id)
+            ->update([
+                'tag_number' => $data['tag_number'],
+                'breed'      => $data['breed'],
+                'gender'     => $data['gender'],
+                'birth_date' => $data['birth_date'],
+                'status'     => $data['status'],
+                'weight'     => $data['weight'],
+            ]) > 0;
     }
 
     /**
@@ -71,6 +75,8 @@ class PigManager
      */
     public function deletePig(int $id): bool
     {
-        return $this->db->query("DELETE FROM pig_farmer_pigs WHERE id = ?", ...$i=[$id])->rowCount() > 0;
+        return $this->db->table('pig_farmer_pigs')
+            ->where('id', '=', $id)
+            ->delete() > 0;
     }
 }

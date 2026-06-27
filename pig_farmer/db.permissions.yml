@@ -1,0 +1,39 @@
+db.pig_farmer.read:
+  description: 'Read access to pig farmer tables.'
+  owned_by: pig_farmer
+  tables:
+    pig_farmer_pigs:           [select]
+    pig_farmer_health_records: [select]
+    pig_farmer_feeding_logs:   [select]
+    pig_farmer_finances:       [select]
+
+db.pig_farmer.write:
+  description: 'Create and update pig, health and feeding records.'
+  owned_by: pig_farmer
+  tables:
+    pig_farmer_pigs:           [insert, update]
+    pig_farmer_health_records: [insert, update]
+    pig_farmer_feeding_logs:   [insert, update]
+
+db.pig_farmer.delete:
+  description: 'Delete pig, health and feeding records.'
+  owned_by: pig_farmer
+  tables:
+    pig_farmer_pigs:           [delete]
+    pig_farmer_health_records: [delete]
+    pig_farmer_feeding_logs:   [delete]
+
+db.pig_farmer.finances.write:
+  description: 'Create, update and delete financial records.'
+  owned_by: pig_farmer
+  tables:
+    pig_farmer_finances: [insert, update, delete]
+
+db.pig_farmer.full:
+  description: 'Full access to all pig farmer tables.'
+  owned_by: pig_farmer
+  tables:
+    pig_farmer_pigs:           [select, insert, update, delete]
+    pig_farmer_health_records: [select, insert, update, delete]
+    pig_farmer_feeding_logs:   [select, insert, update, delete]
+    pig_farmer_finances:       [select, insert, update, delete]

@@ -22,28 +22,36 @@ class FeedingLogManager
      */
     public function getFeedingLogsByPigId(int $pigId): array
     {
-        return $this->db->fetchAll("SELECT * FROM pig_farmer_feeding_logs WHERE pig_id = ? ORDER BY feed_date DESC", ...$i=[$pigId]);
+        return $this->db->table('pig_farmer_feeding_logs')
+            ->where('pig_id', '=', $pigId)
+            ->latest('feed_date')
+            ->get();
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public function addFeedingLog(array $data): bool
     {
-        $query = "INSERT INTO pig_farmer_feeding_logs (pig_id, feed_type, quantity, feed_date) VALUES (?, ?, ?, ?)";
-        return $this->db->query($query, ...$i=[
-            $data["pig_id"],
-            $data["feed_type"],
-            $data["quantity"],
-            $data["feed_date"]
-        ])->rowCount() > 0;
+        $id = $this->db->table('pig_farmer_feeding_logs')->insert([
+            'pig_id'    => $data['pig_id'],
+            'feed_type' => $data['feed_type'],
+            'quantity'  => $data['quantity'],
+            'feed_date' => $data['feed_date'],
+        ]);
+        return $id > 0;
     }
 
-     public function getFeedingDataForChart(): array
+    /**
+     * @throws DatabaseException
+     */
+    public function getFeedingDataForChart(): array
     {
-        return $this->db->fetchAll("
-           SELECT feed_date, SUM(quantity) / COUNT(DISTINCT pig_id) as total_quantity
-FROM pig_farmer_feeding_logs
-GROUP BY feed_date
-ORDER BY feed_date ASC
-LIMIT 30
-        ");
+        return $this->db->table('pig_farmer_feeding_logs')
+            ->select(['feed_date', 'SUM(quantity) / COUNT(DISTINCT pig_id) as total_quantity'])
+            ->groupBy('feed_date')
+            ->orderBy('feed_date', 'ASC')
+            ->limit(30)
+            ->get();
     }
 }

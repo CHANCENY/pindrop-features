@@ -1,0 +1,49 @@
+super_admin:
+  db.pig_farmer.full:
+    title: 'Full pig farmer database access'
+    description: 'Full access to all pig farmer tables.'
+  can_manage_pig_farmer:
+    title: 'Can manage pig farmer'
+    description: 'Manage pigs, health records and feeding logs.'
+  can_manage_pig_farmer_finances:
+    title: 'Can manage pig farmer finances'
+    description: 'Manage financial records for the pig farm.'
+  can_view_pig_farmer:
+    title: 'Can view pig farmer'
+    description: 'View the pig farmer dashboard.'
+  can_view_pig_farmer_analytics:
+    title: 'Can view pig farmer analytics'
+    description: 'View analytics and reports for the pig farm.'
+
+admin:
+  db.pig_farmer.full:
+    title: 'Full pig farmer database access'
+    description: 'Full access to all pig farmer tables.'
+  can_manage_pig_farmer:
+    title: 'Can manage pig farmer'
+    description: 'Manage pigs, health records and feeding logs.'
+  can_manage_pig_farmer_finances:
+    title: 'Can manage pig farmer finances'
+    description: 'Manage financial records for the pig farm.'
+  can_view_pig_farmer:
+    title: 'Can view pig farmer'
+    description: 'View the pig farmer dashboard.'
+  can_view_pig_farmer_analytics:
+    title: 'Can view pig farmer analytics'
+    description: 'View analytics and reports for the pig farm.'
+
+moderator:
+  db.pig_farmer.read:
+    title: 'Read pig farmer records'
+    description: 'Read pig, health, feeding and finance records.'
+  can_view_pig_farmer:
+    title: 'Can view pig farmer'
+    description: 'View the pig farmer dashboard.'
+  can_view_pig_farmer_analytics:
+    title: 'Can view pig farmer analytics'
+    description: 'View analytics and reports for the pig farm.'
+
+user:
+  can_view_pig_farmer:
+    title: 'Can view pig farmer'
+    description: 'View the pig farmer home page.'

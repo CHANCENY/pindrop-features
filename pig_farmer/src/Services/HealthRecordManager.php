@@ -22,7 +22,10 @@ class HealthRecordManager
      */
     public function getHealthRecordsByPigId(int $pigId): array
     {
-        return $this->db->fetchAll("SELECT * FROM pig_farmer_health_records WHERE pig_id = ? ORDER BY checkup_date DESC", ...$i=[$pigId]);
+        return $this->db->table('pig_farmer_health_records')
+            ->where('pig_id', '=', $pigId)
+            ->latest('checkup_date')
+            ->get();
     }
 
     /**
@@ -30,13 +33,13 @@ class HealthRecordManager
      */
     public function addHealthRecord(array $data): bool
     {
-        $query = "INSERT INTO pig_farmer_health_records (pig_id, checkup_date, `condition`, treatment, notes) VALUES (?, ?, ?, ?, ?)";
-        return $this->db->query($query, ...$i=[
-            $data["pig_id"],
-            $data["checkup_date"],
-            $data["condition"],
-            $data["treatment"],
-            $data["notes"]
-        ])->rowCount() > 0;
+        $id = $this->db->table('pig_farmer_health_records')->insert([
+            'pig_id'       => $data['pig_id'],
+            'checkup_date' => $data['checkup_date'],
+            'condition'    => $data['condition'],
+            'treatment'    => $data['treatment'],
+            'notes'        => $data['notes'],
+        ]);
+        return $id > 0;
     }
 }
