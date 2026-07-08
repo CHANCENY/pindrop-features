@@ -1,0 +1,128 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Export Ledger</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.transactions')}}"
+                style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-arrow-left"></i> Back to Financials
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h3>Export Criteria</h3>
+
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div id="filter-form"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Date
+                                Range: From</label>
+                            <input type="date" name="start_date" value="2026-04-01"
+                         html       style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Date
+                                Range: To</label>
+                            <input type="date" name="end_date" value="2026-06-30"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Transaction
+                                Type</label>
+                            <select name="type"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option selected>All</option>
+                                <option>Income</option>
+                                <option>Expense</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Category</label>
+                            <select name="category"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option selected>All</option>
+                                <option>Feed Purchase</option>
+                                <option>Veterinary Services</option>
+                                <option>Equipment</option>
+                                <option>Utilities</option>
+                                <option>Payroll</option>
+                                <option>Maintenance</option>
+                                <option>Livestock Sale</option>
+                                <option>Breeding Fee</option>
+                                <option>Grant / Subsidy</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Status</label>
+                            <select name="status"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option selected>All</option>
+                                <option>Cleared</option>
+                                <option>Paid</option>
+                                <option>Pending</option>
+                                <option>Overdue</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">File
+                                Format</label>
+                            <select name="format"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option selected>CSV (.csv)</option>
+                                <option>Excel Workbook (.xlsx)</option>
+                                <option>PDF Document (.pdf)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                        <a href="{{ url('farm.erp.transactions.export.ledger')}}"
+                            style="text-decoration:none; padding: 10px 24px; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">Cancel</a>
+                        <button type="submit"
+                            style="padding: 10px 24px; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-download"></i> Generate Export
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card" id="preview">
+
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('click', async function () {
+    const container = document.getElementById('filter-form');
+    const fields = container.querySelectorAll('input[name], select[name]');
+
+    const params = new URLSearchParams();
+    fields.forEach(field => params.set(field.name, field.value));
+
+    const url = `{{ url('farm.erp.transactions.export.ledger.filter')}}?${params.toString()}`;
+    const response = await fetch(url);
+    const text = await response.text();
+    document.getElementById('preview').innerHTML = text;
+});
+</script>
+
+{% endblock %}

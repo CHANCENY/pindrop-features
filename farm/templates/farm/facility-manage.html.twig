@@ -1,0 +1,178 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Manage Facility</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.facilities') }}"
+                style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-arrow-left"></i> Back to Farm Assets
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ facility.name }}</h3>
+                <span class="status-pill active">Operational</span>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Barns</span><br><strong>{{ facility.barns_count }}</strong>
+                    </div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Capacity</span><br><strong>{{ facility.capacity }}</strong>
+                            Pigs</strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Current Load</span><br><strong>{{ facility.current_load }}
+                            Pigs ({{ facility.load_percentage }}%)</strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Manager</span><br><strong>{{ facility.manager_name }}</strong></div>
+                </div>
+            </div>
+        </div>
+        <form method="POST">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Edit Facility Details</h3>
+
+                </div>
+                <div class="card-body">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Facility
+                                Name</label>
+                            <input type="text" name="name" placeholder="" value="{{ facility.name }}"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Region
+                                / Location</label>
+                            <input type="text" name="location" placeholder="" value="{{ facility.location }}"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Facility
+                                Manager</label>
+                            <input type="text" name="manager_name" placeholder="" value="{{ facility.manager_name }}"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Number
+                                of Barns</label>
+                            <input type="number" name="barns_count" placeholder="" value="{{ facility.barns_count }}"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Total
+                                Capacity (Pigs)</label>
+                            <input type="number" name="capacity" placeholder="" value="{{ facility.capacity }}"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Operational
+                                Status</label>
+                            <select name="status"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                
+                                <option value="Operational" {% if facility.status == 'Operational' %}selected{% endif %}>Operational</option>
+                                <option value="Under Construction" {% if facility.status == 'Under construction' %}selected{% endif %}>Under Construction</option>
+                                <option value="Maintenance" {% if facility.status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                                <option value="Decommissioned" {% if facility.status == 'Decommissioned' %}selected{% endif %}>Decommissioned</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <a href="{{ url('farm.erp.facilities.barns.use', {'facility_id': facility.facility_id}) }}"
+                    class="use-ajax"
+                    data-dialog-type="modal" 
+                    data-dialog-options="{&quot;width&quot;:900}" 
+                     data-link-system-path="{{ url('farm.erp.facilities.barns.use', {'facility_id': facility.facility_id}) }}"
+                    style="text-decoration:none; padding: 10px 24px; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">Use Barn</a>
+                
+                
+                <a href="{{ url('farm.erp.facilities') }}"
+                    style="text-decoration:none; padding: 10px 24px; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">Cancel</a>
+                
+                    <button type="submit"
+                    style="padding: 10px 24px; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-check"></i> Save Changes
+                </button>
+            </div>
+        </form>
+        <div class="card">
+            <div class="card-header">
+                <h3>Barns in this Facility</h3>
+
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Barn</th>
+                            <th>Pens</th>
+                            <th>Capacity</th>
+                            <th>Current Load</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for barn in barns %}
+                        <tr>
+                            <td><strong>{{ barn.name }}</strong></td>
+                            <td>{{ barn.pens_count }}</td>
+                            <td>{{ barn.capacity }}</td>
+                            <td>{{ barn.current_load }}%</td>
+                            <td><span class="status-pill {{ barn.status|lower }}">{{ barn.status }}</span></td>
+                            <td>
+                                <a href="{{ url('farm.erp.facilities.barns.edit', {'facility_id': facility.facility_id, 'barn_id': barn.barn_id}) }}"
+                                    class="use-ajax"
+                                    data-dialog-type="modal" 
+                                    data-dialog-options="{&quot;width&quot;:900}" 
+                                     data-link-system-path="{{ url('farm.erp.facilities.barns.edit', {'facility_id': facility.facility_id, 'barn_id': barn.barn_id}) }}"
+                                    style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                 <a href="{{ url('farm.erp.facilities.barns.pens', {'barn_id': barn.barn_id}) }}"
+                                    class="use-ajax"
+                                    data-dialog-type="modal" 
+                                    data-dialog-options="{&quot;width&quot;:900}" 
+                                     data-link-system-path="{{ url('farm.erp.facilities.barns.pens', {'barn_id': barn.barn_id}) }}"
+                                    style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                                    <i class="fas fa-pen"></i> Pens
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    async function updatePenCurrentLoad(inputElement, penId) {
+        const newValue = inputElement.value;
+        const response = await fetch('/erp/farm/facilities/barns/pens/update-current-load'+`?pen_id=${penId}&current_load=${newValue}`);
+        if (response.ok) {
+            alert(`Successfully updated current load for pen ${penId} to ${newValue}`);
+        } else {
+            alert(`Failed to update current load for pen ${penId}`);
+        }
+    }
+</script>
+{% endblock %}

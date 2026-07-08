@@ -1,0 +1,93 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Livestock Registry</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.livestock.pigs.add') }}"
+                style="text-decoration:none; background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus"></i> Register New Pig
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-body" id="filter-form" style="display: flex; gap: 15px; align-items: center;">
+                <div style="flex: 1;">
+                    <label
+                        style="display: block; font-size: 0.75rem; color: var(--text-light); margin-bottom: 5px;">Search
+                        ID/Tag</label>
+                    <input type="text" placeholder="e.g. PIG-9921" name="tag"
+                        style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                </div>
+                <div style="flex: 1;">
+                    <label
+                        style="display: block; font-size: 0.75rem; color: var(--text-light); margin-bottom: 5px;">Farm
+                        Location</label>
+                    <select name="location"
+                        style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <option>All Farms</option>
+                        {% for facility in facilities %}
+                        <option value="{{ facility.facility_id }}">{{ facility.name }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label
+                        style="display: block; font-size: 0.75rem; color: var(--text-light); margin-bottom: 5px;">Sex</label>
+                    <select name="sex"
+                        style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <option>All Sex</option>
+                        {% for sex in sexes %}
+                        <option value="{{ sex }}">{{ sex }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label
+                        style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Breed</label>
+                    <select name="breed"
+                        style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        <option>All Breed</option>
+                        <option>Landrace</option>
+                        <option>Yorkshire</option>
+                        <option>Duroc</option>
+                        <option>Hampshire</option>
+                        <option>Berkshire</option>
+                        <option>Mixed</option>
+                    </select>
+                </div>
+                <button
+                    style="align-self: flex-end; padding: 8px 20px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Filter</button>
+            </div>
+        </div>
+
+        <div class="card" id="preview">
+           
+        </div>
+    </div>
+</main>
+<script>
+    document.addEventListener('click', async function () {
+        const container = document.getElementById('filter-form');
+        const fields = container.querySelectorAll('input[name], select[name]');
+
+        const params = new URLSearchParams();
+        fields.forEach(field => params.set(field.name, field.value));
+
+        const url = `{{ url('farm.erp.livestock.pigs.weight.add.filter')}}?${params.toString()}`;
+        const response = await fetch(url);
+        const text = await response.text();
+        document.getElementById('preview').innerHTML = text;
+    });
+
+    document.addEventListener('DOMContentLoaded',()=>{
+        document.body.click();
+    })
+</script>
+{% endblock %}

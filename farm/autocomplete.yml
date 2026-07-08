@@ -1,0 +1,12 @@
+autocomplete.pigs.search.sires:
+  handler: Simp\Pindrop\Modules\farm\src\Autocomplete\PigAutoCompleteApiServer::matchMalePigs
+autocomplete.pigs.search.dams:
+  handler: Simp\Pindrop\Modules\farm\src\Autocomplete\PigAutoCompleteApiServer::matchFemalePigs
+autocomplete.pigs.search.tag:
+  handler: Simp\Pindrop\Modules\farm\src\Autocomplete\PigAutoCompleteApiServer::generatePigLabelText
+autocomplete.pigs.search.location:
+  handler: Simp\Pindrop\Modules\farm\src\Autocomplete\PigAutoCompleteApiServer::getLocationsBarnAndPens
+autocomplete.pigs.search.batch:
+  handler: Simp\Pindrop\Modules\farm\src\Autocomplete\PigAutoCompleteApiServer::getPigBatch
+autocomplete.pigs.po_number:
+  handler: Simp\Pindrop\Modules\farm\src\Autocomplete\PigAutoCompleteApiServer::getPurchaseOrderNumber

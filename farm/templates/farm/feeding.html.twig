@@ -1,0 +1,87 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Feeding & Nutrition</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.feeding.formula.add')}}"
+                style="text-decoration:none; background: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-blender"></i> New Feed Formula
+            </a>
+             <a href="{{ url('farm.erp.feeding.silo.add') }}"
+                style="text-decoration:none; background: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-blender"></i> New Silo
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="modules-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Active Feed Formulas</h3>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Formula Name</th>
+                                <th>Target Group</th>
+                                <th>Key Ingredients</th>
+                                <th>Cost / Ton</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for formula in formulas %}
+                            <tr>
+                                <td><strong>{{ formula.name }}</strong></td>
+                                <td>{{ formula.target_group }}</td>
+                                <td>{{ formula.formula_id|key_ingredients }}</td>
+                                <td>{{ formula.cost_per_ton }}</td>
+                                <td><span class="status-pill {{ formula.status|lower|replace({' ': '-'}) }}">{{ formula.status }}</span></td>
+                                 <td>
+                                    <a href="{{ url('farm.erp.feeding.formula.edit', {id: formula.formula_id}) }}"
+                                    class="use-ajax" data-dialog-type="modal"
+                                    data-dialog-options="{&quot;width&quot;:900}"
+                                    data-link-system-path="{{ url('farm.erp.feeding.formula.edit', {id: formula.formula_id}) }}"
+                                    style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                 </td>
+                            </tr>
+                            {% endfor %}
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Feed Silo Levels</h3>
+                </div>
+                <div class="card-body">
+                    {% for silo in silos %}
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>{{ silo.name }} ({{ silo.contents }})</span>
+                            <span>{{ silo.silo_id|silo_current_percentage }}%</span>
+                        </div>
+                        <div style="height: 15px; background: #EEE; border-radius: 10px; overflow: hidden;">
+                            <div style="width: {{ silo.silo_id|silo_current_percentage }}%; height: 100%; background: var(--secondary-color);"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

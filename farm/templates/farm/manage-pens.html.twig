@@ -1,0 +1,84 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Manage Pens in {{ barn.name }}</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.facilities') }}"
+                style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-arrow-left"></i> Back to Farm Assets
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ barn.name }}</h3>
+                <span class="status-pill {{ barn.status|lower }}">{{ barn.status }}</span>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Pen Count</span><br><strong>{{ barn.pens_count }}</strong>
+                    </div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Capacity</span><br><strong>{{ barn.capacity }}</strong>
+                            Pigs</strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Current Load</span><br><strong>{{ barn.current_load }}</strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Manager</span><br><strong>{{ facility.manager_name }}</strong></div>
+                </div>
+            </div>
+        </div>
+         <form method="POST">
+            <div
+                style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <a href="{{ url('farm.erp.facilities.barns.pens.add', {'barn_id': barn.barn_id}) }}"
+                    class="use-ajax"
+                    data-dialog-type="modal" 
+                    data-dialog-options="{&quot;width&quot;:900}" 
+                     data-link-system-path="{{ url('farm.erp.facilities.barns.pens.add', {'barn_id': barn.barn_id}) }}"
+                    style="text-decoration:none; padding:
+                     10px 24px; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">
+                     <i class="fas fa-plus"></i> Create Pen</a>
+            </div>
+        </form>
+        <div class="card">
+            <div class="card-header">
+                <h3>Pens in this Facility</h3>
+
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pen</th>
+                            <th>Capacity</th>
+                            <th>Current Load <i>total pigs inside</i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pen in pens %}
+                        <tr>
+                            <td><strong>{{ pen.name }}</strong></td>
+                            <td>{{ pen.capacity }}</td>
+                            <td><input 
+                                type="number" 
+                                class="pens-current-load"
+                                 data-penid="{{ pen.pen_id }}" 
+                                 value="{{ pen.current_load }}" 
+                                 oninput="updatePenCurrentLoad(this, {{ pen.pen_id }})"
+                                 style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                            </td> 
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

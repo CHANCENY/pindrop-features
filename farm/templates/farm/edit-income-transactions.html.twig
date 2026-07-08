@@ -1,0 +1,122 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Edit Transaction</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.transactions') }}"
+                style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-arrow-left"></i> Back to Financials
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <form method="post" action="{{ url('farm.erp.transactions.income.edit', {id: transaction.transaction_id}) }}">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Transaction Details</h3>
+
+                </div>
+                <div class="card-body">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Date</label>
+                            <input type="date" name="transaction_date" value="{{ transaction.transaction_date }}"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Category</label>
+                            <select name="category"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option {% if transaction.category == 'Livestock Sale' %} selected {% endif %}>Livestock Sale</option>
+                                <option {% if transaction.category == 'Breeding Fee' %} selected {% endif %}>Breeding Fee</option>
+                                <option {% if transaction.category == 'Grant / Subsidy' %} selected {% endif %}>Grant / Subsidy</option>
+                                <option {% if transaction.category == 'Manure Sale' %} selected {% endif %}>Manure Sale</option>
+                                <option {% if transaction.category == 'Other' %} selected {% endif %}>Other</option>
+                            </select>
+                        </div>
+                         <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Payment Method</label>
+                            <select name="payment_method"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option {% if transaction.payment_method == 'Bank Transfer' %} selected {% endif %}>Bank Transfer</option>
+                                <option {% if transaction.payment_method == 'Mobile Wallet' %} selected {% endif %}>Mobile Wallet</option>
+                                <option {% if transaction.payment_method == 'Cash' %} selected {% endif %}>Cash</option>
+                                <option {% if transaction.payment_method == 'Cheque' %} selected {% endif %}>Cheque</option>
+                                <option {% if transaction.payment_method == 'Credit' %} selected {% endif %}>Credit</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Description</label>
+                            <input type="text" value="{{ transaction.description }}" name="description" placeholder="e.g. Livestock Sale (Batch #S-100)"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Client
+                                / Entity</label>
+                            <input type="text" name="entity_name" value="{{ transaction.entity_name }}" placeholder="e.g. Global Meat Corp"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Amount
+                                ($)</label>
+                            <input type="number" name="amount" placeholder="e.g. 85000.00" value="{{ transaction.amount }}"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Status</label>
+                            <select name="status"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option {% if transaction.status == 'Cleared' %} selected {% endif %}>Cleared</option>
+                                <option {% if transaction.status == 'Pending' %} selected {% endif %}>Pending</option>
+                                <option {% if transaction.status == 'Overdue' %} selected {% endif %}>Overdue</option>
+                                <option {% if transaction.status == 'Paid' %} selected {% endif %}>Paid</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Notes</h3>
+
+                </div>
+                <div class="card-body">
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Additional
+                            Notes</label>
+                        <textarea name="notes" placeholder="Invoice reference, additional context..." rows="4"
+                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color);
+                             border-radius: 4px; font-size: 0.9rem;">{{ transaction.notes }}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <a href="{{ url('farm.erp.transactions') }}"
+                    style="text-decoration:none; padding: 10px 24px; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">Cancel</a>
+                <button type="submit"
+                    style="padding: 10px 24px; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-check"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+{% endblock %}

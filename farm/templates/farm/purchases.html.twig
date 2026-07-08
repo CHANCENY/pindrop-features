@@ -1,0 +1,132 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Purchase Orders</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.purchases.add') }}"
+                style="text-decoration:none; background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;"><i
+                    class="fas fa-plus"></i> Add Purchase Order</a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="label">OPEN ORDERS ({{ statics.year }}</span>
+                <span class="value">{{ statics.open_orders }}</span>
+                <span class="trend"><i class="fas fa-clock"></i> Awaiting Delivery</span>
+            </div>
+            <div class="stat-card">
+                <span class="label">TOTAL VALUE (OPEN {{ statics.year }})</span>
+                <span class="value">{{ statics.open_total_amount|figure_to_currency|default(0) }}</span>
+                <span class="trend"><i class="fas fa-file-invoice-dollar"></i> Across Suppliers</span>
+            </div>
+            <div class="stat-card">
+                <span class="label">DELAYED ORDERS ({{ statics.year }})</span>
+                <span class="value">{{ statics.delayed_orders }}</span>
+                <span class="trend down"><i class="fas fa-exclamation-triangle"></i> Needs Follow-up</span>
+            </div>
+            <div class="stat-card">
+                <span class="label">RECEIVED ({{ statics.year }})</span>
+                <span class="value">{{ statics.received_orders }}</span>
+                <span class="trend up"><i class="fas fa-check"></i> On Schedule</span>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>All Purchase Orders</h3>
+
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PO Number</th>
+                            <th>Supplier</th>
+                            <th>Order Date</th>
+                            <th>Expected Delivery</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for purchase in purchases %}
+                        <tr>
+                            <td><strong>{{ purchase.po_number }}</strong></td>
+                            <td>{{ purchase.supplier }}</td>
+                            <td>{{ purchase.order_date }}</td>
+                            <td>{{ purchase.expected_delivery }}</td>
+                            <td>{{ purchase.total_amount|figure_to_currency }}</td>
+                            <td><span class="status-pill pending">{{ purchase.status }}</span></td>
+                            <td>
+                                <a href="{{ url('farm.erp.purchases.edit', {id: purchase.po_id}) }}" class="use-ajax"
+                                    data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:900}"
+                                    data-link-system-path="{{ url('farm.erp.purchases.edit', {id: purchase.po_id}) }}"
+                                    style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const id = setInterval(() => {
+        const purchaseTableBody = document.getElementById("purchaseItemsTableBody");
+        const addPurchaseButton = document.getElementById("addPurchaseItemRow");
+
+        if (addPurchaseButton && purchaseTableBody) {
+
+            clearInterval(id)
+            addPurchaseButton.addEventListener("click", function () {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+        <td>
+            <input type="text" placeholder="Item" name="items[item_name][]"
+                style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:4px;">
+        </td>
+        <td>
+            <input type="number" placeholder="0" name="items[quantity][]"
+                style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:4px;">
+        </td>
+        <td>
+            <input type="text" placeholder="Unit" name="items[unit][]"
+                style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:4px;">
+        </td>
+        <td>
+            <input type="number" placeholder="0.00" name="items[unit_price][]"
+                style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:4px;">
+        </td>
+        <td>
+            <i class="fas fa-trash delete-purchase-row"
+               style="color: var(--danger); cursor:pointer;"></i>
+        </td>
+    `;
+
+                purchaseTableBody.appendChild(row);
+            });
+
+            purchaseTableBody.addEventListener("click", function (e) {
+                if (e.target.classList.contains("delete-purchase-row")) {
+                    e.target.closest("tr").remove();
+                }
+            });
+        }
+    }, 2000)
+</script>
+
+
+{% endblock %}

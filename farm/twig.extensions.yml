@@ -1,0 +1,2 @@
+farm.twig:
+  class: Simp\Pindrop\Modules\farm\src\Twig\PigFarmTwigExtension

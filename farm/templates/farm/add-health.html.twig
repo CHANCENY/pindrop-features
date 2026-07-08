@@ -1,0 +1,140 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Log Treatment</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.health.lists') }}"
+                style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-arrow-left"></i> Back to Health & Vet
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <form method="post" action="{{ url('farm.erp.health.add')}}">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Treatment Details</h3>
+
+                </div>
+                <div class="card-body">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Diagnosis</label>
+                            <input type="text" name="diagnosis" placeholder="e.g. Respiratory Infection"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        
+                            </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Treatment
+                                / Medicine</label>
+                            <input type="text" name="treatment" placeholder="e.g. Antibiotics"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Dosage</label>
+                            <input type="text" name="dosage" placeholder="e.g. 10ml, twice daily"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Treatment
+                                Date</label>
+                            <input type="date" name="date"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Attending
+                                Vet</label>
+                            <input type="text" name="vet" placeholder="e.g. Dr. Smith"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Duration
+                                (days)</label>
+                            <input type="number" name="duration" placeholder="e.g. 5"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Outcome
+                                / Status</label>
+                            <select name="outcome"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option>Under Treatment</option>
+                                <option>Recovered</option>
+                                <option>Ongoing Monitoring</option>
+                                <option>Deceased</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem;
+                                 color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Pig
+                                ID / Group</label>
+                            <input type="text" name="pig_id" id="pig_id" placeholder="e.g. PIG-10295 or Batch #B22" value="{{ pig }}"
+                                style="width: 100%; padding: 10px;
+                                 border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                         <noscript autocomplete='true' style="display:none;">
+                            {
+                            "fieldId": "pig_id",
+                            "source": "autocomplete.pigs.search.batch",
+                            "placeholder": "Search pig or batch..",
+                            "minQueryLength": 2,
+                            "limit": 10,
+                            "displayField": "label",
+                            "valueField": "value",
+                            "searchFields": [
+                            "title",
+                            "id"
+                            ],
+                            "noResultsText": "No pig or batch found",
+                            "loadingText": "Searching...",
+                            "name": "pig_id",
+                            "onSelect": null
+                            }
+                        </noscript>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Notes</h3>
+
+                </div>
+                <div class="card-body">
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Additional
+                            Notes</label>
+                        <textarea name="notes" placeholder="Symptoms, follow-up plan, etc..." rows="4"
+                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <a href="{{ url('farm.erp.health.lists') }}"
+                    style="text-decoration:none; padding: 10px 24px; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">Cancel</a>
+                <button type="submit"
+                    style="padding: 10px 24px; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-check"></i> Log Treatment
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+{% endblock %}

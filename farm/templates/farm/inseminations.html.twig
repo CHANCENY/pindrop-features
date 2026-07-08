@@ -1,0 +1,103 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Breeding & Farrowing</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.inseminations.add') }}"
+                style="text-decoration:none; background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-venus-mars"></i> Log Insemination
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="label">SOWS PREGNANT</span>
+                <span class="value">{{ statics.pregnant }}</span>
+
+            </div>
+            <div class="stat-card">
+                <span class="label">DUE THIS WEEK</span>
+                <span class="value">{{ statics.due_this_week }}</span>
+                {% if statics.barn_focus %}
+                <span class="trend"><i class="fas fa-clock"></i> {{ statis.barn_focus }} Focus</span>
+                {% endif %}
+            </div>
+            <div class="stat-card">
+                <span class="label">AVG LITTER SIZE</span>
+                <span class="value">12.4</span>
+                <span class="trend up"><i class="fas fa-check"></i> Above Target</span>
+            </div>
+            <div class="stat-card">
+                <span class="label">FARROWING RATE</span>
+                <span class="value">92%</span>
+                <span class="trend"><i class="fas fa-star"></i> High Performance</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Upcoming Farrowing Events</h3>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sow ID</th>
+                            <th>Breed</th>
+                            <th>Method</th>
+                            <th>Barn / Pen</th>
+                            <th>Insemination Date</th>
+                            <th>Expected Due Date</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for insemination in inseminations %}
+                        <tr>
+                            <td><strong>#{{ insemination.sow_id }}</strong></td>
+                            <td>{{ insemination.breed }}</td>
+                            <td>{{ insemination.method }}</td>
+                            <td>{{ insemination.location_label }}</td>
+                            <td>{{ insemination.insemination_date|date('F d, Y') }}</td>
+                            <td>{{ insemination.expected_due_date|date('F d, Y') }}</td>
+                            <td><span class="status-pill pending">{{ insemination.status }}</span></td>
+                            <td>
+                                <a href="{{ url('farm.erp.inseminations.edit', {id: insemination.insemination_id}) }}"
+                                    class="use-ajax" data-dialog-type="modal"
+                                    data-dialog-options="{&quot;width&quot;:900}"
+                                    data-link-system-path="{{ url('farm.erp.inseminations.edit', {id: insemination.insemination_id}) }}"
+                                    style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{{ url('farm.erp.inseminations.view',{insemination_id: insemination.insemination_id}) }}"
+                                     style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;" class="use-ajax" data-dialog-type="modal"
+                                    data-dialog-options="{&quot;width&quot;:1500}"
+                                    data-link-system-path="{{ url('farm.erp.inseminations.view',{insemination_id: insemination.insemination_id}) }}">
+                                    <i class="fas fa-eye" style="color: var(--info); cursor: pointer;"></i>View</a>
+                                <a href="{{ url('farm.erp.inseminations.forrowing.add',{insemination_id: insemination.insemination_id}) }}"
+                                    class="use-ajax" data-dialog-type="modal"
+                                    data-dialog-options="{&quot;width&quot;:900}"
+                                    data-link-system-path="{{ url('farm.erp.inseminations.forrowing.add',{insemination_id: insemination.insemination_id}) }}"
+                                    style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                                    <i class="fas fa-arrow-up"></i> Log Forrowing
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

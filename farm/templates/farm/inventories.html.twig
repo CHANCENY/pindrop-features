@@ -1,0 +1,65 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Inventory & Asset Management</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.inventory.add') }}"
+                style="text-decoration:none; background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-barcode"></i> Scan Item
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h3>Warehouse Stock</h3>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Location</th>
+                            <th>Reorder Point</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inventory in inventories %}
+                        <tr>
+                            <td><strong>{{ inventory.name }}</strong></td>
+                            <td>{{ inventory.category }}</td>
+                            <td>{{ inventory.quantity }}</td>
+                            <td>{{ inventory.unit }}</td>
+                            <td>{{ inventory.location }}</td>
+                            <td>{{ inventory.reorder_point }}</td>
+                            <td><span class="status-pill {{ inventory.status|lower }}">{{ inventory.status }}</span></td>
+                            <td>
+                                <a href="{{ url('farm.erp.inventory.edit', {id: inventory.item_id}) }}"
+                                    class="use-ajax" data-dialog-type="modal"
+                                    data-dialog-options="{&quot;width&quot;:900}"
+                                    data-link-system-path="{{ url('farm.erp.inventory.edit', {id: inventory.item_id}) }}"
+                                    style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

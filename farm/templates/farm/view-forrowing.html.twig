@@ -1,0 +1,175 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Insemination & Farrowing</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.inseminations') }}"
+                style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-arrow-left"></i> Back to Breeding
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h3>Sow {{ insemination.sow_id }}</h3>
+                <span class="status-pill active">{{insemination.status}}</span>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Location</span><br><strong>{{
+                            insemination.location_label }}</strong>
+                    </div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Boar</span><br><strong>{{
+                            insemination.boar_id }}</strong></strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Method</span><br><strong>{{
+                            insemination.method }}</strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Insemination Date</span><br><strong>{{
+                            insemination.insemination_date|date('F d, Y') }}</strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Technician</span><br><strong>{{
+                            insemination.technician }}</strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">Expected due date</span><br><strong>{{
+                            insemination.expected_due_date|date('F d, Y') }}</strong></div>
+                    <div><span style="font-size:0.8rem; color:var(--text-light);">status</span><br><strong>{{
+                            insemination.status }}</strong></div>
+                </div>
+            </div>
+        </div>
+        <form method="POST" action="{{ url('farm.erp.inseminations.view.farrowing.piglet.add',{insemination_id: insemination.insemination_id, farrowing_id: farrowing.farrowing_id}) }}">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Farrowing piglets</h3>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pig Tag</th>
+                                <th>Farm</th>
+                                <th>Barn / pen</th>
+                                <th>Date of birth</th>
+                                <th>Breed</th>
+                                <th>Sex</th>
+                                <th>Health status</th>
+                                <th>Initial Weight</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for piglet in 1..farrowing.piglets_alive %}
+                            <tr>
+
+                                <td>
+                                    <div>
+
+                                        <input type="text" name="tag[{{ piglet }}]"
+                                         placeholder="PIG-10296" value="{{ piglets[piglet - 1].pig_id }}"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <select name="farm[{{ piglet }}]"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                            {% for facility in facilities %}
+                                            <option value="{{ facility.facility_id }}" {% if piglets[piglet - 1].facility_id == facility.facility_id %} selected {% endif %}>{{ facility.name }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+
+                                        <input type="text" name="location[{{ piglet }}]"
+                                            placeholder="e.g. Barn 02, Pen 05" value="{{ piglets[piglet - 1].location_label }}"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+
+                                    </div>
+                                  
+                                </td>
+
+                                <td>
+                                    <div>
+                                        <input type="date" name="dob[{{ piglet }}]" value="{{ piglets[piglet - 1].date_of_birth }}"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <select name="breed[{{ piglet }}]"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                            <option {% if piglets[piglet - 1].breed == 'Landrace' %} selected {% endif %}>Landrace</option>
+                                            <option {% if piglets[piglet - 1].breed == 'Yorkshire' %} selected {% endif %}>Yorkshire</option>
+                                            <option {% if piglets[piglet - 1].breed == 'Duroc' %} selected {% endif %}>Duroc</option>
+                                            <option {% if piglets[piglet - 1].breed == 'Hampshire' %} selected {% endif %}>Hampshire</option>
+                                            <option {% if piglets[piglet - 1].breed == 'Berkshire' %} selected {% endif %}>Berkshire</option>
+                                            <option {% if piglets[piglet - 1].breed == 'Mixed' %} selected {% endif %}>Mixed</option>
+                                        </select>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div>
+
+                                        <select name="sex[{{ piglet }}]"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                            <option {% if piglets[piglet - 1].sex == 'Female (Sow)' %} selected {% endif %}>Female (Sow)</option>
+                                            <option {% if piglets[piglet - 1].sex == 'Male (Boar)' %} selected {% endif %}>Male (Boar)</option>
+                                            <option {% if piglets[piglet - 1].sex == 'Female (Gilt)' %} selected {% endif %}>Female (Gilt)</option>
+                                            <option {% if piglets[piglet - 1].sex == 'Male (Barrow)' %} selected {% endif %}>Male (Barrow)</option>
+                                        </select>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div>
+                                        <select name="status[{{ piglet }}]"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                            <option {% if piglets[piglet - 1].health_status == 'Healthy' %} selected {% endif %}>Healthy</option>
+                                            <option {% if piglets[piglet - 1].health_status == 'Quarantine' %} selected {% endif %}>Quarantine</option>
+                                            <option {% if piglets[piglet - 1].health_status == 'Under Observation' %} selected {% endif %}>Under Observation</option>
+                                        </select>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div>
+
+                                        <input type="number" name="weight[{{ piglet }}]" placeholder="e.g. 1.4" value="{{ piglets[piglet - 1].current_weight_kg }}"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                    </div>
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit"
+                    style="padding: 10px 24px; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-check"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    async function updatePenCurrentLoad(inputElement, penId) {
+        const newValue = inputElement.value;
+        const response = await fetch('/erp/farm/facilities/barns/pens/update-current-load' + `?pen_id=${penId}&current_load=${newValue}`);
+        if (response.ok) {
+            alert(`Successfully updated current load for pen ${penId} to ${newValue}`);
+        } else {
+            alert(`Failed to update current load for pen ${penId}`);
+        }
+    }
+</script>
+{% endblock %}

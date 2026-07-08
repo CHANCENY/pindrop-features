@@ -1,0 +1,78 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+ <!-- Main Content Area -->
+    <main class="main-content">
+        <header>
+            <div class="header-left">
+                <h2>Enterprise Dashboard</h2>
+            </div>
+            <div class="header-right">
+                <div class="search-bar" style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 10px; top: 10px; color: #AAA;"></i>
+                    <input type="text" placeholder="Search pigs, pens, records..." style="padding: 8px 10px 8px 35px; border: 1px solid var(--border-color); border-radius: 5px; width: 250px;">
+                </div>
+                <div class="notifications">
+                    <i class="fas fa-bell" style="font-size: 1.2rem; color: var(--text-light); cursor: pointer;"></i>
+                </div>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name={{ fullname }}&background=2C3E50&color=fff" alt="User" style="width: 35px; border-radius: 50%;">
+                    <span>{{ display_name }}</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="label">TOTAL PIGS</span>
+                    <span class="value">{{ statics.pigs_total }}</span>
+                    
+                </div>
+                <div class="stat-card">
+                    <span class="label">PREGNANT SOWS</span>
+                    <span class="value">{{ statics.pregnant_total }}</span>
+                    <span class="trend"><i class="fas fa-minus"></i> Stable</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">FEED STOCK</span>
+                    <span class="value">{{ statics.feed_stock }}</span>
+                   
+                </div>
+                <div class="stat-card">
+                    <span class="label">MONTHLY REVENUE</span>
+                    <span class="value">{{ statics.monthly_income|figure_to_currency }}</span>
+                   
+                </div>
+            </div>
+
+            <div class="modules-grid">
+              
+                <!-- Quick Stats Sidebar -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Farm Distribution</h3>
+                    </div>
+                    <div class="card-body">
+                        {% for index, farm in statics.farms %}
+                        <div class="distribution-item" style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px;">
+                                <span>{{ index }}</span>
+                                <span>{{ farm|round_up }}%</span>
+                            </div>
+                            <div style="height: 8px; background: #EEE; border-radius: 4px; overflow: hidden;">
+                                <div style="width: {{farm|round_up}}%; height: 100%; background: var(--secondary-color);"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+ 
+                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

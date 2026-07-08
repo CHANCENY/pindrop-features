@@ -1,0 +1,102 @@
+farm.facility:
+  class: Simp\Pindrop\Modules\farm\src\Services\Facility
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "farm"
+farm.barn:
+  class: Simp\Pindrop\Modules\farm\src\Services\Barn
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "barn"
+
+farm.pen:
+  class: Simp\Pindrop\Modules\farm\src\Services\Pen
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "pen"
+
+farm.pig:
+  class: Simp\Pindrop\Modules\farm\src\Services\Pig
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "pig"
+
+farm.weight:
+  class: Simp\Pindrop\Modules\farm\src\Services\PigWeightRecord
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "weight"
+
+farm.health:
+  class: Simp\Pindrop\Modules\farm\src\Services\Treatment
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "health"
+
+farm.vaccination:
+  class: Simp\Pindrop\Modules\farm\src\Services\Vaccination
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "vaccination"
+
+farm.insemination:
+  class: Simp\Pindrop\Modules\farm\src\Services\Insemination
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "vaccination"
+
+farm.invetory.feed:
+  class: Simp\Pindrop\Modules\farm\src\Services\InventoryFeed
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "vaccination"
+
+farm.financial:
+  class: Simp\Pindrop\Modules\farm\src\Services\Transaction
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "vaccination"
+
+farm.purchase_order:
+  class: Simp\Pindrop\Modules\farm\src\Services\PurchaseOrder
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "vaccination"
+
+farm.inventory:
+  class: Simp\Pindrop\Modules\farm\src\Services\Inventory
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "vaccination"
+
+farm.dashboard:
+  class: Simp\Pindrop\Modules\farm\src\Services\Dashboard
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "vaccination"

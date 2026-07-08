@@ -1,0 +1,40 @@
+<div class="card-header">
+    <h3>{{ transactions|length }} Matching Records</h3>
+
+</div>
+
+<div class="card-body" id="preview"></div>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Entity</th>
+            <th>Amount</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaction in transactions %}
+        <tr>
+            <td>{{ transaction.created_at|date('F d, Y') }}</td>
+            <td>{{ transaction.transaction_type }}</td>
+            <td><span style="color: var(--success);">{{ transaction.category }}</span></td>
+            <td>{{ transaction.description }}</td>
+            <td>{{ transaction.entity_name }}</td>
+            <td><strong>{% if transaction.transaction_type == 'Income' %}+{% else %}-{% endif %}
+                    {{ transaction.amount|figure_to_currency }}</strong></td>
+            <td><span class="status-pill {{ transactions.status|lower }}">{{ transaction.status }}</span></td>
+        </tr>
+        {% endfor %}
+
+
+    </tbody>
+</table>
+</div>
+<p style="margin-top: 15px; color: var(--text-light); font-size: 0.85rem;">
+    <i class="fas fa-info-circle"></i> This preview shows a sample of matching rows. The full export
+    will include all records within the selected filters.
+</p>

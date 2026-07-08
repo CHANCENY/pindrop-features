@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Ledger</title>
+    <style>
+        /*
+            Written for a CSS-Paged-Media PDF engine (dompdf, mPDF, wkhtmltopdf).
+            - No flexbox/grid: tables are used for layout so it renders consistently.
+            - The @page footer uses CSS counters; supported by dompdf 1.x / mPDF.
+              If your engine doesn't support it, delete the @page block below.
+        */
+        @page {
+            margin: 30px 35px 50px 35px;
+        }
+
+        @page {
+            @bottom-center {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 9px;
+                color: #7f8c8d;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica", "Arial", sans-serif;
+            color: #2c3e50;
+            font-size: 11px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-table {
+            width: 100%;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+
+        .header-table td {
+            vertical-align: bottom;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .brand-sub {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-top: 2px;
+        }
+
+        .doc-title {
+            font-size: 15px;
+            font-weight: bold;
+            text-align: right;
+            color: #2c3e50;
+        }
+
+        .doc-meta {
+            text-align: right;
+            font-size: 9.5px;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+
+        .summary-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .summary-table td {
+            width: 25%;
+            padding: 10px 12px;
+            border: 1px solid #ecf0f1;
+        }
+
+        .summary-label {
+            display: block;
+            font-size: 8.5px;
+            color: #7f8c8d;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .text-income {
+            color: #27ae60;
+        }
+
+        .text-expense {
+            color: #e74c3c;
+        }
+
+        .text-neutral {
+            color: #2c3e50;
+        }
+
+        table.ledger {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.ledger thead th {
+            background: #2c3e50;
+            color: #ffffff;
+            text-align: left;
+            font-size: 9.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 7px 8px;
+        }
+
+        table.ledger tbody td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 10px;
+            vertical-align: top;
+        }
+
+        table.ledger tbody tr {
+            page-break-inside: avoid;
+        }
+
+        table.ledger tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .amount-cell {
+            text-align: right;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 8.5px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .badge-cleared,
+        .badge-paid {
+            background: #27ae60;
+        }
+
+        .badge-pending {
+            background: #f39c12;
+        }
+
+        .badge-overdue {
+            background: #e74c3c;
+        }
+
+        .notes-cell {
+            font-size: 9px;
+            color: #7f8c8d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #7f8c8d;
+            font-size: 11px;
+        }
+
+        .footer-note {
+            margin-top: 18px;
+            font-size: 8.5px;
+            color: #7f8c8d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    {# ------------------------------------------------------------------ #}
+    {# Header                                                            #}
+    {# ------------------------------------------------------------------ #}
+    <table class="header-table">
+        <tr>
+            <td style="width: 60%;">
+                <div class="brand">PigFarm ERP</div>
+                <div class="brand-sub">Financial Ledger Export</div>
+            </td>
+            <td style="width: 40%;">
+                <div class="doc-title">Transaction Ledger</div>
+                <div class="doc-meta">
+                    {% if start_date and end_date %}
+                        Period: {{ start_date|date("M d, Y") }} &ndash; {{ end_date|date("M d, Y") }}<br>
+                    {% endif %}
+                    Generated: {{ generated_at|default("now")|date("M d, Y H:i") }}<br>
+                    Records: {{ transactions|length }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    {# ------------------------------------------------------------------ #}
+    {# Summary totals                                                    #}
+    {# ------------------------------------------------------------------ #}
+    {% set total_income = 0 %}
+    {% set total_expense = 0 %}
+    {% for t in transactions %}
+        {% if t.transaction_type == "Income" %}
+            {% set total_income = total_income + t.amount %}
+        {% else %}
+            {% set total_expense = total_expense + t.amount %}
+        {% endif %}
+    {% endfor %}
+    {% set net_total = total_income - total_expense %}
+
+    <table class="summary-table">
+        <tr>
+            <td>
+                <span class="summary-label">TOTAL INCOME</span>
+                <span class="summary-value text-income">+{{ total_income|figure_to_currency }}</span>
+            </td>
+            <td>
+                <span class="summary-label">TOTAL EXPENSE</span>
+                <span class="summary-value text-expense">-{{ total_expense|figure_to_currency }}</span>
+            </td>
+            <td>
+                <span class="summary-label">NET TOTAL</span>
+                <span class="summary-value {{ net_total >= 0 ? 'text-income' : 'text-expense' }}">
+                    {{ net_total >= 0 ? '+' : '' }}{{ net_total|figure_to_currency }}
+                </span>
+            </td>
+            <td>
+                <span class="summary-label">RECORD COUNT</span>
+                <span class="summary-value text-neutral">{{ transactions|length }}</span>
+            </td>
+        </tr>
+    </table>
+
+    {# ------------------------------------------------------------------ #}
+    {# Transactions table                                                #}
+    {# ------------------------------------------------------------------ #}
+    {% if transactions|length > 0 %}
+        <table class="ledger">
+            <thead>
+                <tr>
+                    <th style="width: 8%;">Date</th>
+                    <th style="width: 8%;">Type</th>
+                    <th style="width: 12%;">Category</th>
+                    <th style="width: 22%;">Description</th>
+                    <th style="width: 12%;">Entity</th>
+                    <th style="width: 10%;">Method</th>
+                    <th style="width: 10%; text-align: right;">Amount</th>
+                    <th style="width: 8%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                    <tr>
+                        <td>{{ t.transaction_date|date("M d, Y") }}</td>
+                        <td class="{{ t.transaction_type == 'Income' ? 'text-income' : 'text-expense' }}">
+                            {{ t.transaction_type }}
+                        </td>
+                        <td>{{ t.category }}</td>
+                        <td>
+                            {{ t.description }}
+                            {% if t.notes %}
+                                <br><span class="notes-cell">{{ t.notes }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ t.entity_name }}</td>
+                        <td>{{ t.payment_method|default("&mdash;") }}</td>
+                        <td class="amount-cell {{ t.transaction_type == 'Income' ? 'text-income' : 'text-expense' }}">
+                            {{ t.transaction_type == 'Income' ? '+' : '-' }}{{ t.amount|figure_to_currency }}
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ t.status|lower }}">{{ t.status }}</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">No transactions found for the selected filters.</div>
+    {% endif %}
+
+    <div class="footer-note">
+        This document was generated automatically by PigFarm ERP and reflects transaction records at the time of export.
+    </div>
+
+</body>
+</html>

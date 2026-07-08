@@ -1,0 +1,254 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Health & Veterinary Management</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.health.add') }}"
+                style="text-decoration:none; background: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus-circle"></i> Log Treatment
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="label">PENDING VACCINATIONS</span>
+                <span class="value">{{ statics.upcoming }}</span>
+                <span class="trend down"><i class="fas fa-exclamation-triangle"></i> {{ statics.overdue }} Overdue</span>
+            </div>
+            <div class="stat-card">
+                <span class="label">IN QUARANTINE</span>
+                <span class="value">18</span>
+                <span class="trend"><i class="fas fa-info-circle"></i> Monitoring</span>
+            </div>
+            <div class="stat-card">
+                <span class="label">MEDICINE STOCK</span>
+                <span class="value">85%</span>
+                <span class="trend up"><i class="fas fa-check"></i> Sufficient</span>
+            </div>
+            <div class="stat-card">
+                <span class="label">VET VISITS (MONTH)</span>
+                <span class="value">{{ statics.vet_visits }}</span>
+                <span class="trend"><i class="fas fa-calendar"></i> Next: {{ statics.next_vet_visit|date('F d') }}</span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <input type="radio" name="tabs" id="tabone" checked="checked">
+            <label for="tabone">Vaccination Schedule</label>
+            <div class="tab-content">
+                <div id="calendar"></div>
+            </div>
+
+            <input type="radio" name="tabs" id="tabtwo">
+            <label for="tabtwo">Medical Records</label>
+            <div class="tab-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pig ID</th>
+                            <th>Diagnosis</th>
+                            <th>Treatment</th>
+                            <th>Date</th>
+                            <th>Outcome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for treatment in treatments %}
+                        <tr>
+                            <td>#{{ treatment.pig_id }}</td>
+                            <td>{{ treatment.diagnosis }}</td>
+                            <td>{{ treatment.treatment }}</td>
+                            <td>{{ treatment.treatment_date|date('F d, Y') }}</td>
+                            <td><span class="status-pill {{ treatmentoutcome|lower|replace({' ': '-'}) }}">{{
+                                    treatment.outcome }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+<div id="event-popup" class="event-popup">
+    <button class="close-btn">&times;</button>
+
+    <h3 id="popup-title"></h3>
+
+    <div><strong>Pen:</strong> <span id="popup-animal"></span></div>
+    <div><strong>Batch:</strong> <span id="popup-batch"></span></div>
+    <div><strong>Status:</strong> <span id="popup-status"></span></div>
+    <div><strong>Date:</strong> <span id="popup-date"></span></div>
+    <div><strong>Vet Name:</strong><span id="vet_name"></span></div>
+    <div>
+        <strong>Pigs:</strong>
+        <ul id="pigs-vaccinations"></ul>
+    </div>
+
+    <div>
+        <label
+            style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Vet Name</label>
+        <input type="text" name="vet" id="vet-name"
+            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+
+    </div>
+
+    <div class="popup-actions">
+        <button id="complete-btn">✓ Complete</button>
+    </div>
+</div>
+
+<style>
+    .event-popup {
+        position: absolute;
+        display: none;
+        width: 260px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
+        padding: 15px;
+        z-index: 9999;
+        font-size: 14px;
+    }
+
+    .event-popup h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+    }
+
+    .event-popup div {
+        margin: 6px 0;
+    }
+
+    .close-btn {
+        position: absolute;
+        right: 8px;
+        top: 6px;
+        border: none;
+        background: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .popup-actions {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .popup-actions button {
+        flex: 1;
+        padding: 8px;
+        cursor: pointer;
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.css" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.js"></script>
+
+<script>
+    const events = {{ events| json_encode | raw }};
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        let VET = null;
+        const popup = document.getElementById('event-popup');
+
+        document.getElementById('vet-name').addEventListener('input',(e)=>{
+            VET = e.target.value;
+        })
+
+        const completeBtn = document.getElementById('complete-btn');
+        completeBtn.addEventListener('click', async (e) => {
+            const id = e.target.dataset.id;
+            const params = new URLSearchParams({
+                name: VET,
+                status: 'Completed',
+                id: id
+            });
+
+            const response = await fetch('/erp/farm/health/update?' + params.toString());
+            const results = await response.json();
+
+            if (results.status) {
+                alert("Vaccination done");
+            }
+        })
+
+        const calendar = new FullCalendar.Calendar(
+            document.getElementById('calendar'),
+            {
+                initialView: 'dayGridMonth',
+                events: events,
+
+                eventClick(info) {
+
+                    const p = info.event.extendedProps;
+
+                    // Fill popup data
+                    document.getElementById('popup-title').textContent = info.event.title;
+                    document.getElementById('popup-animal').textContent = p.animal;
+                    document.getElementById('popup-batch').textContent = p.batch;
+                    document.getElementById('popup-status').textContent = p.status;
+                    document.getElementById('popup-date').textContent = info.event.startStr;
+                    document.getElementById('vet_name').textContent = p.vet ?? "N/A"
+
+                    const pigs_vaccinations = document.getElementById('pigs-vaccinations');
+                    pigs_vaccinations.innerHTML = '';
+                    p.pigs.forEach((pig) => {
+                        const li = document.createElement('li');
+                        li.appendChild(document.createTextNode(pig))
+                        pigs_vaccinations.appendChild(li);
+                    })
+
+                    document.getElementById('complete-btn').setAttribute('data-id', info.event.id);
+                    // Show popup
+                    popup.style.display = 'block';
+
+                    // Position next to clicked event
+                    const rect = info.el.getBoundingClientRect();
+
+                    let left = window.scrollX + rect.right + 10;
+                    let top = window.scrollY + rect.top;
+
+                    popup.style.left = left + 'px';
+                    popup.style.top = top + 'px';
+
+                    // prevent overflow right
+                    const popupWidth = popup.offsetWidth;
+                    if (left + popupWidth > window.innerWidth + window.scrollX) {
+                        popup.style.left = (window.scrollX + rect.left - popupWidth - 10) + 'px';
+                    }
+                }
+            }
+        );
+
+        calendar.render();
+
+        // Close button
+        document.querySelector('.close-btn').addEventListener('click', function () {
+            popup.style.display = 'none';
+        });
+
+        // click outside to close
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.fc-event') && !e.target.closest('#event-popup')) {
+                popup.style.display = 'none';
+            }
+        });
+
+    });
+</script>
+
+
+{% endblock %}

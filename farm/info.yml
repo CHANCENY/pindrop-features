@@ -1,0 +1,9 @@
+name: "Farm"
+description: "Farm management module for handling agricultural operations."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"
+dependencies:
+  - cron
+  - signals_slots

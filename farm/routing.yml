@@ -1,0 +1,385 @@
+farm.erp.dashboard:
+  path: '/erp/farm'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::dashboard'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+
+# Facilities routes defined here. These routes are used to manage farm facilities, including barns and pens.
+
+farm.erp.facilities:
+  path: '/erp/farm/facilities'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::facilities'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+farm.erp.facilities.add:
+  path: '/erp/farm/facilities/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addFacility'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+
+farm.erp.facility.manage:
+  path: '/erp/farm/facilities/[id:int]/manage'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::manageFacility'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+
+farm.erp.facilities.barns.use:
+  path: '/erp/farm/facilities/barns/use/[facility_id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::useBarns'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+
+farm.erp.facilities.barns.edit:
+  path: '/erp/farm/facilities/barns/edit/[facility_id:int]/[barn_id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::editBarn'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+
+farm.erp.facilities.barns.pens:
+  path: '/erp/farm/facilities/barns/pens/[barn_id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::managePens'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+
+farm.erp.facilities.barns.pens.add:
+  path: '/erp/farm/facilities/barns/pens/add/[barn_id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addPen'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+
+farm.erp.facilities.barns.pens.update:
+  path: '/erp/farm/facilities/barns/pens/update-current-load'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::updatePenCurrentLoad'
+  requirements:
+    _permission:
+      - can_manage_erp_farms
+
+# Livestocks routes defined here. These routes are used to manage farm livestocks. 
+
+farm.erp.livestock.pigs:
+  path: '/erp/farm/livestock/pigs'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::managePigs'
+  requirements:
+    _permission:
+      - can_manage_erp_pigs
+
+farm.erp.livestock.pigs.add:
+  path: '/erp/farm/livestock/pigs/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addPig'
+  requirements:
+    _permission:
+      - can_manage_erp_pigs
+
+farm.erp.livestock.pigs.edit:
+  path: '/erp/farm/livestock/pigs/edit/[id:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::editPig'
+  requirements:
+    _permission:
+      - can_manage_erp_pigs 
+
+farm.erp.livestock.pigs.view:
+  path: '/erp/farm/livestock/pigs/view/[id:string]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::viewPig'
+  requirements:
+    _permission:
+      - can_manage_erp_pigs 
+
+farm.erp.livestock.pigs.weight.add:
+  path: '/erp/farm/livestock/pigs/weight/[id:string]/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addWeight'
+  requirements:
+    _permission:
+      - can_manage_erp_pigs 
+
+farm.erp.livestock.pigs.weight.add.filter:
+  path: '/erp/farm/pigs/filter'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::filterPigs'
+  requirements:
+    _permission:
+      - can_manage_erp_finances
+
+# Health routes defined here. These routes are used to manage farm livestocks. 
+
+farm.erp.health.lists:
+  path: '/erp/farm/health'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::health'
+  requirements:
+    _permission:
+      - can_manage_erp_health
+
+farm.erp.health.add:
+  path: '/erp/farm/health/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addHealth'
+  requirements:
+    _permission:
+      - can_manage_erp_health
+
+farm.erp.health.edit:
+  path: '/erp/farm/health/update'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::updateHealth'
+  requirements:
+    _permission:
+      - can_manage_erp_health
+
+farm.erp.inseminations:
+  path: '/erp/farm/inseminations'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::inseminations'
+  requirements:
+    _permission:
+      - can_manage_erp_breeding
+
+
+farm.erp.inseminations.add:
+  path: '/erp/farm/inseminations/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addInseminations'
+  requirements:
+    _permission:
+      - can_manage_erp_breeding
+
+farm.erp.inseminations.edit:
+  path: '/erp/farm/inseminations/edit/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::editInseminations'
+  requirements:
+    _permission:
+      - can_manage_erp_breeding
+
+farm.erp.inseminations.forrowing.add:
+  path: '/erp/farm/forrowing/add/[insemination_id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addForrowing'
+  requirements:
+    _permission:
+      - can_manage_erp_breeding
+
+farm.erp.inseminations.view:
+  path: '/erp/farm/inseminations/view/[insemination_id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::viewInseminations'
+  requirements:
+    _permission:
+      - can_manage_erp_breeding
+
+farm.erp.inseminations.view.farrowing.piglet.add:
+  path: '/erp/farm/inseminations/view/[insemination_id:int]/farrowing/[farrowing_id:int]/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addFarrowingPiglet'
+  requirements:
+    _permission:
+      - can_manage_erp_breeding
+
+# Feeds routes defined here. These routes are used to manage farm livestocks. 
+
+farm.erp.feeding:
+  path: '/erp/farm/feeding'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::feeding'
+  requirements:
+    _permission:
+      - can_manage_erp_feeding
+
+farm.erp.feeding.silo.add:
+  path: '/erp/farm/feeding/silo/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addSilo'
+  requirements:
+    _permission:
+      - can_manage_erp_feeding
+
+farm.erp.feeding.formula.add:
+  path: '/erp/farm/feeding/formula/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addFormula'
+  requirements:
+    _permission:
+      - can_manage_erp_feeding
+
+farm.erp.feeding.formula.edit:
+  path: '/erp/farm/feeding/formula/edit/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::editFormula'
+  requirements:
+    _permission:
+      - can_manage_erp_feeding
+
+# Transactions routes defined here. These routes are used to manage farm livestocks. 
+
+farm.erp.transactions:
+  path: '/erp/farm/transactions'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::transactions'
+  requirements:
+    _permission:
+      - can_manage_erp_finances
+
+farm.erp.transactions.add:
+  path: '/erp/farm/transactions/income/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addIncomeTransaction'
+  requirements:
+    _permission:
+      - can_manage_erp_finances
+
+farm.erp.transactions.income.duplicate:
+  path: '/erp/farm/transactions/duplicate/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::duplicateIncomeTransaction'
+  requirements:
+    _permission:
+      - can_manage_erp_finances
+
+
+farm.erp.transactions.income.edit:
+  path: '/erp/farm/transactions/edit/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::editIncomeTransaction'
+  requirements:
+    _permission:
+      - can_manage_erp_finances
+
+farm.erp.transactions.expense:
+  path: '/erp/farm/transactions/expense/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addExpenseTransaction'
+  requirements:
+    _permission:
+      - can_manage_erp_finances
+
+farm.erp.transactions.export.ledger:
+  path: '/erp/farm/transactions/export-ledger'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::exportLedgerTransaction'
+  requirements:
+    _permission:
+      - can_manage_erp_finances
+
+farm.erp.transactions.export.ledger.filter:
+  path: '/erp/farm/transactions/export-ledger/filter'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::exportLedgerFilterTransaction'
+  requirements:
+    _permission:
+      - can_manage_erp_finances
+
+
+# Purchase orders routes defined here. These routes are used to manage farm livestocks. 
+
+farm.erp.purchases:
+  path: '/erp/farm/purchases'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::purchases'
+  requirements:
+    _permission:
+      - can_manage_erp_sales
+
+farm.erp.purchases.add:
+  path: '/erp/farm/purchases/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addPurchases'
+  requirements:
+    _permission:
+      - can_manage_erp_sales
+
+farm.erp.purchases.edit:
+  path: '/erp/farm/purchases/edit/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::editPurchases'
+  requirements:
+    _permission:
+      - can_manage_erp_sales
+
+
+# Inventory orders routes defined here. These routes are used to manage farm livestocks. 
+
+farm.erp.inventory:
+  path: '/erp/farm/inventory'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::inventory'
+  requirements:
+    _permission:
+      - can_manage_erp_inventory
+
+farm.erp.inventory.add:
+  path: '/erp/farm/inventory/add'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::addInventory'
+  requirements:
+    _permission:
+      - can_manage_erp_inventory
+
+farm.erp.inventory.edit:
+  path: '/erp/farm/inventory/edit/[id:int]'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\farm\src\Controller\FarmController::editInventory'
+  requirements:
+    _permission:
+      - can_manage_erp_inventory

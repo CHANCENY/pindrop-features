@@ -1,0 +1,42 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Farm Assets & Infrastructure</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.facilities.add') }}"
+                style="text-decoration:none; background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus"></i> Add Facility
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="modules-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+            {% for facility in facilities %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ facility.name }}</h3>
+                    <span class="status-pill {{ facility.status|lower|replace({' ': '-'}) }}">{{ facility.status }}</span>
+                </div>
+                <div class="card-body">
+                    <ul style="list-style: none; font-size: 0.9rem;">
+                        <li style="margin-bottom: 10px;"><strong>Barns:</strong> {{ facility.barns_count }}</li>
+                        <li style="margin-bottom: 10px;"><strong>Capacity:</strong> {{ facility.capacity|number_format }}</li>
+                        <li style="margin-bottom: 10px;"><strong>Current Load:</strong> ({{ (facility.current_load)|round }}%)</li>
+                        <li style="margin-bottom: 10px;"><strong>Manager:</strong> {{ facility.manager_name }}</li>
+                    </ul>
+                    <a href="{{ url('farm.erp.facility.manage', {'id': facility.facility_id}) }}"
+                        style="text-decoration:none; text-align:center; display:block; width: 100%; margin-top: 15px; padding: 10px; border: 1px solid var(--primary-color); background: transparent; color: var(--primary-color); border-radius: 4px; cursor: pointer;">Manage
+                        Facility</a>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,69 @@
+super_admin:
+  db.pf.full: { title: 'Full ERP database access', description: 'Full access to all ERP tables.' }
+  can_manage_erp_farms: { title: 'Manage farms', description: 'Create and manage farms.' }
+  can_manage_erp_pigs: { title: 'Manage pigs', description: 'Full pig lifecycle management.' }
+  can_manage_erp_health: { title: 'Manage health', description: 'Health, vaccination, treatment management.' }
+  can_manage_erp_feeding: { title: 'Manage feeding', description: 'Feeding logs and feed inventory.' }
+  can_manage_erp_finances: { title: 'Manage finances', description: 'Expenses, income, invoices, payroll.' }
+  can_manage_erp_breeding: { title: 'Manage breeding', description: 'Breeding, farrowing, weaning records.' }
+  can_manage_erp_inventory: { title: 'Manage inventory', description: 'Inventory, purchase orders, assets.' }
+  can_manage_erp_sales: { title: 'Manage sales', description: 'Sales, purchases, customer records.' }
+  can_view_erp_reports: { title: 'View reports', description: 'Enterprise reports and analytics dashboard.' }
+  can_manage_erp_compliance: { title: 'Manage compliance', description: 'Inspections, certifications, biosecurity.' }
+  can_manage_erp_settings: { title: 'Manage ERP settings', description: 'System settings, users, and configuration.' }
+
+admin:
+  db.pf.full: { title: 'Full ERP database access', description: 'Full access to all ERP tables.' }
+  can_manage_erp_farms: { title: 'Manage farms', description: 'Create and manage farms.' }
+  can_manage_erp_pigs: { title: 'Manage pigs', description: 'Full pig lifecycle management.' }
+  can_manage_erp_health: { title: 'Manage health', description: 'Health, vaccination, treatment management.' }
+  can_manage_erp_feeding: { title: 'Manage feeding', description: 'Feeding logs and feed inventory.' }
+  can_manage_erp_finances: { title: 'Manage finances', description: 'Expenses, income, invoices, payroll.' }
+  can_manage_erp_breeding: { title: 'Manage breeding', description: 'Breeding, farrowing, weaning records.' }
+  can_manage_erp_inventory: { title: 'Manage inventory', description: 'Inventory, purchase orders, assets.' }
+  can_manage_erp_sales: { title: 'Manage sales', description: 'Sales, purchases, customer records.' }
+  can_view_erp_reports: { title: 'View reports', description: 'Enterprise reports and analytics dashboard.' }
+  can_manage_erp_compliance: { title: 'Manage compliance', description: 'Inspections, certifications, biosecurity.' }
+
+farm_owner:
+  db.pf.full: { title: 'Full ERP database access', description: 'Full access.' }
+  can_manage_erp_pigs: { title: 'Manage pigs', description: 'Full pig lifecycle.' }
+  can_manage_erp_health: { title: 'Manage health', description: 'Health management.' }
+  can_manage_erp_feeding: { title: 'Manage feeding', description: 'Feeding management.' }
+  can_manage_erp_finances: { title: 'Manage finances', description: 'Financial management.' }
+  can_manage_erp_breeding: { title: 'Manage breeding', description: 'Breeding management.' }
+  can_manage_erp_inventory: { title: 'Manage inventory', description: 'Inventory management.' }
+  can_manage_erp_sales: { title: 'Manage sales', description: 'Sales management.' }
+  can_view_erp_reports: { title: 'View reports', description: 'Reports and analytics.' }
+  can_manage_erp_compliance: { title: 'Manage compliance', description: 'Compliance management.' }
+
+farm_manager:
+  db.pf.operations: { title: 'ERP operations database access', description: 'Access to operational tables.' }
+  can_manage_erp_pigs: { title: 'Manage pigs', description: 'Full pig lifecycle.' }
+  can_manage_erp_health: { title: 'Manage health', description: 'Health management.' }
+  can_manage_erp_feeding: { title: 'Manage feeding', description: 'Feeding management.' }
+  can_manage_erp_breeding: { title: 'Manage breeding', description: 'Breeding management.' }
+  can_manage_erp_inventory: { title: 'Manage inventory', description: 'Inventory management.' }
+  can_view_erp_reports: { title: 'View reports', description: 'Reports and analytics.' }
+
+farm_worker:
+  db.pf.worker: { title: 'ERP worker database access', description: 'Write access to daily logs.' }
+  can_log_erp_feeding: { title: 'Log feeding', description: 'Create feeding log entries.' }
+  can_log_erp_health: { title: 'Log health checks', description: 'Create health check records.' }
+  can_log_erp_weights: { title: 'Log weights', description: 'Record pig weights.' }
+  can_log_erp_tasks: { title: 'Complete tasks', description: 'Update assigned task status.' }
+
+veterinarian_staff:
+  db.pf.health: { title: 'ERP health database access', description: 'Full access to health tables.' }
+  can_manage_erp_health: { title: 'Manage health', description: 'Full health management.' }
+  can_view_erp_reports: { title: 'View health reports', description: 'View health reports.' }
+
+farm_accountant:
+  db.pf.finance: { title: 'ERP finance database access', description: 'Full access to financial tables.' }
+  can_manage_erp_finances: { title: 'Manage finances', description: 'Full financial management.' }
+  can_manage_erp_sales: { title: 'Manage sales', description: 'Sales and invoice management.' }
+  can_view_erp_reports: { title: 'View financial reports', description: 'Financial reports and analytics.' }
+
+moderator:
+  db.pf.read: { title: 'ERP read access', description: 'Read all ERP data.' }
+  can_view_erp_reports: { title: 'View reports', description: 'View all reports.' }

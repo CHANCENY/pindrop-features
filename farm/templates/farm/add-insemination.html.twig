@@ -1,0 +1,201 @@
+{% extends 'templates/farm/base.html.twig' %}
+
+{% block content %}
+
+<main class="main-content">
+    <header>
+        <div class="header-left">
+            <h2>Log Insemination</h2>
+        </div>
+        <div class="header-right">
+            <a href="{{ url('farm.erp.inseminations.add') }}"
+                style="text-decoration:none; color: var(--text-light); font-size: 0.9rem; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-arrow-left"></i> Back to Breeding & Farrowing
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Insemination Details</h3>
+
+                </div>
+                <div class="card-body">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Sow
+                                ID</label>
+                            <input type="text" name="sow_id" id="sow_id" placeholder="e.g. SOW-8842"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <noscript autocomplete='true' style="display:none;">
+                            {
+                            "fieldId": "sow_id",
+                            "source": "autocomplete.pigs.search.dams",
+                            "placeholder": "Search saw..",
+                            "minQueryLength": 2,
+                            "limit": 10,
+                            "displayField": "label",
+                            "valueField": "value",
+                            "searchFields": [
+                            "title",
+                            "id"
+                            ],
+                            "noResultsText": "No sow found",
+                            "loadingText": "Searching...",
+                            "name": "sow_id",
+                            "onSelect": null
+                            }
+                        </noscript>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Boar
+                                ID / Semen Batch</label>
+                            <input type="text" name="boar_id" id="boar_id" placeholder="e.g. BOAR-201 / SEM-4471"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <noscript autocomplete='true' style="display:none;">
+                            {
+                            "fieldId": "boar_id",
+                            "source": "autocomplete.pigs.search.sires",
+                            "placeholder": "Search boar..",
+                            "minQueryLength": 2,
+                            "limit": 10,
+                            "displayField": "label",
+                            "valueField": "value",
+                            "searchFields": [
+                            "title",
+                            "id"
+                            ],
+                            "noResultsText": "No boar found",
+                            "loadingText": "Searching...",
+                            "name": "boar_id",
+                            "onSelect": null
+                            }
+                        </noscript>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Insemination
+                                Date</label>
+                            <input type="date" name="date"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Insemination
+                                Method</label>
+                            <select name="method"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option>Natural Mating</option>
+                                <option>Artificial Insemination</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Farm</label>
+                            <select name="farm" id="farm"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                {% for facility in facilities %}
+                                <option value="{{ facility.facility_id }}">{{ facility.name }}</option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Barn
+                                / Pen</label>
+                            <input type="text" name="location" id="location" placeholder="e.g. Barn 02, Pen 05"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                         <noscript autocomplete='true' style="display:none;">
+                            {
+                            "fieldId": "location",
+                            "source": "autocomplete.pigs.search.location",
+                            "placeholder": "Search location..",
+                            "minQueryLength": 2,
+                            "limit": 10,
+                            "displayField": "label",
+                            "valueField": "value",
+                            "searchFields": [
+                            "title",
+                            "id"
+                            ],
+                            "noResultsText": "No location found",
+                            "loadingText": "Searching...",
+                            "name": "location",
+                            "onSearch": "findBenAndPenInFacility"
+                            }
+                        </noscript>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Technician</label>
+                            <input type="text" name="technician" placeholder="e.g. John Doe"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Insemination
+                                Status</label>
+                            <select name="status"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;">
+                                <option>Confirmed</option>
+                                <option>Imminent</option>
+                                 <option>Not Pregnant</option>
+                                  <option>Failed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Notes</h3>
+
+                </div>
+                <div class="card-body">
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600;">Additional
+                            Notes</label>
+                        <textarea name="notes" placeholder="Observations, semen quality, etc..." rows="4"
+                            style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <a href="{{ url('farm.erp.inseminations.add') }}"
+                    style="text-decoration:none; padding: 10px 24px; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">Cancel</a>
+                <button type="submit"
+                    style="padding: 10px 24px; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-check"></i> Log Insemination
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    async function findBenAndPenInFacility(query, limit) {
+   
+        query = document.getElementById('farm').value;
+        // Use backend autocomplete endpoint
+        const response = await fetch(`/internal/autocomplete?source=${encodeURIComponent('autocomplete.pigs.search.location')}&q=${encodeURIComponent(query)}&limit=${limit}`);
+        if (!response.ok) {
+            throw new Error('Autocomplete request failed');
+        }
+        const data = await response.json();
+
+        // Use standardized response format {results: [{value, label}]}
+        return data.results || [];
+
+    }
+</script>
+
+
+{% endblock %}

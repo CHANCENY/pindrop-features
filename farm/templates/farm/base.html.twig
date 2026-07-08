@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Assets - PigFarm ERP</title>
+    <link rel="stylesheet" href="/modules/farm/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/themes/admin/assets/css/admin.css">
+     <link rel="stylesheet" href="/themes/admin/assets/flatpickr/flatpickr.min.css">
+    {{ asset_handler.renderCss() }}
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-piggy-bank" style="color: var(--secondary-color); font-size: 1.5rem;"></i>
+            <span>PigFarm ERP</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url('farm.erp.dashboard') }}" {% if is_route('farm.erp.dashboard') %} class="active" {% endif %}><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+            <div class="menu-section">Core Operations</div>
+            <li><a href="{{ url('farm.erp.facilities') }}" {% if is_route('farm.erp.facilities') %} class="active" {% endif %}><i class="fas fa-tractor"></i> <span>Farm Assets</span></a></li>
+            <li><a href="{{ url('farm.erp.livestock.pigs') }}" {% if is_route('farm.erp.livestock.pigs') %} class="active" {% endif %}><i class="fas fa-pig"></i> <span>Livestock Registry</span></a></li>
+            <li><a href="{{ url('farm.erp.inseminations') }}" {% if is_route('farm.erp.inseminations') %} class="active" {% endif %}><i class="fas fa-heart"></i> <span>Breeding & Farrowing</span></a></li>
+            <div class="menu-section">Health & Nutrition</div>
+            <li><a href="{{ url('farm.erp.health.lists') }}" {% if is_route('farm.erp.health.lists') %} class="active" {% endif %}><i class="fas fa-medkit"></i> <span>Health & Vet</span></a></li>
+            <li><a href="{{ url('farm.erp.feeding') }}" {% if is_route('farm.erp.feeding') %} class="active" {% endif %}><i class="fas fa-utensils"></i> <span>Feeding Management</span></a></li>
+            <div class="menu-section">Logistics</div>
+            <li><a href="{{ url('farm.erp.inventory')}}" {% if is_route('farm.erp.inventory') %} class="active" {% endif %}><i class="fas fa-boxes"></i> <span>Inventory & Stock</span></a></li>
+            <li><a href="{{ url('farm.erp.purchases') }}" {% if is_route('farm.erp.purchases') %} class="active" {% endif %}><i class="fas fa-clipboard-list"></i> <span>Purchase Orders</span></a></li>
+            <li><a href="{{ url('farm.erp.transactions') }}" {% if is_route('farm.erp.transactions') %} class="active" {% endif %}><i class="fas fa-file-invoice-dollar"></i> <span>Financials</span></a></li>
+            <div class="menu-section">Analysis</div>
+            <!-- <li><a href="reports.html"><i class="fas fa-chart-line"></i> <span>Reports & KPIs</span></a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> <span>System Settings</span></a></li> -->
+        </ul>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    {{ asset_handler.renderJs() }}
+    <script type="module" src="/themes/admin/assets/js/behavior.js"></script>
+
+</body>
+</html>    
