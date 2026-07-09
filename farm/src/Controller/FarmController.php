@@ -23,6 +23,7 @@ use Simp\Pindrop\Modules\farm\src\Services\PurchaseOrder;
 use Simp\Pindrop\Modules\farm\src\Services\Transaction;
 use Simp\Pindrop\Modules\farm\src\Services\Treatment;
 use Simp\Pindrop\Modules\farm\src\Services\Vaccination;
+use Simp\Pindrop\Modules\signals_slots\src\Service\SignalBus;
 use Simp\Pindrop\Routing\Url;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,7 +46,8 @@ class FarmController extends ControllerBase
         protected PurchaseOrder $purchaseOrder_service,
         protected Inventory $inventory_service,
         protected Dashboard $dashboard_service,
-        protected ?CurrentUser $currentUser
+        protected ?CurrentUser $currentUser,
+        protected SignalBus    $signalBus
     ) {
         return parent::__construct();
     }
@@ -66,7 +68,8 @@ class FarmController extends ControllerBase
             $container->get('farm.purchase_order'),
             $container->get('farm.inventory'),
             $container->get('farm.dashboard'),
-            $container->get('current_user')
+            $container->get('current_user'),
+            $container->get(SignalBus::class)
 
         );
     }
@@ -87,6 +90,10 @@ class FarmController extends ControllerBase
 
             $facility_id = $this->facility_service->createFacility($data);
             if ($facility_id) {
+                $this->signalBus->emit('farm.facility.created', [
+                    'facility' => $this->facility_service->getFacilityById($facility_id)
+                ]);
+
                 // Redirect to the facilities list after successful creation
                 return $this->redirect(Url::routeByName('farm.erp.facilities'));
             } else {
@@ -121,6 +128,10 @@ class FarmController extends ControllerBase
             $data['current_load'] = ((int) $data['barns_count'] / (int) $data['capacity']) * 100;
             $update_success = $this->facility_service->updateFacility($facility_id, $data);
             if ($update_success) {
+                $this->signalBus->emit('farm.facility.updated', [
+                    'facility_id' => $facility_id,
+                    'facility' => $data,
+                ]);
                 Message::info("Facility updated successfully.");
                 return $this->redirect(Url::routeByName('farm.erp.facilities'));
             } else {
@@ -147,6 +158,11 @@ class FarmController extends ControllerBase
 
             $barn_id = $this->barn_service->createBarn($data);
             if ($barn_id) {
+                $this->signalBus->emit('farm.barn.created', [
+                    'barn_id' => $barn_id,
+                    'facility_id' => $data['facility_id'],
+                    'barn' => $data,
+                ]);
                 Message::info("Barn created successfully.");
             } else {
                 Message::error("Failed to create barn. Please try again.");
@@ -185,6 +201,10 @@ class FarmController extends ControllerBase
 
             $update_success = $this->barn_service->updateBarn($barn_id, $data);
             if ($update_success) {
+                $this->signalBus->emit('farm.barn.updated', [
+                    'barn_id' => $barn_id,
+                    'barn' => $data,
+                ]);
                 Message::info("Barn updated successfully.");
             } else {
                 Message::error("Failed to update barn. Please try again.");
@@ -231,6 +251,11 @@ class FarmController extends ControllerBase
 
             $pen_id = $this->pen_service->createPen($data);
             if ($pen_id) {
+                $this->signalBus->emit('farm.pen.created', [
+                    'pen_id' => $pen_id,
+                    'barn_id' => $barn_id,
+                    'pen' => $data,
+                ]);
                 Message::info("Pen created successfully.");
             } else {
                 Message::error("Failed to create pen. Please try again.");
@@ -260,6 +285,10 @@ class FarmController extends ControllerBase
             $update_success = $this->pen_service->updatePen($pen_id, ['current_load' => $current_load]);
 
             if ($update_success) {
+                $this->signalBus->emit('farm.pen.updated', [
+                    'pen_id' => $pen_id,
+                    'current_load' => $current_load,
+                ]);
                 return new JsonResponse(['success' => true, 'message' => 'Current load updated successfully.']);
             } else {
                 return new JsonResponse(['error' => 'Failed to update current load.'], 500);
@@ -308,6 +337,12 @@ class FarmController extends ControllerBase
                 $pig_id = $this->pig_service->createPig($dd);
 
                 if ($pig_id) {
+
+                    $this->signalBus->emit('farm.pig.created', [
+                        'pig_id' => $dd['pig_id'],
+                        'facility_id' => $dd['facility_id'],
+                        'pen_id' => $dd['pen_id'],
+                    ]);
 
                     $this->pen_service->updatePen($dd['pen_id'], [
                         'current_load' => ((int) $pen['current_load'] ?? 0) + 1
@@ -365,6 +400,10 @@ class FarmController extends ControllerBase
                 $pig_id = $this->pig_service->updatePig($id, $dd);
 
                 if ($pig_id) {
+                    $this->signalBus->emit('farm.pig.updated', [
+                        'pig_id' => $dd['pig_id'],
+                        'pig' => $dd,
+                    ]);
                     Message::info("Pig updated successfully.");
                     return $this->redirect(Url::routeByName('farm.erp.livestock.pigs'));
                 } else {
@@ -429,6 +468,10 @@ class FarmController extends ControllerBase
             $weight_id = $this->pigWeightRecord->createWeightRecord($data);
             if ($weight_id) {
                 $this->pig_service->updatePig($id, ['current_weight_kg' => $data['weight_kg']]);
+                $this->signalBus->emit('farm.pig.weight_recorded', [
+                    'pig_id' => $pig['pig_id'],
+                    'weight_kg' => $data['weight_kg'],
+                ]);
                 Message::info("Weight add successfully");
 
             } else {
@@ -540,6 +583,11 @@ class FarmController extends ControllerBase
             }
 
             if (!empty($flags)) {
+                $this->signalBus->emit('farm.health.treatment_created', [
+                    'pig_ids' => $flags,
+                    'diagnosis' => $dd['diagnosis'],
+                    'treatment' => $dd['treatment'],
+                ]);
                 Message::info("Health treatment records for pig(s) " . implode(',', $flags));
             }
             return $this->redirect(Url::routeByName('farm.erp.health.lists'));
@@ -558,6 +606,10 @@ class FarmController extends ControllerBase
         $vet = $request->query->get('name');
         $status = $request->query->get('status');
         $this->vaccination_service->updateVaccination($id, $vet, $status);
+        $this->signalBus->emit('farm.vaccination.updated', [
+            'vaccination_id' => $id,
+            'status' => $status,
+        ]);
         return new JsonResponse(['status' => true]);
     }
 
@@ -591,6 +643,14 @@ class FarmController extends ControllerBase
                 'notes' => $data['notes'],
                 'expected_due_date' => $expected_date->format('Y-m-d h:i:s'),
             ]);
+
+            if ($in_id) {
+                $this->signalBus->emit('farm.insemination.created', [
+                    'insemination_id' => $in_id,
+                    'sow_id' => $data['sow_id'],
+                    'boar_id' => $data['boar_id'],
+                ]);
+            }
 
             if (!$in_id) {
                 Message::info("Insemination done");
@@ -630,6 +690,9 @@ class FarmController extends ControllerBase
             ]);
 
             if ($in_id) {
+                $this->signalBus->emit('farm.insemination.updated', [
+                    'insemination_id' => $request->query->getInt('id'),
+                ]);
                 Message::info("Insemination done");
                 return $this->redirect(Url::routeByName('farm.erp.inseminations'));
             }
@@ -651,6 +714,10 @@ class FarmController extends ControllerBase
             $data = $request->request->all();
             unset($data['_csrf_token']);
             if ($this->insemination_service->addFarrowing($data)) {
+                $this->signalBus->emit('farm.farrowing.created', [
+                    'insemination_id' => $insemination_id,
+                    'farrowing' => $data,
+                ]);
                 Message::info("Farrowing added");
             }
             return $this->redirect(Url::routeByName('farm.erp.inseminations'));
@@ -712,6 +779,10 @@ class FarmController extends ControllerBase
             foreach ($pigs as $pig) {
                 if ($this->pig_service->createPig($pig)) {
                     $this->insemination_service->addPigletRecord($pig['pig_id'], $farrowing_id);
+                    $this->signalBus->emit('farm.farrowing.piglet_born', [
+                        'pig_id' => $pig['pig_id'],
+                        'farrowing_id' => $farrowing_id,
+                    ]);
 
                     $pen = $this->pen_service->getPenById($pig['pen_id']);
                     $this->pen_service->updatePen($pig['pen_id'], [
@@ -743,6 +814,9 @@ class FarmController extends ControllerBase
             unset($data['_csrf_token']);
 
             if ($this->inventoryFeed_service->createSilo($data)) {
+                $this->signalBus->emit('farm.feed.silo_created', [
+                    'silo' => $data,
+                ]);
                 Message::info("Silo added");
             }
 
@@ -780,6 +854,9 @@ class FarmController extends ControllerBase
 
             if ($this->inventoryFeed_service->createFeedFormula($formula)) {
 
+                $this->signalBus->emit('farm.feed.formula_created', [
+                    'formula' => $formula,
+                ]);
                 Message::info("Formula created");
             }
             return $this->redirect(Url::routeByName('farm.erp.feeding'));
@@ -800,6 +877,10 @@ class FarmController extends ControllerBase
             unset($data['_csrf_token']);
 
             if ($this->inventoryFeed_service->updateFormula($formula['formula_id'], $data)) {
+                $this->signalBus->emit('farm.feed.formula_updated', [
+                    'formula_id' => $formula['formula_id'],
+                    'formula' => $data,
+                ]);
                 Message::info("Updated");
             }
             return $this->redirect(Url::routeByName('farm.erp.feeding'));
@@ -832,6 +913,10 @@ class FarmController extends ControllerBase
 
             $data['transaction_type'] = "Income";
             if ($this->financial_service->addTransaction($data)) {
+                $this->signalBus->emit('farm.transaction.recorded', [
+                    'transaction_type' => $data['transaction_type'],
+                    'transaction' => $data,
+                ]);
                 Message::info("Added income transaction");
             }
             return $this->redirect(Url::routeByName('farm.erp.transactions'));
@@ -852,6 +937,10 @@ class FarmController extends ControllerBase
             $data['transaction_type'] = $transaction['transaction_type'];
 
             if ($this->financial_service->addTransaction($data)) {
+                $this->signalBus->emit('farm.transaction.recorded', [
+                    'transaction_type' => $data['transaction_type'],
+                    'transaction' => $data,
+                ]);
                 Message::info("Added income transaction");
             }
             return $this->redirect(Url::routeByName('farm.erp.transactions'));
@@ -868,6 +957,10 @@ class FarmController extends ControllerBase
             unset($data['_csrf_token']);
 
             if ($this->financial_service->updateTransaction($request->query->get('id'), $data)) {
+                $this->signalBus->emit('farm.transaction.updated', [
+                    'transaction_id' => $request->query->get('id'),
+                    'transaction' => $data,
+                ]);
                 Message::info("Added income transaction");
             }
 
@@ -887,6 +980,10 @@ class FarmController extends ControllerBase
             $data['transaction_type'] = "Expense";
 
             if ($this->financial_service->addTransaction($data)) {
+                $this->signalBus->emit('farm.transaction.recorded', [
+                    'transaction_type' => $data['transaction_type'],
+                    'transaction' => $data,
+                ]);
                 Message::info("Added expense transaction");
             }
 
@@ -1043,6 +1140,10 @@ class FarmController extends ControllerBase
                 $this->purchaseOrder_service->addPurchaseOrderItems($po, $items);
                 $this->purchaseOrder_service->reCalculatePurchaseOrder($po);
                 $this->purchaseOrder_service->addTransactions($po);
+                $this->signalBus->emit('farm.purchase_order.created', [
+                    'purchase_order_id' => $po,
+                    'items' => $items,
+                ]);
                 Message::info("Added purchase order");
             }
 
@@ -1079,6 +1180,10 @@ class FarmController extends ControllerBase
                 $this->purchaseOrder_service->resetPurchaseOrderItems($id, $items);
                 $this->purchaseOrder_service->reCalculatePurchaseOrder($id);
                 $this->purchaseOrder_service->addTransactions($id);
+                $this->signalBus->emit('farm.purchase_order.updated', [
+                    'purchase_order_id' => $id,
+                    'items' => $items,
+                ]);
                 Message::info("Updated purchase order");
             }
 
@@ -1104,6 +1209,9 @@ class FarmController extends ControllerBase
             unset($data['_csrf_token']);
 
             if ($this->inventory_service->addInventory($data)) {
+                $this->signalBus->emit('farm.inventory.created', [
+                    'inventory' => $data,
+                ]);
                 Message::info("Added the inventory ". $data['name']);
             }
 
@@ -1122,6 +1230,10 @@ class FarmController extends ControllerBase
             unset($data['_csrf_token']);
 
             if ($this->inventory_service->updateInventory($request->query->getInt('id'),$data)) {
+                $this->signalBus->emit('farm.inventory.updated', [
+                    'inventory_id' => $request->query->getInt('id'),
+                    'inventory' => $data,
+                ]);
                 Message::info("Added the inventory ". $data['name']);
             }
 

@@ -1,0 +1,232 @@
+# =============================================================================
+# FARM SIGNALS
+# =============================================================================
+# Signals emitted by the farm ERP plugin via SignalBus::emit(). Each of these
+# is fired directly from FarmController at the point an entity is created or
+# updated, and can be wired to any slot (farm-provided or third-party) through
+# the Signals & Slots admin UI.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Facilities
+# -----------------------------------------------------------------------------
+
+farm.facility.created:
+  name: "Facility Created"
+  description: "Emitted after a new farm facility is created."
+  plugin: farm
+  payload:
+    facility: "array — the full facility record as stored"
+
+farm.facility.updated:
+  name: "Facility Updated"
+  description: "Emitted after a farm facility is updated."
+  plugin: farm
+  payload:
+    facility_id: "int — id of the updated facility"
+    facility: "array — the submitted facility fields"
+
+# -----------------------------------------------------------------------------
+# Barns & pens
+# -----------------------------------------------------------------------------
+
+farm.barn.created:
+  name: "Barn Created"
+  description: "Emitted after a new barn is created within a facility."
+  plugin: farm
+  payload:
+    barn_id: "int — id of the newly created barn"
+    facility_id: "int — facility the barn belongs to"
+    barn: "array — the submitted barn fields"
+
+farm.barn.updated:
+  name: "Barn Updated"
+  description: "Emitted after a barn is updated."
+  plugin: farm
+  payload:
+    barn_id: "int — id of the updated barn"
+    barn: "array — the submitted barn fields"
+
+farm.pen.created:
+  name: "Pen Created"
+  description: "Emitted after a new pen is created within a barn."
+  plugin: farm
+  payload:
+    pen_id: "int — id of the newly created pen"
+    barn_id: "int — barn the pen belongs to"
+    pen: "array — the submitted pen fields"
+
+farm.pen.updated:
+  name: "Pen Updated"
+  description: "Emitted after a pen's current load (or other fields) is updated."
+  plugin: farm
+  payload:
+    pen_id: "int — id of the updated pen"
+    current_load: "int — new current load percentage"
+
+# -----------------------------------------------------------------------------
+# Livestock
+# -----------------------------------------------------------------------------
+
+farm.pig.created:
+  name: "Pig Registered"
+  description: "Emitted after a new pig is registered into the herd (including farrowed piglets)."
+  plugin: farm
+  payload:
+    pig_id: "string — ear tag / pig identifier"
+    facility_id: "int — facility the pig is housed at"
+    pen_id: "int — pen the pig is housed in"
+
+farm.pig.updated:
+  name: "Pig Updated"
+  description: "Emitted after a pig's record is updated."
+  plugin: farm
+  payload:
+    pig_id: "string — ear tag / pig identifier"
+    pig: "array — the submitted pig fields"
+
+farm.pig.weight_recorded:
+  name: "Pig Weight Recorded"
+  description: "Emitted after a new weight measurement is logged for a pig."
+  plugin: farm
+  payload:
+    pig_id: "string — ear tag / pig identifier"
+    weight_kg: "float — recorded weight in kilograms"
+
+# -----------------------------------------------------------------------------
+# Health
+# -----------------------------------------------------------------------------
+
+farm.health.treatment_created:
+  name: "Treatment Recorded"
+  description: "Emitted after a health treatment record is created for one or more pigs."
+  plugin: farm
+  payload:
+    pig_ids: "array — ear tags of pigs treated in this batch"
+    diagnosis: "string — recorded diagnosis"
+    treatment: "string — treatment administered"
+
+farm.vaccination.updated:
+  name: "Vaccination Schedule Updated"
+  description: "Emitted after a vaccination schedule entry is updated (vet assignment / status)."
+  plugin: farm
+  payload:
+    vaccination_id: "int — id of the vaccination schedule entry"
+    status: "string — new status"
+
+# -----------------------------------------------------------------------------
+# Breeding
+# -----------------------------------------------------------------------------
+
+farm.insemination.created:
+  name: "Insemination Recorded"
+  description: "Emitted after a new insemination record is created."
+  plugin: farm
+  payload:
+    insemination_id: "int — id of the new insemination record"
+    sow_id: "string — sow ear tag"
+    boar_id: "string — boar ear tag"
+
+farm.insemination.updated:
+  name: "Insemination Updated"
+  description: "Emitted after an insemination record is updated."
+  plugin: farm
+  payload:
+    insemination_id: "int — id of the updated insemination record"
+
+farm.farrowing.created:
+  name: "Farrowing Recorded"
+  description: "Emitted after a farrowing event is recorded against an insemination."
+  plugin: farm
+  payload:
+    insemination_id: "int — insemination the farrowing belongs to"
+    farrowing: "array — the submitted farrowing fields"
+
+farm.farrowing.piglet_born:
+  name: "Piglet Born"
+  description: "Emitted for each piglet registered against a farrowing event."
+  plugin: farm
+  payload:
+    pig_id: "string — ear tag assigned to the piglet"
+    farrowing_id: "int — farrowing event the piglet belongs to"
+
+# -----------------------------------------------------------------------------
+# Feed
+# -----------------------------------------------------------------------------
+
+farm.feed.silo_created:
+  name: "Silo Created"
+  description: "Emitted after a new feed silo is created."
+  plugin: farm
+  payload:
+    silo: "array — the submitted silo fields"
+
+farm.feed.formula_created:
+  name: "Feed Formula Created"
+  description: "Emitted after a new feed formula is created."
+  plugin: farm
+  payload:
+    formula: "array — the formula, including its ingredient list"
+
+farm.feed.formula_updated:
+  name: "Feed Formula Updated"
+  description: "Emitted after a feed formula is updated."
+  plugin: farm
+  payload:
+    formula_id: "int — id of the updated formula"
+    formula: "array — the submitted formula fields"
+
+# -----------------------------------------------------------------------------
+# Finance
+# -----------------------------------------------------------------------------
+
+farm.transaction.recorded:
+  name: "Transaction Recorded"
+  description: "Emitted after an income or expense transaction is recorded."
+  plugin: farm
+  payload:
+    transaction_type: "string — Income or Expense"
+    transaction: "array — the submitted transaction fields"
+
+farm.transaction.updated:
+  name: "Transaction Updated"
+  description: "Emitted after an existing transaction is edited."
+  plugin: farm
+  payload:
+    transaction_id: "int — id of the updated transaction"
+    transaction: "array — the submitted transaction fields"
+
+farm.purchase_order.created:
+  name: "Purchase Order Created"
+  description: "Emitted after a new purchase order is created and its line items saved."
+  plugin: farm
+  payload:
+    purchase_order_id: "int — id of the new purchase order"
+    items: "array — line items on the order"
+
+farm.purchase_order.updated:
+  name: "Purchase Order Updated"
+  description: "Emitted after a purchase order is updated."
+  plugin: farm
+  payload:
+    purchase_order_id: "int — id of the updated purchase order"
+    items: "array — line items on the order"
+
+# -----------------------------------------------------------------------------
+# Inventory
+# -----------------------------------------------------------------------------
+
+farm.inventory.created:
+  name: "Inventory Item Created"
+  description: "Emitted after a new inventory item is created."
+  plugin: farm
+  payload:
+    inventory: "array — the submitted inventory fields"
+
+farm.inventory.updated:
+  name: "Inventory Item Updated"
+  description: "Emitted after an inventory item is updated."
+  plugin: farm
+  payload:
+    inventory_id: "int — id of the updated inventory item"
+    inventory: "array — the submitted inventory fields"

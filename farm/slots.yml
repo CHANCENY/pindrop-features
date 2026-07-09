@@ -1,0 +1,179 @@
+# =============================================================================
+# FARM SLOTS
+# =============================================================================
+# Every class listed here implements SlotInterface and is ready to be
+# connected to any signal (farm or core) via the Signals & Slots admin UI.
+# Each ships pre-wired to its natural farm.* signal as a sensible default,
+# but rewiring is just an admin-UI action away.
+#
+# Slots are defensive: missing payload keys are skipped rather than causing
+# a fatal error.
+# =============================================================================
+
+farm.slot.facility_created:
+  name: "Log Facility Creation"
+  description: "Logs a new facility being added to the farm."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotFacilityCreated
+  plugin: farm
+  payload_required: ["facility"]
+
+farm.slot.facility_updated:
+  name: "Log Facility Update"
+  description: "Logs a facility being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotFacilityUpdated
+  plugin: farm
+  payload_required: ["facility_id"]
+
+farm.slot.barn_created:
+  name: "Log Barn Creation"
+  description: "Logs a new barn being added to a facility."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotBarnCreated
+  plugin: farm
+  payload_required: ["barn_id"]
+
+farm.slot.barn_updated:
+  name: "Log Barn Update"
+  description: "Logs a barn being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotBarnUpdated
+  plugin: farm
+  payload_required: ["barn_id"]
+
+farm.slot.pen_created:
+  name: "Log Pen Creation"
+  description: "Logs a new pen being added to a barn."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotPenCreated
+  plugin: farm
+  payload_required: ["pen_id"]
+
+farm.slot.pen_updated:
+  name: "Log Pen Load Update"
+  description: "Logs a pen's current load being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotPenUpdated
+  plugin: farm
+  payload_required: ["pen_id"]
+
+farm.slot.pig_created:
+  name: "Log Pig Registration"
+  description: "Logs a new pig being registered into the herd."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotPigCreated
+  plugin: farm
+  payload_required: ["pig_id"]
+
+farm.slot.pig_updated:
+  name: "Log Pig Update"
+  description: "Logs a pig record being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotPigUpdated
+  plugin: farm
+  payload_required: ["pig_id"]
+
+farm.slot.pig_weight_recorded:
+  name: "Log Pig Weight"
+  description: "Logs a new weight measurement for a pig."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotPigWeightRecorded
+  plugin: farm
+  payload_required: ["pig_id", "weight_kg"]
+
+farm.slot.health_treatment_created:
+  name: "Log Treatment"
+  description: "Logs a health treatment being recorded for one or more pigs."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotHealthTreatmentCreated
+  plugin: farm
+  payload_required: ["pig_ids"]
+
+farm.slot.vaccination_updated:
+  name: "Log Vaccination Update"
+  description: "Logs a vaccination schedule entry being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotVaccinationUpdated
+  plugin: farm
+  payload_required: ["vaccination_id"]
+
+farm.slot.insemination_created:
+  name: "Log Insemination"
+  description: "Logs a new insemination record."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotInseminationCreated
+  plugin: farm
+  payload_required: ["insemination_id"]
+
+farm.slot.insemination_updated:
+  name: "Log Insemination Update"
+  description: "Logs an insemination record being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotInseminationUpdated
+  plugin: farm
+  payload_required: ["insemination_id"]
+
+farm.slot.farrowing_created:
+  name: "Log Farrowing"
+  description: "Logs a farrowing event being recorded."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotFarrowingCreated
+  plugin: farm
+  payload_required: ["insemination_id"]
+
+farm.slot.farrowing_piglet_born:
+  name: "Log Piglet Registration"
+  description: "Logs a piglet being registered against a farrowing event."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotFarrowingPigletBorn
+  plugin: farm
+  payload_required: ["pig_id", "farrowing_id"]
+
+farm.slot.feed_silo_created:
+  name: "Log Silo Creation"
+  description: "Logs a new feed silo being created."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotFeedSiloCreated
+  plugin: farm
+  payload_required: []
+
+farm.slot.feed_formula_created:
+  name: "Log Feed Formula Creation"
+  description: "Logs a new feed formula being created."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotFeedFormulaCreated
+  plugin: farm
+  payload_required: ["formula"]
+
+farm.slot.feed_formula_updated:
+  name: "Log Feed Formula Update"
+  description: "Logs a feed formula being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotFeedFormulaUpdated
+  plugin: farm
+  payload_required: ["formula_id"]
+
+farm.slot.transaction_recorded:
+  name: "Log Transaction"
+  description: "Logs an income or expense transaction being recorded."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotTransactionRecorded
+  plugin: farm
+  payload_required: ["transaction_type"]
+
+farm.slot.transaction_updated:
+  name: "Log Transaction Update"
+  description: "Logs a transaction being edited."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotTransactionUpdated
+  plugin: farm
+  payload_required: ["transaction_id"]
+
+farm.slot.purchase_order_created:
+  name: "Log Purchase Order Creation"
+  description: "Logs a new purchase order being created."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotPurchaseOrderCreated
+  plugin: farm
+  payload_required: ["purchase_order_id"]
+
+farm.slot.purchase_order_updated:
+  name: "Log Purchase Order Update"
+  description: "Logs a purchase order being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotPurchaseOrderUpdated
+  plugin: farm
+  payload_required: ["purchase_order_id"]
+
+farm.slot.inventory_created:
+  name: "Log Inventory Creation"
+  description: "Logs a new inventory item being created."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotInventoryCreated
+  plugin: farm
+  payload_required: ["inventory"]
+
+farm.slot.inventory_updated:
+  name: "Log Inventory Update"
+  description: "Logs an inventory item being updated."
+  class: Simp\Pindrop\Modules\farm\src\Slot\FarmSlotInventoryUpdated
+  plugin: farm
+  payload_required: ["inventory_id"]
