@@ -1,0 +1,4 @@
+farm.default:
+  name: "Farm CLI commands"
+  script: "modules/farm/cli/command.php"
+  status: true
