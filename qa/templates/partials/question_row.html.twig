@@ -1,0 +1,18 @@
+<div class="qa-question-row">
+    <div class="qa-question-stats">
+        <span><strong>{{ question.votes_count }}</strong> votes</span>
+        <span class="{{ question.accepted_answer_id ? 'accepted' : '' }}">
+            <strong>{{ question.answers_count }}</strong> answers
+        </span>
+        <span><strong>{{ question.views }}</strong> views</span>
+    </div>
+    <div>
+        <a class="qa-question-title" href="/questions/{{ question.slug }}">{{ question.title }}</a>
+        <p class="qa-question-excerpt">{{ question.body|qa_excerpt(140) }}</p>
+        <div class="qa-meta-line">
+            asked {{ question.created_at|qa_time_ago }} by
+            <a href="/users/{{ question.user_id }}">{{ question.author_username|default('User #' ~ question.user_id) }}</a>
+            {% if question.status == 'closed' %}<span class="qa-tag-pill">closed</span>{% endif %}
+        </div>
+    </div>
+</div>

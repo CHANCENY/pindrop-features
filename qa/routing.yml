@@ -1,0 +1,209 @@
+# -----------------------------------------------------------------------------
+# Public browsing (no _permission requirement = open to anonymous visitors,
+# per AuthMiddleware: an empty required-permissions list always passes).
+# -----------------------------------------------------------------------------
+
+qa.home:
+  path: '/questions'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\QuestionController::index'
+  requirements: {}
+
+qa.question.view:
+  path: '/questions/[slug:string]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\QuestionController::view'
+  requirements: {}
+
+qa.tags:
+  path: '/tags'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\TagController::index'
+  requirements: {}
+
+qa.tag.view:
+  path: '/tag/[slug:string]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\TagController::view'
+  requirements: {}
+
+qa.search:
+  path: '/search'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\SearchController::index'
+  requirements: {}
+
+qa.user.profile:
+  path: '/users/[id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\UserProfileController::view'
+  requirements: {}
+
+# -----------------------------------------------------------------------------
+# SEO surface — sitemap, feed, robots
+# -----------------------------------------------------------------------------
+
+qa.sitemap:
+  path: '/sitemap-questions.xml'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\SeoController::sitemap'
+  requirements: {}
+
+qa.rss:
+  path: '/questions/feed'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\SeoController::rss'
+  requirements: {}
+
+# -----------------------------------------------------------------------------
+# Authenticated participation — requires the relevant can_qa_* permission,
+# enforced by admin's AuthMiddleware reading these _permission keys.
+# -----------------------------------------------------------------------------
+
+qa.question.ask:
+  path: '/questions/ask'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\QuestionController::ask'
+  requirements:
+    _permission: ['can_qa_ask']
+
+qa.question.edit:
+  path: '/questions/[id:int]/edit'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\QuestionController::edit'
+  requirements:
+    _permission: ['can_qa_ask', 'can_qa_moderate']
+
+qa.question.answer:
+  path: '/questions/[id:int]/answer'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\QuestionController::answer'
+  requirements:
+    _permission: ['can_qa_answer']
+
+qa.answer.accept:
+  path: '/answers/[id:int]/accept'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\QuestionController::acceptAnswer'
+  requirements:
+    _permission: ['can_qa_ask', 'can_qa_answer']
+
+qa.vote.cast:
+  path: '/vote/[type:string]/[id:int]'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\InteractionController::vote'
+  requirements:
+    _permission: ['can_qa_vote']
+
+qa.bookmark.toggle:
+  path: '/bookmark/[id:int]'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\InteractionController::bookmark'
+  requirements:
+    _permission: ['can_qa_bookmark']
+
+qa.comment.add:
+  path: '/comment/add'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\InteractionController::addComment'
+  requirements:
+    _permission: ['can_qa_comment']
+
+qa.report.create:
+  path: '/report'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\InteractionController::report'
+  requirements:
+    _permission: ['can_qa_comment']
+
+qa.dashboard:
+  path: '/dashboard/qa'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\UserProfileController::dashboard'
+  requirements:
+    _permission: ['can_qa_ask', 'can_qa_answer']
+
+# -----------------------------------------------------------------------------
+# Moderation — admin sidebar surface, requires can_qa_moderate.
+# -----------------------------------------------------------------------------
+
+qa.admin.dashboard:
+  path: '/admin/qa'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\ModerationController::dashboard'
+  requirements:
+    _permission: ['can_qa_moderate']
+
+qa.admin.questions:
+  path: '/admin/qa/questions'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\ModerationController::questions'
+  requirements:
+    _permission: ['can_qa_moderate']
+
+qa.admin.question.close:
+  path: '/admin/qa/questions/[id:int]/close'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\ModerationController::closeQuestion'
+  requirements:
+    _permission: ['can_qa_moderate']
+
+qa.admin.question.delete:
+  path: '/admin/qa/questions/[id:int]/delete'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\ModerationController::deleteQuestion'
+  requirements:
+    _permission: ['can_qa_moderate']
+
+qa.admin.reports:
+  path: '/admin/qa/reports'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\ModerationController::reports'
+  requirements:
+    _permission: ['can_qa_moderate']
+
+qa.admin.report.resolve:
+  path: '/admin/qa/reports/[id:int]/resolve'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\ModerationController::resolveReport'
+  requirements:
+    _permission: ['can_qa_moderate']
+
+qa.admin.tags:
+  path: '/admin/qa/tags'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\ModerationController::tags'
+  requirements:
+    _permission: ['can_qa_moderate']
+
+qa.admin.import:
+  path: '/admin/qa/import'
+  methods: ['GET', 'POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\qa\src\Controller\ModerationController::import'
+  requirements:
+    _permission: ['can_qa_moderate']

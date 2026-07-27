@@ -1,0 +1,18 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-page-header"><h1>Manage Tags</h1></div>
+
+<div class="qa-card">
+    {% for tag in tags %}
+        <form method="post" action="/admin/qa/tags" class="qa-question-row" style="align-items:center;">
+            <input type="hidden" name="tag_id" value="{{ tag.id }}">
+            <div style="min-width:160px;"><span class="qa-tag-pill">{{ tag.name }}</span></div>
+            <input type="text" name="description" value="{{ tag.description }}" placeholder="Tag description…" style="flex:1; padding:8px; border:1px solid var(--qa-border); border-radius:6px; background:var(--qa-bg); color:var(--qa-text);">
+            <div class="qa-meta-line" style="min-width:100px;">{{ tag.questions_count }} questions</div>
+            <button type="submit" class="qa-btn qa-btn--small">Save</button>
+        </form>
+    {% else %}
+        <div class="qa-empty-state">No tags yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

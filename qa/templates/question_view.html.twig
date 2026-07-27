@@ -1,0 +1,117 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<nav class="qa-meta-line" style="margin-bottom:10px;">
+    <a href="/questions">Questions</a> / {{ question.title }}
+</nav>
+
+<div class="qa-layout">
+    <div>
+        <div class="qa-card">
+            <div style="display:flex; gap:18px;">
+                {% include '@qa/partials/vote_widget.html.twig' with {
+                    votable_type: 'question',
+                    votable_id: question.id,
+                    votes_count: question.votes_count,
+                    user_vote: user_votes.question ?? null
+                } %}
+                <div style="flex:1;">
+                    <h1 style="margin-top:0;">{{ question.title }}</h1>
+                    <div class="qa-meta-line">
+                        Asked {{ question.created_at|qa_time_ago }} ·
+                        Viewed {{ question.views }} times
+                        {% if question.status == 'closed' %} · <span class="qa-tag-pill">closed</span>{% endif %}
+                    </div>
+
+                    <div class="qa-question-body">{{ question.body|raw }}</div>
+
+                    <div style="margin:10px 0;">
+                        {% for tag in tags %}
+                            <a class="qa-tag-pill" href="/tag/{{ tag.slug }}">{{ tag.name }}</a>
+                        {% endfor %}
+                    </div>
+
+                    <div class="qa-meta-line" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>
+                            <form class="qa-ajax-form" data-qa-action="bookmark" method="post" action="/bookmark/{{ question.id }}" style="display:inline;">
+                                <button type="submit" class="qa-icon-btn {{ bookmarked ? 'active-bookmark' : '' }}">
+                                    <i class="fa-{{ bookmarked ? 'solid' : 'regular' }} fa-bookmark"></i> {{ bookmarked ? 'Bookmarked' : 'Bookmark' }}
+                                </button>
+                            </form>
+                            <form method="post" action="/report" style="display:inline;">
+                                <input type="hidden" name="reportable_type" value="question">
+                                <input type="hidden" name="reportable_id" value="{{ question.id }}">
+                                <input type="hidden" name="reason" value="Reported from question page">
+                                <button type="submit" class="qa-icon-btn"><i class="fa-solid fa-flag"></i> Report</button>
+                            </form>
+                        </span>
+                        <span>asked by <a href="/users/{{ question.user_id }}">{{ question.author_username|default('User #' ~ question.user_id) }}</a></span>
+                    </div>
+
+                    {% include '@qa/partials/comments.html.twig' with {
+                        comments: question_comments,
+                        commentable_type: 'question',
+                        commentable_id: question.id
+                    } %}
+                </div>
+            </div>
+        </div>
+
+        <h2 style="margin-top:28px;">{{ answers|length }} Answer{{ answers|length != 1 ? 's' : '' }}</h2>
+
+        {% for answer in answers %}
+            <div class="qa-card {{ answer.is_accepted ? 'accepted' : '' }}" id="answer-{{ answer.id }}">
+                <div style="display:flex; gap:18px;">
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+                        {% include '@qa/partials/vote_widget.html.twig' with {
+                            votable_type: 'answer',
+                            votable_id: answer.id,
+                            votes_count: answer.votes_count,
+                            user_vote: user_votes.answer[answer.id] ?? null
+                        } %}
+                        {% if can_accept %}
+                            <form method="post" action="/answers/{{ answer.id }}/accept">
+                                <button type="submit" class="qa-icon-btn" title="Accept this answer">
+                                    <i class="fa-{{ answer.is_accepted ? 'solid' : 'regular' }} fa-circle-check"></i>
+                                </button>
+                            </form>
+                        {% elseif answer.is_accepted %}
+                            <span class="qa-accepted-badge"><i class="fa-solid fa-circle-check"></i> Accepted</span>
+                        {% endif %}
+                    </div>
+                    <div style="flex:1;">
+                        <div class="qa-question-body">{{ answer.body|raw }}</div>
+                        <div class="qa-meta-line" style="text-align:right;">
+                            answered {{ answer.created_at|qa_time_ago }} by
+                            <a href="/users/{{ answer.user_id }}">{{ answer.author_username|default('User #' ~ answer.user_id) }}</a>
+                        </div>
+                        {% include '@qa/partials/comments.html.twig' with {
+                            comments: answer_comments[answer.id] ?? [],
+                            commentable_type: 'answer',
+                            commentable_id: answer.id
+                        } %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="qa-card qa-empty-state">No answers yet — be the first to answer!</div>
+        {% endfor %}
+
+        <div class="qa-card" style="margin-top:20px;">
+            <h3>Your Answer</h3>
+            <form class="qa-form" method="post" action="/questions/{{ question.id }}/answer">
+                <textarea name="body" rows="8" placeholder="Write your answer… (Markdown / rich text supported by your editor integration)" required></textarea>
+                <button type="submit" class="qa-btn qa-btn--primary" style="margin-top:10px;">Post Your Answer</button>
+            </form>
+        </div>
+    </div>
+
+    <aside>
+        <div class="qa-card">
+            <h3>Related tags</h3>
+            {% for tag in tags %}
+                <a class="qa-tag-pill" href="/tag/{{ tag.slug }}">{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+    </aside>
+</div>
+{% endblock %}

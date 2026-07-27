@@ -1,0 +1,46 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-page-header"><h1>Manage Questions</h1></div>
+
+<div class="qa-filters">
+    <a href="?" class="{{ status is empty ? 'active' : '' }}">All</a>
+    <a href="?status=open" class="{{ status == 'open' ? 'active' : '' }}">Open</a>
+    <a href="?status=closed" class="{{ status == 'closed' ? 'active' : '' }}">Closed</a>
+</div>
+
+<div class="qa-card">
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="text-align:left; border-bottom:1px solid var(--qa-border);">
+                <th style="padding:8px;">Title</th>
+                <th style="padding:8px;">Status</th>
+                <th style="padding:8px;">Votes</th>
+                <th style="padding:8px;">Answers</th>
+                <th style="padding:8px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for question in questions %}
+            <tr style="border-bottom:1px solid var(--qa-border);">
+                <td style="padding:8px;"><a href="/questions/{{ question.slug }}">{{ question.title }}</a></td>
+                <td style="padding:8px;">{{ question.status }}</td>
+                <td style="padding:8px;">{{ question.votes_count }}</td>
+                <td style="padding:8px;">{{ question.answers_count }}</td>
+                <td style="padding:8px; display:flex; gap:6px;">
+                    {% if question.status != 'closed' %}
+                        <form method="post" action="/admin/qa/questions/{{ question.id }}/close">
+                            <button type="submit" class="qa-btn qa-btn--small">Close</button>
+                        </form>
+                    {% endif %}
+                    <form method="post" action="/admin/qa/questions/{{ question.id }}/delete" onsubmit="return confirm('Delete this question?');">
+                        <button type="submit" class="qa-btn qa-btn--small qa-btn--danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5" style="padding:20px; text-align:center;">No questions found.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

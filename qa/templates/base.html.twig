@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ meta.title|default('Q&A Platform') }}</title>
+    <meta name="description" content="{{ meta.description|default('Ask questions, get answers.') }}">
+    {% if seo_meta is defined %}
+        <link rel="canonical" href="{{ seo_meta.canonical }}">
+        {% for key, value in seo_meta.og|default({}) %}
+            <meta property="{{ key }}" content="{{ value }}">
+        {% endfor %}
+        {% for key, value in seo_meta.twitter|default({}) %}
+            <meta name="{{ key }}" content="{{ value }}">
+        {% endfor %}
+    {% endif %}
+    {% if json_ld is defined %}{{ qa_json_ld(json_ld) }}{% endif %}
+    {% if breadcrumb_json_ld is defined %}{{ qa_json_ld(breadcrumb_json_ld) }}{% endif %}
+    <link rel="alternate" type="application/rss+xml" title="Latest Questions" href="/questions/feed">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    {# CSS is inlined rather than linked from /modules/qa/assets/... — plugin
+       static-file serving isn't a confirmed core route, so a linked
+       stylesheet risks 404ing. See assets/css/qa.css in this plugin for the
+       same file kept on disk for reference/editing. #}
+    <style>{% include '@qa/partials/styles.css.twig' %}</style>
+</head>
+<body>
+<header class="qa-header">
+    <div class="qa-container qa-header__inner">
+        <a href="/questions" class="qa-logo"><i class="fa-solid fa-comments"></i> Q&amp;A</a>
+        <form action="/search" method="get" class="qa-search-form">
+            <input type="text" name="q" placeholder="Search questions…" value="{{ term|default('') }}">
+            <button type="submit"><i class="fa-solid fa-search"></i></button>
+        </form>
+        <nav class="qa-nav">
+            <a href="/questions">Questions</a>
+            <a href="/tags">Tags</a>
+            {% if is_login %}
+                <a href="/dashboard/qa#bookmarks"><i class="fa-regular fa-bookmark"></i> Bookmarks</a>
+                <a href="/dashboard/qa">Dashboard</a>
+                <a href="/questions/ask" class="qa-btn qa-btn--primary">Ask Question</a>
+                <a href="/user/logout">Logout</a>
+            {% else %}
+                <a href="/user/login">Login</a>
+                <a href="/user/register" class="qa-btn qa-btn--small">Sign up</a>
+            {% endif %}
+            <button id="qa-theme-toggle" class="qa-icon-btn" aria-label="Toggle dark mode" type="button">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </nav>
+    </div>
+</header>
+
+<main class="qa-container qa-main">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="qa-footer">
+    <div class="qa-container">
+        <p>&copy; {{ "now"|date("Y") }} Q&amp;A Platform — built on Pindrop CMS.</p>
+        <p><a href="/questions/feed">RSS</a> · <a href="/sitemap-questions.xml">Sitemap</a></p>
+    </div>
+</footer>
+
+<script>{% include '@qa/partials/scripts.js.twig' %}</script>
+</body>
+</html>

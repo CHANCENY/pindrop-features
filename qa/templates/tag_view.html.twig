@@ -1,0 +1,30 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-layout">
+    <div>
+        <div class="qa-page-header">
+            <h1>#{{ tag.name }}</h1>
+            <a href="/questions/ask" class="qa-btn qa-btn--primary">Ask Question</a>
+        </div>
+        <p class="qa-question-excerpt">{{ tag.description|default('No description yet for this tag.') }}</p>
+
+        <div class="qa-card">
+            {% for question in questions %}
+                {% include '@qa/partials/question_row.html.twig' %}
+            {% else %}
+                <div class="qa-empty-state">No questions tagged {{ tag.name }} yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+    <aside>
+        <div class="qa-card">
+            <h3>Related tags</h3>
+            {% for t in related %}
+                <a class="qa-tag-pill" href="/tag/{{ t.slug }}">{{ t.name }}</a>
+            {% else %}
+                <p class="qa-help">No related tags found.</p>
+            {% endfor %}
+        </div>
+    </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+groups:
+  admin:
+    qa_dashboard:
+      title: "Q&A Dashboard"
+      route: qa.admin.dashboard
+      icon: fa fa-comments
+      weight: 40
+      roles: [moderator, admin, super_admin]
+    qa_questions:
+      title: "Questions"
+      route: qa.admin.questions
+      icon: fa fa-question-circle
+      weight: 41
+      roles: [moderator, admin, super_admin]
+    qa_reports:
+      title: "Reports"
+      route: qa.admin.reports
+      icon: fa fa-flag
+      weight: 42
+      roles: [moderator, admin, super_admin]
+    qa_tags:
+      title: "Tags"
+      route: qa.admin.tags
+      icon: fa fa-tags
+      weight: 43
+      roles: [moderator, admin, super_admin]
+    qa_import:
+      title: "Import Questions"
+      route: qa.admin.import
+      icon: fa fa-file-import
+      weight: 44
+      roles: [moderator, admin, super_admin]

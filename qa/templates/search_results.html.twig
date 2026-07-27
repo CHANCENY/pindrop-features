@@ -1,0 +1,34 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-page-header"><h1>Search {% if term %}: "{{ term }}"{% endif %}</h1></div>
+
+<div class="qa-filters">
+    <a href="?q={{ term }}&filter=newest" class="{{ filter == 'newest' ? 'active' : '' }}">Newest</a>
+    <a href="?q={{ term }}&filter=oldest" class="{{ filter == 'oldest' ? 'active' : '' }}">Oldest</a>
+    <a href="?q={{ term }}&filter=votes" class="{{ filter == 'votes' ? 'active' : '' }}">Most Votes</a>
+    <a href="?q={{ term }}&filter=views" class="{{ filter == 'views' ? 'active' : '' }}">Most Viewed</a>
+    <a href="?q={{ term }}&filter=unanswered" class="{{ filter == 'unanswered' ? 'active' : '' }}">No Answers</a>
+    <a href="?q={{ term }}&filter=accepted" class="{{ filter == 'accepted' ? 'active' : '' }}">Accepted Answers</a>
+</div>
+
+{% if tag_results|length > 0 %}
+    <div class="qa-card">
+        <h3>Matching tags</h3>
+        {% for tag in tag_results %}
+            <a class="qa-tag-pill" href="/tag/{{ tag.slug }}">{{ tag.name }}</a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="qa-card">
+    {% if term == '' %}
+        <div class="qa-empty-state">Type something in the search box above to get started.</div>
+    {% elseif results|length == 0 %}
+        <div class="qa-empty-state">No questions matched "{{ term }}".</div>
+    {% else %}
+        {% for question in results %}
+            {% include '@qa/partials/question_row.html.twig' %}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

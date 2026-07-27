@@ -1,0 +1,18 @@
+<div class="qa-comments">
+    {% for comment in comments %}
+        <div class="qa-comment" style="{{ comment.parent_id ? 'margin-left:24px;' : '' }}">
+            <strong>{{ comment.author_username|default('User #' ~ comment.user_id) }}</strong>
+            — {{ comment.body }}
+            <span class="qa-help">· {{ comment.created_at|qa_time_ago }}</span>
+        </div>
+    {% else %}
+        <p class="qa-help">No comments yet.</p>
+    {% endfor %}
+
+    <form method="post" action="/comment/add" style="margin-top:8px;">
+        <input type="hidden" name="commentable_type" value="{{ commentable_type }}">
+        <input type="hidden" name="commentable_id" value="{{ commentable_id }}">
+        <input type="text" name="body" placeholder="Add a comment…" style="font-size:.82rem; padding:6px 10px;">
+        <button type="submit" class="qa-btn qa-btn--small">Comment</button>
+    </form>
+</div>

@@ -1,0 +1,64 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-layout">
+    <div>
+        <div class="qa-page-header">
+            <h1>All Questions</h1>
+            <a href="/questions/ask" class="qa-btn qa-btn--primary"><i class="fa-solid fa-plus"></i> Ask Question</a>
+        </div>
+
+        <div class="qa-filters">
+            <a href="?order=newest" class="{{ order == 'newest' ? 'active' : '' }}">Newest</a>
+            <a href="?order=active" class="{{ order == 'active' ? 'active' : '' }}">Active</a>
+            <a href="?order=votes" class="{{ order == 'votes' ? 'active' : '' }}">Most Votes</a>
+            <a href="?order=views" class="{{ order == 'views' ? 'active' : '' }}">Most Viewed</a>
+            <a href="?order=unanswered" class="{{ order == 'unanswered' ? 'active' : '' }}">Unanswered</a>
+        </div>
+
+        <div class="qa-card">
+            {% if questions|length == 0 %}
+                <div class="qa-empty-state">
+                    <i class="fa-regular fa-comment-dots fa-2x"></i>
+                    <p>No questions yet — be the first to ask one!</p>
+                </div>
+            {% else %}
+                {% for question in questions %}
+                    {% include '@qa/partials/question_row.html.twig' %}
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="qa-meta-line" style="margin-top:14px;">
+            {% if page > 1 %}<a href="?order={{ order }}&page={{ page - 1 }}">&laquo; Prev</a>{% endif %}
+            {% if questions|length == per_page %}<a href="?order={{ order }}&page={{ page + 1 }}">Next &raquo;</a>{% endif %}
+        </div>
+    </div>
+
+    <aside>
+        <div class="qa-card">
+            <h3>🔥 Trending</h3>
+            {% for q in trending %}
+                <div class="qa-meta-line"><a href="/questions/{{ q.slug }}">{{ q.title }}</a></div>
+            {% else %}
+                <p class="qa-help">Nothing trending yet.</p>
+            {% endfor %}
+        </div>
+        <div class="qa-card">
+            <h3>❓ Unanswered</h3>
+            {% for q in unanswered %}
+                <div class="qa-meta-line"><a href="/questions/{{ q.slug }}">{{ q.title }}</a></div>
+            {% else %}
+                <p class="qa-help">Everything's answered right now.</p>
+            {% endfor %}
+        </div>
+        <div class="qa-card">
+            <h3>🏷️ Popular Tags</h3>
+            {% for tag in popular_tags %}
+                <a class="qa-tag-pill" href="/tag/{{ tag.slug }}">{{ tag.name }} ({{ tag.questions_count }})</a>
+            {% else %}
+                <p class="qa-help">No tags yet.</p>
+            {% endfor %}
+        </div>
+    </aside>
+</div>
+{% endblock %}

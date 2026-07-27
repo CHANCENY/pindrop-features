@@ -1,0 +1,28 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-page-header"><h1>Reports</h1></div>
+
+<div class="qa-filters">
+    <a href="?status=pending" class="{{ status == 'pending' ? 'active' : '' }}">Pending</a>
+    <a href="?status=resolved" class="{{ status == 'resolved' ? 'active' : '' }}">Resolved</a>
+</div>
+
+<div class="qa-card">
+    {% for report in reports %}
+        <div class="qa-question-row">
+            <div style="flex:1;">
+                <strong>{{ report.reportable_type|capitalize }} #{{ report.reportable_id }}</strong>
+                <p class="qa-question-excerpt">{{ report.reason }}</p>
+                <div class="qa-meta-line">Reported {{ report.created_at|qa_time_ago }} by user #{{ report.reporter_id }} · status: {{ report.status }}</div>
+            </div>
+            {% if report.status == 'pending' %}
+                <form method="post" action="/admin/qa/reports/{{ report.id }}/resolve">
+                    <button type="submit" class="qa-btn qa-btn--small">Mark Resolved</button>
+                </form>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="qa-empty-state">No {{ status }} reports.</div>
+    {% endfor %}
+</div>
+{% endblock %}

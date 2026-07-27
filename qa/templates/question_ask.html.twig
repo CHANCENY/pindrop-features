@@ -1,0 +1,27 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-card" style="max-width:760px; margin:0 auto;">
+    <h1>Ask a Question</h1>
+    <p class="qa-help">Be specific and imagine you're asking another person. Include enough detail for someone to understand and reproduce the issue.</p>
+
+    <form class="qa-form" method="post" action="/questions/ask">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" value="{{ old.title|default('') }}" placeholder="e.g. How do I install Laravel on Ubuntu?" required>
+        {% if errors.title is defined %}<div class="qa-error">{{ errors.title }}</div>{% endif %}
+        <div class="qa-help">Be specific and imagine you're asking a question to another person.</div>
+
+        <label for="body">Body</label>
+        <textarea id="body" name="body" rows="12" placeholder="Include all the information someone would need to answer your question…" required>{{ old.body|default('') }}</textarea>
+        {% if errors.body is defined %}<div class="qa-error">{{ errors.body }}</div>{% endif %}
+
+        <label for="tags">Tags</label>
+        <input type="text" id="tags" name="tags" value="{{ old.tags|default('') }}" placeholder="php, laravel, ubuntu (comma separated)">
+        <div class="qa-help">Add up to 5 tags to describe what your question is about.</div>
+
+        <label for="meta_description">Meta description (SEO, optional)</label>
+        <input type="text" id="meta_description" name="meta_description" value="{{ old.meta_description|default('') }}" maxlength="255">
+
+        <button type="submit" class="qa-btn qa-btn--primary" style="margin-top:18px;">Post Your Question</button>
+    </form>
+</div>
+{% endblock %}

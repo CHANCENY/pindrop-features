@@ -1,0 +1,73 @@
+# Q&A Plugin — Role Permission Definitions
+# db.qa.* keys are linked to table operations via db.permissions.yml.
+# can_qa_* keys gate route-level actions (checked by admin's AuthMiddleware
+# through the routing.yml `_permission` requirement).
+
+anonymous:
+  db.qa.read:
+    title: 'Browse Q&A content'
+    description: 'Read-only access to questions, answers, comments, and tags.'
+
+user:
+  db.qa.read:
+    title: 'Browse Q&A content'
+    description: 'Read-only access to questions, answers, comments, and tags.'
+  db.qa.write:
+    title: 'Participate in Q&A'
+    description: 'Create and edit your own questions, answers, comments, votes, bookmarks.'
+  can_qa_ask:
+    title: 'Ask questions'
+    description: 'Post new questions.'
+  can_qa_answer:
+    title: 'Post answers'
+    description: 'Answer existing questions.'
+  can_qa_comment:
+    title: 'Post comments'
+    description: 'Comment on questions and answers.'
+  can_qa_vote:
+    title: 'Vote'
+    description: 'Upvote or downvote questions and answers.'
+  can_qa_bookmark:
+    title: 'Bookmark questions'
+    description: 'Save questions to your bookmarks.'
+
+moderator:
+  db.qa.read: { title: 'Browse Q&A content', description: 'Read-only access.' }
+  db.qa.write: { title: 'Participate in Q&A', description: 'Create and edit content.' }
+  db.qa.moderate: { title: 'Moderate Q&A', description: 'Delete/close/edit any content, manage reports.' }
+  can_qa_ask: { title: 'Ask questions', description: 'Post new questions.' }
+  can_qa_answer: { title: 'Post answers', description: 'Answer existing questions.' }
+  can_qa_comment: { title: 'Post comments', description: 'Comment on content.' }
+  can_qa_vote: { title: 'Vote', description: 'Upvote or downvote content.' }
+  can_qa_bookmark: { title: 'Bookmark questions', description: 'Save questions.' }
+  can_qa_moderate:
+    title: 'Moderate Q&A content'
+    description: 'Close/delete questions and answers, resolve reports, manage tags.'
+
+admin:
+  db.qa.read: { title: 'Browse Q&A content', description: 'Read-only access.' }
+  db.qa.write: { title: 'Participate in Q&A', description: 'Create and edit content.' }
+  db.qa.moderate: { title: 'Moderate Q&A', description: 'Full moderation access.' }
+  can_qa_ask: { title: 'Ask questions', description: 'Post new questions.' }
+  can_qa_answer: { title: 'Post answers', description: 'Answer existing questions.' }
+  can_qa_comment: { title: 'Post comments', description: 'Comment on content.' }
+  can_qa_vote: { title: 'Vote', description: 'Upvote or downvote content.' }
+  can_qa_bookmark: { title: 'Bookmark questions', description: 'Save questions.' }
+  can_qa_moderate: { title: 'Moderate Q&A content', description: 'Full moderation access.' }
+  can_qa_manage_settings:
+    title: 'Manage Q&A settings'
+    description: 'Configure the Q&A module from the admin panel.'
+
+super_admin:
+  db.qa.read: { title: 'Browse Q&A content', description: 'Read-only access.' }
+  db.qa.write: { title: 'Participate in Q&A', description: 'Create and edit content.' }
+  db.qa.moderate: { title: 'Moderate Q&A', description: 'Full moderation access.' }
+  can_qa_ask: { title: 'Ask questions', description: 'Post new questions.' }
+  can_qa_answer: { title: 'Post answers', description: 'Answer existing questions.' }
+  can_qa_comment: { title: 'Post comments', description: 'Comment on content.' }
+  can_qa_vote: { title: 'Vote', description: 'Upvote or downvote content.' }
+  can_qa_bookmark: { title: 'Bookmark questions', description: 'Save questions.' }
+  can_qa_moderate: { title: 'Moderate Q&A content', description: 'Full moderation access.' }
+  can_qa_manage_settings:
+    title: 'Manage Q&A settings'
+    description: 'Configure the Q&A module from the admin panel.'

@@ -1,0 +1,84 @@
+qa.question:
+  class: Simp\Pindrop\Modules\qa\src\Services\QuestionService
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "qa"
+
+qa.answer:
+  class: Simp\Pindrop\Modules\qa\src\Services\AnswerService
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "qa"
+
+qa.comment:
+  class: Simp\Pindrop\Modules\qa\src\Services\CommentService
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "qa"
+
+qa.tag:
+  class: Simp\Pindrop\Modules\qa\src\Services\TagService
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "qa"
+
+qa.vote:
+  class: Simp\Pindrop\Modules\qa\src\Services\VoteService
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "qa"
+
+qa.bookmark:
+  class: Simp\Pindrop\Modules\qa\src\Services\BookmarkService
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "qa"
+
+qa.reputation:
+  class: Simp\Pindrop\Modules\qa\src\Services\ReputationService
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "qa"
+
+qa.search:
+  class: Simp\Pindrop\Modules\qa\src\Services\SearchService
+  arguments:
+    - "@database"
+    - "@logger"
+  tags:
+    - "qa"
+
+qa.import:
+  class: Simp\Pindrop\Modules\qa\src\Services\ImportService
+  arguments:
+    - "@qa.question"
+    - "@qa.answer"
+    - "@qa.tag"
+  tags:
+    - "qa"
+
+qa.seo:
+  class: Simp\Pindrop\Modules\qa\src\Services\SeoService
+  arguments: []
+  tags:
+    - "qa"
+
+qa.signal:
+  class: Simp\Pindrop\Modules\qa\src\Services\QaSignalDispatcher
+  arguments: []
+  tags:
+    - "qa"

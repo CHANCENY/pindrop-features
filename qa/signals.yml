@@ -1,0 +1,82 @@
+# =============================================================================
+# Q&A SIGNALS
+# =============================================================================
+# Emitted via QaSignalDispatcher::emit(), which only calls out to the
+# signals_slots bus if that plugin is installed — qa itself never requires it.
+# Other modules (reputation UI, notifications, AI moderation, etc.) can wire
+# slots to these through the Signals & Slots admin UI when signals_slots is
+# present.
+# =============================================================================
+
+qa.question.created:
+  name: "Question Created"
+  description: "Emitted after a new question is posted."
+  plugin: qa
+  payload:
+    question_id: "int"
+    user_id: "int"
+    title: "string"
+
+qa.question.updated:
+  name: "Question Updated"
+  description: "Emitted after a question is edited."
+  plugin: qa
+  payload:
+    question_id: "int"
+
+qa.question.status_changed:
+  name: "Question Status Changed"
+  description: "Emitted when a question is closed, reopened, or deleted."
+  plugin: qa
+  payload:
+    question_id: "int"
+    status: "string"
+
+qa.answer.created:
+  name: "Answer Posted"
+  description: "Emitted after a new answer is posted."
+  plugin: qa
+  payload:
+    answer_id: "int"
+    question_id: "int"
+    user_id: "int"
+
+qa.answer.accepted:
+  name: "Answer Accepted"
+  description: "Emitted when a question author accepts an answer."
+  plugin: qa
+  payload:
+    answer_id: "int"
+    question_id: "int"
+    answer_user_id: "int"
+
+qa.comment.created:
+  name: "Comment Posted"
+  description: "Emitted after a comment is posted on a question or answer."
+  plugin: qa
+  payload:
+    comment_id: "int"
+    commentable_type: "string"
+    commentable_id: "int"
+    user_id: "int"
+
+qa.vote.cast:
+  name: "Vote Cast"
+  description: "Emitted after a user casts, switches, or removes a vote."
+  plugin: qa
+  payload:
+    votable_type: "string"
+    votable_id: "int"
+    voter_id: "int"
+    owner_id: "int"
+    action: "string — created|switched|removed"
+    vote_type: "string — upvote|downvote"
+
+qa.report.created:
+  name: "Content Reported"
+  description: "Emitted when a user reports a question, answer, or comment."
+  plugin: qa
+  payload:
+    report_id: "int"
+    reportable_type: "string"
+    reportable_id: "int"

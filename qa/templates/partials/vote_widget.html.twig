@@ -1,0 +1,15 @@
+<div class="qa-vote-widget">
+    <form class="qa-ajax-form" data-qa-action="vote" method="post" action="/vote/{{ votable_type }}/{{ votable_id }}">
+        <input type="hidden" name="vote_type" value="upvote">
+        <button type="submit" class="qa-vote-btn {{ user_vote == 'upvote' ? 'active-up' : '' }}" data-type="upvote" title="Upvote">
+            <i class="fa-solid fa-caret-up"></i>
+        </button>
+    </form>
+    <span class="qa-vote-count">{{ votes_count }}</span>
+    <form class="qa-ajax-form" data-qa-action="vote" method="post" action="/vote/{{ votable_type }}/{{ votable_id }}">
+        <input type="hidden" name="vote_type" value="downvote">
+        <button type="submit" class="qa-vote-btn {{ user_vote == 'downvote' ? 'active-down' : '' }}" data-type="downvote" title="Downvote">
+            <i class="fa-solid fa-caret-down"></i>
+        </button>
+    </form>
+</div>

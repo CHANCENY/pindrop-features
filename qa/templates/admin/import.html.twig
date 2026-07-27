@@ -1,0 +1,60 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-page-header"><h1>Import Questions</h1></div>
+
+<div class="qa-card" style="max-width:720px;">
+    <p class="qa-help">
+        Upload a JSON file, or paste JSON below. Expected shape — a JSON array
+        of objects:
+    </p>
+    <pre style="background:var(--qa-bg); padding:12px; border-radius:8px; font-size:.8rem; overflow:auto;">[
+  {
+    "title": "How do you destroy a session in PHP?",
+    "body": "Use session_destroy() to delete all session data…",
+    "tags": "php, session",
+    "answers": ["Use session_destroy() to delete all session data…"]
+  }
+]</pre>
+
+    {% if error %}
+        <div class="qa-error" style="margin:10px 0;">{{ error }}</div>
+    {% endif %}
+
+    {% if result %}
+        <div class="qa-card" style="background:var(--qa-bg); margin:14px 0;">
+            <strong>Import complete</strong>
+            <div class="qa-meta-line">
+                {{ result.imported }} question(s) imported ·
+                {{ result.answers_imported }} answer(s) imported ·
+                {{ result.skipped }} skipped
+            </div>
+            {% if result.errors|length > 0 %}
+                <details style="margin-top:8px;">
+                    <summary class="qa-help">{{ result.errors|length }} issue(s) — click to view</summary>
+                    <ul>
+                        {% for err in result.errors %}<li class="qa-help">{{ err }}</li>{% endfor %}
+                    </ul>
+                </details>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <form class="qa-form" method="post" action="/admin/qa/import" enctype="multipart/form-data">
+        <label for="import_file">Upload JSON file</label>
+        <input type="file" id="import_file" name="import_file" accept=".json,application/json">
+
+        <label for="import_json">…or paste JSON directly</label>
+        <textarea id="import_json" name="import_json" rows="8" placeholder="[ { &quot;title&quot;: ... } ]"></textarea>
+
+        <button type="submit" class="qa-btn qa-btn--primary" style="margin-top:14px;">
+            <i class="fa-solid fa-file-import"></i> Import
+        </button>
+    </form>
+
+    <p class="qa-help" style="margin-top:14px;">
+        Prefer the command line? Run
+        <code>./pindro qa:import /path/to/file.json</code> from your Pindrop root
+        — same importer, same validation, no upload size limits.
+    </p>
+</div>
+{% endblock %}

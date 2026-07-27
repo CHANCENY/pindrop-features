@@ -1,0 +1,2 @@
+qa.twig:
+  class: Simp\Pindrop\Modules\qa\src\Twig\QaTwigExtension

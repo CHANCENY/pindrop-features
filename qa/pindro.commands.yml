@@ -1,0 +1,4 @@
+qa.import:
+  name: "Q&A bulk question importer"
+  script: "modules/qa/cli/import.php"
+  status: true

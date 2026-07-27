@@ -1,0 +1,57 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-page-header">
+    <h1>My Dashboard</h1>
+    <div class="qa-meta-line"><strong>{{ reputation }}</strong> reputation points</div>
+</div>
+
+<div class="qa-layout">
+    <div>
+        <h2>My Questions</h2>
+        <div class="qa-card">
+            {% for question in my_questions %}
+                {% include '@qa/partials/question_row.html.twig' %}
+            {% else %}
+                <div class="qa-empty-state">You haven't asked any questions yet. <a href="/questions/ask">Ask one</a>.</div>
+            {% endfor %}
+        </div>
+
+        <h2 style="margin-top:24px;">My Answers</h2>
+        <div class="qa-card">
+            {% for answer in my_answers %}
+                <div class="qa-meta-line" style="padding:8px 0; border-bottom:1px solid var(--qa-border);">
+                    {{ answer.body|qa_excerpt(120) }}
+                    <div class="qa-help">{{ answer.created_at|qa_time_ago }} · {{ answer.votes_count }} votes{{ answer.is_accepted ? ' · accepted' : '' }}</div>
+                </div>
+            {% else %}
+                <div class="qa-empty-state">You haven't answered any questions yet.</div>
+            {% endfor %}
+        </div>
+
+        <h2 id="bookmarks" style="margin-top:24px;">Bookmarks</h2>
+        <div class="qa-card">
+            {% for question in bookmarks %}
+                {% include '@qa/partials/question_row.html.twig' %}
+            {% else %}
+                <div class="qa-empty-state">No bookmarked questions yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <aside>
+        <div class="qa-card">
+            <h3>Reputation History</h3>
+            {% for entry in rep_history %}
+                <div class="qa-meta-line" style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--qa-border); padding:4px 0;">
+                    <span>{{ entry.reason|replace({'_': ' '}) }}</span>
+                    <strong style="color: {{ entry.change_amount >= 0 ? 'var(--qa-success)' : 'var(--qa-danger)' }};">
+                        {{ entry.change_amount > 0 ? '+' : '' }}{{ entry.change_amount }}
+                    </strong>
+                </div>
+            {% else %}
+                <p class="qa-help">No reputation activity yet.</p>
+            {% endfor %}
+        </div>
+    </aside>
+</div>
+{% endblock %}

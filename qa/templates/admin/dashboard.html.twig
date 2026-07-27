@@ -1,0 +1,27 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-page-header"><h1>Q&amp;A Admin Dashboard</h1></div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px;">
+    <div class="qa-card"><div class="qa-help">Questions</div><h2 style="margin:4px 0;">{{ total_questions }}</h2></div>
+    <div class="qa-card"><div class="qa-help">Answers</div><h2 style="margin:4px 0;">{{ total_answers }}</h2></div>
+    <div class="qa-card"><div class="qa-help">Comments</div><h2 style="margin:4px 0;">{{ total_comments }}</h2></div>
+    <div class="qa-card"><div class="qa-help">Tags</div><h2 style="margin:4px 0;">{{ total_tags }}</h2></div>
+    <div class="qa-card"><div class="qa-help">Pending Reports</div><h2 style="margin:4px 0; color:var(--qa-danger);">{{ pending_reports }}</h2></div>
+</div>
+
+<h2 style="margin-top:26px;">Most Viewed Questions</h2>
+<div class="qa-card">
+    {% for question in most_viewed %}
+        {% include '@qa/partials/question_row.html.twig' %}
+    {% else %}
+        <div class="qa-empty-state">No data yet.</div>
+    {% endfor %}
+</div>
+
+<div class="qa-meta-line" style="margin-top:16px;">
+    <a href="/admin/qa/questions">Manage Questions</a> ·
+    <a href="/admin/qa/reports">Reports</a> ·
+    <a href="/admin/qa/tags">Manage Tags</a>
+</div>
+{% endblock %}

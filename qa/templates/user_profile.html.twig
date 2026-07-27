@@ -1,0 +1,45 @@
+{% extends '@qa/base.html.twig' %}
+{% block content %}
+<div class="qa-card" style="display:flex; gap:20px; align-items:center;">
+    {% if avatar_url %}
+        <img class="qa-avatar" style="width:72px;height:72px;" src="{{ avatar_url }}" alt="{{ display_name }}">
+    {% else %}
+        <div class="qa-avatar" style="width:72px;height:72px; display:flex; align-items:center; justify-content:center; font-size:1.6rem;">
+            {{ display_name|slice(0, 1)|upper }}
+        </div>
+    {% endif %}
+    <div>
+        <h1 style="margin:0;">{{ display_name }}</h1>
+        <div class="qa-meta-line">
+            <strong>{{ reputation }}</strong> reputation ·
+            <strong>{{ questions_count }}</strong> questions ·
+            <strong>{{ answers_count }}</strong> answers
+        </div>
+    </div>
+</div>
+
+<div class="qa-layout" style="margin-top:20px;">
+    <div>
+        <h2>Recent Questions</h2>
+        <div class="qa-card">
+            {% for question in recent_questions %}
+                {% include '@qa/partials/question_row.html.twig' %}
+            {% else %}
+                <div class="qa-empty-state">No questions yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+    <aside>
+        <h2>Recent Answers</h2>
+        <div class="qa-card">
+            {% for answer in recent_answers %}
+                <div class="qa-meta-line" style="padding:6px 0; border-bottom:1px solid var(--qa-border);">
+                    {{ answer.body|qa_excerpt(90) }}
+                </div>
+            {% else %}
+                <p class="qa-help">No answers yet.</p>
+            {% endfor %}
+        </div>
+    </aside>
+</div>
+{% endblock %}

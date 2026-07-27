@@ -1,0 +1,6 @@
+name: "Q&A Platform"
+description: "A Stack Overflow / Quora style Question & Answer platform: questions, answers, nested comments, voting, tags, bookmarks, reputation tracking, and SEO (meta tags, JSON-LD, sitemap)."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"

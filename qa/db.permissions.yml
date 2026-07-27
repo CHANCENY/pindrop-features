@@ -1,0 +1,59 @@
+# Q&A Plugin — Database Permission Rules
+#
+# Three tiers:
+#   db.qa.read      — anyone who can view the site (select only)
+#   db.qa.write     — logged-in users creating/editing their own content
+#   db.qa.moderate  — moderators/admins: delete + status changes on anything
+#
+# Ownership check for "your own content" (e.g. editing your own question)
+# happens at the application layer inside the controllers/services — the
+# database guard only concerns itself with table + operation, not row
+# ownership.
+
+db.qa.read:
+  description: 'Read access to all Q&A tables.'
+  owned_by: qa
+  tables:
+    qa_questions:           [select]
+    qa_answers:              [select]
+    qa_comments:             [select]
+    qa_tags:                 [select]
+    qa_question_tags:        [select]
+    qa_votes:                [select]
+    qa_bookmarks:            [select]
+    qa_reputation_history:   [select]
+    qa_attachments:          [select]
+    qa_edit_history:         [select]
+    qa_reports:              [select]
+
+db.qa.write:
+  description: 'Create and update Q&A content as a logged-in user.'
+  owned_by: qa
+  tables:
+    qa_questions:           [insert, update]
+    qa_answers:              [insert, update]
+    qa_comments:              [insert, update]
+    qa_tags:                  [insert, update]
+    qa_question_tags:         [insert, delete]
+    qa_votes:                 [insert, update, delete]
+    qa_bookmarks:              [insert, delete]
+    qa_reputation_history:     [insert]
+    qa_attachments:            [insert, delete]
+    qa_edit_history:           [insert]
+    qa_reports:                [insert]
+
+db.qa.moderate:
+  description: 'Full moderation access — delete/close/edit any content, manage reports.'
+  owned_by: qa
+  tables:
+    qa_questions:            [select, insert, update, delete]
+    qa_answers:               [select, insert, update, delete]
+    qa_comments:               [select, insert, update, delete]
+    qa_tags:                   [select, insert, update, delete]
+    qa_question_tags:          [select, insert, update, delete]
+    qa_votes:                  [select, insert, update, delete]
+    qa_bookmarks:               [select, insert, update, delete]
+    qa_reputation_history:      [select, insert, update, delete]
+    qa_attachments:             [select, insert, update, delete]
+    qa_edit_history:            [select, insert, update, delete]
+    qa_reports:                 [select, insert, update, delete]
