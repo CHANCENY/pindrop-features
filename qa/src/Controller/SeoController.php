@@ -57,7 +57,7 @@ class SeoController extends ControllerBase
 
         $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"/>');
         $channel = $xml->addChild('channel');
-        $channel->addChild('title', 'Latest Questions — Q&A');
+        $channel->addChild('title', htmlspecialchars('Latest Questions & Answers', ENT_XML1 | ENT_COMPAT, 'UTF-8'));
         $channel->addChild('link', $baseUrl . '/questions');
         $channel->addChild('description', 'The latest questions from the community.');
 
