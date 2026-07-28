@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ meta.title|default('Site Identity') }}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <style>
+        :root { --si-primary: {{ settings.theme_color|default('#0a66c2') }}; --si-bg: #f8f9fb; --si-border: #e3e6ea; --si-text: #1c2024; --si-muted: #656d76; }
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--si-bg); color: var(--si-text); margin: 0; padding: 32px 20px; }
+        .si-wrap { max-width: 760px; margin: 0 auto; }
+        h1 { font-size: 1.5rem; }
+        .si-card { background: #fff; border: 1px solid var(--si-border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        label { display: block; font-weight: 600; font-size: .85rem; margin: 14px 0 6px; }
+        input[type=text], input[type=file], textarea {
+            width: 100%; padding: 9px 12px; border: 1px solid var(--si-border); border-radius: 8px; font-family: inherit; font-size: .92rem;
+        }
+        input[type=color] { width: 52px; height: 36px; padding: 2px; border: 1px solid var(--si-border); border-radius: 6px; vertical-align: middle; }
+        textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem; }
+        .si-help { font-size: .78rem; color: var(--si-muted); margin-top: 4px; }
+        .si-btn { background: var(--si-primary); color: #fff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: .88rem; }
+        .si-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+        .si-tab { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--si-border); background: #fff; cursor: pointer; font-size: .85rem; }
+        .si-tab.active { background: var(--si-primary); color: #fff; border-color: var(--si-primary); }
+        .si-mode-panel { display: none; }
+        .si-mode-panel.active { display: block; }
+        .si-notice { padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: .88rem; }
+        .si-notice--success { background: #e6f4ea; color: #1a7f37; }
+        .si-notice--error { background: #fdecea; color: #cf222e; }
+        .si-preview { display: flex; gap: 14px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+        .si-preview img { border: 1px solid var(--si-border); border-radius: 6px; background: #fff; }
+        .si-color-row { display: flex; align-items: center; gap: 10px; }
+        code { background: var(--si-bg); padding: 1px 5px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="si-wrap">
+    <h1><i class="fa-solid fa-fingerprint"></i> Site Identity</h1>
+    <p class="si-help">Manage <code>robots.txt</code>, <code>ads.txt</code>, branding colors, and the site's favicon/PWA icon set.</p>
+
+    {% if saved %}<div class="si-notice si-notice--success">Saved.</div>{% endif %}
+    {% if error %}<div class="si-notice si-notice--error">{{ error }}</div>{% endif %}
+
+    <div class="si-card">
+        <h2>Branding &amp; Crawlers</h2>
+        <form method="post" action="/admin/site-identity/settings">
+            <label for="site_name">Site name</label>
+            <input type="text" id="site_name" name="site_name" value="{{ settings.site_name }}" maxlength="190">
+
+            <label>Theme color / Background color</label>
+            <div class="si-color-row">
+                <input type="color" name="theme_color" value="{{ settings.theme_color }}">
+                <input type="color" name="background_color" value="{{ settings.background_color }}">
+                <span class="si-help">Used in <code>site.webmanifest</code> and browser UI chrome.</span>
+            </div>
+
+            <label for="robots_txt">robots.txt</label>
+            <textarea id="robots_txt" name="robots_txt" rows="6">{{ settings.robots_txt }}</textarea>
+            <div class="si-help">A <code>Sitemap:</code> line is appended automatically from the field below, if set.</div>
+
+            <label for="sitemap_url">Sitemap URL (optional)</label>
+            <input type="text" id="sitemap_url" name="sitemap_url" value="{{ settings.sitemap_url }}" placeholder="/sitemap-questions.xml or a full https:// URL">
+            <div class="si-help">E.g. the Q&amp;A plugin serves one at <code>/sitemap-questions.xml</code> — paste its path here to have it appended to robots.txt.</div>
+
+            <label for="ads_txt">ads.txt</label>
+            <textarea id="ads_txt" name="ads_txt" rows="4" placeholder="e.g. google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0">{{ settings.ads_txt }}</textarea>
+            <div class="si-help">Leave empty to serve a 404 at <code>/ads.txt</code> (no ad network configured).</div>
+
+            <button type="submit" class="si-btn" style="margin-top:16px;">Save</button>
+        </form>
+    </div>
+
+    <div class="si-card">
+        <h2>Favicon / Logo Generator</h2>
+        <p class="si-help">Generates the full icon set — <code>favicon.svg</code>, <code>favicon.ico</code>,
+            <code>favicon-96x96.png</code>, <code>apple-touch-icon.png</code>, and the 192/512 PWA icons — in one go.</p>
+
+        <div class="si-preview">
+            <img src="/favicon-96x96.png?v={{ 'now'|date('U') }}" width="48" height="48" alt="current favicon">
+            <img src="/apple-touch-icon.png?v={{ 'now'|date('U') }}" width="64" height="64" alt="current apple touch icon">
+            <span class="si-help">Current icon (cache-busted preview)</span>
+        </div>
+
+        <div class="si-tabs">
+            <button type="button" class="si-tab active" data-mode="text">From text</button>
+            <button type="button" class="si-tab" data-mode="image">From image</button>
+        </div>
+
+        <div class="si-mode-panel active" id="panel-text">
+            <form method="post" action="/admin/site-identity/logo" enctype="multipart/form-data">
+                <input type="hidden" name="mode" value="text">
+                <label for="logo_text">Text (1-2 characters, e.g. site initials)</label>
+                <input type="text" id="logo_text" name="logo_text" maxlength="2" value="{{ settings.logo_text }}" placeholder="Q&amp;A">
+
+                <label>Background / Text color</label>
+                <div class="si-color-row">
+                    <input type="color" name="logo_bg_color" value="{{ settings.theme_color }}">
+                    <input type="color" name="logo_fg_color" value="#ffffff">
+                </div>
+
+                <button type="submit" class="si-btn" style="margin-top:16px;">Generate from text</button>
+            </form>
+        </div>
+
+        <div class="si-mode-panel" id="panel-image">
+            <form method="post" action="/admin/site-identity/logo" enctype="multipart/form-data">
+                <input type="hidden" name="mode" value="image">
+                <label for="logo_image">Upload an image (PNG, JPEG, WebP, or GIF)</label>
+                <input type="file" id="logo_image" name="logo_image" accept="image/png,image/jpeg,image/webp,image/gif">
+                <div class="si-help">Cropped to a centered square, resized to every required size, and corner-rounded automatically.</div>
+
+                <button type="submit" class="si-btn" style="margin-top:16px;">Generate from image</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.si-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+        document.querySelectorAll('.si-tab').forEach(function (t) { t.classList.remove('active'); });
+        document.querySelectorAll('.si-mode-panel').forEach(function (p) { p.classList.remove('active'); });
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.mode).classList.add('active');
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+site_identity.settings:
+  class: Simp\Pindrop\Modules\site_identity\src\Services\SettingsService
+  arguments:
+    - "@database"
+  tags:
+    - "site_identity"
+
+site_identity.assets:
+  class: Simp\Pindrop\Modules\site_identity\src\Services\AssetStoreService
+  arguments:
+    - "@database"
+  tags:
+    - "site_identity"
+
+site_identity.generator:
+  class: Simp\Pindrop\Modules\site_identity\src\Services\IconGeneratorService
+  arguments: []
+  tags:
+    - "site_identity"

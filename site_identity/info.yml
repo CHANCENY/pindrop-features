@@ -1,0 +1,6 @@
+name: "Site Identity"
+description: "Site-wide crawler and branding assets: robots.txt, ads.txt, favicon/PWA icon generation (from text or an uploaded image), and the web app manifest — decoupled from any single content plugin so nothing else needs to own these singular, site-wide paths."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"

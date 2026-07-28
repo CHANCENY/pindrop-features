@@ -1,0 +1,8 @@
+groups:
+  admin:
+    site_identity:
+      title: "Site Identity"
+      route: site_identity.admin.index
+      icon: fa fa-fingerprint
+      weight: 5
+      roles: [admin, super_admin]

@@ -1,0 +1,90 @@
+# -----------------------------------------------------------------------------
+# Public — crawler + branding assets. No _permission requirement needed for
+# correctness (a logged-in non-admin visitor's browser still needs these to
+# load), but note db.site_identity.read is what actually makes the DB reads
+# succeed for logged-in roles — see db.permissions.yml.
+# -----------------------------------------------------------------------------
+
+site_identity.robots:
+  path: '/robots.txt'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\PublicAssetController::robots'
+  requirements: {}
+
+site_identity.ads:
+  path: '/ads.txt'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\PublicAssetController::ads'
+  requirements: {}
+
+site_identity.manifest:
+  path: '/site.webmanifest'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\PublicAssetController::manifest'
+  requirements: {}
+
+site_identity.favicon.svg:
+  path: '/favicon.svg'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\PublicAssetController::servedVariant'
+  requirements: {}
+
+site_identity.favicon.ico:
+  path: '/favicon.ico'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\PublicAssetController::servedVariant'
+  requirements: {}
+
+site_identity.favicon.96:
+  path: '/favicon-96x96.png'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\PublicAssetController::servedVariant'
+  requirements: {}
+
+site_identity.apple_touch:
+  path: '/apple-touch-icon.png'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\PublicAssetController::servedVariant'
+  requirements: {}
+
+site_identity.icon.sized:
+  path: '/icons/[size:string]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\PublicAssetController::sizedIcon'
+  requirements: {}
+
+# -----------------------------------------------------------------------------
+# Admin — settings + logo generator. admin/super_admin only.
+# -----------------------------------------------------------------------------
+
+site_identity.admin.index:
+  path: '/admin/site-identity'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\AdminIdentityController::index'
+  requirements:
+    _permission: ['can_manage_site_identity']
+
+site_identity.admin.save_settings:
+  path: '/admin/site-identity/settings'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\AdminIdentityController::saveSettings'
+  requirements:
+    _permission: ['can_manage_site_identity']
+
+site_identity.admin.generate_logo:
+  path: '/admin/site-identity/logo'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\site_identity\src\Controller\AdminIdentityController::generateLogo'
+  requirements:
+    _permission: ['can_manage_site_identity']

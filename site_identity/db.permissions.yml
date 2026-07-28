@@ -1,0 +1,26 @@
+# Site Identity — Database Permission Rules
+#
+# db.site_identity.read is granted to EVERY role including anonymous: browsers
+# request /favicon.ico, /robots.txt, /site.webmanifest, etc. on every page
+# load regardless of who's logged in, and those requests hit these tables.
+# Without a broad read grant, a logged-in non-admin visitor's browser would
+# get a DatabasePermissionException fetching their own favicon (anonymous
+# visitors are unaffected either way — a null current user bypasses the
+# guard entirely, but logged-in ones are not).
+#
+# Writing (changing robots.txt/ads.txt/branding, generating new icons) is
+# admin/super_admin only — see user.permissions.yml.
+
+db.site_identity.read:
+  description: 'Read site identity settings and generated icon assets.'
+  owned_by: site_identity
+  tables:
+    site_identity_settings: [select]
+    site_identity_assets:   [select]
+
+db.site_identity.write:
+  description: 'Manage site identity settings and generate/replace icon assets.'
+  owned_by: site_identity
+  tables:
+    site_identity_settings: [select, insert, update]
+    site_identity_assets:   [select, insert, update, delete]

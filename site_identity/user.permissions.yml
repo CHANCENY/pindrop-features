@@ -1,0 +1,36 @@
+anonymous:
+  db.site_identity.read:
+    title: 'Read site branding assets'
+    description: 'Serve favicon/manifest/robots.txt/ads.txt to anyone.'
+
+user:
+  db.site_identity.read:
+    title: 'Read site branding assets'
+    description: 'Serve favicon/manifest/robots.txt/ads.txt to anyone.'
+
+moderator:
+  db.site_identity.read:
+    title: 'Read site branding assets'
+    description: 'Serve favicon/manifest/robots.txt/ads.txt to anyone.'
+
+admin:
+  db.site_identity.read:
+    title: 'Read site branding assets'
+    description: 'Serve favicon/manifest/robots.txt/ads.txt to anyone.'
+  db.site_identity.write:
+    title: 'Manage site identity'
+    description: 'Edit robots.txt/ads.txt and generate favicons/logos.'
+  can_manage_site_identity:
+    title: 'Manage site identity'
+    description: 'Access the Site Identity admin panel.'
+
+super_admin:
+  db.site_identity.read:
+    title: 'Read site branding assets'
+    description: 'Serve favicon/manifest/robots.txt/ads.txt to anyone.'
+  db.site_identity.write:
+    title: 'Manage site identity'
+    description: 'Edit robots.txt/ads.txt and generate favicons/logos.'
+  can_manage_site_identity:
+    title: 'Manage site identity'
+    description: 'Access the Site Identity admin panel.'
