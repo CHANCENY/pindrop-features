@@ -56,8 +56,6 @@ class AuthMiddleware implements Middleware
             return $next($request, $access_interface);
         }
 
-        // dd(empty(array_intersect($required_permissions, $currentUser->getUser()->getPermissions())));
-
         if (empty(array_intersect($required_permissions, $currentUser->getUser()->getPermissions()))) {
 
             // before fully denying access lets check if general permissions grants access.

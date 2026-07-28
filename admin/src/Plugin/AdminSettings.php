@@ -26,6 +26,7 @@ class AdminSettings implements SettingsInterface
             'site_name' => $request->request->get('site_name'),
             'page_not_error' => $request->request->get('page_not_error'),
             'forbidden_error' => $request->request->get('forbidden_error'),
+            'login_redirect' => $request->request->get('login_redirect'),
         ];
     }
 

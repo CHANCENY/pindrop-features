@@ -29,6 +29,7 @@ use Simp\Pindrop\FactorAuthentication\TwoFactorManager;
 use Simp\Pindrop\Mail\MailManager;
 use Simp\Pindrop\Message\Message;
 use Simp\Pindrop\Modules\admin\src\Address\AddressFormatter;
+use Simp\Pindrop\Modules\admin\src\Plugin\AdminSettings;
 use Simp\Pindrop\Modules\admin\src\Plugin\TwoFactorSettings;
 use Simp\Pindrop\Permission\Permission;
 use Simp\Pindrop\Plugin\PluginManager;
@@ -53,11 +54,11 @@ use function DI\string;
  */
 class AdminController extends ControllerBase
 {
-   
+
 
     public function __construct(protected DatabaseService $database)
     {
-       
+
         parent::__construct();
     }
 
@@ -75,15 +76,15 @@ class AdminController extends ControllerBase
         // This is the public home page - accessible to anonymous users only
         // Authenticated users will be redirected by middleware
         $homeRoute = \getAppContainer()->get('site.settings')->getSetting('site.home.route')?->get('site_home') ?? "";
-       
+
         $event = appEvents()->invokeEvents(Events::HOME_PAGE_REQUEST, [
             'homeRoute' => $homeRoute,
-            'request'  => $request,
+            'request' => $request,
         ]);
         if (isset($event['homeRoute'])) {
             $homeRoute = $event['homeRoute'];
         }
-    
+
         /**@var RouteManager $routeProvider**/
         $homeRouteArray = RouteManager::getRoute($homeRoute);
         if (!empty($homeRouteArray)) {
@@ -251,13 +252,13 @@ class AdminController extends ControllerBase
             }
         }
 
-         /**
+        /**
          * @var PluginManager $pluginManager
          */
         $pluginManager = getAppContainer()->get('plugin.manager');
 
         $roles = $pluginManager->getAllRoles();
-       
+
         return $this->renderTwig('admin/users/create.twig', [
             'page_title' => 'Create User',
             'roles' => $roles,
@@ -347,13 +348,13 @@ class AdminController extends ControllerBase
     public function viewUser(Request $request, string $route_name, array $options): Response
     {
         $user_id = $request->query->get('user_id');
-        $user = User::loadById((int)$user_id, $this->database);
+        $user = User::loadById((int) $user_id, $this->database);
 
         if (!$user) {
             return $this->redirect('/admin/users');
         }
 
-    
+
         return $this->renderTwig('admin/users/view.twig', [
             'page_title' => 'User Details',
             'user' => $user
@@ -1144,10 +1145,10 @@ Generated: " . date('Y-m-d H:i:s') . "
                     );
 
                     if ($verification) {
-                       
-                        $content = $this->renderTwig("@admin/emails/verify_email.twig",[
+
+                        $content = $this->renderTwig("@admin/emails/verify_email.twig", [
                             'user' => $user,
-                            'verification_link' => $request->getSchemeAndHttpHost(). Url::routeByName('user.verify_email',[
+                            'verification_link' => $request->getSchemeAndHttpHost() . Url::routeByName('user.verify_email', [
                                 'token' => $verification->getToken()
                             ])
                         ]);
@@ -1243,11 +1244,11 @@ Generated: " . date('Y-m-d H:i:s') . "
 
                         if (!empty($provider)) {
                             SessionStorage::add('two_factor_session', [
-                            'provider' => $provider?->key(),
-                            'user' => $user->getId(),
-                        ]);
+                                'provider' => $provider?->key(),
+                                'user' => $user->getId(),
+                            ]);
 
-                        return $this->redirect($provider?->redirectLink());
+                            return $this->redirect($provider?->redirectLink());
                         }
                     }
                 }
@@ -1265,7 +1266,18 @@ Generated: " . date('Y-m-d H:i:s') . "
 
                 if ($session->create()) {
                     // Set session cookie
-                    $response = new RedirectResponse(Url::routeByName('users.view.user', ['user_id' => $user->getId()]));
+                    $settings = new Settings($this->database);
+                    $settingsAdmin = $settings->getSetting(new AdminSettings()->settingKey());
+
+                    $url = Url::routeByName('users.view.user', ['user_id' => $user->getId()]);
+
+                    if ($settingsAdmin?->get('login_redirect')) {
+                        $url = $settingsAdmin->get('login_redirect');
+                        $url = substr($url, 0,strrpos($url, '('));
+                        $url = trim($url);
+                    }
+                   
+                    $response = new RedirectResponse($url);
                     $response->headers->setCookie(
                         new Cookie(
                             'session_id',
@@ -1283,15 +1295,21 @@ Generated: " . date('Y-m-d H:i:s') . "
                         'ip' => $request->getClientIp()
                     ]);
 
-                    appEvents()->invokeEvents(Events::AUTH_LOGIN,['session_id'=> $sessionId]);
+                    appEvents()->invokeEvents(Events::AUTH_LOGIN, ['session_id' => $sessionId]);
 
                     return $response;
                 } else {
-                    appEvents()->invokeEvents(Events::AUTH_LOGIN_FAILED,[]);
+                    appEvents()->invokeEvents(Events::AUTH_LOGIN_FAILED, [
+                        'email' => $data['email']
+                    ]);
                     throw new RuntimeException("Failed to create session");
                 }
 
             } catch (Exception $e) {
+
+                appEvents()->invokeEvents(Events::AUTH_LOGIN_FAILED, [
+                    'email' => $data['email']
+                ]);
                 getAppContainer()->get('logger')->error('Login failed', [
                     'error' => $e->getMessage(),
                     'email' => $data['email'] ?? 'unknown',
@@ -1330,7 +1348,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                     'user_id' => $session->getUserId(),
                     'session_id' => $sessionId
                 ]);
-                appEvents()->invokeEvents(Events::AUTH_LOGOUT,['user_id'=>$session->getUserId()]);
+                appEvents()->invokeEvents(Events::AUTH_LOGOUT, ['user_id' => $session->getUserId()]);
             }
         }
 
@@ -1668,38 +1686,36 @@ Generated: " . date('Y-m-d H:i:s') . "
             if (!$user) {
                 return new RedirectResponse('/admin/users');
             }
-            
+
             $roles = $user->getRole();
 
-             if ($request->isMethod('POST'))
-            {
+            if ($request->isMethod('POST')) {
                 $submitted_data = $request->request->all();
                 $permissions = $submitted_data['permissions'][$roles] ?? [];
 
                 $user->setPermissions($permissions);
-                if ($user->save())
-                {
+                if ($user->save()) {
                     Message::info("User permissions saved");
-                    return $this->redirect(Url::routeByName('admin.users.permissions',['user_id'=> $user->getId()]));
+                    return $this->redirect(Url::routeByName('admin.users.permissions', ['user_id' => $user->getId()]));
                 }
             }
 
-            
+
             /**
              * @var PluginManager $pluginManager
-             */ 
+             */
             $pluginManager = getAppContainer()->get('plugin.manager');
-            $permissions   = $pluginManager->getAllPermissions();
+            $permissions = $pluginManager->getAllPermissions();
             $all_permissions = [];
-            foreach($permissions as $permission) {
+            foreach ($permissions as $permission) {
                 $all_permissions = array_merge($all_permissions, $permission);
             }
-            
+
             $user_permissions = $user->getPermissions() ?? [];
-           
+
             return $this->renderTwig('admin/users/permissions.twig', [
                 'page_title' => 'Manage Permissions: ' . $user->getUsername(),
-                'roles'      => [$roles],
+                'roles' => [$roles],
                 'all_permissions' => $all_permissions,
                 'role_permissions' => [
                     $roles => $user_permissions
@@ -1718,34 +1734,32 @@ Generated: " . date('Y-m-d H:i:s') . "
 
     public function manageUserPermissionsAll(Request $request, string $route_name, array $options): Response
     {
-       $user_id = $request->query->get('user_id');
+        $user_id = $request->query->get('user_id');
         $container = getAppContainer();
-        
+
         try {
-           
+
             /**
              * @var PluginManager $pluginManager
-             */ 
+             */
             $pluginManager = getAppContainer()->get('plugin.manager');
 
             $roles = $pluginManager->getAllRoles();
             $roles = array_keys($roles);
 
-            $permissions   = $pluginManager->getAllPermissions();
+            $permissions = $pluginManager->getAllPermissions();
             $all_permissions = [];
-            foreach($permissions as $permission) {
+            foreach ($permissions as $permission) {
                 $all_permissions = array_merge($all_permissions, $permission);
             }
-             
+
             $permissionManager = getAppContainer()->get(Permission::class);
 
-             if ($request->isMethod('POST'))
-            {
+            if ($request->isMethod('POST')) {
                 $submitted_data = $request->request->all();
                 $permissions = $submitted_data['permissions'] ?? [];
-                
-                foreach($permissions as $key=>$permission)
-                {
+
+                foreach ($permissions as $key => $permission) {
                     $r = $permissionManager->create($key, $permission);
                 }
 
@@ -1755,10 +1769,10 @@ Generated: " . date('Y-m-d H:i:s') . "
             }
 
             $general_permissions = $permissionManager->getPermissions();
-            
+
             return $this->renderTwig('admin/users/permissions_all.twig', [
                 'page_title' => 'Manage Permissions',
-                'roles'      => $roles,
+                'roles' => $roles,
                 'all_permissions' => $all_permissions,
                 'general_permissions' => $general_permissions
             ]);
@@ -1844,7 +1858,7 @@ Generated: " . date('Y-m-d H:i:s') . "
         $countries = $countryRepository->getAll();
         $countriesList = [];
         foreach ($countries as $code => $country) {
-            $country = $countryRepository->get((string)$code);
+            $country = $countryRepository->get((string) $code);
             $countriesList[$code] = $country->getName();
 
         }
@@ -1904,7 +1918,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                         return $response;
                     }
                 }
-                
+
                 Message::error('Failed to login');
                 return $this->redirect(Url::routeByName("user.login"));
             }

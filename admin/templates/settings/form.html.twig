@@ -15,3 +15,31 @@
     <input type="text" id="forbidden_error" name="forbidden_error" value="{{ forbidden_error }}" class="admin-form-input">
     <p class="admin-form-help">Site General name</p>
 </div>
+
+<div class="admin-form-group">
+    <label for="login_redirect" class="admin-form-label">Login Redirect page Template</label>
+    <input type="text" id="login_redirect" name="login_redirect" value="{{ login_redirect }}" class="admin-form-input">
+    <p class="admin-form-help">Site General name</p>
+</div>
+
+
+<noscript autocomplete='true' style="display:none;">
+{
+  "fieldId": "login_redirect",
+  "source": "autocomplete.route.search",
+  "placeholder": "Search route..",
+  "minQueryLength": 2,
+  "limit": 10,
+  "displayField": "label",
+  "valueField": "value",
+  "searchFields": [
+    "title",
+    "id"
+  ],
+  "noResultsText": "No routes found",
+  "loadingText": "Searching...",
+  "name": "login_redirect",
+  "onSelect": null
+}
+</noscript>
+
