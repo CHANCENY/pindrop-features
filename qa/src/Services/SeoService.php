@@ -47,6 +47,14 @@ class SeoService
     /**
      * Question + (optionally) AcceptedAnswer JSON-LD, per schema.org/QAPage.
      * Returns a PHP array ready for json_encode() in the template.
+     *
+     * Every Person node (the question's author AND each answer's author)
+     * includes both `name` and `url` — Google Search Console's structured
+     * data checker flags missing `author` on suggestedAnswer/acceptedAnswer
+     * and missing `url` on mainEntity.author as non-critical issues, but
+     * they're easy to satisfy fully since we already have author_username
+     * and user_id denormalized on every question/answer row (see
+     * QuestionService::create()/AnswerService::create() docblocks for why).
      */
     public function questionJsonLd(array $question, array $author, array $answers, string $baseUrl): array
     {
@@ -57,11 +65,12 @@ class SeoService
 
         foreach ($answers as $answer) {
             $node = [
-                '@type'      => 'Answer',
-                'text'       => strip_tags($answer['body']),
+                '@type'       => 'Answer',
+                'text'        => strip_tags($answer['body']),
                 'dateCreated' => $this->toIso($answer['created_at']),
                 'upvoteCount' => (int) ($answer['votes_count'] ?? 0),
-                'url'        => $canonical . '#answer-' . $answer['id'],
+                'url'         => $canonical . '#answer-' . $answer['id'],
+                'author'      => $this->personNode($answer['author_username'] ?? null, $answer['user_id'] ?? null, $baseUrl),
             ];
 
             if (!empty($answer['is_accepted'])) {
@@ -71,26 +80,54 @@ class SeoService
             }
         }
 
+        $mainEntity = [
+            '@type'       => 'Question',
+            'name'        => $question['title'],
+            'text'        => strip_tags($question['body'] ?? ''),
+            'answerCount' => (int) ($question['answers_count'] ?? 0),
+            'upvoteCount' => (int) ($question['votes_count'] ?? 0),
+            'dateCreated' => $this->toIso($question['created_at']),
+            'author'      => $this->personNode($author['username'] ?? null, $question['user_id'] ?? null, $baseUrl),
+        ];
+
+        // Only include these when there's an actual value — unlike the
+        // fields above, `null` here really does mean "absent", not "zero".
+        if ($acceptedAnswer !== null) {
+            $mainEntity['acceptedAnswer'] = $acceptedAnswer;
+        }
+        if (!empty($suggestedAnswers)) {
+            $mainEntity['suggestedAnswer'] = $suggestedAnswers;
+        }
+
         $questionNode = [
-            '@context'  => 'https://schema.org',
-            '@type'     => 'QAPage',
-            'mainEntity' => array_filter([
-                '@type'          => 'Question',
-                'name'           => $question['title'],
-                'text'           => strip_tags($question['body'] ?? ''),
-                'answerCount'    => (int) ($question['answers_count'] ?? 0),
-                'upvoteCount'    => (int) ($question['votes_count'] ?? 0),
-                'dateCreated'    => $this->toIso($question['created_at']),
-                'author'         => [
-                    '@type' => 'Person',
-                    'name'  => $author['username'] ?? 'Anonymous',
-                ],
-                'acceptedAnswer' => $acceptedAnswer,
-                'suggestedAnswer' => !empty($suggestedAnswers) ? $suggestedAnswers : null,
-            ]),
+            '@context'   => 'https://schema.org',
+            '@type'      => 'QAPage',
+            'mainEntity' => $mainEntity,
         ];
 
         return $questionNode;
+    }
+
+    /**
+     * Builds a schema.org Person node with both `name` and `url` always
+     * populated. Points at this plugin's own /users/{id} profile route —
+     * which resolves even for user_id = 0 (the "Import Bot" sentinel used
+     * by ImportService for bulk-imported content — see its docblock),
+     * since UserProfileController::view() derives a real, populated
+     * profile page for any user_id that has authored content, imported
+     * or not. That means every author URL emitted here is a real,
+     * crawlable page, not a dead link.
+     */
+    private function personNode(?string $username, mixed $userId, string $baseUrl): array
+    {
+        $userId = (int) ($userId ?? 0);
+        $name = $username ?: ('User #' . $userId);
+
+        return [
+            '@type' => 'Person',
+            'name'  => $name,
+            'url'   => rtrim($baseUrl, '/') . '/users/' . $userId,
+        ];
     }
 
     /** Simple FAQ schema for a set of Q/A pairs (e.g. a tag page's top questions). */
