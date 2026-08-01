@@ -133,6 +133,10 @@ class QuestionController extends ControllerBase
                 ['name' => 'Questions', 'path' => '/questions'],
                 ['name' => $question['title'], 'path' => '/questions/' . $question['slug']],
             ], $baseUrl),
+            'meta' => [
+                'title'       => $question['title'] . ' — Q&A',
+                'description' => $question['meta_description'] ?: mb_substr(strip_tags($question['body']), 0, 160),
+            ],
         ]);
     }
 
