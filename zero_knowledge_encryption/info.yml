@@ -1,0 +1,6 @@
+name: "Zero-Knowledge Encryption"
+description: "Adds zero-knowledge encryption to user data. After signing in, users unlock their account with a personal encryption key that is never stored by the application. Protected content is encrypted before storage and can only be decrypted by the original user during an active session."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"

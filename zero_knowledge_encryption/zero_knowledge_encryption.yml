@@ -1,0 +1,4 @@
+# This file describes the table and its columns for the zero_knowledge_encryption module to process its data.
+zero_knowledge_encryption:
+  - content
+  - name

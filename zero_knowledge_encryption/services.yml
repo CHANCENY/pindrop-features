@@ -1,0 +1,12 @@
+zero_knowledge_encryption.service:
+  class: Simp\Pindrop\Modules\zero_knowledge_encryption\src\Services\ZeroKnowledgeEncryption
+  arguments:
+    - "@current_user"
+  tags:
+    - "zero_knowledge_encryption.service"
+zero_knowledge_encryption.table_manager:
+  class: Simp\Pindrop\Modules\zero_knowledge_encryption\src\Services\ZeroKnowledgeEncryptionTableManager
+  arguments:
+    - "@plugin.manager"
+  tags:
+    - "zero_knowledge_encryption.table_manager"
