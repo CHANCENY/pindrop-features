@@ -1,0 +1,4 @@
+dev_console.tinker:
+  name: "Interactive PsySH tinker shell"
+  script: "modules/dev_console/cli/tinker.php"
+  status: true

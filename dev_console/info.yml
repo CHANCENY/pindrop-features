@@ -1,0 +1,6 @@
+name: "Dev Console (PsySH Tinker)"
+description: "Adds a `./pindro tinker` CLI command that drops into an interactive PsySH REPL with the app's service container pre-loaded — the same idea as Laravel's `artisan tinker`. CLI-only by design; see README.md for why this plugin deliberately does not expose a web-based console."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"
