@@ -1,0 +1,6 @@
+tinker.manager:
+  class: Simp\Pindrop\Modules\dev_console\src\Plugin\DevConsoleManager
+  arguments:
+    - "@plugin.manager"
+  tags:
+    - "tinker"

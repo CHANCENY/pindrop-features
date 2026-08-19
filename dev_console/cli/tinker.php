@@ -1,6 +1,7 @@
 <?php
 
 use Psy\Output\Theme;
+use Simp\Pindrop\Modules\dev_console\src\Plugin\DevConsoleManager;
 
 return [
     'tinker' => 'devConsoleTinkerCommand',
@@ -63,14 +64,23 @@ function devConsoleTinkerCommand(CLIPrinter $printer, ...$values): void
     }
 
     $config = new \Psy\Configuration();
-    $config->setPrompt('pindrop [' . $env . ']> ');
-    $config->setTheme(Theme::CLASSIC_THEME);
+    
+    $theme = new Theme(Theme::CLASSIC_THEME);
+    $theme->setPrompt('pindrop [' . $env . ']> ');
+    $config->setTheme($theme);
 
+    /**
+     * @var DevConsoleManager
+     */
+    $tinkerManager = getAppContainer()->get('tinker.manager');
+    $includeScripts = $tinkerManager->getTinkerIncludeScripts();
+        
     $shell = new \Psy\Shell($config);
     $shell->setScopeVariables(array_filter([
         'container' => $container,
         'db'        => $database,
     ]));
+    $shell->setIncludes($includeScripts);
 
     $printer->printLine('Pindrop tinker — environment: ' . $env, 'green');
     $printer->printLine('Available: $container (service container), $db (DatabaseService, if resolved).', 'green');
