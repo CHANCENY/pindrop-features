@@ -1,0 +1,6 @@
+name: "FFMPEG Worker"
+description: "FFMPEG Worker is plugin with ffmpeg static binaries which can be built upon and provide few built in features."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"

@@ -1,0 +1,4 @@
+ffmpeg_worker.com:
+  name: "FFMPEG Worker com"
+  script: "modules/ffmpeg_worker/cli/ffmpeg.php"
+  status: true
