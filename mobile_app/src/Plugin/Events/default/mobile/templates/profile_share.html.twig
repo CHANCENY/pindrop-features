@@ -1,0 +1,223 @@
+{# ============================================================
+ # pages/profile_share.html.twig
+ # Route: /profile/share
+ #
+ # PHP variables expected:
+ #   user          object  — current user (display_name, username, avatar, bio)
+ #   profile_url   string  — full public URL of the profile
+ #   qr_url        string  — URL to the QR code image (e.g. /profile/qr)
+ # ============================================================ #}
+{% extends 'templates/mobile.base.html.twig' %}
+
+{% block title %}Share Profile — {{ app_name }}{% endblock %}
+
+{% block header_title %}Share Profile{% endblock %}
+
+{% block content %}
+
+  <div style="padding:24px 16px 40px">
+
+    {# ── Profile preview card ── #}
+    <div class="mobile-card" style="text-align:center;padding:28px 20px;margin-bottom:24px;border:none;
+         background:linear-gradient(145deg,color-mix(in srgb,var(--pd-primary) 8%,transparent),var(--pd-surface))">
+
+      {% if user.avatar_url is defined and user.avatar_url %}
+        <img src="{{ user.avatar_url }}" alt=""
+             class="mobile-avatar mobile-avatar-xl"
+             style="margin:0 auto 12px">
+      {% else %}
+        <div class="mobile-avatar mobile-avatar-xl"
+             style="margin:0 auto 12px;font-size:32px">
+          {{ (user.display_name ?? user.username)|first|upper }}
+        </div>
+      {% endif %}
+
+      <h2 style="margin:0 0 4px;font-size:20px">{{ user.display_name ?? user.username }}</h2>
+      <p style="margin:0 0 10px;color:var(--pd-text-secondary);font-size:14px">
+        @{{ user.username }}
+      </p>
+      {% if user.bio is defined and user.bio %}
+        <p style="margin:0;font-size:13px;color:var(--pd-text-secondary);line-height:1.5">
+          {{ user.bio }}
+        </p>
+      {% endif %}
+
+      {# Profile URL pill #}
+      <div style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+                  background:var(--pd-bg-2);border-radius:var(--pd-radius-full);
+                  padding:8px 14px;max-width:100%;overflow:hidden">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="var(--pd-text-secondary)" stroke-width="2" stroke-linecap="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        <span style="font-size:13px;color:var(--pd-text-secondary);
+                     white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          {{ profile_url|default(app_url ~ '/u/' ~ user.username) }}
+        </span>
+      </div>
+
+    </div>
+
+    {# ── QR Code ── #}
+    {% if qr_url is defined and qr_url %}
+      <div style="text-align:center;margin-bottom:24px">
+        <p class="mobile-list-label" style="text-align:center;margin-bottom:12px">Scan to visit profile</p>
+        <div style="display:inline-block;padding:16px;background:#fff;border-radius:var(--pd-radius);
+                    box-shadow:0 2px 16px rgba(0,0,0,0.08)">
+          <img src="{{ qr_url }}" alt="QR Code" style="width:180px;height:180px;display:block">
+        </div>
+      </div>
+    {% endif %}
+
+    {# ── Native Share ── #}
+    <button
+      id="native-share-btn"
+      class="mobile-btn mobile-btn-primary mobile-btn-block"
+      style="margin-bottom:12px;display:none"
+      onclick="nativeShare()"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+      Share Profile
+    </button>
+
+    {# ── Copy Link ── #}
+    <button
+      class="mobile-btn mobile-btn-outline mobile-btn-block"
+      style="margin-bottom:24px"
+      onclick="copyLink()"
+      id="copy-btn"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      Copy Link
+    </button>
+
+    {# ── Share to platforms ── #}
+    <p class="mobile-list-label" style="margin-bottom:12px">Share to</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px">
+
+      {% set profile_url_encoded = (profile_url ?? (app_url ~ '/u/' ~ user.username))|url_encode %}
+      {% set share_text_encoded  = ('Check out ' ~ (user.display_name ?? user.username) ~ ' on ' ~ app_name)|url_encode %}
+
+      {% set platforms = [
+        {
+          label: 'WhatsApp',
+          icon:  'whatsapp',
+          color: '#25d366',
+          url:   'https://wa.me/?text=' ~ share_text_encoded ~ '%20' ~ profile_url_encoded
+        },
+        {
+          label: 'Twitter',
+          icon:  'twitter',
+          color: '#1da1f2',
+          url:   'https://twitter.com/intent/tweet?text=' ~ share_text_encoded ~ '&url=' ~ profile_url_encoded
+        },
+        {
+          label: 'Facebook',
+          icon:  'facebook',
+          color: '#1877f2',
+          url:   'https://www.facebook.com/sharer/sharer.php?u=' ~ profile_url_encoded
+        },
+        {
+          label: 'Telegram',
+          icon:  'telegram',
+          color: '#229ed9',
+          url:   'https://t.me/share/url?url=' ~ profile_url_encoded ~ '&text=' ~ share_text_encoded
+        },
+      ] %}
+
+      {% for p in platforms %}
+        <a
+          href="{{ p.url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none"
+        >
+          <div style="width:52px;height:52px;border-radius:14px;background:{{ p.color }};
+                      display:flex;align-items:center;justify-content:center">
+            <i class="fab fa-{{ p.icon }}" style="color:#fff;font-size:22px"></i>
+          </div>
+          <span style="font-size:11px;font-weight:500;color:var(--pd-text-secondary)">{{ p.label }}</span>
+        </a>
+      {% endfor %}
+
+    </div>
+
+    {# ── Download QR ── #}
+    {% if qr_url is defined and qr_url %}
+      <a
+        href="{{ qr_url }}"
+        download="{{ user.username }}-qr.png"
+        class="mobile-btn mobile-btn-secondary mobile-btn-block"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download QR Code
+      </a>
+    {% endif %}
+
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  var PROFILE_URL = {{ (profile_url ?? (app_url ~ '/u/' ~ user.username))|json_encode|raw }};
+  var DISPLAY_NAME = {{ (user.display_name ?? user.username)|json_encode|raw }};
+  var APP_NAME = {{ app_name|json_encode|raw }};
+
+  // Show native share button only if Web Share API is supported
+  if (navigator.share) {
+    document.getElementById('native-share-btn').style.display = 'flex';
+  }
+
+  function nativeShare() {
+    navigator.share({
+      title: DISPLAY_NAME + ' on ' + APP_NAME,
+      text:  'Check out ' + DISPLAY_NAME + ' on ' + APP_NAME,
+      url:   PROFILE_URL,
+    }).catch(function () {});
+  }
+
+  function copyLink() {
+    var btn = document.getElementById('copy-btn');
+    navigator.clipboard.writeText(PROFILE_URL).then(function () {
+      btn.textContent = '✓ Copied!';
+      btn.style.background = 'var(--pd-primary)';
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'var(--pd-primary)';
+      setTimeout(function () {
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Link';
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 2000);
+    }).catch(function () {
+      // Fallback for older browsers
+      var ta = document.createElement('textarea');
+      ta.value = PROFILE_URL;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = '✓ Copied!';
+      setTimeout(function () { btn.textContent = 'Copy Link'; }, 2000);
+    });
+  }
+</script>
+{% endblock %}

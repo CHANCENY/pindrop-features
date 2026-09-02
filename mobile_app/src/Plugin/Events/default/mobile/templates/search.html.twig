@@ -1,0 +1,152 @@
+{# ============================================================
+ # pages/search.html.twig
+ # Bottom nav: Search  /search
+ # ============================================================ #}
+{% extends "templates/mobile.base.html.twig" %}
+
+{% block title %}Search — {{ app_name }}{% endblock %}
+
+{% block header_title %}Search{% endblock %}
+
+{% block head %}
+  <style>
+    .search-bar-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--pd-bg);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--pd-divider);
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  {# ── Sticky Search Input ── #}
+  <div class="search-bar-wrap">
+    <form method="GET" action="{{ url('mobile_app.search') }}" id="search-form">
+      <div class="mobile-search-wrap">
+        <input
+          type="search"
+          name="q"
+          class="mobile-input"
+          placeholder="Search..."
+          value="{{ query|default('') }}"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          id="search-input"
+          autofocus
+        >
+      </div>
+    </form>
+  </div>
+
+  {# ── Results ── #}
+  {% if query is defined and query is not empty %}
+
+    {% if results is defined and results is not empty %}
+
+      <p class="mobile-list-label">
+        {{ results|length }} result{{ results|length != 1 ? 's' : '' }} for "{{ query }}"
+      </p>
+
+      <div class="mobile-list" style="margin-inline:16px">
+        {% for result in results %}
+          <a href="{{ result.url }}" class="mobile-list-item">
+            <div class="mobile-list-item-icon"
+                 style="background:color-mix(in srgb,var(--pd-primary) 10%,transparent)">
+              {% if result.icon is defined %}
+                <i class="{{ result.icon }}" style="color:var(--pd-primary)"></i>
+              {% else %}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="var(--pd-primary)" stroke-width="2" stroke-linecap="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              {% endif %}
+            </div>
+            <div class="mobile-list-item-body">
+              <div class="mobile-list-item-title">{{ result.title }}</div>
+              {% if result.excerpt is defined %}
+                <div class="mobile-list-item-subtitle">{{ result.excerpt }}</div>
+              {% endif %}
+            </div>
+            <div class="mobile-list-item-chevron"></div>
+          </a>
+        {% endfor %}
+      </div>
+
+    {% else %}
+
+      <div class="mobile-empty">
+        <div class="mobile-empty-icon">🔍</div>
+        <div class="mobile-empty-title">No results found</div>
+        <p class="mobile-empty-text">Try different keywords or check your spelling.</p>
+      </div>
+
+    {% endif %}
+
+  {% else %}
+
+    {# ── Default state: recent searches + browse categories ── #}
+
+    {% if recent_searches is defined and recent_searches is not empty %}
+      <p class="mobile-list-label">Recent</p>
+      <div class="mobile-list" style="margin-inline:16px">
+        {% for term in recent_searches %}
+          <a href="{{ url('mobile_app.search') }}?q={{ term|url_encode }}"
+             class="mobile-list-item">
+            <div class="mobile-list-item-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-.07-10.07"/>
+              </svg>
+            </div>
+            <div class="mobile-list-item-body">
+              <div class="mobile-list-item-title">{{ term }}</div>
+            </div>
+            <div class="mobile-list-item-chevron"></div>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if categories is defined and categories is not empty %}
+      <p class="mobile-list-label">Browse</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;
+                  padding-inline:16px;margin-bottom:24px">
+        {% for cat in categories %}
+          <a href="{{ cat.url }}"
+             style="display:flex;align-items:center;gap:10px;padding:14px;
+                    background:var(--pd-surface);border:1px solid var(--pd-border);
+                    border-radius:var(--pd-radius);text-decoration:none;color:var(--pd-text)">
+            <span style="font-size:24px">{{ cat.icon|default('📁') }}</span>
+            <span style="font-size:14px;font-weight:500">{{ cat.label }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="mobile-empty">
+        <div class="mobile-empty-icon">🔍</div>
+        <div class="mobile-empty-title">Search anything</div>
+        <p class="mobile-empty-text">Type above to find what you're looking for.</p>
+      </div>
+    {% endif %}
+
+  {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('search-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = document.getElementById('search-input').value.trim();
+    if (!q) return;
+    PindropEngine.navigate('{{ url('mobile_app.search') }}?q=' + encodeURIComponent(q));
+  });
+</script>
+{% endblock %}

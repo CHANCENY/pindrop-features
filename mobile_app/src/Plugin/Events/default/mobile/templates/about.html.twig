@@ -1,0 +1,160 @@
+{# ============================================================
+ # templates/about.html.twig
+ # Route: mobile_app.about  /mobile/about
+ # ============================================================ #}
+{% extends "templates/mobile.base.html.twig" %}
+
+{% block title %}About — {{ app_name }}{% endblock %}
+{% block header_title %}About{% endblock %}
+
+{% block content %}
+
+  {# ── App identity ── #}
+  <div style="display:flex;flex-direction:column;align-items:center;
+              padding:36px 16px 28px;border-bottom:1px solid var(--pd-divider)">
+
+    {%- set _ms = mobile_settings()|json_decode -%}
+
+    {% if _ms.pwa.icon is defined and _ms.pwa.icon %}
+      <img src="{{ _ms.pwa.icon }}" alt="{{ app_name }}"
+           style="width:80px;height:80px;border-radius:20px;
+                  box-shadow:0 4px 20px rgba(0,0,0,0.12);margin-bottom:16px">
+    {% else %}
+      <div style="width:80px;height:80px;border-radius:20px;
+                  background:var(--pd-primary);display:flex;
+                  align-items:center;justify-content:center;margin-bottom:16px;
+                  box-shadow:0 4px 20px color-mix(in srgb,var(--pd-primary) 40%,transparent)">
+        <span style="color:#fff;font-size:36px;font-weight:700">
+          {{ app_name|first }}
+        </span>
+      </div>
+    {% endif %}
+
+    <h1 style="margin:0 0 4px;font-size:22px;font-weight:700">{{ app_name }}</h1>
+    <p style="margin:0;font-size:14px;color:var(--pd-text-secondary)">
+      Version {{ app_version|default('1.0.0') }}
+    </p>
+
+    {% if _ms.pwa.description is defined and _ms.pwa.description %}
+      <p style="margin:12px 0 0;text-align:center;font-size:14px;
+                color:var(--pd-text-secondary);max-width:280px;line-height:1.5">
+        {{ _ms.pwa.description }}
+      </p>
+    {% endif %}
+
+  </div>
+
+  {# ── App details ── #}
+  <p class="mobile-list-label">App Info</p>
+  <div class="mobile-list" style="margin-inline:16px">
+
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon">📦</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Version</div>
+        <div class="mobile-list-item-subtitle">{{ app_version|default('1.0.0') }}</div>
+      </div>
+    </div>
+
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon">⚙️</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Engine</div>
+        <div class="mobile-list-item-subtitle">Pindrop Mobile Engine v1.0.0</div>
+      </div>
+    </div>
+
+    {% if _ms.pwa.display is defined %}
+      <div class="mobile-list-item" style="cursor:default">
+        <div class="mobile-list-item-icon">📱</div>
+        <div class="mobile-list-item-body">
+          <div class="mobile-list-item-title">Display Mode</div>
+          <div class="mobile-list-item-subtitle" style="text-transform:capitalize">
+            {{ _ms.pwa.display }}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon">🌐</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Language</div>
+        <div class="mobile-list-item-subtitle">{{ language() }}</div>
+      </div>
+    </div>
+
+  </div>
+
+  {# ── Legal ── #}
+  <p class="mobile-list-label">Legal</p>
+  <div class="mobile-list" style="margin-inline:16px">
+
+    <a href="/terms" class="mobile-list-item">
+      <div class="mobile-list-item-icon">📄</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Terms of Service</div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+    <a href="/privacy" class="mobile-list-item">
+      <div class="mobile-list-item-icon">🛡️</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Privacy Policy</div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+    <a href="/licenses" class="mobile-list-item">
+      <div class="mobile-list-item-icon">⚖️</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Open Source Licenses</div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+  </div>
+
+  {# ── Support ── #}
+  <p class="mobile-list-label">Support</p>
+  <div class="mobile-list" style="margin-inline:16px;margin-bottom:40px">
+
+    {% if _ms.pwa.website is defined and _ms.pwa.website %}
+      <a href="{{ _ms.pwa.website }}" target="_blank" rel="noopener"
+         class="mobile-list-item">
+        <div class="mobile-list-item-icon">🌍</div>
+        <div class="mobile-list-item-body">
+          <div class="mobile-list-item-title">Website</div>
+          <div class="mobile-list-item-subtitle">{{ _ms.pwa.website }}</div>
+        </div>
+        <div class="mobile-list-item-chevron"></div>
+      </a>
+    {% endif %}
+
+    <a href="/contact" class="mobile-list-item">
+      <div class="mobile-list-item-icon">✉️</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Contact Us</div>
+        <div class="mobile-list-item-subtitle">Get help or send feedback</div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+    <a href="{{ url('mobile_app.settings') }}" class="mobile-list-item">
+      <div class="mobile-list-item-icon">⚙️</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Settings</div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+  </div>
+
+  {# ── Footer credit ── #}
+  <p style="text-align:center;font-size:12px;color:var(--pd-text-disabled);
+            padding:0 16px 32px">
+    Built with Pindrop · &copy; {{ "now"|date("Y") }} {{ app_name }}
+  </p>
+
+{% endblock %}

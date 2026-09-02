@@ -1,0 +1,65 @@
+{# ============================================================
+ # templates/verify_email.html.twig
+ # Route: mobile_app.user.verify_email  /mobile/settings/verify-email
+ # ============================================================ #}
+{% extends "templates/mobile.base.html.twig" %}
+
+{% block title %}Verify Email — {{ app_name }}{% endblock %}
+{% block header_title %}Verify Email{% endblock %}
+
+{% block content %}
+<div style="padding:32px 16px 48px;max-width:400px;margin:0 auto;text-align:center">
+
+  {% set statusMessages = get_messages() %}
+  {% if statusMessages is not empty %}
+    <div style="margin-bottom:16px;text-align:left">
+      {% for message in statusMessages %}
+        <div class="mobile-alert mobile-alert--{{ message.type }}">
+          {{ message.text }}<button onclick="this.parentElement.remove()">✕</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div style="width:80px;height:80px;border-radius:50%;
+              background:color-mix(in srgb,var(--pd-primary) 10%,transparent);
+              display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none"
+         stroke="var(--pd-primary)" stroke-width="2" stroke-linecap="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+      <polyline points="22,6 12,13 2,6"/>
+    </svg>
+  </div>
+
+  <h2 style="margin:0 0 8px;font-size:22px;font-weight:700">Check your inbox</h2>
+  <p style="margin:0 0 24px;color:var(--pd-text-secondary);font-size:15px;line-height:1.5">
+    We sent a verification link to<br>
+    <strong style="color:var(--pd-text)">{{ user.email ?? 'your email' }}</strong>
+  </p>
+
+  {% if token is defined and token %}
+    {# Direct token verification — clicked from email link #}
+    <div class="mobile-alert mobile-alert--success" style="text-align:left;margin-bottom:20px">
+      ✓ Your email has been verified successfully!
+    </div>
+    <a href="{{ url('mobile_app.profile') }}" class="mobile-btn mobile-btn-primary mobile-btn-block">
+      Go to Profile
+    </a>
+  {% else %}
+    {# Prompt to resend #}
+    <form method="POST" action="{{ url('mobile_app.user.verify_email') }}" style="margin-bottom:16px">
+      <input type="hidden" name="_csrf_token" value="{{ mobile_app.__csrf_token }}">
+      <input type="hidden" name="action" value="resend">
+      <button type="submit" class="mobile-btn mobile-btn-primary mobile-btn-block">
+        Resend Verification Email
+      </button>
+    </form>
+    <a href="{{ url('mobile_app.settings') }}"
+       class="mobile-btn mobile-btn-ghost mobile-btn-block"
+       style="color:var(--pd-text-secondary)">
+      Back to Settings
+    </a>
+  {% endif %}
+
+</div>
+{% endblock %}

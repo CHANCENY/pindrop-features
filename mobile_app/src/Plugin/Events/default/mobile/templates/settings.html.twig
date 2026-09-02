@@ -1,0 +1,556 @@
+{# ============================================================
+ # pages/settings.html.twig
+ # Bottom nav: Settings  /settings
+ #
+ # Real user array fields used:
+ #   display_name, full_name, first_name, last_name, username
+ #   avatar_url, email, email_verified_at
+ #   phone, phone_verified_at
+ #   push_notifications, email_notifications, sms_notifications
+ #   two_factor_enabled, profile_visibility
+ #   timezone, language, status, role
+ #   login_attempts, locked_until, last_login_at
+ #   created_at, is_verified
+ # ============================================================ #}
+{% extends "templates/mobile.base.html.twig" %}
+
+{% block title %}Settings — {{ app_name }}{% endblock %}
+
+{% block header_title %}Settings{% endblock %}
+
+{% block content %}
+
+  {% if user is defined and user %}
+
+    {# ── Resolve best display name from real user array ── #}
+    {%- set _first_last = (user.first_name ~ ' ' ~ user.last_name)|trim -%}
+    {%- set display_name =
+          user.display_name is not empty ? user.display_name :
+          (user.full_name is not empty    ? user.full_name    :
+          (_first_last is not empty       ? _first_last       :
+           user.username))
+    -%}
+    {%- set avatar_initial = display_name|first|upper -%}
+
+    {# ── User card ── #}
+    <a href="{{ url('mobile_app.profile') }}"
+       style="margin:16px 16px 0;display:flex;align-items:center;gap:14px;
+              padding:14px 16px;text-decoration:none;color:var(--pd-text);
+              background:var(--pd-surface);border:1px solid var(--pd-border);
+              border-radius:var(--pd-radius)">
+
+      {% if user.avatar_url %}
+        <img src="{{ user.avatar_url }}" alt="" class="mobile-avatar mobile-avatar-md">
+      {% else %}
+        <div class="mobile-avatar mobile-avatar-md">{{ avatar_initial }}</div>
+      {% endif %}
+
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:16px;display:flex;align-items:center;gap:6px">
+          {{ display_name }}
+          {% if user.is_verified %}
+            <svg width="14" height="14" viewBox="0 0 24 24" style="flex-shrink:0">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    fill="none" stroke="var(--pd-primary)" stroke-width="2"
+                    stroke-linecap="round"/>
+            </svg>
+          {% endif %}
+        </div>
+        <div style="font-size:13px;color:var(--pd-text-secondary)">
+          @{{ user.username }}
+          {% if user.role and user.role != 'user' %}
+            · <span style="text-transform:capitalize;color:var(--pd-primary)">
+                {{ user.role }}
+              </span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+    {# ── Account status alert ── #}
+    {% if user.status and user.status != 'active' %}
+      <div class="mobile-alert mobile-alert--warning" style="margin:12px 16px 0">
+        Account is <strong>{{ user.status }}</strong>.
+        {% if user.locked_until %}
+          Locked until {{ user.locked_until|date('d M Y, H:i') }}.
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {# ── Failed login attempts alert ── #}
+    {% if user.login_attempts > 0 %}
+      <div class="mobile-alert mobile-alert--error" style="margin:12px 16px 0">
+        <span>
+          <strong>{{ user.login_attempts }}</strong>
+          failed login attempt{{ user.login_attempts != 1 ? 's' : '' }} detected.
+          <a href="{{ url('mobile_app.settings.sessions') }}"
+             style="color:inherit;font-weight:600;text-decoration:underline">
+            Review sessions
+          </a>
+        </span>
+      </div>
+    {% endif %}
+
+  {% endif %}
+
+  {# ══════════════════════════════════════════════
+   # APPEARANCE
+   # ══════════════════════════════════════════════ #}
+  <p class="mobile-list-label">Appearance</p>
+  <div class="mobile-list" style="margin-inline:16px">
+
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon"
+           style="background:color-mix(in srgb,#9c27b0 12%,transparent)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#9c27b0" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Dark Mode</div>
+        <div class="mobile-list-item-subtitle" id="theme-label">
+          {{ current_theme_setting|default('auto')|capitalize }}
+        </div>
+      </div>
+      <div style="display:flex;gap:4px">
+        {% for opt in ['Auto','Light','Dark'] %}
+          <button
+            onclick="setTheme('{{ opt|lower }}')"
+            id="theme-{{ opt|lower }}"
+            class="theme-btn"
+            style="height:28px;padding:0 10px;border-radius:var(--pd-radius-full);
+                   border:1.5px solid var(--pd-border);background:none;
+                   font-size:12px;font-weight:600;cursor:pointer;
+                   color:var(--pd-text-secondary);transition:all 0.2s"
+          >{{ opt }}</button>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  {# ══════════════════════════════════════════════
+   # NOTIFICATIONS
+   # Reads directly from user array:
+   #   push_notifications, email_notifications, sms_notifications (int 1|0)
+   # ══════════════════════════════════════════════ #}
+  <p class="mobile-list-label">Notifications</p>
+  <div class="mobile-list" style="margin-inline:16px">
+
+    {# Push #}
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon"
+           style="background:color-mix(in srgb,#e91e63 12%,transparent)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#e91e63" stroke-width="2" stroke-linecap="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Push Notifications</div>
+        <div class="mobile-list-item-subtitle">Alerts sent to your device</div>
+      </div>
+      <label class="mobile-toggle">
+        <input
+          type="checkbox"
+          {% if user is defined and user and user.push_notifications %}checked{% endif %}
+          onchange="saveSetting('push_notifications', this.checked ? 1 : 0)"
+        >
+        <span class="mobile-toggle-track"></span>
+      </label>
+    </div>
+
+    {# Email #}
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon"
+           style="background:color-mix(in srgb,#2196f3 12%,transparent)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#2196f3" stroke-width="2" stroke-linecap="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4
+                   c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Email Notifications</div>
+        <div class="mobile-list-item-subtitle">
+          {% if user is defined and user %}
+            {{ user.email }}
+            {% if not user.email_verified_at %}
+              <span style="color:var(--pd-warning,#e65100);font-size:11px"> · unverified</span>
+            {% endif %}
+          {% else %}
+            Updates sent to your email
+          {% endif %}
+        </div>
+      </div>
+      <label class="mobile-toggle">
+        <input
+          type="checkbox"
+          {% if user is defined and user and user.email_notifications %}checked{% endif %}
+          onchange="saveSetting('email_notifications', this.checked ? 1 : 0)"
+          {% if user is defined and user and not user.email_verified_at %}
+            disabled title="Verify your email first"
+          {% endif %}
+        >
+        <span class="mobile-toggle-track"></span>
+      </label>
+    </div>
+
+    {# SMS #}
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon"
+           style="background:color-mix(in srgb,#4caf50 12%,transparent)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#4caf50" stroke-width="2" stroke-linecap="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">SMS Notifications</div>
+        <div class="mobile-list-item-subtitle">
+          {% if user is defined and user and user.phone %}
+            {{ user.phone }}
+            {% if not user.phone_verified_at %}
+              <span style="color:var(--pd-warning,#e65100);font-size:11px"> · unverified</span>
+            {% endif %}
+          {% else %}
+            No phone number added
+          {% endif %}
+        </div>
+      </div>
+      <label class="mobile-toggle">
+        <input
+          type="checkbox"
+          {% if user is defined and user and user.sms_notifications %}checked{% endif %}
+          onchange="saveSetting('sms_notifications', this.checked ? 1 : 0)"
+          {% if user is defined and user and not user.phone %}
+            disabled title="Add a phone number first"
+          {% endif %}
+        >
+        <span class="mobile-toggle-track"></span>
+      </label>
+    </div>
+
+  </div>
+
+  {# ══════════════════════════════════════════════
+   # PRIVACY & SECURITY
+   # ══════════════════════════════════════════════ #}
+  <p class="mobile-list-label">Privacy & Security</p>
+  <div class="mobile-list" style="margin-inline:16px">
+
+    {# Change Password #}
+    <a href="{{ url('mobile_app.settings.password') }}" class="mobile-list-item">
+      <div class="mobile-list-item-icon"
+           style="background:color-mix(in srgb,#607d8b 12%,transparent)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#607d8b" stroke-width="2" stroke-linecap="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Change Password</div>
+        <div class="mobile-list-item-subtitle">Update your password</div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+    {# Profile Visibility — reads user.profile_visibility #}
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon"
+           style="background:color-mix(in srgb,#ff9800 12%,transparent)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#ff9800" stroke-width="2" stroke-linecap="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Profile Visibility</div>
+        <div class="mobile-list-item-subtitle" style="text-transform:capitalize">
+          {{ (user is defined and user) ? (user.profile_visibility ?? 'public') : 'public' }}
+        </div>
+      </div>
+      <select
+        class="mobile-select"
+        style="width:auto;padding:6px 32px 6px 10px;height:32px;font-size:13px"
+        onchange="saveSetting('profile_visibility', this.value)"
+      >
+        {% for vis in ['public','friends','private'] %}
+          <option
+            value="{{ vis }}"
+            {% if (user is defined and user) and (user.profile_visibility ?? 'public') == vis %}
+              selected
+            {% endif %}
+            style="text-transform:capitalize"
+          >{{ vis|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {# Active Sessions #}
+    <a href="{{ url('mobile_app.settings.sessions') }}" class="mobile-list-item">
+      <div class="mobile-list-item-icon"
+           style="background:color-mix(in srgb,#3f51b5 12%,transparent)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#3f51b5" stroke-width="2" stroke-linecap="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+      </div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Active Sessions</div>
+        <div class="mobile-list-item-subtitle">
+          {% if user is defined and user and user.last_login_at %}
+            Last login {{ user.last_login_at|date('d M Y, H:i') }}
+          {% else %}
+            Manage logged-in devices
+          {% endif %}
+        </div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+    {# Two-Factor Auth — reads user.two_factor_enabled #}
+    <a href="{{ url('mobile_app.settings.2fa') }}" class="mobile-list-item">
+      <div class="mobile-list-item-icon"
+           style="background:color-mix(in srgb,#009688 12%,transparent)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#009688" stroke-width="2" stroke-linecap="round">
+          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778
+                   5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3
+                   L22 7l-3-3m-3.5 3.5L19 4"/>
+        </svg>
+      </div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Two-Factor Auth</div>
+        <div class="mobile-list-item-subtitle">
+          {% if user is defined and user and user.two_factor_enabled %}
+            <span style="color:var(--pd-success,#43a047);font-weight:600">Enabled</span>
+          {% else %}
+            Not enabled — add extra security
+          {% endif %}
+        </div>
+      </div>
+      {% if user is defined and user and user.two_factor_enabled %}
+        <span class="mobile-tag mobile-tag-primary"
+              style="font-size:11px;flex-shrink:0">ON</span>
+      {% else %}
+        <div class="mobile-list-item-chevron"></div>
+      {% endif %}
+    </a>
+
+    {# Email Verification — only if not yet verified #}
+    {% if user is defined and user and not user.email_verified_at %}
+      <a href="{{ url('mobile_app.user.verify_email') }}" class="mobile-list-item">
+        <div class="mobile-list-item-icon"
+             style="background:color-mix(in srgb,#ff9800 12%,transparent)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="#ff9800" stroke-width="2" stroke-linecap="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4
+                     c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div class="mobile-list-item-body">
+          <div class="mobile-list-item-title"
+               style="color:var(--pd-warning,#e65100)">Verify Email</div>
+          <div class="mobile-list-item-subtitle">{{ user.email }}</div>
+        </div>
+        <div class="mobile-list-item-chevron"></div>
+      </a>
+    {% endif %}
+
+  </div>
+
+  {# ══════════════════════════════════════════════
+   # GENERAL
+   # ══════════════════════════════════════════════ #}
+  <p class="mobile-list-label">General</p>
+  <div class="mobile-list" style="margin-inline:16px">
+
+    {# Language — reads user.language, falls back to language() #}
+    {% if supportLanguages() is not empty %}
+      <div class="mobile-list-item" style="cursor:default">
+        <div class="mobile-list-item-icon">🌐</div>
+        <div class="mobile-list-item-body">
+          <div class="mobile-list-item-title">Language</div>
+          <div class="mobile-list-item-subtitle">
+            {{ (user is defined and user and user.language) ? user.language : language() }}
+          </div>
+        </div>
+        <select
+          name="lang"
+          class="mobile-select"
+          style="width:auto;padding:6px 32px 6px 10px;height:32px;font-size:13px"
+          onchange="saveSetting('language', this.value);
+                    PindropEngine.navigate('{{ url('mobile_app.settings.language') }}?lang=' + this.value)"
+        >
+          {% for index, lang in supportLanguages() %}
+            <option
+              value="{{ index }}"
+              {% set _current_lang = (user is defined and user and user.language) ? user.language : language() %}
+              {% if _current_lang == index %}selected{% endif %}
+            >{{ lang }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+
+    {# Timezone — reads user.timezone #}
+    <div class="mobile-list-item" style="cursor:default">
+      <div class="mobile-list-item-icon">🕐</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Timezone</div>
+        <div class="mobile-list-item-subtitle">
+          {{ (user is defined and user and user.timezone) ? user.timezone : 'Not set' }}
+        </div>
+      </div>
+      <a href="{{ url('mobile_app.settings.timezone') }}"
+         style="font-size:12px;font-weight:600;color:var(--pd-primary);
+                flex-shrink:0;white-space:nowrap">
+        Change
+      </a>
+    </div>
+
+    {# Storage & Cache #}
+    <a href="{{ url('mobile_app.settings.storage') }}" class="mobile-list-item">
+      <div class="mobile-list-item-icon">💾</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">Storage & Cache</div>
+        <div class="mobile-list-item-subtitle">
+          {% if cache_size is defined %}{{ cache_size }} used{% else %}Manage app data{% endif %}
+        </div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+    {# About #}
+    <a href="{{ url('mobile_app.about') }}" class="mobile-list-item">
+      <div class="mobile-list-item-icon">ℹ️</div>
+      <div class="mobile-list-item-body">
+        <div class="mobile-list-item-title">About {{ app_name }}</div>
+        <div class="mobile-list-item-subtitle">
+          Version {{ app_version|default('1.0.0') }}
+          {% if user is defined and user and user.created_at %}
+            · Member since {{ user.created_at|date('M Y') }}
+          {% endif %}
+        </div>
+      </div>
+      <div class="mobile-list-item-chevron"></div>
+    </a>
+
+  </div>
+
+  {# ══════════════════════════════════════════════
+   # ACCOUNT ACTIONS
+   # ══════════════════════════════════════════════ #}
+  <p class="mobile-list-label">Account</p>
+  <div class="mobile-list" style="margin-inline:16px;margin-bottom:40px">
+
+    {% if user is defined and user %}
+
+      <a href="{{ url('mobile_app.user.logout') }}" class="mobile-list-item">
+        <div class="mobile-list-item-icon"
+             style="background:color-mix(in srgb,var(--pd-error) 10%,transparent)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="var(--pd-error)" stroke-width="2" stroke-linecap="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </div>
+        <div class="mobile-list-item-body">
+          <div class="mobile-list-item-title" style="color:var(--pd-error)">Log Out</div>
+          <div class="mobile-list-item-subtitle">Signed in as @{{ user.username }}</div>
+        </div>
+      </a>
+
+      <a href="{{ url('mobile_app.settings.delete_account') }}" class="mobile-list-item">
+        <div class="mobile-list-item-icon"
+             style="background:color-mix(in srgb,var(--pd-error) 10%,transparent)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="var(--pd-error)" stroke-width="2" stroke-linecap="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+        </div>
+        <div class="mobile-list-item-body">
+          <div class="mobile-list-item-title" style="color:var(--pd-error)">Delete Account</div>
+          <div class="mobile-list-item-subtitle">Permanently remove your account</div>
+        </div>
+        <div class="mobile-list-item-chevron"></div>
+      </a>
+
+    {% else %}
+
+      <a href="{{ url('mobile_app.user.login') }}" class="mobile-list-item">
+        <div class="mobile-list-item-icon">👤</div>
+        <div class="mobile-list-item-body">
+          <div class="mobile-list-item-title">Log In</div>
+          <div class="mobile-list-item-subtitle">Sign in to your account</div>
+        </div>
+        <div class="mobile-list-item-chevron"></div>
+      </a>
+
+    {% endif %}
+
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // ── Theme switcher ──────────────────────────────────────────
+  function setTheme(mode) {
+    var resolved = mode === 'auto'
+      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : mode;
+
+    document.documentElement.dataset.pdTheme = resolved;
+
+    document.querySelectorAll('.theme-btn').forEach(function (btn) {
+      var active = btn.id === 'theme-' + mode;
+      btn.style.background  = active ? 'var(--pd-primary)' : 'none';
+      btn.style.color       = active ? '#fff' : 'var(--pd-text-secondary)';
+      btn.style.borderColor = active ? 'var(--pd-primary)' : 'var(--pd-border)';
+    });
+
+    var lbl = document.getElementById('theme-label');
+    if (lbl) lbl.textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
+
+    saveSetting('theme', mode);
+  }
+
+  // ── Persist any setting to server ──────────────────────────
+  function saveSetting(key, value) {
+    fetch('{{ url('mobile_app.settings.save') }}', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Pindrop-Engine': '1'
+      },
+      body: JSON.stringify({ key: key, value: value }),
+    }).catch(function () {});
+  }
+
+  // ── Boot: activate stored theme button on load ─────────────
+  (function () {
+    var stored = '{{ current_theme_setting|default("auto") }}';
+    setTheme(stored);
+  })();
+</script>
+{% endblock %}

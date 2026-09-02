@@ -1,0 +1,2 @@
+admin.auth.middleware:
+  class: Simp\Pindrop\Modules\mobile_app\src\Plugin\Middleware\MobileMiddleware
