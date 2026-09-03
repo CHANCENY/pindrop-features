@@ -59,6 +59,10 @@ class AlbumController extends ControllerBase
         $tracks = $this->tracks->forAlbum((int) $album['id']);
         $playPayloads = [];
         foreach ($tracks as &$track) {
+            if (empty($track['cover_url'])) {
+                $album = $this->albums->find((int) $track['album_id']);
+                $track['cover_url'] = $album['cover_url'] ?? null;
+            }
             $track['_cover'] = $this->mediaUrl->url($track['cover_url'] ?? null) ?? $this->mediaUrl->url($album['cover_url'] ?? null);
             $track['_play_json'] = $this->presenter->presentAsAttribute($track, $artist);
             $playPayloads[] = $this->presenter->present($track, $artist);

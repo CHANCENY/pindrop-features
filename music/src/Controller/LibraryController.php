@@ -27,7 +27,8 @@ class LibraryController extends ControllerBase
         protected ArtistService $artists,
         protected MediaUrlService $mediaUrl,
         protected TrackPresenterService $presenter,
-        protected CurrentUser $currentUser
+        protected CurrentUser $currentUser,
+        private \Simp\Pindrop\Modules\music\src\Services\AlbumService $albums
     ) {
         parent::__construct();
     }
@@ -43,6 +44,7 @@ class LibraryController extends ControllerBase
             $container->get('music.media_url'),
             $container->get('music.track_presenter'),
             $container->get('current_user'),
+            $container->get('music.album')
         );
     }
 
@@ -82,6 +84,10 @@ class LibraryController extends ControllerBase
             $artistId = (int) $track['artist_id'];
             if (!isset($artistCache[$artistId])) {
                 $artistCache[$artistId] = $this->artists->find($artistId) ?? ['name' => 'Unknown Artist', 'slug' => ''];
+            }
+            if (empty($track['cover_url'])) {
+                $album = $this->albums->find((int) $track['album_id']);
+                $track['cover_url'] = $album['cover_url'] ?? null;
             }
             $artist = $artistCache[$artistId];
             $track['_cover'] = $this->mediaUrl->url($track['cover_url'] ?? null);

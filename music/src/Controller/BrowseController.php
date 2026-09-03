@@ -117,6 +117,10 @@ class BrowseController extends ControllerBase
         foreach ($tracks as &$track) {
             $artist = $artistsById[(int) $track['artist_id']] ?? ['name' => 'Unknown Artist', 'slug' => ''];
             $track['_artist'] = $artist;
+            if (empty($track['cover_url'])) {
+                $album = $this->albums->find((int) $track['album_id']);
+                $track['cover_url'] = $album['cover_url'] ?? null;
+            }
             $track['_cover'] = $this->mediaUrl->url($track['cover_url'] ?? null);
             $track['_play_json'] = $this->presenter->presentAsAttribute($track, $artist);
         }

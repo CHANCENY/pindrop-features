@@ -19,7 +19,8 @@ class SearchController extends ControllerBase
         protected SearchService $search,
         protected ArtistService $artists,
         protected MediaUrlService $mediaUrl,
-        protected TrackPresenterService $presenter
+        protected TrackPresenterService $presenter,
+        protected \Simp\Pindrop\Modules\music\src\Services\AlbumService $albums
     ) {
         parent::__construct();
     }
@@ -31,6 +32,7 @@ class SearchController extends ControllerBase
             $container->get('music.artist'),
             $container->get('music.media_url'),
             $container->get('music.track_presenter'),
+            $container->get('music.album')
         );
     }
 
@@ -50,6 +52,10 @@ class SearchController extends ControllerBase
 
         foreach ($results['tracks'] as &$track) {
             $artist = $artistsById[(int) $track['artist_id']];
+            if (empty($track['cover_url'])) {
+                $album = $this->albums->find((int) $track['album_id']);
+                $track['cover_url'] = $album['cover_url'] ?? null;
+            }
             $track['_cover'] = $this->mediaUrl->url($track['cover_url'] ?? null);
             $track['_artist'] = $artist;
             $track['_play_json'] = $this->presenter->presentAsAttribute($track, $artist);

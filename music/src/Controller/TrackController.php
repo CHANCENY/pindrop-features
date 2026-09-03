@@ -27,7 +27,8 @@ class TrackController extends ControllerBase
         protected LikeService $likes,
         protected PlaylistService $playlists,
         protected SeoService $seo,
-        protected CurrentUser $currentUser
+        protected CurrentUser $currentUser,
+        protected \Simp\Pindrop\Modules\music\src\Services\AlbumService $albums
     ) {
         parent::__construct();
     }
@@ -43,6 +44,7 @@ class TrackController extends ControllerBase
             $container->get('music.playlist'),
             $container->get('music.seo'),
             $container->get('current_user'),
+            $container->get('music.album')
         );
     }
 
@@ -65,6 +67,11 @@ class TrackController extends ControllerBase
         $userId = $this->currentUser->getUserId();
         $isLiked = $userId ? $this->likes->isLiked((int) $userId, 'track', (int) $track['id']) : false;
 
+        if (empty($track['cover_url'])) {
+                $album = $this->albums->find((int) $track['album_id']);
+                $track['cover_url'] = $album['cover_url'] ?? null;
+        }
+        
         $track['_cover'] = $this->mediaUrl->url($track['cover_url'] ?? null) ?? $this->mediaUrl->url($artist['avatar_url'] ?? null);
         $track['_play_json'] = $this->presenter->presentAsAttribute($track, $artist, $isLiked);
         $track['_liked'] = $isLiked;
@@ -77,6 +84,10 @@ class TrackController extends ControllerBase
             $rArtist = (int) $r['artist_id'] === (int) $artist['id']
                 ? $artist
                 : ($this->artists->find((int) $r['artist_id']) ?? ['name' => 'Unknown Artist', 'slug' => '']);
+            if (empty($r['cover_url'])) {
+                $album = $this->albums->find((int) $r['album_id']);
+                $r['cover_url'] = $album['cover_url'] ?? null;
+            }
             $r['_cover'] = $this->mediaUrl->url($r['cover_url'] ?? null);
             $r['_artist'] = $rArtist;
             $r['_play_json'] = $this->presenter->presentAsAttribute($r, $rArtist, $relatedLiked[(int) $r['id']] ?? false);

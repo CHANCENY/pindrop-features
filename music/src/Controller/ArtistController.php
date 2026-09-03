@@ -58,6 +58,10 @@ class ArtistController extends ControllerBase
 
         $topTracks = $this->tracks->topForArtist((int) $artist['id'], 10);
         foreach ($topTracks as &$track) {
+            if (empty($track['cover_url'])) {
+                $album = $this->albums->find((int) $track['album_id']);
+                $track['cover_url'] = $album['cover_url'] ?? null;
+            }
             $track['_cover'] = $this->mediaUrl->url($track['cover_url'] ?? null) ?? $this->mediaUrl->url($artist['avatar_url'] ?? null);
             $track['_play_json'] = $this->presenter->presentAsAttribute($track, $artist);
         }
