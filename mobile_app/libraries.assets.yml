@@ -1,7 +1,0 @@
-mobile_app.global:
-  theme:
-    css:
-      /modules/mobile_app/assets/css/mobile.css: {}
-    js:
-      /modules/mobile_app/assets/js/idiomorph.min.js: {}
-      /modules/mobile_app/assets/js/engine.js: {defer: true}

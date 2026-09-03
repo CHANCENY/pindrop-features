@@ -1,0 +1,74 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}{{ artist.name }} — Music{% endblock %}
+{% block content %}
+
+<div style="display:flex; gap:24px; align-items:center; margin-bottom:32px; flex-wrap:wrap;">
+    {% if avatar %}
+        <img src="{{ avatar }}" alt="{{ artist.name }}" style="width:160px;height:160px;border-radius:50%;object-fit:cover;">
+    {% else %}
+        <div style="width:160px;height:160px;border-radius:50%;background:var(--mp-surface-hover);display:flex;align-items:center;justify-content:center;">
+            <i class="fa-solid fa-user" style="font-size:3rem;color:var(--mp-text-muted);"></i>
+        </div>
+    {% endif %}
+    <div>
+        <div class="mp-help">{{ artist.verified ? 'Verified Artist' : 'Artist' }}</div>
+        <h1 style="margin:4px 0; font-size:2rem;">{{ artist.name }}</h1>
+        <div class="mp-help">{{ artist.follower_count }} followers</div>
+        {% if artist.bio %}<p style="max-width:600px; margin-top:10px;">{{ artist.bio }}</p>{% endif %}
+        <div style="margin-top:14px; display:flex; gap:10px;">
+            {% if top_tracks|length > 0 %}
+                <button class="mp-btn mp-btn--primary" type="button" data-play-track="{{ top_tracks[0]._play_json|raw }}">
+                    <i class="fa-solid fa-play"></i> Play
+                </button>
+            {% endif %}
+            <form method="post" action="/music/follow/{{ artist.id }}">
+                {% if is_following %}
+                    <button type="submit" class="mp-btn"><i class="fa-solid fa-heart"></i> Following</button>
+                {% else %}
+                    <button type="submit" class="mp-btn"><i class="fa-regular fa-heart"></i> Follow</button>
+                {% endif %}
+            </form>
+            {% if is_owner %}
+                <a href="/music/upload?artist_id={{ artist.id }}" class="mp-btn"><i class="fa-solid fa-upload"></i> Upload</a>
+            {% else %}
+                <form method="post" action="/music/report" onsubmit="return confirm('Report this artist profile?');">
+                    <input type="hidden" name="reportable_type" value="artist">
+                    <input type="hidden" name="reportable_id" value="{{ artist.id }}">
+                    <input type="hidden" name="reason" value="Reported from artist page">
+                    <button type="submit" class="mp-icon-btn" title="Report"><i class="fa-solid fa-flag"></i></button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<section class="mp-section">
+    <h2>Popular</h2>
+    {% if top_tracks|length == 0 %}
+        <p class="mp-empty-state">No tracks yet.</p>
+    {% else %}
+        <div class="mp-card-list">
+            {% for track in top_tracks %}
+                {% include '@music/partials/track_row.html.twig' with { track: track, show_artist: false } %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+
+{% if albums|length > 0 %}
+<section class="mp-section">
+    <h2>Albums</h2>
+    <div class="mp-grid">
+        {% for album in albums %}
+            {% include '@music/partials/card.html.twig' with {
+                href: '/music/artist/' ~ artist.slug ~ '/album/' ~ album.slug,
+                image: album._cover,
+                title: album.title,
+                subtitle: album.type|capitalize ~ (album.release_date ? ' · ' ~ album.release_date|date('Y') : '')
+            } %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

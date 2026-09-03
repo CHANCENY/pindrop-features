@@ -1,0 +1,10 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Not Allowed — Music{% endblock %}
+{% block content %}
+<div class="mp-empty-state">
+    <i class="fa-solid fa-lock fa-3x"></i>
+    <h1>403 — Not Allowed</h1>
+    <p>You don't have permission to view or edit this.</p>
+    <a href="/music" class="mp-btn mp-btn--primary">Back to Music</a>
+</div>
+{% endblock %}

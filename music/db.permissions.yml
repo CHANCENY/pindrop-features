@@ -1,0 +1,52 @@
+# Music Platform — Database Permission Rules
+#
+# db.music.read is granted to every role including anonymous — browsing and
+# streaming are public by default. Uploading/editing is db.music.write,
+# gated additionally by can_music_upload at the route level. Moderation
+# (removing others' content, resolving reports) is db.music.moderate +
+# can_music_moderate, staff-only — same three-tier shape as the qa plugin.
+
+db.music.read:
+  description: 'Browse and stream music: artists, albums, tracks, public playlists.'
+  owned_by: music
+  tables:
+    music_artists:            [select]
+    music_albums:              [select]
+    music_tracks:               [select]
+    music_playlists:             [select]
+    music_playlist_tracks:        [select]
+    music_likes:                   [select]
+    music_follows:                  [select]
+    music_listening_history:         [select]
+    music_uploads:                    [select]
+    music_reports:                     [select]
+
+db.music.write:
+  description: 'Upload/manage your own tracks, albums, artist profile, playlists, likes, follows.'
+  owned_by: music
+  tables:
+    music_artists:            [insert, update]
+    music_albums:               [insert, update]
+    music_tracks:                 [insert, update]
+    music_playlists:                [insert, update, delete]
+    music_playlist_tracks:            [insert, update, delete]
+    music_likes:                        [insert, delete]
+    music_follows:                        [insert, delete]
+    music_listening_history:                [insert]
+    music_uploads:                            [insert]
+    music_reports:                              [insert]
+
+db.music.moderate:
+  description: 'Full moderation access — remove/edit any content, manage artist profiles, resolve reports.'
+  owned_by: music
+  tables:
+    music_artists:            [select, insert, update, delete]
+    music_albums:               [select, insert, update, delete]
+    music_tracks:                 [select, insert, update, delete]
+    music_playlists:                [select, insert, update, delete]
+    music_playlist_tracks:            [select, insert, update, delete]
+    music_likes:                        [select, insert, update, delete]
+    music_follows:                        [select, insert, update, delete]
+    music_listening_history:                [select, insert, update, delete]
+    music_uploads:                            [select, insert, update, delete]
+    music_reports:                              [select, insert, update, delete]

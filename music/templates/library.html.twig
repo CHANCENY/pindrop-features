@@ -1,0 +1,83 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Your Library — Music{% endblock %}
+{% block content %}
+
+<h1 style="font-size:1.4rem;">Your Library</h1>
+
+<section class="mp-section">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin-bottom:0;">Playlists</h2>
+        <button class="mp-btn mp-btn--small" type="button" id="mp-new-playlist-btn"><i class="fa-solid fa-plus"></i> New Playlist</button>
+    </div>
+
+    <form method="post" action="/music/playlist/create" id="mp-new-playlist-form" style="display:none; margin-top:12px; max-width:420px;">
+        <input type="text" name="title" placeholder="Playlist name" required
+               style="width:100%; padding:9px 12px; border:1px solid var(--mp-border); border-radius:8px; background:#121212; color:var(--mp-text);">
+        <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.85rem;">
+            <input type="checkbox" name="is_public" value="1"> Make this playlist public
+        </label>
+        <button type="submit" class="mp-btn mp-btn--primary" style="margin-top:10px;">Create</button>
+    </form>
+
+    {% if playlists|length == 0 %}
+        <p class="mp-empty-state">No playlists yet.</p>
+    {% else %}
+        <div class="mp-grid" style="margin-top:14px;">
+            {% for playlist in playlists %}
+                {% include '@music/partials/card.html.twig' with {
+                    href: '/music/playlist/' ~ playlist.id,
+                    image: playlist.cover_url,
+                    title: playlist.title,
+                    subtitle: playlist.tracks_count ~ ' songs' ~ (playlist.is_public ? ' · Public' : ' · Private')
+                } %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+
+<section class="mp-section">
+    <h2>Liked Songs</h2>
+    {% if liked_tracks|length == 0 %}
+        <p class="mp-empty-state">Songs you like will show up here.</p>
+    {% else %}
+        <div class="mp-card-list">
+            {% for track in liked_tracks %}
+                {% include '@music/partials/track_row.html.twig' with { track: track } %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+
+<section class="mp-section">
+    <h2>Following</h2>
+    {% if followed_artists|length == 0 %}
+        <p class="mp-empty-state">Artists you follow will show up here.</p>
+    {% else %}
+        <div class="mp-grid">
+            {% for artist in followed_artists %}
+                {% include '@music/partials/card.html.twig' with {
+                    href: '/music/artist/' ~ artist.slug,
+                    image: artist._avatar,
+                    title: artist.name,
+                    subtitle: artist.follower_count ~ ' followers',
+                    round: true
+                } %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+
+{% block scripts %}
+<script>
+    (function () {
+        var btn = document.getElementById('mp-new-playlist-btn');
+        var form = document.getElementById('mp-new-playlist-form');
+        if (!btn || !form) return;
+        btn.addEventListener('click', function () {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+    })();
+</script>
+{% endblock %}
+
+{% endblock %}

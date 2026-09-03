@@ -1,0 +1,88 @@
+music.artist:
+  class: Simp\Pindrop\Modules\music\src\Services\ArtistService
+  arguments:
+    - "@database"
+  tags:
+    - "music"
+
+music.album:
+  class: Simp\Pindrop\Modules\music\src\Services\AlbumService
+  arguments:
+    - "@database"
+  tags:
+    - "music"
+
+music.track:
+  class: Simp\Pindrop\Modules\music\src\Services\TrackService
+  arguments:
+    - "@database"
+  tags:
+    - "music"
+
+music.media_url:
+  class: Simp\Pindrop\Modules\music\src\Services\MediaUrlService
+  arguments:
+    - "@filesystem"
+  tags:
+    - "music"
+
+music.search:
+  class: Simp\Pindrop\Modules\music\src\Services\SearchService
+  arguments:
+    - "@music.artist"
+    - "@music.album"
+    - "@music.track"
+  tags:
+    - "music"
+
+music.track_presenter:
+  class: Simp\Pindrop\Modules\music\src\Services\TrackPresenterService
+  arguments:
+    - "@music.media_url"
+  tags:
+    - "music"
+
+music.history:
+  class: Simp\Pindrop\Modules\music\src\Services\ListeningHistoryService
+  arguments:
+    - "@database"
+  tags:
+    - "music"
+
+music.upload:
+  class: Simp\Pindrop\Modules\music\src\Services\UploadService
+  arguments:
+    - "@filesystem"
+    - "@database"
+    - "@music.track"
+    - "@music.artist"
+    - "@music.album"
+  tags:
+    - "music"
+
+music.like:
+  class: Simp\Pindrop\Modules\music\src\Services\LikeService
+  arguments:
+    - "@database"
+  tags:
+    - "music"
+
+music.follow:
+  class: Simp\Pindrop\Modules\music\src\Services\FollowService
+  arguments:
+    - "@database"
+  tags:
+    - "music"
+
+music.playlist:
+  class: Simp\Pindrop\Modules\music\src\Services\PlaylistService
+  arguments:
+    - "@database"
+  tags:
+    - "music"
+
+music.seo:
+  class: Simp\Pindrop\Modules\music\src\Services\SeoService
+  arguments: []
+  tags:
+    - "music"

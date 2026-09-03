@@ -1,0 +1,42 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Manage Tracks — Music Admin{% endblock %}
+{% block content %}
+<h1 style="font-size:1.4rem;">Manage Tracks</h1>
+
+<div style="display:flex; gap:8px; margin-bottom:16px;">
+    <a href="?status=published" class="mp-btn mp-btn--small {{ status == 'published' ? 'mp-btn--primary' : '' }}">Published</a>
+    <a href="?status=pending" class="mp-btn mp-btn--small {{ status == 'pending' ? 'mp-btn--primary' : '' }}">Pending</a>
+    <a href="?status=removed" class="mp-btn mp-btn--small {{ status == 'removed' ? 'mp-btn--primary' : '' }}">Removed</a>
+</div>
+
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+        <tr style="text-align:left; border-bottom:1px solid var(--mp-border);">
+            <th style="padding:8px;">Title</th>
+            <th style="padding:8px;">Uploaded by</th>
+            <th style="padding:8px;">Plays</th>
+            <th style="padding:8px;">Uploaded</th>
+            <th style="padding:8px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for track in tracks %}
+        <tr style="border-bottom:1px solid var(--mp-border);">
+            <td style="padding:8px;">{{ track.title }}</td>
+            <td style="padding:8px;">{{ track.uploaded_by_username }}</td>
+            <td style="padding:8px;">{{ track.plays_count }}</td>
+            <td style="padding:8px;">{{ track.created_at|date('Y-m-d') }}</td>
+            <td style="padding:8px;">
+                {% if track.status != 'removed' %}
+                <form method="post" action="/admin/music/tracks/{{ track.id }}/remove" onsubmit="return confirm('Remove this track?');">
+                    <button type="submit" class="mp-btn mp-btn--small">Remove</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5" style="padding:20px; text-align:center;">No tracks found.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

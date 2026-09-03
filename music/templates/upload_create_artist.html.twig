@@ -1,0 +1,22 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Set Up Your Artist Profile — Music{% endblock %}
+{% block content %}
+<div class="mp-card" style="max-width:520px; margin:0 auto; padding:24px;">
+    <h1 style="font-size:1.3rem; margin-top:0;">Set up your artist profile</h1>
+    <p class="mp-help">You need an artist profile before you can upload tracks — this is the name and page your uploads will appear under.</p>
+
+    {% if errors.name %}<div style="color:var(--mp-primary); font-size:.85rem; margin-bottom:10px;">{{ errors.name }}</div>{% endif %}
+
+    <form method="post" action="/music/upload/artist">
+        <label style="display:block; font-weight:600; font-size:.85rem; margin:14px 0 6px;">Artist / display name</label>
+        <input type="text" name="name" value="{{ old.name|default('') }}" required
+               style="width:100%; padding:9px 12px; border:1px solid var(--mp-border); border-radius:8px; background:#121212; color:var(--mp-text);">
+
+        <label style="display:block; font-weight:600; font-size:.85rem; margin:14px 0 6px;">Bio (optional)</label>
+        <textarea name="bio" rows="4"
+                  style="width:100%; padding:9px 12px; border:1px solid var(--mp-border); border-radius:8px; background:#121212; color:var(--mp-text); font-family:inherit;">{{ old.bio|default('') }}</textarea>
+
+        <button type="submit" class="mp-btn mp-btn--primary" style="margin-top:16px;">Create profile &amp; continue</button>
+    </form>
+</div>
+{% endblock %}

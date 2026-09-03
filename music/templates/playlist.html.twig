@@ -1,0 +1,73 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}{{ playlist.title }} — Music{% endblock %}
+{% block content %}
+
+<div style="display:flex; gap:24px; align-items:flex-end; margin-bottom:28px; flex-wrap:wrap;">
+    {% if playlist.cover_url %}
+        <img src="{{ playlist.cover_url }}" alt="{{ playlist.title }}" style="width:200px;height:200px;border-radius:8px;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,.4);">
+    {% else %}
+        <div style="width:200px;height:200px;border-radius:8px;background:var(--mp-surface-hover);display:flex;align-items:center;justify-content:center;">
+            <i class="fa-solid fa-list-music" style="font-size:2.4rem;color:var(--mp-text-muted);"></i>
+        </div>
+    {% endif %}
+    <div>
+        <div class="mp-help">Playlist · {{ playlist.is_public ? 'Public' : 'Private' }}</div>
+        <h1 style="margin:4px 0; font-size:2rem;">{{ playlist.title }}</h1>
+        {% if playlist.description %}<p class="mp-help" style="max-width:500px;">{{ playlist.description }}</p>{% endif %}
+        <div class="mp-help">By {{ playlist.author_username }} · {{ tracks|length }} songs</div>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            {% if tracks|length > 0 %}
+                <button class="mp-btn mp-btn--primary" type="button" id="mp-play-playlist-btn" data-tracks="{{ play_all_json }}">
+                    <i class="fa-solid fa-play"></i> Play
+                </button>
+            {% endif %}
+            {% if is_owner %}
+                <form method="post" action="/music/playlist/{{ playlist.id }}/toggle-public">
+                    <button type="submit" class="mp-btn">{{ playlist.is_public ? 'Make Private' : 'Make Public' }}</button>
+                </form>
+                <form method="post" action="/music/playlist/{{ playlist.id }}/delete" onsubmit="return confirm('Delete this playlist? This can\'t be undone.');">
+                    <button type="submit" class="mp-btn mp-btn--small"><i class="fa-solid fa-trash"></i> Delete</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="mp-card-list" style="max-width:none;">
+    {% for track in tracks %}
+        <div class="mp-track-row" data-play-track="{{ track._play_json|raw }}">
+            <img src="{{ track._cover|default('') }}" alt="" width="44" height="44" loading="lazy">
+            <div class="mp-track-row__meta">
+                <div class="mp-track-row__title">{{ track.title }}</div>
+                <div class="mp-track-row__artist">{{ track._artist.name }}</div>
+            </div>
+            <span class="mp-track-row__duration">{{ (track.duration_seconds // 60) }}:{{ '%02d'|format(track.duration_seconds % 60) }}</span>
+            {% if is_owner %}
+                <form method="post" action="/music/playlist/{{ playlist.id }}/remove-entry" onclick="event.stopPropagation();" onsubmit="return true;">
+                    <input type="hidden" name="entry_id" value="{{ track.entry_id }}">
+                    <button class="mp-icon-btn" type="submit" title="Remove from playlist"><i class="fa-solid fa-xmark"></i></button>
+                </form>
+            {% endif %}
+        </div>
+    {% else %}
+        <p class="mp-empty-state">No songs in this playlist yet — find a song and use "Add to playlist" (from its page) to add one.</p>
+    {% endfor %}
+</div>
+
+{% block scripts %}
+<script>
+    (function () {
+        var btn = document.getElementById('mp-play-playlist-btn');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            try {
+                var tracks = JSON.parse(btn.getAttribute('data-tracks') || '[]');
+                if (tracks.length > 0) window.MusicPlayer.playQueue(tracks, 0);
+            } catch (e) { console.error('Invalid playlist track payload', e); }
+        });
+    })();
+</script>
+{% endblock %}
+
+{% endblock %}

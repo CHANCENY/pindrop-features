@@ -1,0 +1,8 @@
+name: "Music Platform"
+description: "Self-hosted, YouTube-Music-style music streaming platform: artists, albums, tracks, playlists, liked songs, search, a persistent bottom player, and an upload/moderation flow. Streams licensed/uploaded audio from the site's own storage — does not pull from or proxy any third-party catalog. Requires the mobile_app plugin, whose app-shell (idiomorph DOM-morphing navigation, #app-content region) this plugin's persistent player relies on."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"
+dependencies:
+  - mobile_app

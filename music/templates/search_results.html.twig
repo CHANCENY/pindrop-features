@@ -1,0 +1,59 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Search{% if term %}: {{ term }}{% endif %} — Music{% endblock %}
+{% block content %}
+
+<h1 style="font-size:1.4rem;">Search{% if term %}: "{{ term }}"{% endif %}</h1>
+
+{% if term == '' %}
+    <p class="mp-empty-state">Type something in the search box above to get started.</p>
+{% elseif results.artists|length == 0 and results.albums|length == 0 and results.tracks|length == 0 %}
+    <p class="mp-empty-state">No results for "{{ term }}".</p>
+{% else %}
+
+    {% if results.artists|length > 0 %}
+    <section class="mp-section">
+        <h2>Artists</h2>
+        <div class="mp-grid">
+            {% for artist in results.artists %}
+                {% include '@music/partials/card.html.twig' with {
+                    href: '/music/artist/' ~ artist.slug,
+                    image: artist._avatar,
+                    title: artist.name,
+                    subtitle: 'Artist',
+                    round: true
+                } %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if results.albums|length > 0 %}
+    <section class="mp-section">
+        <h2>Albums</h2>
+        <div class="mp-grid">
+            {% for album in results.albums %}
+                {% include '@music/partials/card.html.twig' with {
+                    href: '/music/artist/' ~ album._artist.slug ~ '/album/' ~ album.slug,
+                    image: album._cover,
+                    title: album.title,
+                    subtitle: album._artist.name
+                } %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if results.tracks|length > 0 %}
+    <section class="mp-section">
+        <h2>Songs</h2>
+        <div class="mp-card-list">
+            {% for track in results.tracks %}
+                {% include '@music/partials/track_row.html.twig' with { track: track } %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+{% endif %}
+
+{% endblock %}

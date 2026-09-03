@@ -1,0 +1,14 @@
+{# Expects: track (with _cover, _play_json, and either _artist or an ambient `artist` var), show_artist (bool, default true) #}
+<div class="mp-track-row" data-play-track="{{ track._play_json|raw }}">
+    <img src="{{ track._cover|default('') }}" alt="" width="44" height="44" loading="lazy">
+    <div class="mp-track-row__meta">
+        <div class="mp-track-row__title">{{ track.title }}</div>
+        {% if show_artist|default(true) %}
+            <div class="mp-track-row__artist">{{ (track._artist.name)|default(artist.name)|default('') }}</div>
+        {% endif %}
+    </div>
+    <span class="mp-track-row__duration">{{ (track.duration_seconds // 60) }}:{{ '%02d'|format(track.duration_seconds % 60) }}</span>
+    <button class="mp-icon-btn" type="button" data-queue-track="{{ track._play_json|raw }}" title="Add to queue" aria-label="Add to queue">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+</div>

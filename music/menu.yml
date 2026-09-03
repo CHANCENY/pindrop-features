@@ -1,0 +1,26 @@
+groups:
+  admin:
+    music_dashboard:
+      title: "Music Dashboard"
+      route: music.admin.dashboard
+      icon: fa fa-music
+      weight: 50
+      roles: [moderator, admin, super_admin]
+    music_tracks:
+      title: "Tracks"
+      route: music.admin.tracks
+      icon: fa fa-compact-disc
+      weight: 51
+      roles: [moderator, admin, super_admin]
+    music_artists:
+      title: "Artists"
+      route: music.admin.artists
+      icon: fa fa-microphone
+      weight: 52
+      roles: [moderator, admin, super_admin]
+    music_reports:
+      title: "Music Reports"
+      route: music.admin.reports
+      icon: fa fa-flag
+      weight: 53
+      roles: [moderator, admin, super_admin]

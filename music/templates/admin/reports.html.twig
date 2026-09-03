@@ -1,0 +1,29 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Reports — Music Admin{% endblock %}
+{% block content %}
+<h1 style="font-size:1.4rem;">Reports</h1>
+
+<div style="display:flex; gap:8px; margin-bottom:16px;">
+    <a href="?status=pending" class="mp-btn mp-btn--small {{ status == 'pending' ? 'mp-btn--primary' : '' }}">Pending</a>
+    <a href="?status=resolved" class="mp-btn mp-btn--small {{ status == 'resolved' ? 'mp-btn--primary' : '' }}">Resolved</a>
+</div>
+
+<div class="mp-card-list" style="max-width:none;">
+    {% for report in reports %}
+        <div class="mp-track-row" style="cursor:default; align-items:flex-start;">
+            <div class="mp-track-row__meta">
+                <div class="mp-track-row__title">{{ report.reportable_type|capitalize }} #{{ report.reportable_id }}</div>
+                <div class="mp-track-row__artist">{{ report.reason }}</div>
+                <div class="mp-help">Reported {{ report.created_at|date('Y-m-d H:i') }} by user #{{ report.reporter_id }}</div>
+            </div>
+            {% if report.status == 'pending' %}
+            <form method="post" action="/admin/music/reports/{{ report.id }}/resolve">
+                <button type="submit" class="mp-btn mp-btn--small">Mark Resolved</button>
+            </form>
+            {% endif %}
+        </div>
+    {% else %}
+        <p class="mp-empty-state">No {{ status }} reports.</p>
+    {% endfor %}
+</div>
+{% endblock %}

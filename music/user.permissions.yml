@@ -1,0 +1,56 @@
+anonymous:
+  db.music.read:
+    title: 'Browse and stream music'
+    description: 'Read-only access to artists, albums, tracks, and public playlists.'
+
+user:
+  db.music.read:
+    title: 'Browse and stream music'
+    description: 'Read-only access to artists, albums, tracks, and public playlists.'
+  db.music.write:
+    title: 'Upload and manage your own music'
+    description: 'Create tracks/albums/artist profile, playlists, likes, follows.'
+  can_music_upload:
+    title: 'Upload tracks'
+    description: 'Upload audio and create artist/album/track entries.'
+  can_music_playlist:
+    title: 'Create playlists'
+    description: 'Create and manage your own playlists.'
+  can_music_like:
+    title: 'Like tracks and albums'
+    description: 'Like/unlike tracks and albums, follow artists.'
+  can_music_play_track:
+    title: 'Record listening activity'
+    description: 'Have your plays counted toward track play counts and your listening history.'
+
+moderator:
+  db.music.read: { title: 'Browse and stream music', description: 'Read-only access.' }
+  db.music.write: { title: 'Upload and manage your own music', description: 'Create/edit content.' }
+  db.music.moderate: { title: 'Moderate music content', description: 'Remove/edit any content, resolve reports.' }
+  can_music_upload: { title: 'Upload tracks', description: 'Upload audio and create entries.' }
+  can_music_playlist: { title: 'Create playlists', description: 'Create and manage playlists.' }
+  can_music_like: { title: 'Like tracks and albums', description: 'Like/follow.' }
+  can_music_play_track: { title: 'Record listening activity', description: 'Count plays and history.' }
+  can_music_moderate:
+    title: 'Moderate music content'
+    description: 'Remove tracks/albums, suspend artist profiles, resolve reports.'
+
+admin:
+  db.music.read: { title: 'Browse and stream music', description: 'Read-only access.' }
+  db.music.write: { title: 'Upload and manage your own music', description: 'Create/edit content.' }
+  db.music.moderate: { title: 'Moderate music content', description: 'Full moderation access.' }
+  can_music_upload: { title: 'Upload tracks', description: 'Upload audio and create entries.' }
+  can_music_playlist: { title: 'Create playlists', description: 'Create and manage playlists.' }
+  can_music_like: { title: 'Like tracks and albums', description: 'Like/follow.' }
+  can_music_play_track: { title: 'Record listening activity', description: 'Count plays and history.' }
+  can_music_moderate: { title: 'Moderate music content', description: 'Full moderation access.' }
+
+super_admin:
+  db.music.read: { title: 'Browse and stream music', description: 'Read-only access.' }
+  db.music.write: { title: 'Upload and manage your own music', description: 'Create/edit content.' }
+  db.music.moderate: { title: 'Moderate music content', description: 'Full moderation access.' }
+  can_music_upload: { title: 'Upload tracks', description: 'Upload audio and create entries.' }
+  can_music_playlist: { title: 'Create playlists', description: 'Create and manage playlists.' }
+  can_music_like: { title: 'Like tracks and albums', description: 'Like/follow.' }
+  can_music_play_track: { title: 'Record listening activity', description: 'Count plays and history.' }
+  can_music_moderate: { title: 'Moderate music content', description: 'Full moderation access.' }

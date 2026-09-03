@@ -1,0 +1,228 @@
+music.home:
+  path: '/music'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\BrowseController::index'
+  requirements: {}
+
+music.search:
+  path: '/music/search'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\SearchController::index'
+  requirements: {}
+
+music.artist.view:
+  path: '/music/artist/[slug:string]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ArtistController::view'
+  requirements: {}
+
+music.album.view:
+  path: '/music/artist/[artistSlug:string]/album/[albumSlug:string]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\AlbumController::view'
+  requirements: {}
+
+music.track.view:
+  path: '/music/artist/[artistSlug:string]/track/[trackSlug:string]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\TrackController::view'
+  requirements: {}
+
+music.playback.beacon:
+  path: '/music/track/[id:int]/play-beacon'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\PlaybackController::recordPlay'
+  requirements:
+    _permission: ['can_music_play_track']
+
+music.upload.index:
+  path: '/music/upload'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\UploadController::index'
+  requirements:
+    _permission: ['can_music_upload']
+
+music.upload.create_artist:
+  path: '/music/upload/artist'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\UploadController::createArtist'
+  requirements:
+    _permission: ['can_music_upload']
+
+music.upload.store:
+  path: '/music/upload'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\UploadController::store'
+  requirements:
+    _permission: ['can_music_upload']
+
+music.admin.dashboard:
+  path: '/admin/music'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ModerationController::dashboard'
+  requirements:
+    _permission: ['can_music_moderate']
+
+music.admin.tracks:
+  path: '/admin/music/tracks'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ModerationController::tracks'
+  requirements:
+    _permission: ['can_music_moderate']
+
+music.admin.track.remove:
+  path: '/admin/music/tracks/[id:int]/remove'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ModerationController::removeTrack'
+  requirements:
+    _permission: ['can_music_moderate']
+
+music.admin.artists:
+  path: '/admin/music/artists'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ModerationController::artists'
+  requirements:
+    _permission: ['can_music_moderate']
+
+music.admin.artist.suspend:
+  path: '/admin/music/artists/[id:int]/suspend'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ModerationController::suspendArtist'
+  requirements:
+    _permission: ['can_music_moderate']
+
+music.admin.artist.reinstate:
+  path: '/admin/music/artists/[id:int]/reinstate'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ModerationController::reinstateArtist'
+  requirements:
+    _permission: ['can_music_moderate']
+
+music.admin.reports:
+  path: '/admin/music/reports'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ModerationController::reports'
+  requirements:
+    _permission: ['can_music_moderate']
+
+music.admin.report.resolve:
+  path: '/admin/music/reports/[id:int]/resolve'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\ModerationController::resolveReport'
+  requirements:
+    _permission: ['can_music_moderate']
+
+# -----------------------------------------------------------------------------
+# Phase 6 — likes, follows, reports, library, playlists
+# -----------------------------------------------------------------------------
+
+music.like.toggle:
+  path: '/music/like/[type:string]/[id:int]'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\InteractionController::toggleLike'
+  requirements:
+    _permission: ['can_music_like']
+
+music.follow.toggle:
+  path: '/music/follow/[id:int]'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\InteractionController::toggleFollow'
+  requirements:
+    _permission: ['can_music_like']
+
+music.report.create:
+  path: '/music/report'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\InteractionController::report'
+  requirements:
+    _permission: ['can_music_like']
+
+music.library:
+  path: '/music/library'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\LibraryController::index'
+  requirements:
+    _permission: ['can_music_playlist']
+
+music.playlist.create:
+  path: '/music/playlist/create'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\PlaylistController::store'
+  requirements:
+    _permission: ['can_music_playlist']
+
+music.playlist.view:
+  path: '/music/playlist/[id:int]'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\PlaylistController::view'
+  requirements: {}
+
+music.playlist.add_track:
+  path: '/music/playlist/[id:int]/add-track'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\PlaylistController::addTrack'
+  requirements:
+    _permission: ['can_music_playlist']
+
+music.playlist.remove_entry:
+  path: '/music/playlist/[id:int]/remove-entry'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\PlaylistController::removeEntry'
+  requirements:
+    _permission: ['can_music_playlist']
+
+music.playlist.reorder:
+  path: '/music/playlist/[id:int]/reorder'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\PlaylistController::reorder'
+  requirements:
+    _permission: ['can_music_playlist']
+
+music.playlist.toggle_public:
+  path: '/music/playlist/[id:int]/toggle-public'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\PlaylistController::togglePublic'
+  requirements:
+    _permission: ['can_music_playlist']
+
+music.playlist.delete:
+  path: '/music/playlist/[id:int]/delete'
+  methods: ['POST']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\PlaylistController::delete'
+  requirements:
+    _permission: ['can_music_playlist']
+
+music.sitemap:
+  path: '/music/sitemap.xml'
+  methods: ['GET']
+  defaults:
+    _controller: 'Simp\Pindrop\Modules\music\src\Controller\SitemapController::index'
+  requirements: {}

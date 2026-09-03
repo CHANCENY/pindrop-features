@@ -1,0 +1,42 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Manage Artists — Music Admin{% endblock %}
+{% block content %}
+<h1 style="font-size:1.4rem;">Manage Artists</h1>
+
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+        <tr style="text-align:left; border-bottom:1px solid var(--mp-border);">
+            <th style="padding:8px;">Name</th>
+            <th style="padding:8px;">Owner</th>
+            <th style="padding:8px;">Tracks</th>
+            <th style="padding:8px;">Followers</th>
+            <th style="padding:8px;">Status</th>
+            <th style="padding:8px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for artist in artists %}
+        <tr style="border-bottom:1px solid var(--mp-border);">
+            <td style="padding:8px;"><a href="/music/artist/{{ artist.slug }}">{{ artist.name }}</a></td>
+            <td style="padding:8px;">{{ artist.owner_username }}</td>
+            <td style="padding:8px;">{{ artist.tracks_count }}</td>
+            <td style="padding:8px;">{{ artist.follower_count }}</td>
+            <td style="padding:8px;">{{ artist.status }}</td>
+            <td style="padding:8px;">
+                {% if artist.status == 'active' %}
+                <form method="post" action="/admin/music/artists/{{ artist.id }}/suspend">
+                    <button type="submit" class="mp-btn mp-btn--small">Suspend</button>
+                </form>
+                {% else %}
+                <form method="post" action="/admin/music/artists/{{ artist.id }}/reinstate">
+                    <button type="submit" class="mp-btn mp-btn--small">Reinstate</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6" style="padding:20px; text-align:center;">No artists found.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

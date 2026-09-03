@@ -1,0 +1,12 @@
+{# Expects: href, image, title, subtitle, round (bool, for artist avatars) #}
+<a href="{{ href }}" class="mp-card {{ round|default(false) ? 'mp-card--round' : '' }}" style="display:block;">
+    {% if image %}
+        <img src="{{ image }}" alt="{{ title }}" loading="lazy">
+    {% else %}
+        <div style="width:100%;aspect-ratio:1;border-radius:{{ round|default(false) ? '50%' : '8px' }};background:var(--mp-surface-hover);display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+            <i class="fa-solid {{ round|default(false) ? 'fa-user' : 'fa-music' }}" style="color:var(--mp-text-muted);font-size:1.6rem;"></i>
+        </div>
+    {% endif %}
+    <div class="mp-card__title">{{ title }}</div>
+    {% if subtitle %}<div class="mp-card__subtitle">{{ subtitle }}</div>{% endif %}
+</a>

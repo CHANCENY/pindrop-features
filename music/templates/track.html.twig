@@ -1,0 +1,75 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}{{ track.title }} — {{ artist.name }}{% endblock %}
+{% block content %}
+
+<div style="display:flex; gap:24px; align-items:flex-end; margin-bottom:28px; flex-wrap:wrap;">
+    {% if track._cover %}
+        <img src="{{ track._cover }}" alt="{{ track.title }}" style="width:200px;height:200px;border-radius:8px;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,.4);">
+    {% else %}
+        <div style="width:200px;height:200px;border-radius:8px;background:var(--mp-surface-hover);display:flex;align-items:center;justify-content:center;">
+            <i class="fa-solid fa-music" style="font-size:2.4rem;color:var(--mp-text-muted);"></i>
+        </div>
+    {% endif %}
+    <div>
+        <div class="mp-help">Song</div>
+        <h1 style="margin:4px 0; font-size:2rem;">{{ track.title }}</h1>
+        <div class="mp-help">
+            <a href="/music/artist/{{ artist.slug }}">{{ artist.name }}</a>
+            · {{ track.plays_count }} plays
+        </div>
+        <div style="margin-top:14px; display:flex; gap:10px;">
+            <button class="mp-btn mp-btn--primary" type="button" data-play-track="{{ track._play_json|raw }}">
+                <i class="fa-solid fa-play"></i> Play
+            </button>
+            <button class="mp-btn" type="button" data-queue-track="{{ track._play_json|raw }}">
+                <i class="fa-solid fa-plus"></i> Queue
+            </button>
+            {% if is_login %}
+                <form method="post" action="/music/like/track/{{ track.id }}" class="mp-like-form" data-track-id="{{ track.id }}">
+                    <button type="submit" class="mp-icon-btn {{ track._liked ? 'active' : '' }}" title="Like">
+                        <i class="fa-{{ track._liked ? 'solid' : 'regular' }} fa-heart"></i>
+                    </button>
+                </form>
+                {% if my_playlists|length > 0 %}
+                    <form method="post" action="/music/playlist/{{ my_playlists[0].id }}/add-track" id="mp-add-to-playlist-form">
+                        <input type="hidden" name="track_id" value="{{ track.id }}">
+                        <select name="_playlist_select" id="mp-playlist-select"
+                                style="padding:8px 12px; border-radius:8px; border:1px solid var(--mp-border); background:#121212; color:var(--mp-text);"
+                                onchange="this.form.action = '/music/playlist/' + this.value + '/add-track';">
+                            {% for pl in my_playlists %}
+                                <option value="{{ pl.id }}">{{ pl.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="mp-btn mp-btn--small"><i class="fa-solid fa-list-music"></i> Add</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+            <form method="post" action="/music/report" onsubmit="return confirm('Report this track?');">
+                <input type="hidden" name="reportable_type" value="track">
+                <input type="hidden" name="reportable_id" value="{{ track.id }}">
+                <input type="hidden" name="reason" value="Reported from track page">
+                <button type="submit" class="mp-icon-btn" title="Report"><i class="fa-solid fa-flag"></i></button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if track.lyrics %}
+<section class="mp-section">
+    <h2>Lyrics</h2>
+    <p style="white-space:pre-line; max-width:640px; color:var(--mp-text-muted); line-height:1.8;">{{ track.lyrics }}</p>
+</section>
+{% endif %}
+
+{% if related|length > 0 %}
+<section class="mp-section">
+    <h2>You might also like</h2>
+    <div class="mp-card-list">
+        {% for r in related %}
+            {% include '@music/partials/track_row.html.twig' with { track: r } %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}Music{% endblock %}</title>
+    <meta name="theme-color" content="#0f0f0f">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/modules/music/assets/css/music.css">
+    {% if seo_meta is defined %}
+        <meta name="description" content="{{ seo_meta.description }}">
+        <link rel="canonical" href="{{ seo_meta.canonical }}">
+        {% for key, value in seo_meta.og %}
+            <meta property="{{ key }}" content="{{ value }}">
+        {% endfor %}
+        {% for key, value in seo_meta.twitter %}
+            <meta name="{{ key }}" content="{{ value }}">
+        {% endfor %}
+    {% endif %}
+    {% if json_ld_script is defined %}{{ json_ld_script|raw }}{% endif %}
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+{#
+  ════════════════════════════════════════════════════════════════
+  App shell. #app-content is the ONLY region engine.js morphs on
+  navigation (matches its default CONTENT_SELECTOR, "#app-content" —
+  see mobile_app's engine.js, confirmed no config override needed).
+  The player bar + <audio> element are siblings AFTER #app-content,
+  not children of it, so DOM morphing never touches — and playback
+  is never interrupted by — in-app navigation.
+  ════════════════════════════════════════════════════════════════
+#}
+
+<header class="mp-header">
+    <div class="mp-header__inner">
+        <a href="/music" class="mp-logo"><i class="fa-solid fa-play"></i> Music</a>
+        <form action="/music/search" method="get" class="mp-search-form">
+            <input type="text" name="q" placeholder="Search songs, albums, artists…" value="{{ term|default('') }}">
+            <button type="submit"><i class="fa-solid fa-search"></i></button>
+        </form>
+        <nav class="mp-nav">
+            {% if is_login %}
+                <a href="/music/library"><i class="fa-solid fa-book"></i> Library</a>
+                <a href="/music/upload" class="mp-btn mp-btn--primary"><i class="fa-solid fa-upload"></i> Upload</a>
+                <a href="/user/logout">Logout</a>
+            {% else %}
+                <a href="/user/login">Login</a>
+                <a href="/user/register" class="mp-btn mp-btn--small">Sign up</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main id="app-content" class="mp-content">
+    {% block content %}{% endblock %}
+</main>
+
+{# ── Persistent player bar — survives navigation, lives outside #app-content ── #}
+<div id="mp-player-bar" class="mp-player-bar" data-state="empty" aria-hidden="true">
+    <audio id="mp-audio" preload="metadata"></audio>
+
+    <div class="mp-player-bar__track">
+        <img id="mp-now-cover" class="mp-now-cover" src="" alt="" width="48" height="48">
+        <div class="mp-now-meta">
+            <a id="mp-now-title" class="mp-now-title" href="#">&nbsp;</a>
+            <a id="mp-now-artist" class="mp-now-artist" href="#">&nbsp;</a>
+        </div>
+        <button id="mp-like-btn" class="mp-icon-btn" aria-label="Like" data-track-id="">
+            <i class="fa-regular fa-heart"></i>
+        </button>
+    </div>
+
+    <div class="mp-player-bar__controls">
+        <div class="mp-transport">
+            <button id="mp-shuffle-btn" class="mp-icon-btn" aria-label="Shuffle"><i class="fa-solid fa-shuffle"></i></button>
+            <button id="mp-prev-btn" class="mp-icon-btn" aria-label="Previous"><i class="fa-solid fa-backward-step"></i></button>
+            <button id="mp-play-btn" class="mp-icon-btn mp-icon-btn--play" aria-label="Play"><i class="fa-solid fa-play"></i></button>
+            <button id="mp-next-btn" class="mp-icon-btn" aria-label="Next"><i class="fa-solid fa-forward-step"></i></button>
+            <button id="mp-repeat-btn" class="mp-icon-btn" aria-label="Repeat" data-mode="off"><i class="fa-solid fa-repeat"></i></button>
+        </div>
+        <div class="mp-seek-row">
+            <span id="mp-time-current" class="mp-time">0:00</span>
+            <input id="mp-seek" class="mp-seek" type="range" min="0" max="100" value="0" step="1" aria-label="Seek">
+            <span id="mp-time-duration" class="mp-time">0:00</span>
+        </div>
+    </div>
+
+    <div class="mp-player-bar__extra">
+        <button id="mp-queue-btn" class="mp-icon-btn" aria-label="Queue"><i class="fa-solid fa-list"></i></button>
+        <i class="fa-solid fa-volume-high mp-icon-btn" aria-hidden="true"></i>
+        <input id="mp-volume" class="mp-volume" type="range" min="0" max="100" value="80" step="1" aria-label="Volume">
+    </div>
+</div>
+
+{# ── Queue drawer — toggled by #mp-queue-btn, populated client-side ── #}
+<aside id="mp-queue-drawer" class="mp-queue-drawer" aria-hidden="true">
+    <div class="mp-queue-drawer__header">
+        <h3>Queue</h3>
+        <button id="mp-queue-close" class="mp-icon-btn" aria-label="Close queue"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="mp-queue-list" class="mp-queue-list"></div>
+</aside>
+
+{#
+  Hidden, otherwise-unused form whose only purpose is to receive core's
+  auto-injected _csrf_token hidden field, so music-player.js's fetch()-based
+  play-beacon call (not a real form submission) can read and attach a valid
+  token — same technique as qa's AJAX vote/bookmark forms, just via a
+  detached form instead of a visible one since the beacon has no natural
+  form context of its own.
+#}
+<form id="mp-csrf-source" style="display:none" aria-hidden="true"></form>
+
+{% block scripts %}{% endblock %}
+
+{#
+  Load order matters: idiomorph before engine.js, engine.js before our
+  own player script (which listens for engine.js's navigation events).
+  Reused directly from mobile_app's real assets — not duplicated —
+  per the plan's revised architecture decision. Deliberately NOT setting
+  window.__PINDROP_MOBILE__: engine.js's own settings lookup
+  (`global.__PINDROP_MOBILE__ || {}`) safely defaults every mobile-only
+  feature (bottom nav, gesture config) to a no-op without it, while the
+  DOM-morphing navigation itself (what we actually need) works with zero
+  configuration, defaulting CONTENT_SELECTOR to "#app-content".
+#}
+
+<script type="module" src="/themes/admin/assets/js/behavior.js"></script>
+<script src="/modules/mobile_app/assets/js/idiomorph.min.js"></script>
+<script src="/modules/mobile_app/assets/js/engine.js"></script>
+<script src="/modules/music/assets/js/music-player.js" defer></script>
+
+</body>
+</html>

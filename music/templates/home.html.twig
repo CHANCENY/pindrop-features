@@ -1,0 +1,81 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Music{% endblock %}
+{% block content %}
+
+{% if made_for_you|length > 0 %}
+<section class="mp-section">
+    <h2>Made For You</h2>
+    <div class="mp-grid">
+        {% for track in made_for_you %}
+            <div class="mp-card" data-play-track="{{ track._play_json|raw }}" style="cursor:pointer;">
+                <img src="{{ track._cover|default('') }}" alt="{{ track.title }}" loading="lazy">
+                <div class="mp-card__title">{{ track.title }}</div>
+                <div class="mp-card__subtitle">{{ track._artist.name }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="mp-section">
+    <h2>Trending</h2>
+    {% if trending|length == 0 %}
+        <p class="mp-empty-state">No tracks yet — <a href="/music/upload">upload the first one</a>.</p>
+    {% else %}
+        <div class="mp-grid">
+            {% for track in trending %}
+                <div class="mp-card" data-play-track="{{ track._play_json|raw }}" style="cursor:pointer;">
+                    <img src="{{ track._cover|default('') }}" alt="{{ track.title }}" loading="lazy">
+                    <div class="mp-card__title">{{ track.title }}</div>
+                    <div class="mp-card__subtitle">{{ track._artist.name }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+
+{% if recent_albums|length > 0 %}
+<section class="mp-section">
+    <h2>New Releases</h2>
+    <div class="mp-grid">
+        {% for album in recent_albums %}
+            {% include '@music/partials/card.html.twig' with {
+                href: '/music/artist/' ~ album._artist.slug ~ '/album/' ~ album.slug,
+                image: album._cover,
+                title: album.title,
+                subtitle: album._artist.name
+            } %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if popular_artists|length > 0 %}
+<section class="mp-section">
+    <h2>Popular Artists</h2>
+    <div class="mp-grid">
+        {% for artist in popular_artists %}
+            {% include '@music/partials/card.html.twig' with {
+                href: '/music/artist/' ~ artist.slug,
+                image: artist._avatar,
+                title: artist.name,
+                subtitle: artist.follower_count ~ ' followers',
+                round: true
+            } %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if recently_added|length > 0 %}
+<section class="mp-section">
+    <h2>Recently Added</h2>
+    <div class="mp-card-list">
+        {% for track in recently_added %}
+            {% include '@music/partials/track_row.html.twig' with { track: track } %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
