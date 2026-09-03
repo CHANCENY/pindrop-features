@@ -1,0 +1,16 @@
+music_cron.storage_mover:
+  class: Simp\Pindrop\Modules\music_cron\src\Service\StorageMover
+  arguments:
+    - "@filesystem"
+  tags:
+    - "music_cron"
+
+music_cron.ingest:
+  class: Simp\Pindrop\Modules\music_cron\src\Service\MusicIngestService
+  arguments:
+    - "@music.artist"
+    - "@music.album"
+    - "@music.track"
+    - "@music_cron.storage_mover"
+  tags:
+    - "music_cron"

@@ -1,0 +1,10 @@
+name: "Music Cron"
+description: "Bulk-ingest cron handler for the Music Platform plugin. Scans sites/default/files/music/albums/untrace for album folders dropped on disk, reads each track's real audio metadata via ffmpeg_worker's SongsApiStandard (ffprobe), creates/reuses the matching music_artists/music_albums/music_tracks rows through music's own services, moves each audio file into permanent storage, and clears the folder once an album is fully imported. Runs as a cron subscriber — no new HTTP routes or database tables of its own; all persistence goes through music's public service API (ArtistService/AlbumService/TrackService), per core's cross-plugin isolation rule."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"
+dependencies:
+  - cron
+  - music
+  - ffmpeg_worker

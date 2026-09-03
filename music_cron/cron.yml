@@ -1,0 +1,3 @@
+music_ingest:
+  class: Simp\Pindrop\Modules\music_cron\src\Plugin\CronDefinition\MusicIngestCronDefinition
+  status: true

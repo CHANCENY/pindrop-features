@@ -1,0 +1,4 @@
+music_cron.default:
+  name: "Music Cron CLI commands"
+  script: "modules/music_cron/cli/music_cron.php"
+  status: true
