@@ -23,6 +23,7 @@ use Simp\Pindrop\Entity\File\File;
 use Simp\Pindrop\Entity\User\CurrentUser;
 use Simp\Pindrop\Entity\User\User;
 use Simp\Pindrop\Entity\User\UserVerification;
+use Simp\Pindrop\Events\EventEmitter;
 use Simp\Pindrop\Events\SystemEvents\Events;
 use Simp\Pindrop\FactorAuthentication\TwoFactorInterface;
 use Simp\Pindrop\FactorAuthentication\TwoFactorManager;
@@ -81,6 +82,11 @@ class AdminController extends ControllerBase
             'homeRoute' => $homeRoute,
             'request' => $request,
         ]);
+
+        if (is_object($event)) {
+            $event = $event->raw;
+        }
+
         if (isset($event['homeRoute'])) {
             $homeRoute = $event['homeRoute'];
         }
@@ -1277,7 +1283,7 @@ Generated: " . date('Y-m-d H:i:s') . "
                         $url = trim($url);
                     }
                    
-                    $response = new RedirectResponse($url);
+                    $response = new RedirectResponse(!empty($url)? $url : '/');
                     $response->headers->setCookie(
                         new Cookie(
                             'session_id',
