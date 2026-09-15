@@ -182,8 +182,8 @@ class MusicIngestService
                 $trackArtist = trim(explode('/', $trackArtist)[0]);
             }
 
-            if ($trackArtist !== '' && $this->slugify($trackArtist) !== $this->slugify($artistName)) {
-                dd($trackArtist, $artistName);
+            if ($trackArtist !== '' && !str_contains($trackArtist,$artistName)) {
+                
                 $log("Skipping '" . basename($filePath) . "': tagged artist '{$trackArtist}' does not match this album's artist '{$artistName}'.", 'warn');
                 $allHandled = false;
                 continue;
