@@ -308,6 +308,14 @@ class MusicIngestService
             return 'failed';
         }
 
+        $meta = $this->probe($filePath, $log);
+        $probed = [];
+        if ($meta !== null) {
+            $probed[] = ['path' => $filePath, 'meta' => $meta];
+        }
+
+        $cover_url = $this->extractAlbumCover($probed, $log);
+
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION)) ?: 'mp3';
         $mimeType = self::MIME_BY_EXTENSION[$extension] ?? 'application/octet-stream';
         $destination = 'public://music/tracks/' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.' . $extension;
@@ -329,7 +337,7 @@ class MusicIngestService
             $duration,
             self::HOUSE_USER_ID,
             self::HOUSE_USERNAME,
-            null, // cover_url — falls back to the album cover client-side
+            $cover_url,
             $genre,
             null, // lyrics — not available from ffprobe tags
             $trackNumber
@@ -472,7 +480,7 @@ class MusicIngestService
      */
     private function untraceRoot(): string
     {
-        $root = dirname(__DIR__, 4);
+        $root = $_ENV['ROOT'];
         return $root . '/sites/default/files/music/albums/untrace';
     }
 }

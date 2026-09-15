@@ -1,0 +1,47 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Manage Spotify Album Downloads — Music Admin{% endblock %}
+
+
+{% block head %}
+
+{{ asset_handler.renderCss() }}
+
+{% endblock %}
+{% block content %}
+
+<h1 style="font-size:1.4rem;">Manage Spotify Albums</h1>
+
+
+<section class="mp-section">
+    <p class="mp-empty-state">
+        <a class="mp-btn mp-btn--primary use-ajax" href=""
+            data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:900}"
+            data-link-system-path="/admin/music/spotify/downloads/new">New</a>
+    </p>
+</section>
+
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+        <tr style="text-align:left; border-bottom:1px solid var(--mp-border);">
+            <th style="padding:8px;">Title</th>
+            <th style="padding:8px;">Downloaded Size</th>
+            <th style="padding:8px;">Total Size</th>
+            <th style="padding:8px;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in lists %}
+        <tr style="border-bottom:1px solid var(--mp-border);">
+            <td style="padding:8px;">{{ item.album_name }}</td>
+            <td style="padding:8px;">{{ item.downloaded_size }}</td>
+            <td style="padding:8px;">{{ item.download_total_size }}</td>
+            <td style="padding:8px;">{{ item.status }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="padding:20px; text-align:center;">No downloads found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

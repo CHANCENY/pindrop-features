@@ -1,0 +1,17 @@
+{% extends '@music/base.html.twig' %}
+{% block title %}Spotify album links — Music{% endblock %}
+{% block content %}
+<div class="mp-card" style="max-width:520px; padding:24px; color: black !important;">
+    <h1 style="font-size:1.3rem; margin-top:0;">Add Links
+    </h1>
+    <p class="mp-help">Add spotfy album link per line in textarea field below</p>
+    <form method="post" action="/admin/music/spotify/downloads/new">
+      
+        <label style="display:block; font-weight:600; font-size:.85rem; margin:14px 0 6px;">Links</label>
+        <textarea name="links" rows="4"
+                  style="width:100%; padding:9px 12px; border:1px solid var(--mp-border); border-radius:8px; background:#121212; color:var(--mp-text); font-family:inherit;">{{ old.bio|default('') }}</textarea>
+
+        <button type="submit" class="mp-btn mp-btn--primary" style="margin-top:16px;">Save</button>
+    </form>
+</div>
+{% endblock %}

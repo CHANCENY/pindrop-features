@@ -14,3 +14,10 @@ music_cron.ingest:
     - "@music_cron.storage_mover"
   tags:
     - "music_cron"
+
+music_cron.downloader:
+  class: Simp\Pindrop\Modules\music_cron\src\Service\SpotifyAlbum
+  arguments:
+    - "@database"
+  tags:
+    - "music_downloader"
