@@ -142,4 +142,14 @@ class ArtistService
         $text = trim($text, '-');
         return $text !== '' ? substr($text, 0, 180) : 'artist';
     }
+
+    public function getAllArtists(int $limit = 100, int $offset = 0): array
+    {
+        return $this->database->table(self::TABLE)
+            ->where('status', '=', 'active')
+            ->orderBy('name', 'ASC')
+            ->limit($limit)
+            ->offset($offset)
+            ->get();
+    }
 }

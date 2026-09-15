@@ -56,4 +56,29 @@ class ListeningHistoryService
 
         return $ids;
     }
+
+    public function getAllListeningHistory()
+    {
+        return $this->database->table(self::TABLE)
+            ->latest('played_at')
+            ->get();
+    }
+
+    public function mostPlayed(int $user_id, int $limit): array
+    {
+        $mosted = $this->database->table(self::TABLE)
+        ->where('user_id', '=', $user_id)
+        ->select(['track_id', "COUNT(track_id) AS t"])
+        ->limit($limit)
+        ->orderBy('t', 'DESC')
+        ->groupBy('track_id')
+        ->get();
+
+        $tracks = array_column($mosted, 'track_id');
+
+        return $this->database->table('music_tracks')
+        ->whereIn('id', $tracks)
+        ->get();
+        
+    }
 }

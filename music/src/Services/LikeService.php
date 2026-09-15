@@ -96,4 +96,14 @@ class LikeService
             ->where('likeable_id', '=', $id)
             ->count();
     }
+
+    public function getAllLikes(int $user_id, string $type, int $id)
+    {
+        return $this->database->table(self::TABLE)
+            ->where('likeable_type','=', $type)
+            ->where('likeable_id', '=', $id)
+            ->where('user_id', '=', $user_id)
+            ->latest('created_at')
+            ->get();
+    }
 }

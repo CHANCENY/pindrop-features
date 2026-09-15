@@ -130,7 +130,7 @@ music.admin.report.resolve:
     _permission: ['can_music_moderate']
 
 # -----------------------------------------------------------------------------
-# Phase 6 — likes, follows, reports, library, playlists
+# Phase 6 — likes, follows, reports, library, playlists  
 # -----------------------------------------------------------------------------
 
 music.like.toggle:

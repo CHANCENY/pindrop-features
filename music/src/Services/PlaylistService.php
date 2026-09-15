@@ -73,6 +73,14 @@ class PlaylistService
             ->get();
     }
 
+    public function getAllPlaylists(int $limit, int $offset)
+    {
+        return $this->database->table(self::TABLE)
+            ->limit($limit)
+            ->offset($offset)
+            ->get();
+    }
+
     public function addTrack(int $playlistId, int $trackId): void
     {
         $maxPosition = $this->database->table(self::PIVOT)

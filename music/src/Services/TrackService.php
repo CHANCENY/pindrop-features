@@ -108,6 +108,15 @@ class TrackService
             ->get();
     }
 
+    public function randomPick(int $limit = 20): array
+    {
+        return $this->database->table(self::TABLE)
+            ->where('status', '=', 'published')
+            ->latest('created_at')
+            ->limit($limit)
+            ->get();
+    }
+
     public function search(string $term, int $limit = 20): array
     {
         $term = trim($term);

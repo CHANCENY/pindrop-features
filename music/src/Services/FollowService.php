@@ -51,4 +51,11 @@ class FollowService
 
         return array_map(static fn ($r) => (int) $r['artist_id'], $rows);
     }
+
+    public function getAllFollowings()
+    {
+        return $this->database->table(self::TABLE)
+            ->latest('created_at')
+            ->get();
+    }
 }

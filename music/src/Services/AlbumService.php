@@ -36,6 +36,16 @@ class AlbumService
             ->get();
     }
 
+    public function getAllAlbums(int $limit = 100, int $offset = 0): array
+    {
+        return $this->database->table(self::TABLE)
+            ->where('status', '=', 'published')
+            ->orderBy('release_date', 'DESC')
+            ->limit($limit)
+            ->offset($offset)
+            ->get();
+    }
+
     public function recent(int $limit = 12): array
     {
         return $this->database->table(self::TABLE)
