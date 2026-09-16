@@ -12,6 +12,7 @@ music_cron.ingest:
     - "@music.album"
     - "@music.track"
     - "@music_cron.storage_mover"
+    - "@music.playlist"
   tags:
     - "music_cron"
 

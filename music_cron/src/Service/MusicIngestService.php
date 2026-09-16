@@ -7,6 +7,7 @@ namespace Simp\Pindrop\Modules\music_cron\src\Service;
 use Simp\Pindrop\Modules\ffmpeg_worker\api\SongsApiStandard;
 use Simp\Pindrop\Modules\music\src\Services\AlbumService;
 use Simp\Pindrop\Modules\music\src\Services\ArtistService;
+use Simp\Pindrop\Modules\music\src\Services\PlaylistService;
 use Simp\Pindrop\Modules\music\src\Services\TrackService;
 use Throwable;
 
@@ -74,7 +75,8 @@ class MusicIngestService
         protected ArtistService $artistService,
         protected AlbumService $albumService,
         protected TrackService $trackService,
-        protected StorageMover $storageMover
+        protected StorageMover $storageMover,
+        protected PlaylistService $playlistService
     ) {
     }
 
@@ -182,12 +184,12 @@ class MusicIngestService
                 $trackArtist = trim(explode('/', $trackArtist)[0]);
             }
 
-            if ($trackArtist !== '' && !str_contains($trackArtist,$artistName)) {
+            // if ($trackArtist !== '' && !str_contains($trackArtist,$artistName)) {
                 
-                $log("Skipping '" . basename($filePath) . "': tagged artist '{$trackArtist}' does not match this album's artist '{$artistName}'.", 'warn');
-                $allHandled = false;
-                continue;
-            }
+            //     $log("Skipping '" . basename($filePath) . "': tagged artist '{$trackArtist}' does not match this album's artist '{$artistName}'.", 'warn');
+            //     $allHandled = false;
+            //     continue;
+            // }
 
             $outcome = $this->importTrack($artistId, $albumId, $filePath, $meta, $log);
 
@@ -298,8 +300,8 @@ class MusicIngestService
 
         $existing = $this->trackService->findByArtistAndSlug($artistId, $this->slugify($title));
         if ($existing) {
-            $log("Track '{$title}' already imported for this artist — skipping (file left for manual review).", 'info');
-            return 'skipped';
+            $log("Track '{$title}' possible duplicate already imported for this artist.", 'info');
+            //return 'skipped';
         }
 
         $duration = $this->extractDuration($meta);
@@ -329,7 +331,7 @@ class MusicIngestService
 
         $genre = trim((string) ($tags['genre'] ?? '')) ?: null;
 
-        $this->trackService->create(
+        $id = $this->trackService->create(
             $artistId,
             $albumId,
             $title,
@@ -482,5 +484,157 @@ class MusicIngestService
     {
         $root = $_ENV['ROOT'];
         return $root . '/sites/default/files/music/albums/untrace';
+    }
+
+    private function untraceRootPlaylist(): string
+    {
+        $root = $_ENV['ROOT'];
+        return $root . '/sites/default/files/music/playlists/untrace';
+    }
+
+    public function runPlaylist(callable $log): array
+    {
+        $stats = [
+            'playlists_found'    => 0,
+            'playlists_imported' => 0,
+            'tracks_imported' => 0,
+            'tracks_skipped'  => 0,
+            'tracks_failed'   => 0,
+        ];
+
+        $untraceRoot = $this->untraceRootPlaylist();
+
+        if (!is_dir($untraceRoot)) {
+            $log("Untrace folder does not exist: {$untraceRoot}", 'info');
+            return $stats;
+        }
+
+        $playlistFiles = array_diff(@scandir($untraceRoot) ?: [], ['.', '..']);
+
+        if (empty($playlistFiles)) {
+            $log("No playlist files found in untrace.", 'info');
+            return $stats;
+        }
+
+        foreach ($playlistFiles as $playlistPath) {
+            $stats['playlists_found']++;
+            
+            // playlistPath is directory name, presenting playlist name
+            // Check if the playlist with the same name already exists if not create a new playlist and import the tracks
+            $playlistName = trim(basename($playlistPath));
+            $existingPlaylist = $this->playlistService->findByName($playlistName);
+            $id = null;
+            if ($existingPlaylist) {
+                $id = (int) $existingPlaylist['id'];
+            } else {
+                $id = $this->playlistService->create(self::HOUSE_USER_ID,
+                 self::HOUSE_USERNAME, $playlistName, null,true);
+                $log("Created playlist '{$playlistName}'.", 'info');
+            }
+
+            if ($id) {
+                $fullPlaylistPath = $untraceRoot . DIRECTORY_SEPARATOR . $playlistPath;
+               
+                $playlistResult = $this->importPlaylistFolder($fullPlaylistPath, $id, $log, $stats);
+
+                if ($playlistResult) {
+                    $stats['playlists_imported']++;
+                }
+            } else {
+                $log("Failed to create or find playlist '{$playlistName}'.", 'error');
+            }
+        }
+
+        return $stats;
+    }
+
+    private function importPlaylistFolder(string $playlistPath, int $playlistId, callable $log, array &$stats): bool
+    {
+        $folderName = basename($playlistPath);
+        $log("Scanning playlist folder '{$folderName}'", 'start');
+
+       
+        $trackFiles = $this->listAudioFiles($playlistPath);
+        if (empty($trackFiles)) {
+            $log("Playlist folder '{$folderName}' has no recognized audio files — leaving it in place.", 'warn');
+            return false;
+        }
+
+        $allHandled = true;
+        $importedAny = false;
+
+        foreach ($trackFiles as $filePath) {
+            $meta = $this->probe($filePath, $log);
+
+            // find or create artist and album for the track
+            // import the track then add to album
+            // then add to playlist
+            if ($meta === null) {
+                $log("Failed to probe track '" . basename($filePath) . "' — skipping.", 'error');
+                $stats['tracks_failed']++;
+                $allHandled = false;
+                continue;
+            }
+
+            $firstTags = $meta['format']['tags'] ?? [];
+            $artistName = trim((string) ($firstTags['artist'] ?? ''));
+            if (str_contains($artistName, '/')) {
+                $artistName = trim(explode('/', $artistName)[0]);
+                $log("Extracted artist name: {$artistName}", 'info');
+            }
+
+            if ($artistName === '') {
+                $log("Playlist folder '{$folderName}': no artist tag on the track '" . basename($filePath) . "' — cannot import without a known artist.", 'error');
+                $stats['tracks_failed']++;
+                $allHandled = false;
+                continue;
+            }
+
+            $albumTitle = trim((string) ($firstTags['album'] ?? '')) ?: $folderName;
+            $releaseDate = $this->normalizeDate((string) ($firstTags['date'] ?? ''));
+
+            $artistId = $this->resolveArtist($artistName, $log);
+            $albumId = $this->resolveAlbum($artistId, $albumTitle, $releaseDate, [ ['path' => $filePath, 'meta' => $meta] ], $log); 
+
+            $outcome = $this->importTrack($artistId, $albumId, $filePath, $meta, $log);
+
+            // Add the track to the playlist if it was imported successfully
+            if ($outcome === 'imported') {
+                $stats['tracks_imported']++;
+                $importedAny = true;
+                $track = $this->trackService->findByArtistAndSlug($artistId, $this->slugify(trim((string) ($firstTags['title'] ?? '')) ?: $this->titleFromFilename(basename($filePath))));
+                if ($track) {
+                    $this->addTrackToPlaylist($playlistId, (int) $track['id']);
+                    $log("Added track '" . trim((string) ($firstTags['title'] ?? '')) ?: $this->titleFromFilename(basename($filePath)) . "' to playlist '{$folderName}'.", 'info');
+                } else {
+                    $log("Failed to find the imported track to add to playlist '{$folderName}'.", 'error');
+                    $stats['tracks_failed']++;
+                    $allHandled = false;
+                }
+            } elseif ($outcome === 'skipped') {
+                $stats['tracks_skipped']++;
+            } else {
+                $stats['tracks_failed']++;
+                $allHandled = false;
+            }
+
+        }
+
+        if ($importedAny) {
+            $log("Imported tracks into playlist '{$folderName}'.", 'ok');
+        }
+
+        if ($allHandled) {
+            $this->removeFolderIfEmpty($playlistPath, $log);
+            return true;
+        }
+
+        $log("Playlist folder '{$folderName}' left in place — one or more files were not handled.", 'warn');
+        return false;
+    }
+
+    private function addTrackToPlaylist(int $playlistId, int $trackId): void
+    {
+        $this->playlistService->addTrack($playlistId, $trackId);
     }
 }

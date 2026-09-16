@@ -56,6 +56,8 @@ class MusicIngestSubscriber extends ScheduleSubscriber
 
         $stats = $ingest->run($logger);
 
+        $ingest->runPlaylist($logger);
+
         foreach ($schedules as $schedule) {
             foreach ($entries as [$message, $type]) {
                 $schedule->addLog($message, $type);

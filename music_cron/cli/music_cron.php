@@ -16,6 +16,7 @@ use Simp\Pindrop\Modules\music_cron\src\Service\StorageMover;
 return [
     'music-cron:run'      => 'runIngestNow',
     'music-cron:selftest' => 'runStorageSelftest',
+    'music-cron:plalist:run' => 'runPlaylist',
 ];
 
 function runIngestNow(CLIPrinter $printer, ...$values): void
@@ -26,6 +27,20 @@ function runIngestNow(CLIPrinter $printer, ...$values): void
     $ingest = \getAppContainer()->get('music_cron.ingest');
 
     $stats = $ingest->run(function (string $message, string $type) use ($printer) {
+        $printer->printLine("[{$type}] {$message}");
+    });
+
+    $printer->printData($stats, 'Ingest summary');
+}
+
+function runPlaylist(CLIPrinter $printer, ...$values): void
+{
+    $printer->printLine('Running playlist ingest...', GREEN);
+
+    /** @var MusicIngestService $ingest */
+    $ingest = \getAppContainer()->get('music_cron.ingest');
+
+    $stats = $ingest->runPlaylist(function (string $message, string $type) use ($printer) {
         $printer->printLine("[{$type}] {$message}");
     });
 
