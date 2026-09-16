@@ -150,4 +150,9 @@ class PlaylistService
         $text = trim($text, '-');
         return $text !== '' ? substr($text, 0, 180) : 'playlist';
     }
+
+    public function findByName(string $name): ?array
+    {
+        return $this->database->table(self::TABLE)->where('title', '=', $name)->first();
+    }
 }
