@@ -1,0 +1,92 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}File Manager{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/file_manager/assets/file-manager.css?v=1.0.0">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page-header">
+    <h1 class="admin-page-title">File Manager</h1>
+    <p class="admin-page-subtitle">
+        Working in <code id="fm-root-label">{{ root }}</code>
+        {% if read_only %}<span class="fm-badge fm-badge-warn">Read-only mode</span>{% endif %}
+    </p>
+</div>
+
+<div class="fm" id="fm" data-state="loading">
+    <noscript><p class="fm-noscript">The file manager needs JavaScript.</p></noscript>
+
+    <div class="fm-banner" id="fm-banner" hidden></div>
+
+    <div class="fm-toolbar" id="fm-toolbar" role="toolbar" aria-label="File actions">
+        <div class="fm-tb-group">
+            <button type="button" class="fm-btn" data-act="new-file"><i class="fa-solid fa-file-circle-plus"></i><span>File</span></button>
+            <button type="button" class="fm-btn" data-act="new-folder"><i class="fa-solid fa-folder-plus"></i><span>Folder</span></button>
+            <button type="button" class="fm-btn fm-btn-primary" data-act="upload"><i class="fa-solid fa-arrow-up-from-bracket"></i><span>Upload</span></button>
+        </div>
+        <div class="fm-tb-group" data-needs="selection">
+            <button type="button" class="fm-btn" data-act="open" data-needs="one"><i class="fa-solid fa-pen-to-square"></i><span>Edit</span></button>
+            <button type="button" class="fm-btn" data-act="download" data-needs="one-file"><i class="fa-solid fa-arrow-down-to-bracket"></i><span>Download</span></button>
+            <button type="button" class="fm-btn" data-act="rename" data-needs="one"><i class="fa-solid fa-i-cursor"></i><span>Rename</span></button>
+            <button type="button" class="fm-btn" data-act="copy" data-needs="any"><i class="fa-regular fa-copy"></i><span>Copy</span></button>
+            <button type="button" class="fm-btn" data-act="move" data-needs="any"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Move</span></button>
+            <button type="button" class="fm-btn" data-act="zip" data-needs="any"><i class="fa-solid fa-file-zipper"></i><span>Compress</span></button>
+            <button type="button" class="fm-btn" data-act="unzip" data-needs="one-zip"><i class="fa-solid fa-box-open"></i><span>Extract</span></button>
+            <button type="button" class="fm-btn" data-act="chmod" data-needs="one"><i class="fa-solid fa-lock"></i><span>Permissions</span></button>
+            <button type="button" class="fm-btn fm-btn-danger" data-act="delete" data-needs="any"><i class="fa-regular fa-trash-can"></i><span>Delete</span></button>
+        </div>
+        <div class="fm-tb-spacer"></div>
+        <div class="fm-tb-group">
+            <label class="fm-check" title="Show files that start with a dot">
+                <input type="checkbox" id="fm-hidden"> <span>Hidden files</span>
+            </label>
+            <button type="button" class="fm-btn" data-act="refresh" title="Reload this folder"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+    </div>
+
+    <div class="fm-pathbar">
+        <button type="button" class="fm-btn fm-btn-icon" id="fm-up" title="Up one level (Backspace)"><i class="fa-solid fa-arrow-up"></i></button>
+        <nav class="fm-crumbs" id="fm-crumbs" aria-label="Location"></nav>
+        <form class="fm-search" id="fm-search" role="search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" id="fm-search-input" placeholder="Search names in this folder and below" autocomplete="off" aria-label="Search files">
+        </form>
+    </div>
+
+    <div class="fm-body">
+        <aside class="fm-tree" id="fm-tree" aria-label="Folders"></aside>
+        <section class="fm-main">
+            <div class="fm-scroll" id="fm-scroll">
+                <table class="fm-table" id="fm-table">
+                    <thead>
+                        <tr>
+                            <th class="fm-c-check"><input type="checkbox" id="fm-all" aria-label="Select all"></th>
+                            <th class="fm-c-name" data-sort="name" aria-sort="none">Name</th>
+                            <th class="fm-c-size" data-sort="size" aria-sort="none">Size</th>
+                            <th class="fm-c-date" data-sort="mtime" aria-sort="none">Modified</th>
+                            <th class="fm-c-perm" data-sort="perms" aria-sort="none">Perms</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fm-rows"></tbody>
+                </table>
+                <div class="fm-empty" id="fm-empty" hidden></div>
+            </div>
+            <div class="fm-status" id="fm-status" aria-live="polite"></div>
+        </section>
+    </div>
+
+    <div class="fm-dropzone" id="fm-drop" hidden><div><i class="fa-solid fa-cloud-arrow-up"></i><p>Drop files to upload into <strong id="fm-drop-target">/</strong></p></div></div>
+    <input type="file" id="fm-file-input" multiple hidden>
+    <div class="fm-uploads" id="fm-uploads" hidden></div>
+    <div class="fm-toasts" id="fm-toasts" aria-live="polite"></div>
+    <div class="fm-menu" id="fm-menu" role="menu" hidden></div>
+</div>
+
+<script type="application/json" id="fm-config">{{ config_json|raw }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="/modules/file_manager/assets/file-manager.js?v=1.0.0"></script>
+{% endblock %}

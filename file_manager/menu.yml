@@ -1,0 +1,9 @@
+groups:
+  admin:
+    file_manager:
+      icon: fa fa-folder-open
+      permissions:
+      - can_use_file_manager
+      route: file_manager.index
+      title: File Manager
+      weight: 6

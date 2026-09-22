@@ -1,0 +1,84 @@
+# File Manager routes.
+# Every route needs can_use_file_manager. NOTE: Pindrop's AuthMiddleware lets any
+# admin/super_admin through permission-gated routes, so the controller ALSO
+# re-checks the permission (RequestGuard::requireUser). Do not remove that check.
+
+file_manager.index:
+  defaults:
+    _controller: Simp\Pindrop\Modules\file_manager\src\Controller\FileManagerController::index
+  methods:
+  - GET
+  path: /admin/file-manager
+  requirements:
+    _permission:
+    - can_use_file_manager
+
+file_manager.api.list:
+  defaults:
+    _controller: Simp\Pindrop\Modules\file_manager\src\Controller\FileManagerController::list
+  methods:
+  - GET
+  path: /admin/file-manager/api/list
+  requirements:
+    _permission:
+    - can_use_file_manager
+
+file_manager.api.search:
+  defaults:
+    _controller: Simp\Pindrop\Modules\file_manager\src\Controller\FileManagerController::search
+  methods:
+  - GET
+  path: /admin/file-manager/api/search
+  requirements:
+    _permission:
+    - can_use_file_manager
+
+file_manager.api.read:
+  defaults:
+    _controller: Simp\Pindrop\Modules\file_manager\src\Controller\FileManagerController::read
+  methods:
+  - GET
+  path: /admin/file-manager/api/read
+  requirements:
+    _permission:
+    - can_use_file_manager
+
+file_manager.api.download:
+  defaults:
+    _controller: Simp\Pindrop\Modules\file_manager\src\Controller\FileManagerController::download
+  methods:
+  - GET
+  path: /admin/file-manager/api/download
+  requirements:
+    _permission:
+    - can_use_file_manager
+
+file_manager.api.token:
+  defaults:
+    _controller: Simp\Pindrop\Modules\file_manager\src\Controller\FileManagerController::token
+  methods:
+  - GET
+  path: /admin/file-manager/api/token
+  requirements:
+    _permission:
+    - can_use_file_manager
+
+file_manager.api.action:
+  defaults:
+    _controller: Simp\Pindrop\Modules\file_manager\src\Controller\FileManagerController::action
+  methods:
+  - POST
+  path: /admin/file-manager/api/action
+  requirements:
+    _permission:
+    - can_use_file_manager
+
+file_manager.api.upload:
+  defaults:
+    _controller: Simp\Pindrop\Modules\file_manager\src\Controller\FileManagerController::upload
+  methods:
+  - POST
+  path: /admin/file-manager/api/upload
+  requirements:
+    _permission:
+    - can_use_file_manager

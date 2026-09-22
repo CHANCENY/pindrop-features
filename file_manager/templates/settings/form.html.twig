@@ -1,0 +1,34 @@
+<div class="admin-form-group">
+    <label for="fm_root_path" class="admin-form-label">Root folder</label>
+    <input type="text" id="fm_root_path" name="fm_root_path" value="{{ fm.root_path }}" class="admin-form-input" placeholder="(blank = whole project)">
+    <p class="admin-form-help">The file manager cannot leave this folder. Blank means the project root ({{ project_root }}). Use a relative path such as <code>sites/default/files</code> to restrict it, or an absolute path.</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="fm_protected_paths" class="admin-form-label">Protected paths</label>
+    <textarea id="fm_protected_paths" name="fm_protected_paths" rows="3" class="admin-form-input">{{ fm.protected_paths }}</textarea>
+    <p class="admin-form-help">One per line, relative to the root. These can be viewed but never edited, deleted, renamed, replaced or overwritten by upload or extraction. Applies to everything inside a protected folder.</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="fm_blocked_extensions" class="admin-form-label">Blocked upload / extract extensions</label>
+    <textarea id="fm_blocked_extensions" name="fm_blocked_extensions" rows="2" class="admin-form-input">{{ fm.blocked_extensions }}</textarea>
+    <p class="admin-form-help">Comma separated. Checked on every dot-separated part of the name, so <code>shell.php.jpg</code> is blocked too. Files can still be created and edited in the editor.</p>
+    <label style="display:block;margin-top:.5rem"><input type="checkbox" name="fm_allow_php" value="1" {{ fm.allow_php ? 'checked' : '' }}> Allow uploading / extracting PHP files (removes php, phtml, phar, pht, php3-7, phps from the list above)</label>
+</div>
+
+<div class="admin-form-group">
+    <label style="display:block"><input type="checkbox" name="fm_read_only" value="1" {{ fm.read_only ? 'checked' : '' }}> Read-only mode (browse, view and download only)</label>
+    <label style="display:block;margin-top:.5rem"><input type="checkbox" name="fm_show_hidden" value="1" {{ fm.show_hidden ? 'checked' : '' }}> Show hidden (dot) files by default</label>
+</div>
+
+<div class="admin-form-group">
+    <label for="fm_max_edit_kb" class="admin-form-label">Largest file the editor will open (KB)</label>
+    <input type="number" min="16" max="20480" id="fm_max_edit_kb" name="fm_max_edit_kb" value="{{ fm.max_edit_kb }}" class="admin-form-input">
+</div>
+
+<div class="admin-form-group">
+    <label for="fm_max_upload_mb" class="admin-form-label">Largest upload (MB)</label>
+    <input type="number" min="1" max="2048" id="fm_max_upload_mb" name="fm_max_upload_mb" value="{{ fm.max_upload_mb }}" class="admin-form-input">
+    <p class="admin-form-help">PHP's own <code>upload_max_filesize</code> and <code>post_max_size</code> still apply and may be lower than this.</p>
+</div>

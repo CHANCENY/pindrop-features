@@ -1,0 +1,6 @@
+# Only super_admin gets this by default. To let another role/user in, grant the
+# permission from the CMS permissions screen (Users > Permissions).
+super_admin:
+  can_use_file_manager:
+    title: 'Use the File Manager'
+    description: 'Browse, upload, edit, delete and change permissions of files on the server. Equivalent to full code access - grant with great care.'

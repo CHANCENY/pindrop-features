@@ -1,0 +1,5 @@
+name: "File Manager"
+description: "cPanel-style file manager: browse, upload, download, edit, rename, move, copy, compress, extract and set permissions from the admin panel."
+version: 1.0.0
+author: "Pindrop Community"
+license: "MIT"

@@ -1,0 +1,3 @@
+file_manager:
+  name: File Manager Settings
+  class: Simp\Pindrop\Modules\file_manager\src\Plugin\FileManagerSettings
