@@ -1,0 +1,4 @@
+super_admin:
+  can_use_mailbox:
+    title: 'Use the Mailbox'
+    description: 'Read, send, and manage mail for the configured mailbox account. Grants access to message contents.'

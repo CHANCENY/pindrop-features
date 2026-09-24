@@ -1,0 +1,9 @@
+groups:
+  admin:
+    mailbox:
+      icon: fa fa-envelope
+      permissions:
+      - can_use_mailbox
+      route: mailbox.index
+      title: Mailbox
+      weight: 7

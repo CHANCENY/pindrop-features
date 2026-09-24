@@ -1,0 +1,9 @@
+{% extends "templates/base.twig" %}
+{% block title %}Mailbox{% endblock %}
+{% block content %}
+<div class="admin-page-header"><h1 class="admin-page-title">Mailbox</h1></div>
+<div style="max-width:640px;padding:1.25rem 1.5rem;border:1px solid var(--admin-border,#e2e8f0);border-left:4px solid var(--admin-danger-color,#ef4444);border-radius:.5rem;background:var(--admin-surface,#f8fafc)">
+    <p style="margin:0 0 .5rem;font-weight:600">You can't open the mailbox.</p>
+    <p style="margin:0;color:var(--admin-text-secondary,#64748b)">{{ message }}</p>
+</div>
+{% endblock %}

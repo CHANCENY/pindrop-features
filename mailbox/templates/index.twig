@@ -1,0 +1,61 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Mailbox{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/mailbox/assets/mailbox.css?v=1.0.0">
+{% endblock %}
+
+{% block content %}
+<div class="mb" id="mb" data-state="loading">
+    <noscript><p class="mb-noscript">The mailbox needs JavaScript.</p></noscript>
+
+    <div class="mb-toasts" id="mb-toasts" aria-live="polite"></div>
+
+    <aside class="mb-sidebar">
+        <button type="button" class="mb-compose-btn" id="mb-compose"><i class="fa-solid fa-pen"></i> Compose</button>
+        <nav class="mb-folders" id="mb-folders" aria-label="Folders"></nav>
+        <div class="mb-account" title="{{ config_json is defined ? '' : '' }}">
+            <i class="fa-regular fa-envelope"></i><span id="mb-account-email"></span>
+        </div>
+    </aside>
+
+    <section class="mb-list-pane">
+        <div class="mb-list-toolbar">
+            <label class="mb-check-all"><input type="checkbox" id="mb-select-all" aria-label="Select all"></label>
+            <div class="mb-bulk-actions" id="mb-bulk-actions" hidden>
+                <button type="button" class="mb-icon-btn" data-act="bulk-flag" title="Flag"><i class="fa-regular fa-star"></i></button>
+                <button type="button" class="mb-icon-btn" data-act="bulk-read" title="Mark read"><i class="fa-regular fa-envelope-open"></i></button>
+                <button type="button" class="mb-icon-btn" data-act="bulk-unread" title="Mark unread"><i class="fa-regular fa-envelope"></i></button>
+                <button type="button" class="mb-icon-btn" data-act="bulk-move" title="Move to&hellip;"><i class="fa-solid fa-arrow-right-arrow-left"></i></button>
+                <button type="button" class="mb-icon-btn" data-act="bulk-delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+            <form class="mb-search" id="mb-search" role="search" hidden><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="mb-search-input" placeholder="Search this folder" autocomplete="off"></form>
+            <div class="mb-tb-spacer"></div>
+            <button type="button" class="mb-icon-btn" id="mb-refresh" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+        <div class="mb-list-scroll" id="mb-list-scroll">
+            <ul class="mb-list" id="mb-list"></ul>
+            <div class="mb-empty" id="mb-list-empty" hidden></div>
+        </div>
+        <div class="mb-pager" id="mb-pager" hidden>
+            <button type="button" class="mb-icon-btn" id="mb-page-prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <span id="mb-page-label"></span>
+            <button type="button" class="mb-icon-btn" id="mb-page-next"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <section class="mb-reading-pane" id="mb-reading-pane">
+        <div class="mb-reading-empty" id="mb-reading-empty"><i class="fa-regular fa-envelope-open"></i><p>Select a message to read</p></div>
+        <div class="mb-message" id="mb-message" hidden></div>
+    </section>
+
+    <div class="mb-menu" id="mb-menu" role="menu" hidden></div>
+</div>
+
+<script type="application/json" id="mb-config">{{ config_json|raw }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="/modules/mailbox/assets/mailbox.js?v=1.0.0"></script>
+{% endblock %}

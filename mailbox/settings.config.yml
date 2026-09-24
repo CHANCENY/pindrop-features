@@ -1,0 +1,3 @@
+mailbox:
+  name: Mailbox Account Settings
+  class: Simp\Pindrop\Modules\mailbox\src\Plugin\MailboxSettings

@@ -1,0 +1,5 @@
+name: "Mailbox"
+description: "A full IMAP webmail client: browse folders, read, reply, forward, compose, move, copy and delete mail, right from the admin panel."
+version: 1.0.0
+author: "Pindrop Community"
+license: "MIT"

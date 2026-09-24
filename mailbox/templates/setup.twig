@@ -1,0 +1,10 @@
+{% extends "templates/base.twig" %}
+{% block title %}Mailbox{% endblock %}
+{% block content %}
+<div class="admin-page-header"><h1 class="admin-page-title">Mailbox</h1></div>
+<div style="max-width:640px;padding:1.25rem 1.5rem;border:1px solid var(--admin-border,#e2e8f0);border-left:4px solid var(--admin-primary-color,#2563eb);border-radius:.5rem;background:var(--admin-surface,#f8fafc)">
+    <p style="margin:0 0 .5rem;font-weight:600">No mailbox account is set up yet.</p>
+    <p style="margin:0 0 1rem;color:var(--admin-text-secondary,#64748b)">Add your IMAP server details under Admin &gt; Settings to get started.</p>
+    <a href="{{ url('admin.settings') }}" class="fm-btn" style="display:inline-block;padding:.5rem 1rem;border-radius:.375rem;background:var(--admin-primary-color,#2563eb);color:#fff;text-decoration:none">Go to Settings</a>
+</div>
+{% endblock %}

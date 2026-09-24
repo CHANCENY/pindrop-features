@@ -1,0 +1,79 @@
+mailbox.index:
+  defaults:
+    _controller: Simp\Pindrop\Modules\mailbox\src\Controller\MailboxController::index
+  methods:
+  - GET
+  path: /admin/mailbox
+  requirements:
+    _permission:
+    - can_use_mailbox
+
+mailbox.api.folders:
+  defaults:
+    _controller: Simp\Pindrop\Modules\mailbox\src\Controller\MailboxController::folders
+  methods:
+  - GET
+  path: /admin/mailbox/api/folders
+  requirements:
+    _permission:
+    - can_use_mailbox
+
+mailbox.api.messages:
+  defaults:
+    _controller: Simp\Pindrop\Modules\mailbox\src\Controller\MailboxController::messages
+  methods:
+  - GET
+  path: /admin/mailbox/api/messages
+  requirements:
+    _permission:
+    - can_use_mailbox
+
+mailbox.api.message:
+  defaults:
+    _controller: Simp\Pindrop\Modules\mailbox\src\Controller\MailboxController::message
+  methods:
+  - GET
+  path: /admin/mailbox/api/message
+  requirements:
+    _permission:
+    - can_use_mailbox
+
+mailbox.api.attachment:
+  defaults:
+    _controller: Simp\Pindrop\Modules\mailbox\src\Controller\MailboxController::attachment
+  methods:
+  - GET
+  path: /admin/mailbox/api/attachment
+  requirements:
+    _permission:
+    - can_use_mailbox
+
+mailbox.api.token:
+  defaults:
+    _controller: Simp\Pindrop\Modules\mailbox\src\Controller\MailboxController::token
+  methods:
+  - GET
+  path: /admin/mailbox/api/token
+  requirements:
+    _permission:
+    - can_use_mailbox
+
+mailbox.api.action:
+  defaults:
+    _controller: Simp\Pindrop\Modules\mailbox\src\Controller\MailboxController::action
+  methods:
+  - POST
+  path: /admin/mailbox/api/action
+  requirements:
+    _permission:
+    - can_use_mailbox
+
+mailbox.api.send:
+  defaults:
+    _controller: Simp\Pindrop\Modules\mailbox\src\Controller\MailboxController::send
+  methods:
+  - POST
+  path: /admin/mailbox/api/send
+  requirements:
+    _permission:
+    - can_use_mailbox

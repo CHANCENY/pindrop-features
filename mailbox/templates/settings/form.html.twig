@@ -1,0 +1,66 @@
+{% if not crypto_configured %}
+<div class="admin-form-group" style="padding:.75rem 1rem;border:1px solid #fde68a;background:#fffbeb;border-radius:.375rem;margin-bottom:1rem">
+    <strong>Before you can save a password:</strong> add <code>MAILBOX_ENCRYPTION_KEY</code> to your <code>.env</code> file. Suggested value (generate your own, don't reuse this example):
+    <pre style="white-space:pre-wrap;word-break:break-all;margin:.4rem 0 0">{{ key_suggestion }}</pre>
+</div>
+{% endif %}
+
+<div class="admin-form-group">
+    <label for="mb_host" class="admin-form-label">IMAP server</label>
+    <input type="text" id="mb_host" name="mb_host" value="{{ mb.host }}" class="admin-form-input" placeholder="imap.example.com">
+</div>
+
+<div class="admin-form-group" style="display:flex;gap:1rem">
+    <div style="flex:1">
+        <label for="mb_port" class="admin-form-label">Port</label>
+        <input type="number" id="mb_port" name="mb_port" value="{{ mb.port }}" class="admin-form-input">
+    </div>
+    <div style="flex:1">
+        <label for="mb_encryption" class="admin-form-label">Encryption</label>
+        <select id="mb_encryption" name="mb_encryption" class="admin-form-input">
+            <option value="ssl" {{ mb.encryption == 'ssl' ? 'selected' : '' }}>SSL/TLS (port 993)</option>
+            <option value="tls" {{ mb.encryption == 'tls' ? 'selected' : '' }}>STARTTLS (port 143)</option>
+            <option value="none" {{ mb.encryption == 'none' ? 'selected' : '' }}>None (not recommended)</option>
+        </select>
+    </div>
+</div>
+
+<div class="admin-form-group">
+    <label for="mb_username" class="admin-form-label">Username</label>
+    <input type="text" id="mb_username" name="mb_username" value="{{ mb.username }}" class="admin-form-input" autocomplete="off">
+</div>
+
+<div class="admin-form-group">
+    <label for="mb_password" class="admin-form-label">Password</label>
+    <input type="password" id="mb_password" name="mb_password" class="admin-form-input" autocomplete="new-password"
+        placeholder="{{ mb.has_password ? 'Leave blank to keep the current password' : '(not set)' }}">
+    <p class="admin-form-help">Many providers (Gmail, Yahoo, iCloud) require an app-specific password rather than your normal login password.</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="mb_watch_folder" class="admin-form-label">Folder to watch for new mail</label>
+    <input type="text" id="mb_watch_folder" name="mb_watch_folder" value="{{ mb.watch_folder }}" class="admin-form-input">
+    <p class="admin-form-help">Checked by the scheduled sync job (set up its interval under Admin &gt; Cron). Other folders load live when you open them.</p>
+</div>
+
+<div class="admin-form-group">
+    <label class="admin-form-label">Special folders</label>
+    <p class="admin-form-help">Leave blank to auto-detect from the server; fill in only if that guess is wrong (common on some cPanel/Dovecot setups).</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .75rem">
+        <div><label for="mb_sent_folder" style="font-weight:400">Sent</label><input type="text" id="mb_sent_folder" name="mb_sent_folder" value="{{ mb.sent_folder }}" class="admin-form-input" placeholder="e.g. Sent"></div>
+        <div><label for="mb_drafts_folder" style="font-weight:400">Drafts</label><input type="text" id="mb_drafts_folder" name="mb_drafts_folder" value="{{ mb.drafts_folder }}" class="admin-form-input" placeholder="e.g. Drafts"></div>
+        <div><label for="mb_trash_folder" style="font-weight:400">Trash</label><input type="text" id="mb_trash_folder" name="mb_trash_folder" value="{{ mb.trash_folder }}" class="admin-form-input" placeholder="e.g. Trash"></div>
+        <div><label for="mb_junk_folder" style="font-weight:400">Junk</label><input type="text" id="mb_junk_folder" name="mb_junk_folder" value="{{ mb.junk_folder }}" class="admin-form-input" placeholder="e.g. Junk"></div>
+    </div>
+</div>
+
+<div class="admin-form-group">
+    <label for="mb_messages_per_page" class="admin-form-label">Messages per page</label>
+    <input type="number" id="mb_messages_per_page" name="mb_messages_per_page" min="10" max="200" value="{{ mb.messages_per_page }}" class="admin-form-input">
+</div>
+
+<div class="admin-form-group">
+    <label for="mb_signature" class="admin-form-label">Signature</label>
+    <textarea id="mb_signature" name="mb_signature" rows="4" class="admin-form-input">{{ mb.signature }}</textarea>
+    <p class="admin-form-help">Appended to new messages and replies. Plain text (HTML is escaped when sending as plain-text mail).</p>
+</div>

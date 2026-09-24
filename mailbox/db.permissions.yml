@@ -1,0 +1,23 @@
+db.mailbox.read:
+  description: 'Read access to the mailbox message cache.'
+  owned_by: mailbox
+  tables:
+    mailbox_messages: [select]
+
+db.mailbox.write:
+  description: 'Write access to the mailbox message cache.'
+  owned_by: mailbox
+  tables:
+    mailbox_messages: [insert, update]
+
+db.mailbox.delete:
+  description: 'Delete access to the mailbox message cache.'
+  owned_by: mailbox
+  tables:
+    mailbox_messages: [delete]
+
+db.mailbox.full:
+  description: 'Full access to the mailbox message cache.'
+  owned_by: mailbox
+  tables:
+    mailbox_messages: [select, insert, update, delete]

@@ -1,0 +1,18 @@
+mailbox.message.received:
+  name: "New Mailbox Message"
+  description: "Emitted by the scheduled sync when a new message arrives in the watched folder."
+  plugin: mailbox
+  payload:
+    folder: "string — raw IMAP folder name"
+    uid: "int — message UID within that folder"
+    subject: "string"
+    from: "array — {name: string|null, email: string|null}"
+    date: "string|null — ISO 8601"
+
+mailbox.sync.failed:
+  name: "Mailbox Sync Failed"
+  description: "Emitted when the scheduled sync could not reach or log into the mail server."
+  plugin: mailbox
+  payload:
+    reason: "string — the error message"
+    at: "string — ISO 8601 timestamp"
