@@ -17,6 +17,8 @@ return [
     'music-cron:run'      => 'runIngestNow',
     'music-cron:selftest' => 'runStorageSelftest',
     'music-cron:plalist:run' => 'runPlaylist',
+    'music-cron:lyrics'  => 'runLyrics',
+    'music-cron:singles'  => 'runSingles',
 ];
 
 function runIngestNow(CLIPrinter $printer, ...$values): void
@@ -32,6 +34,35 @@ function runIngestNow(CLIPrinter $printer, ...$values): void
 
     $printer->printData($stats, 'Ingest summary');
 }
+
+function runLyrics(CLIPrinter $printer, ...$values): void
+{
+    $printer->printLine('Running music lyrics ingest...', GREEN);
+
+    /** @var MusicIngestService $ingest */
+    $ingest = \getAppContainer()->get('music_cron.ingest');
+
+    $stats = $ingest->runLyricsIngest(function (string $message, string $type) use ($printer) {
+        $printer->printLine("[{$type}] {$message}");
+    });
+
+    $printer->printData($stats, 'Ingest summary');
+}
+
+function runSingles(CLIPrinter $printer, ...$values): void
+{
+    $printer->printLine('Running music singles ingest...', GREEN);
+
+    /** @var MusicIngestService $ingest */
+    $ingest = \getAppContainer()->get('music_cron.ingest');
+
+    $stats = $ingest->runTracksUnknownAlbums(function (string $message, string $type) use ($printer) {
+        $printer->printLine("[{$type}] {$message}");
+    });
+
+    $printer->printData($stats, 'Ingest summary');
+}
+
 
 function runPlaylist(CLIPrinter $printer, ...$values): void
 {

@@ -22,3 +22,10 @@ music_cron.downloader:
     - "@database"
   tags:
     - "music_downloader"
+
+music_cron.syncalong:
+  class: Simp\Pindrop\Modules\music_cron\src\Service\SyncAlongService
+  arguments:
+    - "@music.media_url"
+  tags:
+    - "music_cron"

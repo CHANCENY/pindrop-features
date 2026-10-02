@@ -6,7 +6,7 @@ use Simp\Pindrop\Modules\cron\src\Plugin\Subscriber\ScheduleSubscriber;
 use Simp\Pindrop\Modules\music_cron\src\Service\MusicIngestService;
 
 /**
- * MusicIngestSubscriber
+ * MusicLyricsIngestSubscriber
  *
  * CronDefinitionSubscriberInterface's constructor signature is fixed to
  * __construct(DatabaseService $databaseService) — CronManager instantiates
@@ -24,16 +24,16 @@ use Simp\Pindrop\Modules\music_cron\src\Service\MusicIngestService;
  * dashboard entry still shows what happened) before each is marked
  * finished() and gets its own next_run recalculated.
  */
-class MusicIngestSubscriber extends ScheduleSubscriber
+class MusicLyricsIngestSubscriber extends ScheduleSubscriber
 {
     public function name(): string
     {
-        return 'Music album ingest subscriber';
+        return 'Music lyrics ingest subscriber';
     }
 
     public function id(): string
     {
-        return 'music.ingest.subscriber';
+        return 'music.lyrics.ingest.subscriber';
     }
 
     public function runSchedules(array $schedules): string
@@ -54,11 +54,7 @@ class MusicIngestSubscriber extends ScheduleSubscriber
             $schedule->addLog('Music ingest run started', 'start');
         }
 
-        $stats = $ingest->run($logger);
-
-        $ingest->runPlaylist($logger);
-
-        $ingest->runTracksUnknownAlbums($logger);
+        $stats = $ingest->runLyricsIngest($logger);
 
         foreach ($schedules as $schedule) {
             foreach ($entries as [$message, $type]) {
@@ -68,12 +64,11 @@ class MusicIngestSubscriber extends ScheduleSubscriber
         }
 
         return sprintf(
-            'Music ingest: %d album folder(s) found, %d imported, %d track(s) imported, %d skipped, %d failed.',
-            $stats['albums_found'],
-            $stats['albums_imported'],
-            $stats['tracks_imported'],
-            $stats['tracks_skipped'],
-            $stats['tracks_failed']
+            'Music ingest: %d lyrics found, %d imported, %d, %d skipped, %d failed.',
+            $stats['lyrics_found'],
+            $stats['lyrics_imported'],
+            $stats['lyrics_skipped'],
+            $stats['lyrics_failed']
         );
     }
 }
