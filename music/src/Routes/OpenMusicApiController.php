@@ -24,8 +24,7 @@ use Simp\Pindrop\Routing\AttributeRoute;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Throwable;
+
 
 class OpenMusicApiController extends ControllerBase
 {
@@ -133,10 +132,17 @@ class OpenMusicApiController extends ControllerBase
          */
         $currentUser = getAppContainer()->get('current_user');
         if ($currentUser instanceof CurrentUser) {
+
+           
+            if (isset($_ENV['ANONYMOUS_ID']) && $currentUser->getUser()->getId() == $_ENV['ANONYMOUS_ID']) {
+                return self::responseBuilder(message: "You are logged in as anonymous user", status: false);
+            }
+
+
             return self::responseBuilder(['session' => $currentUser->getSessionId()], message: "You are logged in");
         }
 
-        return self::responseBuilder(message: "You need to login first or again");
+        return self::responseBuilder(message: "You need to login first or again", status: false);
 
     }
 
@@ -166,7 +172,7 @@ class OpenMusicApiController extends ControllerBase
                     return self::responseBuilder([
                         'session' => $currentUser->getSessionId(),
                         'cookie' => "PHPSESSID=" . $currentUser->getSessionId() . ";session_id=" . $currentUser->getSessionId()
-                    ], httpCode: 302, message: "Logged in successfully");
+                    ], message: "Logged in successfully");
                 }
 
                 return self::responseBuilder(message: "Failed to login", status: false);
@@ -267,6 +273,10 @@ class OpenMusicApiController extends ControllerBase
         $currentUser = getAppContainer()->get('current_user');
         if ($currentUser instanceof CurrentUser) {
             $user = $currentUser->getUser();
+
+            if (isset($_ENV['ANONYMOUS_ID']) && $user->getId() == $_ENV['ANONYMOUS_ID']) {
+                return self::responseBuilder(message: "You are logged in as anonymous user", status: false);
+            }
 
             return self::responseBuilder([
                 'id' => $user->getId(),
@@ -595,6 +605,7 @@ class OpenMusicApiController extends ControllerBase
     {
         $limit = $request->query->get('limit', 12);
         $trending = $this->enrichTracks($this->tracks->trending($limit));
+        
         return self::responseBuilder($trending, message: "Fetched trending songs");
     }
 
@@ -638,6 +649,7 @@ class OpenMusicApiController extends ControllerBase
 
         foreach ($albums as &$album) {
             $album['_cover'] = $this->mediaUrlService->url($album['cover_url'] ?? null);
+            $album['cover_url'] = $this->mediaUrlService->url($album['cover_url'] ?? null);
             $album['_artist'] = $artistsById[(int) $album['artist_id']] ?? ['name' => 'Unknown Artist', 'slug' => ''];
         }
         unset($album);
@@ -701,6 +713,8 @@ class OpenMusicApiController extends ControllerBase
             }
             $artist = $artistCache[$artistId];
             $track['_cover'] = $this->mediaUrlService->url($track['cover_url'] ?? null);
+            $track['audio_uri'] = $this->mediaUrlService->url($track['audio_uri'] ?? null);
+            $track['cover_url'] = $this->mediaUrlService->url($track['cover_url'] ?? null);
             $track['_artist'] = $artist;
             $playPayloads[] = $this->presenter->present($track, $artist);
         }
@@ -869,12 +883,15 @@ class OpenMusicApiController extends ControllerBase
             }
             $track['_cover'] = $this->mediaUrlService->url($track['cover_url'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
             $track['_play_json'] = $this->presenter->presentAsAttribute($track, $artist);
+            $track['audio_uri'] = $this->mediaUrlService->url($track['audio_uri'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
+            $track['cover_url'] = $this->mediaUrlService->url($track['cover_url'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
         }
         unset($track);
 
         $albums = $this->albums->forArtist((int) $artist['id']);
         foreach ($albums as &$album) {
             $album['_cover'] = $this->mediaUrlService->url($album['cover_url'] ?? null);
+            $album['cover_url'] = $this->mediaUrlService->url($album['cover_url'] ?? null);
         }
         unset($album);
 
@@ -920,11 +937,16 @@ class OpenMusicApiController extends ControllerBase
                 $track['cover_url'] = $album['cover_url'] ?? null;
             }
             $track['_cover'] = $this->mediaUrlService->url($track['cover_url'] ?? null) ?? $this->mediaUrlService->url($album['cover_url'] ?? null);
+            $track['audio_uri'] = $this->mediaUrlService->url($track['audio_uri'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
+            $track['cover_url'] = $this->mediaUrlService->url($track['cover_url'] ?? null) ?? $this->mediaUrlService->url($album['cover_url'] ?? null);
             $playPayloads[] = $track;
         }
         unset($track);
 
         $totalSeconds = array_sum(array_column($tracks, 'duration_seconds'));
+        $album['_cover'] = $this->mediaUrlService->url($album['cover_url'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
+        $album['cover_url'] = $this->mediaUrlService->url($album['cover_url'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
+
 
         return self::responseBuilder([
             'artist' => $artist,
@@ -968,6 +990,8 @@ class OpenMusicApiController extends ControllerBase
         }
 
         $track['_cover'] = $this->mediaUrlService->url($track['cover_url'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
+        $track['cover_url'] = $this->mediaUrlService->url($track['cover_url'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
+        $track['audio_uri'] = $this->mediaUrlService->url($track['audio_uri'] ?? null) ?? $this->mediaUrlService->url($artist['avatar_url'] ?? null);
         $track['_play_json'] = $this->presenter->presentAsAttribute($track, $artist, $isLiked);
         $track['_liked'] = $isLiked;
 
@@ -984,6 +1008,8 @@ class OpenMusicApiController extends ControllerBase
                 $r['cover_url'] = $album['cover_url'] ?? null;
             }
             $r['_cover'] = $this->mediaUrlService->url($r['cover_url'] ?? null);
+            $r['cover_url'] = $this->mediaUrlService->url($r['cover_url'] ?? null);
+            $r['audio_uri'] = $this->mediaUrlService->url($r['audio_uri'] ?? null);
             $r['_artist'] = $rArtist;
             $r['_play_json'] = $this->presenter->presentAsAttribute($r, $rArtist, $relatedLiked[(int) $r['id']] ?? false);
         }
@@ -1066,6 +1092,26 @@ class OpenMusicApiController extends ControllerBase
         return self::responseBuilder([
             'artist' => $artist,
             'track' => $track,
+        ]);
+    }
+
+    #[AttributeRoute('/api/music/track/[id:int]/blob', ['GET'], permission: [])]
+    public function echoBlobTrackData(Request $request, string $route_name, array $options): Response
+    {
+        $trackId = (int) $request->query->get('id');
+        $track = $this->tracks->find($trackId);
+        if (!$track) {
+            return self::responseBuilder(message: "Not found", status: false, httpCode: 404);
+        }
+
+        $audioPath = $track['audio_uri'] ?? null;
+        if (!file_exists($audioPath)) {
+            return self::responseBuilder(message: "Audio file not found", status: false, httpCode: 404);
+        }
+
+        return new Response(file_get_contents($audioPath), 200, [
+            'Content-Type' => mime_content_type($audioPath),
+            'Content-Length' => filesize($audioPath),
         ]);
     }
 
