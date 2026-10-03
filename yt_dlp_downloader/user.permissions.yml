@@ -1,0 +1,4 @@
+super_admin:
+  yt_dlp_downloader_links:
+    title: 'Full yt_dlp_downloader access'
+    description: 'Full access to the yt_dlp_downloader functionality.'

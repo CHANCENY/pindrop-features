@@ -1,0 +1,9 @@
+groups:
+  yt_dlp_downloader:
+    links:
+      icon: fa fa-link
+      permissions:
+      - yt_dlp_downloader_links
+      route: YtController.links
+      title: Yt Links
+      weight: 7

@@ -1,0 +1,164 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Add yt-dlp Link{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/modules/yt_dlp_downloader/assets/css/style.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <div class="page-header">
+        <div>
+            <h1>Add yt-dlp Link</h1>
+            <p>Add a new URL for downloading.</p>
+        </div>
+
+        <a
+            href="{{ url('YtController.links') }}"
+            class="btn btn-secondary"
+        >
+            Back
+        </a>
+    </div>
+
+    <form
+    method="post"
+    class="link-form"
+>
+
+    <div class="form-group">
+
+        <label for="name">
+            Name
+        </label>
+
+        <input
+            type="text"
+            id="name"
+            name="name"
+            value="{{ link.name|default('') }}"
+            maxlength="500"
+            required
+            placeholder="e.g. My YouTube Video"
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="link">
+            URL
+        </label>
+
+        <input
+            type="url"
+            id="link"
+            name="link"
+            value="{{ link.link|default('') }}"
+            maxlength="500"
+            required
+            placeholder="https://www.youtube.com/watch?v=..."
+        >
+
+        <small>
+            Enter the URL that yt-dlp should download.
+        </small>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="local_path">
+            Local Path
+        </label>
+
+        <input
+            type="text"
+            id="local_path"
+            name="local_path"
+            value="{{ link.local_path|default('sites/default/files') }}"
+            maxlength="500"
+            required
+            placeholder="sites/default/files"
+        >
+
+        <small>
+            Directory where yt-dlp should save the downloaded file.
+        </small>
+
+    </div>
+
+
+    {% if link is defined and link.id is defined %}
+
+        <div class="form-group">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select id="status" name="status">
+
+                <option
+                    value="pending"
+                    {% if link.status == 'pending' %}selected{% endif %}
+                >
+                    Pending
+                </option>
+
+                <option
+                    value="downloading"
+                    {% if link.status == 'downloading' %}selected{% endif %}
+                >
+                    Downloading
+                </option>
+
+                <option
+                    value="completed"
+                    {% if link.status == 'completed' %}selected{% endif %}
+                >
+                    Completed
+                </option>
+
+                <option
+                    value="failed"
+                    {% if link.status == 'failed' %}selected{% endif %}
+                >
+                    Failed
+                </option>
+
+            </select>
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="form-actions">
+
+        <a
+            href="{{ url('YtController.links') }}"
+            class="btn btn-secondary"
+        >
+            Cancel
+        </a>
+
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            {{ submit_label|default('Save') }}
+        </button>
+
+    </div>
+
+</form>
+
+</div>
+
+{% endblock %}

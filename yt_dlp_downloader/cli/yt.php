@@ -4,7 +4,13 @@
  * Provide cli commands for the yt-dlp downloader module.
  */
 
+use Simp\Pindrop\Modules\cron\src\Plugin\Cron\CronManager;
+use Simp\Pindrop\Modules\cron\src\Plugin\Cron\interface\CronDefinitionSubscriberInterface;
+use Simp\Pindrop\Modules\cron\src\Plugin\Cron\Schedule;
+use Simp\Pindrop\Modules\cron\src\Plugin\Cron\SchedulerManager;
+use Simp\Pindrop\Modules\cron\src\Plugin\Subscriber\ScheduleSubscriber;
 use Simp\Pindrop\Modules\ffmpeg_worker\binaries\Binary;
+use Simp\Pindrop\Modules\yt_dlp_downloader\src\Plugin\Subscriber\YtCronSubscriber;
 
 return [
     'yt-dlp:meta' => "collectMetadata",
@@ -21,6 +27,7 @@ return [
     'yt-dlp:download:audio' => "downloadAudio",
     'yt-dlp:download:playlist' => "downloadYoutubePlaylist",
     'yt-dlp:download:playlist:audio' => "downloadPlaylistAudios",
+    'yt-dlp:download:cron:test' => "testCronDownload"
 ];
 
 function collectMetadata(\CLIPrinter $printer, ...$values): void
@@ -647,4 +654,29 @@ function downloadPlaylistAudios(\CLIPrinter $printer, ...$values): void
     $printer->printLine(
         "Playlist audio download completed successfully."
     );
+}
+
+function testCronDownload(\CLIPrinter $printer, ...$values): void
+{
+    $printer->printLine("Testing cron download...");
+
+   $cronManager = new CronManager(\getAppContainer()->get('plugin.manager'));
+
+   
+   $subscriber = $cronManager->getSubscriber('yt_dlp_downloader_cron_subscriber');
+   
+   /**
+     * @var SchedulerManager
+     */
+    $scheduleManager = \getAppContainer()->get('cron.scheduler');
+
+    $schedules = $scheduleManager->getSchedulesBySubscriber('yt_dlp_downloader_cron_subscriber');
+
+    foreach ($schedules as $schedule) {
+        $printer->printLine("Schedule ID: {$schedule->id}, Subscriber: {$schedule->subscriber}, Next Run: {$schedule->next_run}");
+        if ($schedule->subscriber === 'yt_dlp_downloader_cron_subscriber') {
+            $printer->printLine("Running schedule ID: {$schedule->id}...");
+            $subscriber->runSchedules([$schedule]);
+        }
+    }
 }
