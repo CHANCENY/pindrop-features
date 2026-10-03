@@ -1,0 +1,8 @@
+name: "YT DLP Downloader"
+description: "A module that allows you to download videos from YouTube and other platforms using yt-dlp."
+version: "1.0.0"
+author: "Pindrop Team"
+website: "https://pindrop.dev"
+license: "MIT"
+dependencies:
+  - ffmpeg_worker

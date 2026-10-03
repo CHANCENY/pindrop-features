@@ -1,0 +1,4 @@
+yt_dlp.default:
+  name: "Cli Downloader"
+  script: "modules/yt_dlp_downloader/cli/yt.php"
+  status: true
