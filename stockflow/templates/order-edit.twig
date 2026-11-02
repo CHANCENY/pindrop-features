@@ -1,0 +1,9 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading"><div><div class="eyebrow">Fulfillment queue</div><h1>Edit {{ order.order_number }}</h1><p class="sub">Pending and unpaid orders only. Prices, adjustments, shipping, and stock reservations are recalculated when saved.</p></div><div class="heading-actions"><a class="button" href="/stockflow/orders/view?id={{ order.id }}">Cancel</a></div></div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Order details</div><h2>Update customer, items, and delivery</h2></div></div>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

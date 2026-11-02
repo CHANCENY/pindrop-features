@@ -1,0 +1,25 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading"><div><div class="eyebrow">Product catalog</div><h1>Products</h1><p class="sub">Review catalog records and inventory across product variants.</p></div><div class="heading-actions"><a class="button primary" href="/stockflow/products/manage">＋ Manage catalog</a></div></div>
+<section class="panel" style="margin-top:17px"><div class="panel-head"><div><div class="kicker">Catalog library</div><h2>Products and variants</h2></div></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>Variants</th><th>SKU</th><th>Category</th><th>On hand</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    {% for product in products %}
+        <tr>
+            <td><div class="product"><div class="thumb">□</div><div><strong>{{ product.name }}</strong><span>{{ product.brand|default('') }} {{ product.slug }}</span></div></div></td>
+            <td>{{ product.variant_count }}</td>
+            <td><span class="mono">{{ product.sku|default('—') }}</span></td>
+            <td>{{ product.category_name|default('Uncategorized') }}</td>
+            <td>{{ product.quantity_on_hand|default(0) }}</td>
+            <td>{% if product.price is not null %}<b>{{ product.display_price }}</b>{% else %}—{% endif %}</td>
+            <td><span class="status-pill {{ product.status == 'active' ? 'healthy' : 'low' }}">{{ product.status|title }}</span></td>
+            <td class="table-actions">
+                <a class="button small" href="/stockflow/products/edit?id={{ product.id }}">Edit</a>
+                <a class="button small" href="/stockflow/products/variants?product_id={{ product.id }}">Variants</a>
+                <a class="button small" href="{{ product.delete_url }}">Delete</a>
+            </td>
+        </tr>
+    {% else %}<tr><td colspan="8">No products yet. Use Manage catalog to create your first product.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% endblock %}

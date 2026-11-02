@@ -1,0 +1,25 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div>
+        <div class="eyebrow">Product catalog</div>
+        <h1>Manage catalog</h1>
+        <p class="sub">Create a product, choose or create a category, and set up its first variant in guided steps.</p>
+    </div>
+    <div class="heading-actions"><a class="button" href="/stockflow/products">Back to products</a></div>
+</div>
+<section class="panel stockflow-form-panel" style="margin-top:17px">
+    <div class="panel-head">
+        <div>
+            <div class="kicker">Catalog editor</div>
+            <h2>Create a product</h2>
+        </div>
+        {% if has_wizard_state %}
+            <a class="button" href="/stockflow/products/manage?reset_product_form=1">Reset form</a>
+        {% endif %}
+    </div>
+    <p class="sub">Enter product details, assign a category, set up the first variant and stock, then review before saving.</p>
+    {{ wizard_html|raw }}
+</section>
+{% endblock %}

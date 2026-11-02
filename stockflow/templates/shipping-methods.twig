@@ -1,0 +1,42 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Store setup</div><h1>Shipping methods</h1><p class="sub">Configure flat-rate, order-total, and weight-based delivery rules.</p></div>
+    <div class="heading-actions"><a class="button primary" href="/stockflow/shipping/create">＋ Add shipping method</a></div>
+</div>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Delivery options</div><h2>Configured methods</h2></div><span class="metric-label">{{ shipping_methods|length }} methods</span></div>
+    <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Method</th><th>Type</th><th>Charge</th><th>Rule</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for method in shipping_methods %}
+            <tr>
+                <td><strong>{{ method.name }}</strong></td>
+                <td>{{ method.type|default('flat_rate')|replace({'_':' '})|title }}</td>
+                <td>
+                    {{ method.flat_rate|number_format(2) }} {{ currency }}
+                    {% if method.type|default('flat_rate') == 'weight_based' %}
+                        + {{ method.rate_per_kg|default('0')|number_format(2) }} {{ currency }}/kg
+                    {% endif %}
+                </td>
+                <td>
+                    {% if method.type|default('flat_rate') == 'price_based' %}
+                        Order total {{ method.minimum_order_total is not empty ? '≥ ' ~ method.minimum_order_total|number_format(2) : '' }}{{ method.minimum_order_total is not empty and method.maximum_order_total is not empty ? ' and ' : '' }}{{ method.maximum_order_total is not empty ? '≤ ' ~ method.maximum_order_total|number_format(2) : '' }} {{ currency }}
+                    {% elseif method.type|default('flat_rate') == 'weight_based' %}
+                        {{ method.minimum_weight_grams is not empty ? 'From ' ~ method.minimum_weight_grams ~ ' g' : 'Any weight' }}{{ method.maximum_weight_grams is not empty ? ' up to ' ~ method.maximum_weight_grams ~ ' g' : '' }}
+                    {% else %}
+                        Standard flat rate
+                    {% endif %}
+                    {% if method.free_threshold is not empty %}<br>Free above {{ method.free_threshold|number_format(2) }} {{ currency }}{% endif %}
+                </td>
+                <td><span class="status-pill {{ method.status == 'active' ? 'healthy' : 'low' }}">{{ method.status|title }}</span></td>
+                <td><a class="button small" href="/stockflow/shipping/edit?id={{ method.id }}">Edit</a></td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6">No shipping methods configured. Add one to define delivery pricing.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Live inventory</div><h1>Adjust stock</h1><p class="sub">Record a traceable quantity movement for a product variant.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/inventory">Back to inventory</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Stock movement</div><h2>Inventory adjustment</h2></div></div>
+    <p class="sub">Every movement is written to the inventory ledger. Stock cannot be adjusted below zero.</p>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

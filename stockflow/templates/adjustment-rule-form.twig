@@ -1,0 +1,29 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Store setup</div><h1>{{ page_title }}</h1><p class="sub">Choose the application scope{% if adjustment_kind == 'discounts' %} and optional campaign dates and order eligibility limits{% endif %} for this {{ adjustment_label|lower }}.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/{{ adjustment_kind }}">Back to {{ adjustment_kind }}</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="kicker">{{ is_new ? 'New adjustment rule' : 'Update adjustment rule' }}</div>
+    <h2>{{ adjustment_label }} settings</h2>
+    <p class="sub">Percentage rules are calculated against the applicable product line or order subtotal. Discount eligibility limits always use the whole order subtotal, total quantity, and count of distinct products; a product-scoped discount still applies only to its selected product.</p>
+    {{ form_html|raw }}
+</section>
+<script>
+(() => {
+    const form = document.querySelector('.stockflow-form');
+    const scope = form?.querySelector('[name="apply_to"]');
+    const product = form?.querySelector('[name="product_id"]');
+    const wrapper = product?.closest('.form-field');
+    const updateProduct = () => {
+        const required = scope?.value === 'product';
+        if (wrapper) wrapper.hidden = !required;
+        if (product) product.required = required;
+    };
+    scope?.addEventListener('change', updateProduct);
+    updateProduct();
+})();
+</script>
+{% endblock %}

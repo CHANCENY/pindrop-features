@@ -1,0 +1,37 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Overview</div><h1>Dashboard</h1><p class="sub">A live view of products, inventory, and fulfillment.</p></div>
+    <div class="heading-actions"><a class="button secondary" href="/stockflow/orders">View orders</a><a class="button primary" href="/stockflow/products">＋ Add product</a></div>
+</div>
+<div class="status"><span><span class="status-dot"></span>Commerce data connected</span><span class="status-meta">Currency: <strong>{{ dashboard.currency }}</strong></span></div>
+<section class="metrics">
+    <article class="metric"><div class="metric-top"><span class="metric-label">Units on hand</span><span class="metric-icon teal">•</span></div><div class="metric-value">{{ dashboard.units_on_hand|number_format }}</div><div class="metric-footer">Current stock across variants</div></article>
+    <article class="metric"><div class="metric-top"><span class="metric-label">Low stock items</span><span class="metric-icon amber">•</span></div><div class="metric-value">{{ dashboard.low_stock_count }}</div><div class="metric-footer">At or below reorder point</div></article>
+    <article class="metric"><div class="metric-top"><span class="metric-label">Open orders</span><span class="metric-icon plum">•</span></div><div class="metric-value">{{ dashboard.open_orders }}</div><div class="metric-footer">Pending through shipped</div></article>
+    <article class="metric"><div class="metric-top"><span class="metric-label">Inventory value</span><span class="metric-icon blue">•</span></div><div class="metric-value">{{ dashboard.inventory_value }}</div><div class="metric-footer">Based on variant price × on-hand units</div></article>
+</section>
+<div class="layout">
+    <section class="panel">
+        <div class="panel-head"><div><div class="kicker">Live inventory</div><h2>Stock overview</h2></div><a class="button secondary" href="/stockflow/inventory">All inventory</a></div>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Price</th><th>Status</th></tr></thead><tbody>
+        {% for item in dashboard.inventory %}
+            <tr><td><div class="product"><div class="thumb">□</div><div><strong>{{ item.product_name }}</strong><span>{{ item.category_name|default('Uncategorized') }}</span></div></div></td><td><span class="mono">{{ item.sku }}</span></td><td>{{ item.quantity_on_hand }}</td><td><b>{{ item.display_price }}</b></td><td><span class="status-pill {{ item.quantity_on_hand <= item.reorder_point ? 'low' : 'healthy' }}">{{ item.quantity_on_hand <= item.reorder_point ? 'Low stock' : 'Healthy' }}</span></td></tr>
+        {% else %}
+            <tr><td colspan="5">No inventory yet. Add a product to get started.</td></tr>
+        {% endfor %}
+        </tbody></table></div>
+    </section>
+    <aside class="side">
+        <section class="panel"><div class="kicker">Action queue</div><h2>Needs attention</h2><div class="alert"><div class="alert-icon amber">!</div><div class="alert-copy"><strong>{{ dashboard.low_stock_count }} low stock variants</strong><span>Review reorder points and stock</span></div></div><div class="alert"><div class="alert-icon blue">☷</div><div class="alert-copy"><strong>{{ dashboard.open_purchase_orders }} open purchase orders</strong><span>Submitted or partially received</span></div></div><a class="wide" href="/stockflow/inventory">Review inventory ↗</a></section>
+        <section class="panel"><div class="kicker">Sales this month</div><h2>{{ dashboard.sales_total }}</h2><p class="sub">Orders in the store's configured currency.</p><a class="wide" href="/stockflow/orders">Open orders ↗</a></section>
+    </aside>
+</div>
+<section class="panel" style="margin-top:17px"><div class="panel-head"><div><div class="kicker">Fulfillment</div><h2>Recent orders</h2></div><a class="button secondary" href="/stockflow/orders">All orders</a></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Order</th><th>Customer email</th><th>Date</th><th>Total</th><th>Status</th></tr></thead><tbody>
+    {% for order in dashboard.recent_orders %}<tr><td><span class="mono">{{ order.order_number }}</span></td><td>{{ order.email }}</td><td>{{ order.placed_at|default('—') }}</td><td><b>{{ order.display_total }}</b></td><td><span class="status-pill healthy">{{ order.status|replace({'_':' '})|title }}</span></td></tr>
+    {% else %}<tr><td colspan="5">No orders have been recorded.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% endblock %}

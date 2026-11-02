@@ -1,0 +1,18 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading"><div><div class="eyebrow">Payment management</div><h1>Payments</h1><p class="sub">Review provider transactions and manually recorded offline payments.</p></div></div>
+<section class="panel" style="margin-top:17px">
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Order</th><th>Customer</th><th>Provider</th><th>Reference</th><th>Amount</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody>
+    {% for payment in payments %}
+        <tr><td><a href="/stockflow/orders/view?id={{ payment.order_id }}">{{ payment.order_number }}</a></td><td>{{ payment.email }}</td><td>{{ payment.provider|replace({'_':' '})|title }}</td><td>{{ payment.provider_payment_id|default('—') }}</td><td>{{ payment.amount|number_format(2) }} {{ payment.currency_code }}</td><td>{{ payment.status|title }}</td><td>{{ payment.created_at }}</td><td>
+        {% if payment.provider == 'manual' and payment.status == 'pending' %}
+            <a href="/stockflow/payments/edit?id={{ payment.id }}">Edit</a> · <a href="/stockflow/payments/receive?id={{ payment.id }}">Receive</a> · <a href="/stockflow/payments/delete?id={{ payment.id }}">Delete</a>
+        {% elseif payment.provider != 'manual' and payment.status in ['pending','authorized'] %}
+            <a href="/stockflow/payments/reconcile?id={{ payment.id }}">Reconcile</a>
+        {% else %}Read only{% endif %}
+        </td></tr>
+    {% else %}<tr><td colspan="8">No payment records.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% endblock %}

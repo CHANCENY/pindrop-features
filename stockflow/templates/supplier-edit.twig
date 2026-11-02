@@ -1,0 +1,12 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Supply operations</div><h1>Edit supplier</h1><p class="sub">Update supplier contact details and ordering status.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/suppliers">Back to suppliers</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Supplier directory</div><h2>Supplier details</h2></div></div>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

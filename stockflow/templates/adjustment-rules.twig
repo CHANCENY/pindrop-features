@@ -1,0 +1,37 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Store setup</div><h1>{{ page_title }}</h1><p class="sub">Configure fixed-amount or percentage {{ adjustment_kind }} rules for order lines and order totals.</p></div>
+    <div class="heading-actions"><a class="button primary" href="/stockflow/{{ adjustment_kind }}/create">＋ Add {{ adjustment_kind == 'taxes' ? 'tax' : 'discount' }}</a></div>
+</div>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Adjustment rules</div><h2>Configured {{ adjustment_kind }}</h2></div><span class="metric-label">{{ adjustment_rules|length }} rules</span></div>
+    <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Name</th><th>Description</th><th>Calculation</th><th>Value</th><th>Applies to</th>{% if adjustment_kind == 'discounts' %}<th>Dates and eligibility</th>{% endif %}<th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for rule in adjustment_rules %}
+            <tr>
+                <td><strong>{{ rule.name }}</strong></td>
+                <td>{{ rule.description }}</td>
+                <td>{{ rule.calculation_type|title }}</td>
+                <td>{{ rule.amount }}{{ rule.calculation_type == 'percentage' ? '%' : ' ' ~ currency }}</td>
+                <td>{% if rule.apply_to == 'product' %}Product: {{ rule.product_name|default('ID ' ~ rule.product_id) }}{% elseif rule.apply_to == 'order_subtotal' %}Order subtotal{% elseif rule.apply_to == 'legacy' %}Existing rule (all scopes){% else %}All products{% endif %}</td>
+                {% if adjustment_kind == 'discounts' %}
+                    <td>
+                        {% if rule.starts_at or rule.ends_at %}{{ rule.starts_at|default('Any date') }} – {{ rule.ends_at|default('No end date') }}{% else %}Any date{% endif %}
+                        {% if rule.minimum_order_total is not null or rule.maximum_order_total is not null %}<br>Order: {{ rule.minimum_order_total|default('0') }}–{{ rule.maximum_order_total|default('no max') }} {{ currency }}{% endif %}
+                        {% if rule.minimum_total_items is not null or rule.maximum_total_items is not null %}<br>Quantity: {{ rule.minimum_total_items|default('0') }}–{{ rule.maximum_total_items|default('no max') }}{% endif %}
+                        {% if rule.minimum_distinct_products is not null or rule.maximum_distinct_products is not null %}<br>Distinct products: {{ rule.minimum_distinct_products|default('0') }}–{{ rule.maximum_distinct_products|default('no max') }}{% endif %}
+                    </td>
+                {% endif %}
+                <td><span class="status-pill {{ rule.status == 'active' ? 'healthy' : 'low' }}">{{ rule.status|title }}</span></td>
+                <td><a class="button small" href="/stockflow/{{ adjustment_kind }}/edit?id={{ rule.id }}">Edit</a></td>
+            </tr>
+        {% else %}
+            <tr><td colspan="{{ adjustment_kind == 'discounts' ? 8 : 7 }}">No {{ adjustment_kind }} configured yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+</section>
+{% endblock %}

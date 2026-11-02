@@ -1,0 +1,9 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading"><div><div class="eyebrow">Fulfillment queue</div><h1>Delete {{ order.order_number }}</h1><p class="sub">Review this action before continuing.</p></div><div class="heading-actions"><a class="button" href="/stockflow/orders/view?id={{ order.id }}">Cancel</a></div></div>
+<section class="panel form-panel" style="margin-top:17px">
+    <p>Only pending orders without a completed or unresolved gateway payment can be deleted. Reserved inventory will be released. Payment and order records are removed by this action.</p>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

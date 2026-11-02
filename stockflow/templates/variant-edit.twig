@@ -1,0 +1,12 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">{{ variant.product_name }}</div><h1>Edit variant</h1><p class="sub">Update variant details and reorder settings.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/products/variants?product_id={{ variant.product_id }}">Back to variants</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Variant details</div><h2>{{ variant.option_label|default('Default variant') }}</h2></div></div>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

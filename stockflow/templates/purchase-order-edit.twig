@@ -1,0 +1,13 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Supply operations</div><h1>Edit purchase order</h1><p class="sub">Update {{ purchase_order.order_number }} before receiving any stock.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/purchasing">Back to purchasing</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Inbound stock</div><h2>Purchase order details</h2></div></div>
+    <p class="sub">The order subtotal is recalculated from unit cost and quantity using the store currency.</p>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Customer directory</div><h1>Add customer</h1><p class="sub">Create a customer contact record for commerce operations.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/customers">Back to customers</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">People & accounts</div><h2>Customer details</h2></div></div>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

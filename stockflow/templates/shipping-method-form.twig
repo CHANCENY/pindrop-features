@@ -1,0 +1,13 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Store setup</div><h1>{{ page_title }}</h1><p class="sub">Choose flat-rate, price-based, or weight-based shipping and set its eligibility rules.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/shipping">Back to shipping methods</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Shipping rule</div><h2>{{ form_title }}</h2></div></div>
+    <p class="sub">Flat rate uses one charge. Price-based methods use an order-total range. Weight-based methods add a per-kilogram charge to the base fee. Optional free-shipping thresholds apply to eligible orders.</p>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

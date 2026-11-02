@@ -1,0 +1,30 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Supply operations</div><h1>Receive stock</h1><p class="sub">Record goods received against {{ purchase_order.order_number }}.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/purchasing">Back to purchasing</a></div>
+</div>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Purchase order</div><h2>{{ purchase_order.order_number }}</h2></div><span class="status-pill low">{{ purchase_order.status|replace({'_':' '})|title }}</span></div>
+    <dl class="detail-grid">
+        <div><dt>Supplier</dt><dd>{{ purchase_order.supplier_name }}</dd></div>
+        <div><dt>Expected date</dt><dd>{{ purchase_order.expected_at|default('—') }}</dd></div>
+        <div><dt>Order subtotal</dt><dd>{{ purchase_order.display_subtotal }}</dd></div>
+        <div><dt>Outstanding quantity</dt><dd>{{ purchase_order.receivable_quantity }}</dd></div>
+    </dl>
+    <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Product</th><th>Variant</th><th>SKU</th><th>Ordered</th><th>Received</th></tr></thead>
+        <tbody>
+        {% for item in purchase_order.items %}
+            <tr><td>{{ item.product_name }}</td><td>{{ item.option_label|default('Default variant') }}</td><td><span class="mono">{{ item.sku }}</span></td><td>{{ item.quantity_ordered }}</td><td>{{ item.quantity_received }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+</section>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Receiving</div><h2>Record received quantity</h2></div></div>
+    <p class="sub">Receive all or part of the outstanding quantity. Partial receipts can be entered in multiple visits.</p>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

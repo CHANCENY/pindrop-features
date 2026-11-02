@@ -1,0 +1,12 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Product catalog</div><h1>Edit product</h1><p class="sub">Update {{ product.name }} catalog details.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/products">Back to products</a><a class="button" href="/stockflow/products/variants?product_id={{ product.id }}">Manage variants</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Catalog details</div><h2>Product information</h2></div></div>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

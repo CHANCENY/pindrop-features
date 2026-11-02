@@ -1,0 +1,41 @@
+super_admin:
+  can_access_stockflow:
+    title: 'Access Stockflow'
+    description: 'View Stockflow commerce operations.'
+  can_manage_stockflow:
+    title: 'Manage Stockflow'
+    description: 'Create, update, and manage Stockflow commerce records.'
+
+admin:
+  can_access_stockflow:
+    title: 'Access Stockflow'
+    description: 'View Stockflow commerce operations.'
+  can_manage_stockflow:
+    title: 'Manage Stockflow'
+    description: 'Create, update, and manage Stockflow commerce records.'
+
+customer:
+  can_view_public_content:
+    title: 'Can view public content'
+    description: 'Allow customer accounts to browse public pages and published products.'
+  can_browse_shop:
+    title: 'Can browse the shop'
+    description: 'Allow customer accounts to browse the storefront, product listings, and product details.'
+  can_manage_own_cart:
+    title: 'Can manage own cart'
+    description: 'Allow customer accounts to add, update, and remove items in their own shopping cart.'
+  can_place_orders:
+    title: 'Can place orders'
+    description: 'Allow customer accounts to submit checkout and place orders.'
+  can_view_own_orders:
+    title: 'Can view own orders'
+    description: 'Allow customer accounts to view their own order history and status.'
+  can_manage_own_addresses:
+    title: 'Can manage own addresses'
+    description: 'Allow customer accounts to create, edit, and delete their own shipping and billing addresses.'
+  can_manage_own_profile:
+    title: 'Can manage own profile'
+    description: 'Allow customer accounts to manage their own user profile.'
+  can_use_two_factor:
+    title: 'Can use two-factor authentication'
+    description: 'Allow customer accounts to enable and manage two-factor authentication.'

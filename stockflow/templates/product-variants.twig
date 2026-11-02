@@ -1,0 +1,33 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Product catalog</div><h1>Variants</h1><p class="sub">Manage variants and stock records for {{ product.name }}.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/products">Back to products</a><a class="button" href="/stockflow/products/edit?id={{ product.id }}">Edit product</a><a class="button primary" href="/stockflow/products/variant/add?product_id={{ product.id }}">＋ Add variant</a></div>
+</div>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Catalog options</div><h2>{{ product.name }} variants</h2></div></div>
+    <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Variant</th><th>SKU</th><th>Barcode</th><th>On hand</th><th>Reorder point</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for variant in variants %}
+            <tr>
+                <td>{{ variant.option_label|default('Default') }}</td>
+                <td><span class="mono">{{ variant.sku }}</span></td>
+                <td>{{ variant.barcode|default('—') }}</td>
+                <td>{{ variant.quantity_on_hand|default(0) }}</td>
+                <td>{{ variant.reorder_point|default(0) }}</td>
+                <td><b>{{ variant.display_price }}</b></td>
+                <td><span class="status-pill {{ variant.status == 'active' ? 'healthy' : 'low' }}">{{ variant.status|title }}</span></td>
+                <td class="table-actions">
+                    <a class="button small" href="/stockflow/products/variant/edit?id={{ variant.id }}">Edit</a>
+                    <a class="button small" href="/stockflow/products/variant/delete?id={{ variant.id }}">Delete</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="8">No variants are registered for this product.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+</section>
+{% endblock %}

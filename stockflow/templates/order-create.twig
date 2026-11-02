@@ -1,0 +1,248 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Fulfillment queue</div><h1>Create manual order</h1><p class="sub">Add customer details, build the cart, enter billing and shipping details, choose payment, then review the order.</p></div>
+    <div class="heading-actions">
+        {% if has_order_form_state %}<a class="button" href="/stockflow/orders/create?reset_order_form=1">Start over</a>{% endif %}
+        <a class="button" href="/stockflow/orders">Back to orders</a>
+    </div>
+</div>
+{% if shipping_method_count == 0 %}
+<section class="panel" style="margin-top:17px"><div class="kicker">Shipping setup required</div><p class="sub">Create and enable a shipping method before creating an order.</p><a class="button" href="/stockflow/shipping">Manage shipping methods</a></section>
+{% elseif payment_methods|length == 0 %}
+<section class="panel" style="margin-top:17px"><div class="kicker">Payment setup required</div><p class="sub">Enable a configured payment gateway that supports {{ currency }} before creating an order.</p><a class="button" href="/stockflow/payment-methods">Configure payment methods</a></section>
+{% elseif variant_count == 0 %}
+<section class="panel" style="margin-top:17px"><div class="kicker">Catalog setup required</div><p class="sub">Create active products and variants with inventory before placing a manual order.</p><a class="button" href="/stockflow/products">Manage products</a></section>
+{% else %}
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Order details</div><h2>Create order in guided steps</h2></div></div>
+    <p class="sub">An existing customer profile is matched by email; otherwise a guest customer profile is created. Order lines use current catalog prices. Available inventory is reserved while payment is pending and decremented when payment succeeds. Card details must be tokenized by Authorize.Net Accept.js; this form never collects card numbers.</p>
+    {{ form_html|raw }}
+    <button class="button" id="add-order-item" type="button" style="display:none;margin-top:12px">＋ Add item to cart</button>
+</section>
+{% for payment_method in payment_methods %}
+    {% if payment_method.id == 'authorize_net' %}
+<script src="{{ payment_method.authorize_client.environment == 'production' ? 'https://js.authorize.net/v1/Accept.js' : 'https://jstest.authorize.net/v1/Accept.js' }}"></script>
+    {% endif %}
+{% endfor %}
+<script>
+(() => {
+    const form = document.querySelector('#stockflow-manual-order');
+    if (!form) return;
+
+    const addItemButton = document.getElementById('add-order-item');
+    const itemGroups = new Map();
+    form.querySelectorAll('.order-line').forEach(field => {
+        const indexClass = [...field.classList].find(name => /^order-line-\d+$/.test(name));
+        if (!indexClass) return;
+        const index = Number(indexClass.replace('order-line-', ''));
+        itemGroups.set(index, [...(itemGroups.get(index) || []), field]);
+    });
+    const initialIndexes = [...itemGroups.keys()].sort((first, second) => first - second);
+    if (initialIndexes.length) {
+        const container = document.createElement('div');
+        container.className = 'order-lines';
+        itemGroups.get(initialIndexes[0])[0].before(container);
+        const updateRemoveButtons = () => {
+            const rows = [...container.querySelectorAll('.order-line-row')];
+            rows.forEach((row, index) => {
+                row.querySelector('legend').textContent = `Item ${index + 1}`;
+                const controls = [...row.querySelectorAll('input, select, textarea')];
+                controls.forEach((control, controlIndex) => {
+                    const oldId = control.id;
+                    control.name = control.name.replace(/items\[\d+\]/, `items[${index}]`);
+                    control.id = `stockflow-order-item-${index}-${controlIndex}`;
+                    row.querySelectorAll('label[for]').forEach(label => {
+                        if (label.htmlFor === oldId) label.htmlFor = control.id;
+                    });
+                });
+                const remove = row.querySelector('.order-line-actions button');
+                if (remove) remove.disabled = rows.length === 1;
+            });
+            updateItemRuleVisibility();
+        };
+        const updateItemRuleVisibility = () => {
+            form.querySelectorAll('[data-variant-products][data-discount-rules]').forEach(metadata => {
+                const variantProducts = JSON.parse(metadata.dataset.variantProducts);
+                const discountRules = JSON.parse(metadata.dataset.discountRules);
+                const row = metadata.closest('.order-line-row');
+                if (!row) return;
+                const variantSelect = row.querySelector('select[name^="items["][name$="[variant_id]"]');
+                const discountSelect = row.querySelector('select[name^="items["][name$="[discount_id]"]');
+                if (variantSelect && !variantSelect.dataset.ruleVisibilityBound) {
+                    variantSelect.dataset.ruleVisibilityBound = 'true';
+                    variantSelect.addEventListener('change', updateItemRuleVisibility);
+                }
+                const productId = variantProducts[variantSelect?.value] || '';
+                row.querySelectorAll('.rule-checkboxes label[data-rule-scope]').forEach(label => {
+                    const scope = label.dataset.ruleScope;
+                    const matches = scope === 'legacy' || scope === 'all_products'
+                        || (scope === 'product' && label.dataset.ruleProduct === String(productId));
+                    label.hidden = !matches;
+                    const checkbox = label.querySelector('input[type="checkbox"]');
+                    if (!matches && checkbox) checkbox.checked = false;
+                });
+                if (discountSelect) {
+                    [...discountSelect.options].forEach(option => {
+                        if (!option.value) return;
+                        const rule = discountRules[option.value];
+                        const matches = rule && (rule.apply_to === 'legacy' || rule.apply_to === 'all_products'
+                            || (rule.apply_to === 'product' && String(rule.product_id) === String(productId)));
+                        option.hidden = !matches;
+                        option.disabled = !matches;
+                        if (!matches && option.selected) discountSelect.value = '';
+                    });
+                }
+            });
+        };
+        const addRemoveButton = row => {
+            const actions = document.createElement('div');
+            actions.className = 'order-line-actions';
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'button small';
+            remove.textContent = 'Remove item';
+            remove.addEventListener('click', () => {
+                row.remove();
+                updateRemoveButtons();
+            });
+            actions.append(remove);
+            row.append(actions);
+        };
+        const createRow = (fields, clone = false) => {
+            const row = document.createElement('fieldset');
+            row.className = 'order-line-row';
+            const legend = document.createElement('legend');
+            row.append(legend);
+            fields.forEach(field => row.append(clone ? field.cloneNode(true) : field));
+            if (clone) {
+                row.querySelectorAll('input, select, textarea').forEach(control => {
+                    if (control.type === 'checkbox') control.checked = false;
+                    else if (control.type === 'number') control.value = '1';
+                    else if (control.tagName === 'SELECT') control.selectedIndex = 0;
+                    else if (control.type !== 'hidden') control.value = '';
+                });
+            }
+            addRemoveButton(row);
+            container.append(row);
+        };
+        initialIndexes.forEach(index => createRow(itemGroups.get(index)));
+        updateRemoveButtons();
+        container.after(addItemButton);
+        addItemButton.style.display = 'inline-flex';
+        addItemButton?.addEventListener('click', () => {
+            createRow(itemGroups.get(initialIndexes[0]), true);
+            updateRemoveButtons();
+        });
+    }
+
+    const sameShipping = form.querySelector('[name="same_shipping"]');
+    const shippingFields = [...form.querySelectorAll('.shipping-address-fields')];
+    const updateShippingFields = () => shippingFields.forEach(field => {
+        const shippingMatchesBilling = sameShipping?.value === 'yes';
+        field.hidden = shippingMatchesBilling;
+        field.querySelectorAll('input').forEach(input => {
+            input.disabled = shippingMatchesBilling;
+        });
+        field.querySelectorAll('input').forEach(input => {
+            input.required = !shippingMatchesBilling
+                && /shipping_(first_name|last_name|line1|city|postal_code|country_code)$/.test(input.name);
+        });
+    });
+    sameShipping?.addEventListener('change', updateShippingFields);
+    updateShippingFields();
+
+    const updatePaymentFields = () => {
+        const provider = form.querySelector('[name="payment_method"]:checked')?.value || '';
+        form.querySelectorAll('.payment-provider-field').forEach(field => {
+            const active = field.dataset.paymentProvider === provider;
+            field.hidden = !active;
+            field.querySelectorAll('input, select, textarea').forEach(input => {
+                input.disabled = !active;
+                input.required = active && field.dataset.paymentRequired === 'true';
+            });
+        });
+        const authorizeCardFields = form.querySelector('.authorize-card-fields');
+        if (authorizeCardFields) {
+            const active = provider === 'authorize_net';
+            const hasToken = Boolean(
+                form.querySelector('[name="payment_data[opaque_data_descriptor]"]')?.value
+                && form.querySelector('[name="payment_data[opaque_data_value]"]')?.value
+            );
+            authorizeCardFields.hidden = !active;
+            authorizeCardFields.querySelectorAll('[data-card-number], [data-card-month], [data-card-year], [data-card-code]')
+                .forEach(input => {
+                    input.required = active && !hasToken;
+                    input.disabled = !active;
+                });
+            if (!active) {
+                form.querySelector('[name="payment_data[opaque_data_descriptor]"]').value = '';
+                form.querySelector('[name="payment_data[opaque_data_value]"]').value = '';
+            }
+        }
+    };
+    form.querySelectorAll('[name="payment_method"]').forEach(radio => {
+        radio.addEventListener('change', updatePaymentFields);
+    });
+    updatePaymentFields();
+    form.addEventListener('submit', event => {
+        const step = form.querySelector('[name="_multistep_step"]')?.value;
+        const provider = form.querySelector('[name="payment_method"]:checked')?.value;
+        if (step !== '5' || provider !== 'authorize_net') return;
+
+        const descriptor = form.querySelector('[name="payment_data[opaque_data_descriptor]"]');
+        const opaqueValue = form.querySelector('[name="payment_data[opaque_data_value]"]');
+        if (descriptor?.value && opaqueValue?.value) return;
+
+        event.preventDefault();
+        const cardFields = form.querySelector('.authorize-card-fields');
+        const error = cardFields?.querySelector('.authorize-card-error');
+        const showError = message => {
+            if (!error) return;
+            error.textContent = message;
+            error.hidden = false;
+        };
+        if (!window.Accept || !cardFields?.dataset.apiLoginId || !cardFields?.dataset.clientKey) {
+            showError('Authorize.Net card tokenization is not configured. Check the API Login ID and Accept.js Client Key.');
+            return;
+        }
+        if (form.dataset.tokenizing === 'true') return;
+
+        const submitButton = form.querySelector('[name="_multistep_action"][value="next"]');
+        const secureData = {
+            authData: {
+                apiLoginID: cardFields.dataset.apiLoginId,
+                clientKey: cardFields.dataset.clientKey
+            },
+            cardData: {
+                cardNumber: cardFields.querySelector('[data-card-number]').value.replace(/\s+/g, ''),
+                month: cardFields.querySelector('[data-card-month]').value,
+                year: cardFields.querySelector('[data-card-year]').value,
+                cardCode: cardFields.querySelector('[data-card-code]').value
+            }
+        };
+        form.dataset.tokenizing = 'true';
+        if (submitButton) submitButton.disabled = true;
+        if (error) error.hidden = true;
+        window.Accept.dispatchData(secureData, response => {
+            form.dataset.tokenizing = 'false';
+            if (submitButton) submitButton.disabled = false;
+            if (response.messages?.resultCode !== 'Ok' || !response.opaqueData?.dataDescriptor || !response.opaqueData?.dataValue) {
+                const messages = (response.messages?.message || []).map(message => message.text).filter(Boolean);
+                showError(messages.join(' ') || 'Authorize.Net could not tokenize this card. Check the details and try again.');
+                return;
+            }
+            descriptor.value = response.opaqueData.dataDescriptor;
+            opaqueValue.value = response.opaqueData.dataValue;
+            cardFields.querySelectorAll('[data-card-number], [data-card-month], [data-card-year], [data-card-code]')
+                .forEach(input => { input.value = ''; });
+            form.submit();
+        });
+    });
+    const finishButton = form.querySelector('[name="_multistep_action"][value="finish"]');
+    if (finishButton) finishButton.textContent = 'Confirm order and request payment';
+})();
+</script>
+{% endif %}
+{% endblock %}

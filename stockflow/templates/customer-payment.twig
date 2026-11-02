@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page_title|default('Secure payment') }}</title>
+    <link rel="stylesheet" href="/modules/stockflow/samplehtmls/stockflow.css">
+    <link rel="stylesheet" href="/modules/stockflow/assets/stockflow-plugin.css">
+</head>
+<body>
+<main class="content" style="max-width:760px;margin:40px auto;padding:24px">
+    <div class="heading"><div><div class="eyebrow">Secure checkout</div><h1>{{ page_title|default('Pay for order') }}</h1></div></div>
+    {% if error_message is defined %}<section class="panel" style="margin-top:17px"><p>{{ error_message }}</p></section>{% endif %}
+    {% if order is defined %}
+        <section class="panel" style="margin-top:17px">
+            <h2>Order {{ order.order_number }}</h2>
+            <p>{{ order.email }}</p>
+            <p><strong>Total due: {{ order.grand_total|number_format(2) }} {{ order.currency_code }}</strong></p>
+            {% if notice %}<p class="stockflow-message info">{{ notice }}</p>{% endif %}
+            {% if form_html %}
+                <p>Choose an enabled payment method. Card details are tokenized directly by Authorize.Net and are not sent to this store.</p>
+                {{ form_html|raw }}
+                {% if authorize_client %}
+                    <script src="{{ authorize_client.environment == 'production' ? 'https://js.authorize.net/v1/Accept.js' : 'https://jstest.authorize.net/v1/Accept.js' }}"></script>
+                    <fieldset class="authorize-card-fields" data-payment-provider="authorize_net" data-api-login-id="{{ authorize_client.api_login_id|e('html_attr') }}" data-client-key="{{ authorize_client.client_key|e('html_attr') }}" hidden>
+                        <legend>Credit card</legend>
+                        <label>Card number<input type="text" inputmode="numeric" autocomplete="cc-number" data-card-number></label>
+                        <label>Expiration month<input type="text" inputmode="numeric" autocomplete="cc-exp-month" maxlength="2" data-card-month></label>
+                        <label>Expiration year<input type="text" inputmode="numeric" autocomplete="cc-exp-year" maxlength="4" data-card-year></label>
+                        <label>Security code<input type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" data-card-code></label>
+                        <p role="alert" data-card-error hidden></p>
+                    </fieldset>
+                {% endif %}
+            {% elseif order.status == 'confirmed' %}
+                <p>Payment is complete. Thank you.</p>
+            {% else %}
+                <p>No payment methods are currently available for this order currency. Contact the store for assistance.</p>
+            {% endif %}
+        </section>
+    {% endif %}
+</main>
+<script>
+(() => {
+    const form = document.querySelector('form.stockflow-form');
+    if (!form) return;
+    const provider = form.querySelector('[name="payment_method"]');
+    const fields = [...form.querySelectorAll('[data-payment-provider]')];
+    const card = document.querySelector('.authorize-card-fields');
+    const refresh = () => {
+        fields.forEach(field => { field.hidden = field.dataset.paymentProvider !== provider?.value; });
+        if (card) card.hidden = provider?.value !== 'authorize_net';
+    };
+    provider?.addEventListener('change', refresh);
+    refresh();
+    form.addEventListener('submit', event => {
+        if (provider?.value !== 'authorize_net') return;
+        const descriptor = form.querySelector('[name="payment_data[opaque_data_descriptor]"]');
+        const value = form.querySelector('[name="payment_data[opaque_data_value]"]');
+        if (descriptor?.value && value?.value) return;
+        event.preventDefault();
+        const error = card?.querySelector('[data-card-error]');
+        if (!window.Accept || !card?.dataset.apiLoginId || !card?.dataset.clientKey) {
+            if (error) { error.textContent = 'Card tokenization is unavailable. Contact the store.'; error.hidden = false; }
+            return;
+        }
+        window.Accept.dispatchData({
+            authData: {apiLoginID: card.dataset.apiLoginId, clientKey: card.dataset.clientKey},
+            cardData: {
+                cardNumber: card.querySelector('[data-card-number]').value.replace(/\s+/g, ''),
+                month: card.querySelector('[data-card-month]').value,
+                year: card.querySelector('[data-card-year]').value,
+                cardCode: card.querySelector('[data-card-code]').value
+            }
+        }, response => {
+            if (response.messages?.resultCode !== 'Ok' || !response.opaqueData?.dataDescriptor || !response.opaqueData?.dataValue) {
+                if (error) {
+                    error.textContent = (response.messages?.message || []).map(message => message.text).filter(Boolean).join(' ')
+                        || 'Card tokenization failed. Check the card details and retry.';
+                    error.hidden = false;
+                }
+                return;
+            }
+            descriptor.value = response.opaqueData.dataDescriptor;
+            value.value = response.opaqueData.dataValue;
+            card.querySelectorAll('[data-card-number], [data-card-month], [data-card-year], [data-card-code]')
+                .forEach(input => { input.value = ''; });
+            form.submit();
+        });
+    });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading"><div><div class="eyebrow">Workspace controls</div><h1>Settings</h1><p class="sub">Store preferences are persisted in Pindrop's site settings.</p></div></div>
+<section class="panel stockflow-form-panel"><div class="kicker">Workspace profile</div><h2>Store details and preferences</h2>{{ form_html|raw }}</section>
+<section class="panel" style="margin-top:17px"><div class="kicker">Inventory behavior</div><h2>Stock locations</h2><p class="sub">The current schema stores one on-hand quantity per product variant. Location-based inventory is not enabled in this version.</p></section>
+<section class="panel" style="margin-top:17px"><div class="kicker">Team access</div><h2>Access is managed by Pindrop</h2><p class="sub">Stockflow uses the existing Pindrop user roles and permissions. Team invitations require an invitation workflow and persistence model not present in the supplied schema.</p></section>
+{% endblock %}

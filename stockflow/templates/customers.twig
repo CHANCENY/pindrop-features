@@ -1,0 +1,11 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading"><div><div class="eyebrow">Customer directory</div><h1>Customers</h1><p class="sub">Maintain customer contact records for commerce orders.</p></div><div class="heading-actions"><a class="button primary" href="/stockflow/customers/create">＋ Add customer</a></div></div>
+<section class="panel" style="margin-top:17px"><div class="panel-head"><div><div class="kicker">People & accounts</div><h2>Customer directory</h2></div></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>Created</th><th>Status</th></tr></thead><tbody>
+    {% for customer in customers %}<tr><td><div class="product"><div class="thumb">{{ customer.first_name|first|upper }}{{ customer.last_name|first|upper }}</div><div><strong>{{ customer.first_name }} {{ customer.last_name }}</strong></div></div></td><td>{{ customer.email }}</td><td>{{ customer.phone|default('—') }}</td><td>{{ customer.created_at }}</td><td><span class="status-pill {{ customer.status == 'blocked' ? 'out' : 'healthy' }}">{{ customer.status|title }}</span></td></tr>
+    {% else %}<tr><td colspan="5">No customers recorded.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Fulfillment queue</div><h1>Order {{ order.order_number }}</h1><p class="sub">{{ order.email }} · {{ order.placed_at|default('—') }}</p></div>
+    <div class="heading-actions">
+        {% if can_edit %}<a class="button" href="/stockflow/orders/edit?id={{ order.id }}">Edit order</a>{% endif %}
+        <a class="button" href="/stockflow/orders">Back to orders</a>
+    </div>
+</div>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Order summary</div><h2>{{ order.status|replace({'_':' '})|title }}</h2></div></div>
+    <div class="table-wrap"><table class="data-table"><tbody>
+        <tr><th>Subtotal</th><td>{{ order.subtotal|number_format(2) }} {{ currency }}</td></tr>
+        <tr><th>Discount</th><td>{{ order.discount_total|number_format(2) }} {{ currency }}</td></tr>
+        <tr><th>Shipping</th><td>{{ order.shipping_total|number_format(2) }} {{ currency }}</td></tr>
+        <tr><th>Tax</th><td>{{ order.tax_total|number_format(2) }} {{ currency }}</td></tr>
+        <tr><th>Total</th><td><strong>{{ order.grand_total|number_format(2) }} {{ currency }}</strong></td></tr>
+    </tbody></table></div>
+</section>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Items</div><h2>Order lines</h2></div></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>SKU</th><th>Quantity</th><th>Unit price</th><th>Line total</th></tr></thead><tbody>
+    {% for item in order.items %}
+        <tr><td>{{ item.product_name }}</td><td>{{ item.sku }}</td><td>{{ item.quantity }}</td><td>{{ item.unit_price|number_format(2) }} {{ currency }}</td><td>{{ item.line_total|number_format(2) }} {{ currency }}</td></tr>
+    {% else %}<tr><td colspan="5">No items.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Addresses</div><h2>Billing and shipping</h2></div></div>
+    <div class="grid">
+        <div><h3>Billing</h3>{% if order.billing_address %}<p>{{ order.billing_address.first_name }} {{ order.billing_address.last_name }}<br>{{ order.billing_address.line1 }}{% if order.billing_address.line2 %}<br>{{ order.billing_address.line2 }}{% endif %}<br>{{ order.billing_address.city }} {{ order.billing_address.postal_code }}<br>{{ order.billing_address.country_code }}<br>{{ order.billing_address.phone }}</p>{% else %}<p>Not recorded.</p>{% endif %}</div>
+        <div><h3>Shipping</h3>{% if order.shipping_address %}<p>{{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>{{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %}<br>{{ order.shipping_address.line2 }}{% endif %}<br>{{ order.shipping_address.city }} {{ order.shipping_address.postal_code }}<br>{{ order.shipping_address.country_code }}<br>{{ order.shipping_address.phone }}</p>{% else %}<p>Not recorded.</p>{% endif %}</div>
+    </div>
+</section>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Payment history</div><h2>Payments</h2></div><a class="button" href="/stockflow/payments">Manage payments</a></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Provider</th><th>Reference</th><th>Amount</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody>
+    {% for payment in order.payments %}
+        <tr><td>{{ payment.provider|replace({'_':' '})|title }}</td><td>{{ payment.provider_payment_id|default('—') }}</td><td>{{ payment.amount|number_format(2) }} {{ payment.currency_code }}</td><td>{{ payment.status|title }}</td><td>{{ payment.created_at }}</td><td>
+        {% if payment.provider == 'manual' and payment.status == 'pending' %}
+            <a href="/stockflow/payments/edit?id={{ payment.id }}">Edit</a> · <a href="/stockflow/payments/receive?id={{ payment.id }}">Receive</a> · <a href="/stockflow/payments/delete?id={{ payment.id }}">Delete</a>
+        {% elseif payment.provider != 'manual' and payment.status in ['pending','authorized'] %}
+            <a href="/stockflow/payments/reconcile?id={{ payment.id }}">Reconcile</a>
+        {% else %}Read only{% endif %}
+        </td></tr>
+    {% else %}<tr><td colspan="6">No payment records.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% if order.status == 'pending' %}
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Collect payment</div><h2>Payment actions</h2></div></div>
+    <p class="sub">A customer payment link expires after seven days. Do not send a new payment link while a gateway payment is unresolved.</p>
+    {% if can_request_payment %}
+        {{ payment_request_form|raw }}
+        <p><a class="button" href="/stockflow/orders/manual-payment?id={{ order.id }}">Record offline payment</a></p>
+    {% else %}
+        <p>A payment is pending or already completed. Reconcile it before accepting another payment.</p>
+    {% endif %}
+</section>
+{% endif %}
+{% if can_delete %}
+<section class="panel form-panel" style="margin-top:17px;border-color:#e8caca">
+    <div class="panel-head"><div><div class="kicker">Destructive action</div><h2>Delete pending order</h2></div></div>
+    <p class="sub">Only an unpaid order without an unresolved gateway attempt can be deleted. Reserved stock is released.</p>
+    <a class="button" href="/stockflow/orders/delete?id={{ order.id }}">Review deletion</a>
+</section>
+{% endif %}
+{% endblock %}

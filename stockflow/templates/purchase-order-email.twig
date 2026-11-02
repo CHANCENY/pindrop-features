@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>{{ purchase_order.order_number }}</title></head>
+<body>
+    <h1>{{ store_name }} — Purchase order {{ purchase_order.order_number }}</h1>
+    {% if event == 'created' %}
+        <p>A new purchase order has been placed with your company.</p>
+    {% elseif event == 'updated' %}
+        <p>The purchase order details have been updated.</p>
+    {% else %}
+        <p>{{ quantity_received }} unit(s) have been recorded as received against this purchase order.</p>
+    {% endif %}
+    <p><strong>Supplier:</strong> {{ purchase_order.supplier_name }}</p>
+    <p><strong>Expected date:</strong> {{ purchase_order.expected_at|default('Not specified') }}</p>
+    <p><strong>Subtotal:</strong> {{ purchase_order.display_subtotal }}</p>
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead><tr><th>Product</th><th>Variant</th><th>SKU</th><th>Quantity</th><th>Unit cost</th></tr></thead>
+        <tbody>
+        {% for item in purchase_order.items %}
+            <tr>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.option_label|default('Default variant') }}</td>
+                <td>{{ item.sku }}</td>
+                <td>{{ item.quantity_ordered }}</td>
+                <td>{{ item.display_unit_cost }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if purchase_order.notes|default('') %}
+        <p><strong>Notes:</strong> {{ purchase_order.notes }}</p>
+    {% endif %}
+</body>
+</html>

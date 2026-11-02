@@ -1,0 +1,82 @@
+methods:
+  authorize_net:
+    label: Credit card
+    gateway: Simp\Pindrop\Modules\stockflow\src\Payment\AuthorizeNetGateway
+    currencies:
+      - USD
+    required_payment_data:
+      - opaque_data_descriptor
+      - opaque_data_value
+    payment_fields:
+      - name: opaque_data_descriptor
+        label: Authorize.Net opaque data descriptor
+        type: hidden
+        required: true
+      - name: opaque_data_value
+        label: Authorize.Net payment nonce (opaque data value)
+        type: hidden
+        required: true
+    settings:
+      - name: environment
+        label: Environment
+        type: select
+        options:
+          sandbox: Sandbox
+          production: Production
+        default: sandbox
+      - name: api_login_id
+        label: API Login ID
+        type: password
+        secret: true
+        required: true
+      - name: transaction_key
+        label: Transaction Key
+        type: password
+        secret: true
+        required: true
+      - name: client_key
+        label: Accept.js Client Key
+        type: text
+        required: true
+  airtel_money:
+    label: Airtel Money
+    gateway: Simp\Pindrop\Modules\stockflow\src\Payment\AirtelMoneyGateway
+    countries:
+      - MW
+    currencies:
+      - MWK
+    required_payment_data:
+      - phone
+    payment_fields:
+      - name: phone
+        label: Airtel Money phone number
+        type: tel
+        required: true
+    settings:
+      - name: environment
+        label: Environment
+        type: select
+        options:
+          sandbox: Sandbox
+          production: Production
+        default: sandbox
+      - name: merchant_code
+        label: Merchant Code
+        type: text
+        default: 9H7TE2NI
+        required: true
+      - name: client_id
+        label: Client ID
+        type: password
+        secret: true
+        required: true
+      - name: client_secret
+        label: Client Secret
+        type: password
+        secret: true
+        required: true
+      - name: api_key
+        label: API Key
+        type: password
+        secret: true
+        required: true

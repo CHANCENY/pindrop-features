@@ -1,0 +1,15 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading"><div><div class="eyebrow">Supply operations</div><h1>Purchasing</h1><p class="sub">Create purchase orders for known suppliers and product variants.</p></div><div class="heading-actions"><a class="button" href="/stockflow/suppliers">Supplier directory</a><a class="button primary" href="/stockflow/purchasing/create">＋ New purchase order</a></div></div>
+<section class="metrics">
+    <article class="metric"><div class="metric-top"><span class="metric-label">Purchase orders</span><span class="metric-icon amber">•</span></div><div class="metric-value">{{ purchase_orders|length }}</div><div class="metric-footer">Recent records</div></article>
+    <article class="metric"><div class="metric-top"><span class="metric-label">Active suppliers</span><span class="metric-icon teal">•</span></div><div class="metric-value">{{ supplier_count }}</div><div class="metric-footer">Available for ordering</div></article>
+</section>
+<section class="panel" style="margin-top:17px"><div class="panel-head"><div><div class="kicker">Inbound stock</div><h2>Purchase orders</h2></div></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>PO number</th><th>Supplier</th><th>Expected</th><th>Subtotal</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    {% for po in purchase_orders %}<tr><td><span class="mono">{{ po.order_number }}</span></td><td>{{ po.supplier_name }}</td><td>{{ po.expected_at|default('—') }}</td><td><b>{{ po.display_subtotal }}</b></td><td><span class="status-pill {{ po.status == 'received' ? 'healthy' : 'low' }}">{{ po.status|replace({'_':' '})|title }}</span></td><td>{% if po.edit_url|default(false) %}<a class="button small" href="{{ po.edit_url }}">Edit</a>{% endif %} {% if po.receive_url|default(false) %}<a class="button small" href="{{ po.receive_url }}">Receive stock</a>{% endif %}{% if not (po.edit_url|default(false)) and not (po.receive_url|default(false)) %}—{% endif %}</td></tr>
+    {% else %}<tr><td colspan="6">No purchase orders recorded.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% endblock %}

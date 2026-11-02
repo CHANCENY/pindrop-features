@@ -1,0 +1,106 @@
+.stockflow-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.stockflow-form .form-field{min-width:0;display:flex;flex-direction:column;gap:6px;color:#77736e;font-size:10px;font-weight:700}
+.stockflow-form .form-field[hidden]{display:none}
+.stockflow-form .form-field label{color:#77736e;font-size:10px;font-weight:700}
+.stockflow-form input:not([type=submit]),.stockflow-form select,.stockflow-form textarea{width:100%;min-height:36px;padding:9px 10px;border:1px solid #ddd8d0;border-radius:7px;outline:none;background:#fff;color:var(--ink);font:11px Arial,Helvetica,sans-serif}
+.stockflow-form textarea{min-height:82px;resize:vertical}
+.stockflow-form input:focus,.stockflow-form select:focus,.stockflow-form textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-wash)}
+.stockflow-form input[type=submit]{grid-column:1/-1;justify-self:end;min-height:37px;border:0}
+.stockflow-form-panel{margin-top:17px}
+.stockflow-message{margin-bottom:12px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:12px}
+.stockflow-message.error{border-color:#e8c1bb;color:#8f342b;background:var(--coral-wash)}
+.stockflow-message.info{border-color:#b9d8d1;color:#24695f;background:var(--teal-wash)}
+.stockflow-product-wizard.msf{--msf-ink:var(--ink);--msf-muted:#77736e;--msf-line:var(--line);--msf-accent:var(--amber);--msf-accent-soft:var(--amber-wash);--msf-success:#24695f;max-width:none;margin:18px 0 0;padding:0;border:0;border-radius:0;box-shadow:none}
+.stockflow-product-wizard .msf__panel{background:#fff;border-color:var(--line)}
+.stockflow-product-wizard .msf__panel label{color:#77736e;font-size:10px;font-weight:700}
+.stockflow-product-wizard .msf__panel input:not([type=checkbox]):not([type=radio]),.stockflow-product-wizard .msf__panel select,.stockflow-product-wizard .msf__panel textarea{min-height:36px;padding:9px 10px;border-color:#ddd8d0;border-radius:7px;font:11px Arial,Helvetica,sans-serif}
+.stockflow-product-wizard .msf__panel input:focus,.stockflow-product-wizard .msf__panel select:focus,.stockflow-product-wizard .msf__panel textarea:focus{outline:0;border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-wash)}
+.stockflow-product-wizard .msf__button{font-size:12px}
+.stockflow-manual-order.msf{--msf-ink:var(--ink);--msf-muted:#77736e;--msf-line:var(--line);--msf-accent:var(--amber);--msf-accent-soft:var(--amber-wash);--msf-success:#24695f;max-width:none;margin:18px 0 0;padding:0;border:0;border-radius:0;box-shadow:none}
+.stockflow-manual-order .msf__panel{background:#fff;border-color:var(--line)}
+.stockflow-manual-order .msf__panel label{color:#77736e;font-size:10px;font-weight:700}
+.stockflow-manual-order .msf__panel input:not([type=checkbox]):not([type=radio]),.stockflow-manual-order .msf__panel select,.stockflow-manual-order .msf__panel textarea{min-height:36px;padding:9px 10px;border-color:#ddd8d0;border-radius:7px;font:11px Arial,Helvetica,sans-serif}
+.stockflow-manual-order .msf__panel input:focus,.stockflow-manual-order .msf__panel select:focus,.stockflow-manual-order .msf__panel textarea:focus{outline:0;border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-wash)}
+.stockflow-manual-order .msf__button{font-size:12px}
+.payment-method-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:0;padding:0;border:0}
+.payment-method-options legend{margin-bottom:8px;color:#77736e;font-size:10px;font-weight:700}
+.payment-method-option{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.payment-method-option:has(input:checked){border-color:var(--amber);background:var(--amber-wash)}
+.payment-method-option input[type=radio]{width:auto;min-height:0;margin:0;accent-color:var(--amber)}
+.payment-method-option span{display:grid;gap:4px}
+.payment-method-option strong{color:var(--ink);font-size:12px}
+.payment-method-option small{color:var(--muted);font-size:10px}
+.authorize-card-fields{grid-column:1/-1;padding:14px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.authorize-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.authorize-card-grid label{display:grid;gap:6px;color:var(--muted);font-size:10px;font-weight:700}
+.authorize-card-grid input{width:100%;min-height:38px;padding:9px 10px;border:1px solid #ddd8d0;border-radius:7px;font:12px Arial,Helvetica,sans-serif}
+.authorize-card-error{margin:10px 0 0;color:#a52a2a;font-size:12px}
+.authorize-card-fields[hidden]{display:none}
+.order-review{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.order-review section{padding:14px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.order-review h3{margin:0 0 8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.order-review p,.order-review-items{margin:0;color:var(--ink);font-size:12px;line-height:1.6}
+.order-review-items{padding:0;list-style:none}
+.order-review-items li{display:flex;justify-content:space-between;gap:12px;padding:4px 0}
+.order-review-items strong{white-space:nowrap}
+.order-line-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 12px;padding:14px;border:1px solid var(--line);border-radius:8px}
+.order-line-row legend{padding:0 6px;color:var(--ink);font-size:12px;font-weight:700}
+.rule-checkboxes{display:grid;gap:8px;margin:0;padding:12px;border:1px solid var(--line);border-radius:8px}
+.rule-checkboxes legend{padding:0 6px;color:var(--muted);font-size:10px;font-weight:700}
+.rule-checkboxes label{display:flex;align-items:center;gap:8px;margin:0;color:var(--ink);font-size:11px;font-weight:500}
+.rule-checkboxes label[hidden]{display:none}
+.rule-checkboxes input[type=checkbox]{width:auto;min-height:0;margin:0;accent-color:var(--amber)}
+.order-line-actions{grid-column:1/-1}
+.order-line-actions .button{margin:0}
+#add-order-item{justify-self:start}
+.table-actions{white-space:nowrap}
+.table-actions>a{display:inline-grid;vertical-align:middle}
+.button.small{padding:7px 9px;font-size:10px}
+.detail-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding:14px 0}
+.detail-grid>div{min-width:0}
+.detail-grid dt{margin-bottom:5px;color:var(--muted);font-size:10px;font-weight:700}
+.detail-grid dd{margin:0;font-size:12px;font-weight:700}
+@media(max-width:700px){.stockflow-form{grid-template-columns:1fr}.stockflow-form input[type=submit]{grid-column:auto;justify-self:stretch}}
+@media(max-width:700px){.order-review{grid-template-columns:1fr}.order-review-items li{display:grid}}
+@media(max-width:700px){.authorize-card-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.order-line-row{grid-template-columns:1fr}.order-line-actions{grid-column:auto}}
+@media(max-width:700px){.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Improve readability across the Stockflow admin interface. */
+.workspace-copy strong,.profile-copy strong{font-size:14px}
+.workspace-copy span,.profile-copy span{font-size:12px}
+.nav-label{font-size:11px}
+.nav-item{font-size:14px}
+.crumbs{font-size:14px}
+.help{font-size:13px}
+.eyebrow,.kicker{font-size:11px}
+.sub{font-size:14px}
+.button{font-size:13px}
+.status{font-size:12px}
+.metric-label{font-size:12px}
+.metric-footer{font-size:11px}
+.panel p,.panel li,.panel dd,.panel td{font-size:13px}
+.data-table th{font-size:10px}
+.data-table td{font-size:12px}
+.product strong{font-size:13px}
+.product span{font-size:11px}
+.status-pill{font-size:10px}
+.stockflow-form .form-field,.stockflow-form .form-field label,
+.stockflow-product-wizard .msf__panel label,
+.stockflow-manual-order .msf__panel label,
+.payment-method-options legend,.authorize-card-grid label,
+.rule-checkboxes legend,.detail-grid dt{font-size:12px}
+.stockflow-form input:not([type=submit]),.stockflow-form select,.stockflow-form textarea,
+.stockflow-product-wizard .msf__panel input:not([type=checkbox]):not([type=radio]),
+.stockflow-product-wizard .msf__panel select,.stockflow-product-wizard .msf__panel textarea,
+.stockflow-manual-order .msf__panel input:not([type=checkbox]):not([type=radio]),
+.stockflow-manual-order .msf__panel select,.stockflow-manual-order .msf__panel textarea{font-size:14px}
+.stockflow-product-wizard .msf__button,.stockflow-manual-order .msf__button{font-size:14px}
+.stockflow-message{font-size:14px}
+.payment-method-option strong{font-size:14px}
+.payment-method-option small{font-size:12px}
+.order-review h3,.order-review p,.order-review-items,.detail-grid dd{font-size:13px}
+.order-line-row legend{font-size:14px}
+.rule-checkboxes label{font-size:13px}
+.button.small{font-size:12px}
+.authorize-card-grid input{font-size:14px}

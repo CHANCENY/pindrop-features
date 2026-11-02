@@ -1,0 +1,4 @@
+customer:
+  label: 'Customer'
+  description: 'A customer account linked to a Stockflow customer profile.'
+  parent: 'user'

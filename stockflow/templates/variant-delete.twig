@@ -1,0 +1,13 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">{{ product.name }}</div><h1>Delete variant</h1><p class="sub">Review before deleting this product variant.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/products/variants?product_id={{ product.id }}">Cancel</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Confirm deletion</div><h2>{{ variant.option_label|default('Default variant') }}</h2></div></div>
+    <p>SKU: <span class="mono">{{ variant.sku }}</span>. Deletion is blocked if this variant is the product's only variant or has inventory movements, cart items, purchase-order items, or order items.</p>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

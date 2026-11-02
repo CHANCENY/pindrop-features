@@ -1,0 +1,24 @@
+stockflow.service:
+  class: Simp\Pindrop\Modules\stockflow\src\Services\StockflowService
+  arguments:
+    - "@database"
+    - "@site.settings"
+    - "@filesystem.interface"
+stockflow.shipping_methods:
+  class: Simp\Pindrop\Modules\stockflow\src\Services\ShippingMethodService
+  arguments:
+    - "@site.settings"
+stockflow.payment_methods:
+  class: Simp\Pindrop\Modules\stockflow\src\Payment\PaymentMethodRegistry
+  arguments:
+    - "@site.settings"
+stockflow.adjustments:
+  class: Simp\Pindrop\Modules\stockflow\src\Services\AdjustmentConfigurationService
+  arguments:
+    - "@site.settings"
+stockflow.manual_orders:
+  class: Simp\Pindrop\Modules\stockflow\src\Services\ManualOrderService
+  arguments:
+    - "@database"
+    - "@site.settings"
+    - "@stockflow.shipping_methods"

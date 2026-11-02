@@ -1,0 +1,13 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Product catalog</div><h1>Delete product</h1><p class="sub">Review before deleting this catalog record.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/products">Cancel</a></div>
+</div>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Confirm deletion</div><h2>{{ product.name }}</h2></div></div>
+    <p>This deletes the product and its variants. Deletion is blocked if a variant has inventory movements, cart items, purchase-order items, or order items.</p>
+    {{ form_html|raw }}
+</section>
+{% endblock %}

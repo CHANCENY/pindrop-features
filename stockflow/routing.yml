@@ -1,0 +1,488 @@
+stockflow.dashboard:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::dashboard
+  methods:
+  - GET
+  path: /stockflow
+  requirements:
+    _permission:
+    - can_access_stockflow
+
+stockflow.dashboard.alias:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::dashboard
+  methods:
+  - GET
+  path: /stockflow/dashboard
+  requirements:
+    _permission:
+    - can_access_stockflow
+
+stockflow.inventory:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::inventory
+  methods:
+  - GET
+  path: /stockflow/inventory
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.inventory.adjust:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::inventoryAdjustment
+  methods:
+  - GET
+  - POST
+  path: /stockflow/inventory/adjust
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.products:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::products
+  methods:
+  - GET
+  - POST
+  path: /stockflow/products
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.products.manage:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::productManagement
+  methods:
+  - GET
+  - POST
+  path: /stockflow/products/manage
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.products.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::productEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/products/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.products.delete:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::productDelete
+  methods:
+  - GET
+  - POST
+  path: /stockflow/products/delete
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.products.variants:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::productVariants
+  methods:
+  - GET
+  path: /stockflow/products/variants
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.products.variant.add:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::variantAdd
+  methods:
+  - GET
+  - POST
+  path: /stockflow/products/variant/add
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.products.variant.delete:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::variantDelete
+  methods:
+  - GET
+  - POST
+  path: /stockflow/products/variant/delete
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.products.variant.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::variantEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/products/variant/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.orders:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::orders
+  methods:
+  - GET
+  - POST
+  path: /stockflow/orders
+  requirements:
+    _permission:
+    - can_access_stockflow
+
+stockflow.orders.create:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::manualOrderCreate
+  methods:
+  - GET
+  - POST
+  path: /stockflow/orders/create
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.orders.view:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::orderView
+  methods:
+  - GET
+  path: /stockflow/orders/view
+  requirements:
+    _permission:
+    - can_access_stockflow
+
+stockflow.orders.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::orderEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/orders/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.orders.delete:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::orderDelete
+  methods:
+  - GET
+  - POST
+  path: /stockflow/orders/delete
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.orders.payment_request:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::orderPaymentRequest
+  methods:
+  - POST
+  path: /stockflow/orders/payment-request
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.orders.manual_payment:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::manualPayment
+  methods:
+  - GET
+  - POST
+  path: /stockflow/orders/manual-payment
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.payments:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::payments
+  methods:
+  - GET
+  path: /stockflow/payments
+  requirements:
+    _permission:
+    - can_access_stockflow
+
+stockflow.payments.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::paymentEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/payments/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.payments.delete:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::paymentDelete
+  methods:
+  - GET
+  - POST
+  path: /stockflow/payments/delete
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.payments.receive:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::paymentReceive
+  methods:
+  - GET
+  - POST
+  path: /stockflow/payments/receive
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.payments.reconcile:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::paymentReconcile
+  methods:
+  - GET
+  - POST
+  path: /stockflow/payments/reconcile
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.payment_link:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::customerPayment
+  methods:
+  - GET
+  - POST
+  path: /stockflow/pay
+
+stockflow.purchasing:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::purchasing
+  methods:
+  - GET
+  path: /stockflow/purchasing
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.purchasing.create:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::purchaseOrderCreate
+  methods:
+  - GET
+  - POST
+  path: /stockflow/purchasing/create
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.purchasing.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::purchaseOrderEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/purchasing/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.purchasing.receive:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::purchaseOrderReceive
+  methods:
+  - GET
+  - POST
+  path: /stockflow/purchasing/receive
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.suppliers:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::suppliers
+  methods:
+  - GET
+  path: /stockflow/suppliers
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.suppliers.create:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::supplierCreate
+  methods:
+  - GET
+  - POST
+  path: /stockflow/suppliers/create
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.suppliers.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::supplierEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/suppliers/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.customers:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::customers
+  methods:
+  - GET
+  path: /stockflow/customers
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.customers.create:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::customerCreate
+  methods:
+  - GET
+  - POST
+  path: /stockflow/customers/create
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.settings:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::settings
+  methods:
+  - GET
+  - POST
+  path: /stockflow/settings
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.shipping:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::shippingMethods
+  methods:
+  - GET
+  path: /stockflow/shipping
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.shipping.create:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::shippingMethodCreate
+  methods:
+  - GET
+  - POST
+  path: /stockflow/shipping/create
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.shipping.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::shippingMethodEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/shipping/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.taxes:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::taxes
+  methods:
+  - GET
+  path: /stockflow/taxes
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.taxes.create:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::taxCreate
+  methods:
+  - GET
+  - POST
+  path: /stockflow/taxes/create
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.taxes.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::taxEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/taxes/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.discounts:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::discounts
+  methods:
+  - GET
+  path: /stockflow/discounts
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.discounts.create:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::discountCreate
+  methods:
+  - GET
+  - POST
+  path: /stockflow/discounts/create
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.discounts.edit:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::discountEdit
+  methods:
+  - GET
+  - POST
+  path: /stockflow/discounts/edit
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.payment_methods:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::paymentMethods
+  methods:
+  - GET
+  path: /stockflow/payment-methods
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.payment_methods.configure:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::paymentMethodConfigure
+  methods:
+  - GET
+  - POST
+  path: /stockflow/payment-methods/configure
+  requirements:
+    _permission:
+    - can_manage_stockflow

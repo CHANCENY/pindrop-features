@@ -1,0 +1,13 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading"><div><div class="eyebrow">Fulfillment queue</div><h1>Orders</h1><p class="sub">Search and review commerce orders or create a manual order.</p></div><div class="heading-actions"><a class="button primary" href="/stockflow/orders/create">＋ Create manual order</a></div></div>
+<section class="panel stockflow-form-panel"><div class="kicker">Order queue</div><h2>Filter orders</h2>{{ filter_form|raw }}</section>
+<section class="panel" style="margin-top:17px"><div class="panel-head"><div><div class="kicker">Fulfillment queue</div><h2>Orders</h2></div></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Order</th><th>Customer email</th><th>Date</th><th>Total</th><th>Status</th><th>Payment</th></tr></thead><tbody>
+    {% for order in orders %}
+        <tr><td><a class="mono" href="/stockflow/orders/view?id={{ order.id }}">{{ order.order_number }}</a></td><td>{{ order.email }}</td><td>{{ order.placed_at|default('—') }}</td><td><b>{{ order.display_total }}</b></td><td><span class="status-pill {{ order.status in ['cancelled','refunded'] ? 'out' : (order.status in ['pending','processing'] ? 'low' : 'healthy') }}">{{ order.status|replace({'_':' '})|title }}</span></td><td>{% if order.payment_status %}<span class="status-pill {{ order.payment_status == 'paid' ? 'healthy' : (order.payment_status == 'failed' ? 'out' : 'low') }}">{{ order.payment_provider|replace({'_':' '})|title }} · {{ order.payment_status|title }}</span>{% else %}—{% endif %}</td></tr>
+    {% else %}<tr><td colspan="6">No orders match these filters.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% endblock %}

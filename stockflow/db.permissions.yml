@@ -1,0 +1,71 @@
+db.stockflow.read:
+  description: 'Read Stockflow commerce data.'
+  owned_by: stockflow
+  tables:
+    customers: [select]
+    addresses: [select]
+    categories: [select]
+    products: [select]
+    product_variants: [select]
+    product_images: [select]
+    inventory: [select]
+    inventory_movements: [select]
+    suppliers: [select]
+    supplier_products: [select]
+    purchase_orders: [select]
+    purchase_order_items: [select]
+    carts: [select]
+    cart_items: [select]
+    adjustments: [select]
+    orders: [select]
+    order_items: [select]
+    payments: [select]
+    shipments: [select]
+    coupons: [select]
+    coupon_redemptions: [select]
+    reviews: [select]
+    audit_logs: [select]
+
+db.stockflow.write:
+  description: 'Create and update Stockflow commerce data.'
+  owned_by: stockflow
+  tables:
+    customers: [insert, update]
+    addresses: [insert, update]
+    categories: [insert, update]
+    products: [insert, update, delete]
+    product_variants: [insert, update, delete]
+    product_images: [insert, update]
+    inventory: [insert, update]
+    inventory_movements: [insert]
+    suppliers: [insert, update]
+    supplier_products: [insert, update]
+    purchase_orders: [insert, update]
+    purchase_order_items: [insert, update]
+    carts: [insert, update]
+    cart_items: [insert, update]
+    adjustments: [insert, update]
+    orders: [insert, update, delete]
+    order_items: [insert, update, delete]
+    payments: [insert, update, delete]
+    shipments: [insert, update]
+    coupons: [insert, update]
+    coupon_redemptions: [insert, update]
+    reviews: [insert, update]
+    audit_logs: [insert]
+
+admin:
+  db.stockflow.read:
+    title: 'Read Stockflow records'
+    description: 'Read Stockflow commerce data.'
+  db.stockflow.write:
+    title: 'Manage Stockflow records'
+    description: 'Create and update Stockflow commerce data.'
+
+super_admin:
+  db.stockflow.read:
+    title: 'Read Stockflow records'
+    description: 'Read Stockflow commerce data.'
+  db.stockflow.write:
+    title: 'Manage Stockflow records'
+    description: 'Create and update Stockflow commerce data.'

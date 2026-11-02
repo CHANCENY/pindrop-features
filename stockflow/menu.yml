@@ -1,0 +1,72 @@
+groups:
+  stockflow:
+    dashboard:
+      icon: fa fa-dashboard
+      permissions:
+      - can_access_stockflow
+      route: stockflow.dashboard
+      title: Stockflow
+      weight: 20
+    inventory:
+      icon: fa fa-cubes
+      permissions:
+      - can_manage_stockflow
+      route: stockflow.inventory
+      title: Inventory
+      weight: 21
+    products:
+      icon: fa fa-tags
+      permissions:
+      - can_manage_stockflow
+      route: stockflow.products
+      title: Products
+      weight: 22
+    orders:
+      icon: fa fa-shopping-bag
+      permissions:
+      - can_access_stockflow
+      route: stockflow.orders
+      title: Orders
+      weight: 23
+    purchasing:
+      icon: fa fa-truck
+      permissions:
+      - can_manage_stockflow
+      route: stockflow.purchasing
+      title: Purchasing
+      weight: 24
+    shipping:
+      icon: fa fa-truck
+      permissions:
+      - can_manage_stockflow
+      route: stockflow.shipping
+      title: Shipping methods
+      weight: 25
+    payments:
+      icon: fa fa-credit-card
+      permissions:
+      - can_manage_stockflow
+      route: stockflow.payment_methods
+      title: Payment methods
+      weight: 26
+    payment_records:
+      icon: fa fa-money
+      permissions:
+      - can_access_stockflow
+      route: stockflow.payments
+      title: Payments
+      weight: 27
+    customers:
+      icon: fa fa-users
+      permissions:
+      - can_manage_stockflow
+      route: stockflow.customers
+      title: Customers
+      weight: 28
+    settings:
+      icon: fa fa-gear
+      permissions:
+      - can_manage_stockflow
+      route: stockflow.settings
+      title: Stockflow settings
+      weight: 29

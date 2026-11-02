@@ -1,0 +1,6 @@
+name: "Stockflow"
+description: "Commerce operations for products, inventory, purchasing, orders, and customers"
+version: 1.0.0
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"

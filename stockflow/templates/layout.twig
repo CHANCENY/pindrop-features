@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page_title|default('Stockflow') }} · Stockflow</title>
+    <link rel="stylesheet" href="/modules/stockflow/samplehtmls/stockflow.css">
+    <link rel="stylesheet" href="/modules/stockflow/assets/stockflow-plugin.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <a class="brand" href="/stockflow"><span class="brand-mark"></span>stockflow</a>
+        <div class="workspace">
+            <div class="avatar">S</div>
+            <div class="workspace-copy"><strong>{{ store_name|default('Stockflow') }}</strong><span>Commerce operations</span></div>
+        </div>
+        <nav>
+            <div class="nav-group">
+                <p class="nav-label">Workspace</p>
+                <a class="nav-item {{ page_title == 'Dashboard' ? 'active' : '' }}" href="/stockflow"><span>▦</span><span>Dashboard</span></a>
+                <a class="nav-item {{ page_title == 'Inventory' ? 'active' : '' }}" href="/stockflow/inventory"><span>▣</span><span>Inventory</span></a>
+                <a class="nav-item {{ page_title in ['Orders', 'Create manual order'] ? 'active' : '' }}" href="/stockflow/orders"><span>◫</span><span>Orders</span></a>
+                <a class="nav-item {{ page_title == 'Products' ? 'active' : '' }}" href="/stockflow/products"><span>□</span><span>Products</span></a>
+                <a class="nav-item {{ page_title in ['Shipping methods', 'Create shipping method', 'Edit shipping method'] ? 'active' : '' }}" href="/stockflow/shipping"><span>⇢</span><span>Shipping methods</span></a>
+                <a class="nav-item {{ page_title in ['Taxes', 'Create tax', 'Edit tax'] ? 'active' : '' }}" href="/stockflow/taxes"><span>%</span><span>Taxes</span></a>
+                <a class="nav-item {{ page_title in ['Discounts', 'Create discount', 'Edit discount'] ? 'active' : '' }}" href="/stockflow/discounts"><span>−</span><span>Discounts</span></a>
+                <a class="nav-item {{ page_title == 'Payment methods' or payment_method is defined ? 'active' : '' }}" href="/stockflow/payment-methods"><span>¤</span><span>Payment methods</span></a>
+                <a class="nav-item {{ page_title == 'Payments' ? 'active' : '' }}" href="/stockflow/payments"><span>¤</span><span>Payments</span></a>
+            </div>
+            <div class="nav-group">
+                <p class="nav-label">Operations</p>
+                <a class="nav-item {{ page_title == 'Purchasing' ? 'active' : '' }}" href="/stockflow/purchasing"><span>☷</span><span>Purchasing</span></a>
+                <a class="nav-item {{ page_title == 'Suppliers' ? 'active' : '' }}" href="/stockflow/suppliers"><span>♧</span><span>Suppliers</span></a>
+                <a class="nav-item {{ page_title == 'Customers' ? 'active' : '' }}" href="/stockflow/customers"><span>♙</span><span>Customers</span></a>
+            </div>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="nav-group">
+                <p class="nav-label">Manage</p>
+                <a class="nav-item {{ page_title == 'Settings' ? 'active' : '' }}" href="/stockflow/settings"><span>⚙</span><span>Settings</span></a>
+                <a class="nav-item" href="/docs"><span>?</span><span>Help center</span></a>
+            </div>
+            <div class="profile"><div class="avatar">SF</div><div class="profile-copy"><strong>Stockflow</strong><span>Operations</span></div></div>
+        </div>
+    </aside>
+    <main class="main">
+        <header class="topbar">
+            <div class="crumbs"><span>Workspace</span><span>›</span><strong>{{ page_title }}</strong></div>
+            <div class="top-actions"><a class="help" href="/stockflow/settings">Stockflow settings</a></div>
+        </header>
+        <div class="content">
+            {% for message in messages|default([]) %}
+                <div class="stockflow-message {{ message.type }}">{{ message.text }}</div>
+            {% endfor %}
+            {% block content %}{% endblock %}
+            <footer class="footer"><span>▣ Stockflow Commerce Admin</span><span>Powered by Pindrop</span></footer>
+        </div>
+    </main>
+</div>
+</body>
+</html>

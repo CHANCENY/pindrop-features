@@ -1,0 +1,27 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Supply operations</div><h1>Suppliers</h1><p class="sub">Manage supplier records and their availability for new purchase orders.</p></div>
+    <div class="heading-actions"><a class="button" href="/stockflow/purchasing">Purchasing</a><a class="button primary" href="/stockflow/suppliers/create">＋ Add supplier</a></div>
+</div>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Supplier directory</div><h2>All suppliers</h2></div><span class="metric-label">{{ suppliers|length }} records</span></div>
+    <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Supplier</th><th>Code</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for supplier in suppliers %}
+            <tr>
+                <td><strong>{{ supplier.name }}</strong></td>
+                <td><span class="mono">{{ supplier.code }}</span></td>
+                <td>{{ supplier.email|default('—') }}</td>
+                <td><span class="status-pill {{ supplier.status == 'active' ? 'healthy' : 'low' }}">{{ supplier.status|title }}</span></td>
+                <td><a class="button small" href="/stockflow/suppliers/edit?id={{ supplier.id }}">Edit</a></td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5">No suppliers yet. Add one to start creating purchase orders.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+</section>
+{% endblock %}
