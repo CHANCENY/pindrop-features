@@ -18,6 +18,13 @@
 <section class="panel form-panel" style="margin-top:17px">
     <div class="panel-head"><div><div class="kicker">Order details</div><h2>Create order in guided steps</h2></div></div>
     <p class="sub">An existing customer profile is matched by email; otherwise a guest customer profile is created. Order lines use current catalog prices. Available inventory is reserved while payment is pending and decremented when payment succeeds. Card details must be tokenized by Authorize.Net Accept.js; this form never collects card numbers.</p>
+    <div id="stockflow-payment-processing" class="stockflow-payment-processing" role="status" aria-live="polite" aria-hidden="true" hidden>
+        <div class="stockflow-payment-processing-card">
+            <span class="stockflow-payment-spinner" aria-hidden="true"></span>
+            <strong>Processing secure card payment</strong>
+            <span data-processing-message>Please wait while your card details are securely tokenized.</span>
+        </div>
+    </div>
     {{ form_html|raw }}
     <button class="button" id="add-order-item" type="button" style="display:none;margin-top:12px">＋ Add item to cart</button>
 </section>
@@ -30,6 +37,21 @@
 (() => {
     const form = document.querySelector('#stockflow-manual-order');
     if (!form) return;
+    const processingOverlay = document.getElementById('stockflow-payment-processing');
+    const processingMessage = processingOverlay?.querySelector('[data-processing-message]');
+    const showProcessing = message => {
+        if (!processingOverlay) return;
+        if (processingMessage) processingMessage.textContent = message;
+        processingOverlay.hidden = false;
+        processingOverlay.setAttribute('aria-hidden', 'false');
+        form.setAttribute('aria-busy', 'true');
+    };
+    const hideProcessing = () => {
+        if (!processingOverlay) return;
+        processingOverlay.hidden = true;
+        processingOverlay.setAttribute('aria-hidden', 'true');
+        form.removeAttribute('aria-busy');
+    };
 
     const addItemButton = document.getElementById('add-order-item');
     const itemGroups = new Map();
@@ -225,20 +247,30 @@
         form.dataset.tokenizing = 'true';
         if (submitButton) submitButton.disabled = true;
         if (error) error.hidden = true;
-        window.Accept.dispatchData(secureData, response => {
+        showProcessing('Please wait while your card details are securely tokenized.');
+        try {
+            window.Accept.dispatchData(secureData, response => {
+                form.dataset.tokenizing = 'false';
+                if (submitButton) submitButton.disabled = false;
+                if (response?.messages?.resultCode !== 'Ok' || !response.opaqueData?.dataDescriptor || !response.opaqueData?.dataValue) {
+                    hideProcessing();
+                    const messages = (response?.messages?.message || []).map(message => message.text).filter(Boolean);
+                    showError(messages.join(' ') || 'Authorize.Net could not tokenize this card. Check the details and try again.');
+                    return;
+                }
+                descriptor.value = response.opaqueData.dataDescriptor;
+                opaqueValue.value = response.opaqueData.dataValue;
+                cardFields.querySelectorAll('[data-card-number], [data-card-month], [data-card-year], [data-card-code]')
+                    .forEach(input => { input.value = ''; });
+                showProcessing('Your card is tokenized. Submitting the payment request securely.');
+                form.submit();
+            });
+        } catch (exception) {
             form.dataset.tokenizing = 'false';
             if (submitButton) submitButton.disabled = false;
-            if (response.messages?.resultCode !== 'Ok' || !response.opaqueData?.dataDescriptor || !response.opaqueData?.dataValue) {
-                const messages = (response.messages?.message || []).map(message => message.text).filter(Boolean);
-                showError(messages.join(' ') || 'Authorize.Net could not tokenize this card. Check the details and try again.');
-                return;
-            }
-            descriptor.value = response.opaqueData.dataDescriptor;
-            opaqueValue.value = response.opaqueData.dataValue;
-            cardFields.querySelectorAll('[data-card-number], [data-card-month], [data-card-year], [data-card-code]')
-                .forEach(input => { input.value = ''; });
-            form.submit();
-        });
+            hideProcessing();
+            showError('Authorize.Net could not start card tokenization. Please try again.');
+        }
     });
     const finishButton = form.querySelector('[name="_multistep_action"][value="finish"]');
     if (finishButton) finishButton.textContent = 'Confirm order and request payment';
