@@ -36,6 +36,10 @@ With the database configured and the terminal-command plugin available:
    minimum/maximum whole-order subtotal, total quantity, and distinct-product
    requirements. A qualifying product-scoped discount still applies only to
    its configured product.
+   The Stockflow admin header includes a global search for products and
+   variants, orders and their line items, inventory movements, purchase orders
+   and their line items, customers, taxes, and discounts. Search results are
+   capped at eight per category.
    Admins can create manual orders from `/stockflow/orders/create` through
    customer, cart items, billing, shipping, payment, and review steps. New
    customers entered during this workflow are stored as guest customer profiles.

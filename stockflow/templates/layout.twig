@@ -48,7 +48,14 @@
     <main class="main">
         <header class="topbar">
             <div class="crumbs"><span>Workspace</span><span>›</span><strong>{{ page_title }}</strong></div>
-            <div class="top-actions"><a class="help" href="/stockflow/settings">Stockflow settings</a></div>
+            <div class="top-actions">
+                <form class="stockflow-global-search" method="get" action="/stockflow/search" role="search">
+                    <label class="visually-hidden" for="stockflow-search">Search Stockflow</label>
+                    <input id="stockflow-search" type="search" name="q" value="{{ search_term|default('') }}" placeholder="Search products, orders, customers…" maxlength="120">
+                    <button class="button small" type="submit">Search</button>
+                </form>
+                <a class="help" href="/stockflow/settings">Stockflow settings</a>
+            </div>
         </header>
         <div class="content">
             {% for message in messages|default([]) %}

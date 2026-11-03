@@ -65,6 +65,37 @@ final class StockflowController extends ControllerBase
         ]);
     }
 
+    public function search(Request $request, string $route_name, array $options): Response
+    {
+        $term = $request->query->get('q', '');
+        if (!is_string($term)) {
+            Message::error('Enter a valid search term.');
+            $term = '';
+        }
+        $term = trim($term);
+        $results = [];
+        if ($term !== '') {
+            if (strlen($term) > 120) {
+                Message::error('Search must be 120 characters or fewer.');
+            } else {
+                try {
+                    $results = $this->stockflow->searchEverything($term);
+                } catch (\Throwable $exception) {
+                    getAppContainer()->get('logger')->error('Stockflow admin search failed', [
+                        'exception' => $exception->getMessage(),
+                    ]);
+                    Message::error('Search could not be completed. Please try again.');
+                }
+            }
+        }
+
+        return $this->page('search.twig', [
+            'page_title' => 'Search Stockflow',
+            'search_term' => $term,
+            'search_results' => $results,
+        ]);
+    }
+
     public function inventory(Request $request, string $route_name, array $options): Response
     {
         return $this->page('inventory.twig', [

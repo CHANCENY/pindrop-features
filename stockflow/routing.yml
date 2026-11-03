@@ -18,6 +18,16 @@ stockflow.dashboard.alias:
     _permission:
     - can_access_stockflow
 
+stockflow.search:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::search
+  methods:
+  - GET
+  path: /stockflow/search
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
 stockflow.inventory:
   defaults:
     _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::inventory

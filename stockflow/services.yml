@@ -4,6 +4,7 @@ stockflow.service:
     - "@database"
     - "@site.settings"
     - "@filesystem.interface"
+    - "@stockflow.adjustments"
 stockflow.shipping_methods:
   class: Simp\Pindrop\Modules\stockflow\src\Services\ShippingMethodService
   arguments:

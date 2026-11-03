@@ -60,11 +60,36 @@
 .detail-grid>div{min-width:0}
 .detail-grid dt{margin-bottom:5px;color:var(--muted);font-size:10px;font-weight:700}
 .detail-grid dd{margin:0;font-size:12px;font-weight:700}
+.top-actions{display:flex;align-items:center;gap:14px}
+.stockflow-global-search{display:flex;align-items:center;gap:6px}
+.stockflow-global-search input{width:min(28vw,330px);min-width:170px;height:36px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);font:13px Arial,Helvetica,sans-serif}
+.stockflow-global-search input:focus,.stockflow-search-form input:focus{outline:0;border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-wash)}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.stockflow-search-panel{margin-top:17px}
+.stockflow-search-form{display:grid;gap:9px}
+.stockflow-search-form label{color:var(--muted);font-size:12px;font-weight:700}
+.stockflow-search-form>div{display:flex;gap:8px}
+.stockflow-search-form input{flex:1;min-width:0;min-height:42px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;font:14px Arial,Helvetica,sans-serif}
+.stockflow-search-form button{min-width:100px}
+.stockflow-search-results{margin-top:14px}
+.stockflow-search-results ul{margin:0;padding:0;list-style:none}
+.stockflow-search-results li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px;border-top:1px solid var(--line)}
+.stockflow-search-results li:first-child{border-top:0}
+.stockflow-search-results li>a{display:grid;gap:5px;min-width:0;color:inherit;text-decoration:none}
+.stockflow-search-results li>a:hover strong{color:var(--amber)}
+.stockflow-search-results li strong{font-size:14px}
+.stockflow-search-results li span{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.stockflow-search-results .search-result-arrow{color:var(--amber);font-size:18px}
+.stockflow-search-empty{margin-top:17px;padding:24px}
+.stockflow-search-empty h2{margin:0 0 8px;font-size:16px}
+.stockflow-search-empty p,.stockflow-search-limit{margin:0;color:var(--muted);font-size:13px}
+.stockflow-search-limit{margin:12px 4px}
 @media(max-width:700px){.stockflow-form{grid-template-columns:1fr}.stockflow-form input[type=submit]{grid-column:auto;justify-self:stretch}}
 @media(max-width:700px){.order-review{grid-template-columns:1fr}.order-review-items li{display:grid}}
 @media(max-width:700px){.authorize-card-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.order-line-row{grid-template-columns:1fr}.order-line-actions{grid-column:auto}}
 @media(max-width:700px){.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.top-actions{gap:8px}.stockflow-global-search{flex:1}.stockflow-global-search input{width:100%;min-width:0}.stockflow-global-search .button{display:none}.stockflow-search-form>div{align-items:stretch;flex-direction:column}.stockflow-search-form button{min-height:40px}}
 
 /* Improve readability across the Stockflow admin interface. */
 .workspace-copy strong,.profile-copy strong{font-size:14px}

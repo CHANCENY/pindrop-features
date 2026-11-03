@@ -18,7 +18,8 @@ final class StockflowService
     public function __construct(
         private readonly DatabaseService $database,
         private readonly Settings $settings,
-        private readonly FileSystemInterface $fileSystem
+        private readonly FileSystemInterface $fileSystem,
+        private readonly AdjustmentConfigurationService $adjustments
     ) {
     }
 
@@ -368,6 +369,222 @@ final class StockflowService
             ->orderBy('created_at', 'DESC')
             ->limit(100)
             ->get();
+    }
+
+    public function searchEverything(string $term): array
+    {
+        $term = trim($term);
+        if ($term === '' || strlen($term) > 120) {
+            throw new InvalidArgumentException('Search must contain between 1 and 120 characters.');
+        }
+        $like = '%' . $term . '%';
+        $results = [];
+
+        $products = $this->database->table('product_variants', 'stockflow')
+            ->select([
+                'products.id AS product_id',
+                'products.name AS product_name',
+                'products.brand',
+                'products.description',
+                'products.status AS product_status',
+                'categories.name AS category_name',
+                'product_variants.id AS variant_id',
+                'product_variants.sku',
+                'product_variants.barcode',
+                'product_variants.option_label',
+                'product_variants.price',
+            ])
+            ->join('products', 'products.id', '=', 'product_variants.product_id')
+            ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+            ->whereRaw(
+                '(products.name LIKE ? OR products.slug LIKE ? OR products.brand LIKE ? OR products.description LIKE ?'
+                . ' OR categories.name LIKE ? OR CAST(product_variants.price AS CHAR) LIKE ?'
+                . ' OR product_variants.sku LIKE ? OR product_variants.barcode LIKE ?'
+                . ' OR product_variants.option_label LIKE ? OR CAST(products.id AS CHAR) LIKE ?'
+                . ' OR CAST(product_variants.id AS CHAR) LIKE ?)',
+                [$like, $like, $like, $like, $like, $like, $like, $like, $like, $like, $like]
+            )
+            ->orderBy('products.name')
+            ->limit(8)
+            ->get();
+        foreach ($products as $product) {
+            $results['Products'][] = [
+                'title' => (string) $product['product_name'],
+                'detail' => implode(' · ', array_filter([
+                    $product['brand'] ?? '',
+                    $product['sku'] ?? '',
+                    $product['option_label'] ?? '',
+                    $product['category_name'] ?? '',
+                    (string) $product['product_status'],
+                ])),
+                'href' => '/stockflow/products/variants?product_id=' . (int) $product['product_id'],
+            ];
+        }
+
+        $orders = $this->database->table('orders', 'stockflow')
+            ->select(['id', 'order_number', 'email', 'status', 'grand_total', 'currency_code', 'placed_at'])
+            ->whereRaw(
+                '(order_number LIKE ? OR email LIKE ? OR status LIKE ? OR CAST(id AS CHAR) LIKE ?'
+                . ' OR CAST(grand_total AS CHAR) LIKE ?'
+                . ' OR EXISTS (SELECT 1 FROM order_items oi WHERE oi.order_id = orders.id'
+                . ' AND (oi.sku LIKE ? OR oi.product_name LIKE ?)))',
+                [$like, $like, $like, $like, $like, $like, $like]
+            )
+            ->orderBy('placed_at', 'DESC')
+            ->limit(8)
+            ->get();
+        foreach ($orders as $order) {
+            $results['Orders'][] = [
+                'title' => (string) $order['order_number'],
+                'detail' => implode(' · ', array_filter([
+                    (string) $order['email'],
+                    (string) $order['status'],
+                    $this->formatOrderTotal($order),
+                ])),
+                'href' => '/stockflow/orders/view?id=' . (int) $order['id'],
+            ];
+        }
+
+        $movements = $this->database->table('inventory_movements', 'stockflow')
+            ->select([
+                'inventory_movements.id',
+                'inventory_movements.quantity_delta',
+                'inventory_movements.movement_type',
+                'inventory_movements.reason',
+                'inventory_movements.reference_type',
+                'inventory_movements.reference_id',
+                'inventory_movements.created_at',
+                'product_variants.sku',
+                'products.name AS product_name',
+            ])
+            ->join('product_variants', 'product_variants.id', '=', 'inventory_movements.variant_id')
+            ->join('products', 'products.id', '=', 'product_variants.product_id')
+            ->whereRaw(
+                '(products.name LIKE ? OR product_variants.sku LIKE ?'
+                . ' OR inventory_movements.reason LIKE ? OR inventory_movements.movement_type LIKE ?'
+                . ' OR inventory_movements.reference_type LIKE ?'
+                . ' OR CAST(inventory_movements.reference_id AS CHAR) LIKE ?'
+                . ' OR CAST(inventory_movements.id AS CHAR) LIKE ?)',
+                [$like, $like, $like, $like, $like, $like, $like]
+            )
+            ->orderBy('inventory_movements.created_at', 'DESC')
+            ->limit(8)
+            ->get();
+        foreach ($movements as $movement) {
+            $results['Inventory movements'][] = [
+                'title' => (string) $movement['product_name'] . ' · ' . (string) $movement['movement_type'],
+                'detail' => implode(' · ', array_filter([
+                    (string) $movement['sku'],
+                    ((int) $movement['quantity_delta'] > 0 ? '+' : '') . (string) $movement['quantity_delta'] . ' units',
+                    (string) ($movement['reason'] ?? ''),
+                    (string) $movement['created_at'],
+                ])),
+                'href' => '/stockflow/inventory',
+            ];
+        }
+
+        $purchaseOrders = $this->database->table('purchase_orders', 'stockflow')
+            ->select([
+                'purchase_orders.id',
+                'purchase_orders.order_number',
+                'purchase_orders.status',
+                'purchase_orders.notes',
+                'purchase_orders.subtotal',
+                'purchase_orders.expected_at',
+                'purchase_orders.created_at',
+                'suppliers.name AS supplier_name',
+                'suppliers.code AS supplier_code',
+            ])
+            ->join('suppliers', 'suppliers.id', '=', 'purchase_orders.supplier_id')
+            ->whereRaw(
+                '(purchase_orders.order_number LIKE ? OR purchase_orders.status LIKE ?'
+                . ' OR purchase_orders.notes LIKE ? OR suppliers.name LIKE ? OR suppliers.code LIKE ?'
+                . ' OR CAST(purchase_orders.id AS CHAR) LIKE ? OR CAST(purchase_orders.subtotal AS CHAR) LIKE ?'
+                . ' OR CAST(purchase_orders.expected_at AS CHAR) LIKE ?'
+                . ' OR EXISTS (SELECT 1 FROM purchase_order_items poi'
+                . ' JOIN product_variants pv ON pv.id = poi.variant_id'
+                . ' JOIN products pp ON pp.id = pv.product_id'
+                . ' WHERE poi.purchase_order_id = purchase_orders.id'
+                . ' AND (pv.sku LIKE ? OR pp.name LIKE ?)))',
+                [$like, $like, $like, $like, $like, $like, $like, $like, $like, $like]
+            )
+            ->orderBy('purchase_orders.created_at', 'DESC')
+            ->limit(8)
+            ->get();
+        foreach ($purchaseOrders as $purchaseOrder) {
+            $results['Purchases'][] = [
+                'title' => (string) $purchaseOrder['order_number'],
+                'detail' => implode(' · ', array_filter([
+                    (string) $purchaseOrder['supplier_name'],
+                    (string) $purchaseOrder['supplier_code'],
+                    (string) $purchaseOrder['status'],
+                    $this->formatMoney($purchaseOrder['subtotal']),
+                ])),
+                'href' => '/stockflow/purchasing',
+            ];
+        }
+
+        $customers = $this->database->table('customers', 'stockflow')
+            ->select(['id', 'first_name', 'last_name', 'email', 'phone', 'status'])
+            ->whereRaw(
+                '(first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ?'
+                . ' OR status LIKE ? OR CAST(id AS CHAR) LIKE ?)',
+                [$like, $like, $like, $like, $like, $like]
+            )
+            ->orderBy('last_name')
+            ->limit(8)
+            ->get();
+        foreach ($customers as $customer) {
+            $results['Customers'][] = [
+                'title' => trim((string) $customer['first_name'] . ' ' . (string) $customer['last_name']),
+                'detail' => implode(' · ', array_filter([
+                    (string) $customer['email'],
+                    (string) ($customer['phone'] ?? ''),
+                    (string) $customer['status'],
+                ])),
+                'href' => '/stockflow/customers',
+            ];
+        }
+
+        foreach (['taxes' => 'Taxes', 'discounts' => 'Discounts'] as $kind => $label) {
+            foreach ($this->adjustments->getRules($kind) as $rule) {
+                $searchable = implode(' ', array_map(
+                    static fn (mixed $value): string => is_scalar($value) ? (string) $value : '',
+                    [
+                        $rule['id'] ?? '',
+                        $rule['name'] ?? '',
+                        $rule['description'] ?? '',
+                        $rule['status'] ?? '',
+                        $rule['calculation_type'] ?? '',
+                        $rule['apply_to'] ?? '',
+                        $rule['amount'] ?? '',
+                    ]
+                ));
+                if (stripos($searchable, $term) === false) {
+                    continue;
+                }
+                $amount = (string) ($rule['amount'] ?? '');
+                if (($rule['calculation_type'] ?? '') === 'fixed' && $amount !== '') {
+                    $amount = $this->formatMoney($amount);
+                } elseif ($amount !== '') {
+                    $amount .= '%';
+                }
+                $results[$label][] = [
+                    'title' => (string) ($rule['name'] ?? ''),
+                    'detail' => implode(' · ', array_filter([
+                        (string) ($rule['description'] ?? ''),
+                        (string) ($rule['status'] ?? ''),
+                        $amount,
+                    ])),
+                    'href' => '/stockflow/' . $kind . '/edit?id=' . rawurlencode((string) ($rule['id'] ?? '')),
+                ];
+                if (count($results[$label]) >= 8) {
+                    break;
+                }
+            }
+        }
+
+        return $results;
     }
 
     public function getSuppliers(bool $activeOnly = true): array

@@ -1,0 +1,55 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div>
+        <div class="eyebrow">Stockflow workspace</div>
+        <h1>Search Stockflow</h1>
+        <p class="sub">Search products, orders, stock movements, purchases, customers, taxes, and discounts.</p>
+    </div>
+</div>
+<section class="panel stockflow-search-panel">
+    <form class="stockflow-search-form" method="get" action="/stockflow/search" role="search">
+        <label for="stockflow-search-query">Search all Stockflow records</label>
+        <div>
+            <input id="stockflow-search-query" type="search" name="q" value="{{ search_term }}" placeholder="Try a product name, SKU, order number, email, or rule" maxlength="120" autofocus>
+            <button class="button primary" type="submit">Search</button>
+        </div>
+    </form>
+</section>
+
+{% if search_term %}
+    {% if search_results is empty %}
+        <section class="panel stockflow-search-empty">
+            <h2>No matches found</h2>
+            <p>Try another name, SKU, email address, order number, or status.</p>
+        </section>
+    {% else %}
+        {% for category, results in search_results %}
+            <section class="panel stockflow-search-results">
+                <div class="panel-head">
+                    <div><div class="kicker">Matching records</div><h2>{{ category }}</h2></div>
+                    <span class="status-pill">{{ results|length }} results</span>
+                </div>
+                <ul>
+                    {% for result in results %}
+                        <li>
+                            <a href="{{ result.href }}">
+                                <strong>{{ result.title }}</strong>
+                                <span>{{ result.detail }}</span>
+                            </a>
+                            <span class="search-result-arrow" aria-hidden="true">→</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endfor %}
+        <p class="stockflow-search-limit">Showing up to 8 matches per category.</p>
+    {% endif %}
+{% else %}
+    <section class="panel stockflow-search-empty">
+        <h2>Search your store</h2>
+        <p>Search across catalog, sales, inventory activity, purchasing, customer records, and adjustment rules.</p>
+    </section>
+{% endif %}
+{% endblock %}
