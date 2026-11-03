@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="heading">
-    <div><div class="eyebrow">Store setup</div><h1>Payment methods</h1><p class="sub">Discover supported gateways from Stockflow's payments.yml and configure their availability.</p></div>
+    <div><div class="eyebrow">Store setup</div><h1>Payment methods</h1><p class="sub">Configure gateway and offline payment methods defined in Stockflow's payments.yml.</p></div>
 </div>
 {% if not encryption_key_configured %}
 <section class="panel" style="margin-top:17px"><div class="kicker">Server setup required</div><p class="sub">Set PAYMENT_CONFIG_ENCRYPTION_KEY in the server environment before saving gateway credentials. Credentials are encrypted before being stored.</p></section>
@@ -15,8 +15,8 @@
         {% for method in payment_methods %}
             <tr>
                 <td><strong>{{ method.label }}</strong><div class="mono">{{ method.id }}</div></td>
-                <td>{{ method.currencies|join(', ') }}</td>
-                <td><span class="status-pill {{ method.configured ? 'healthy' : 'low' }}">{{ method.configured ? 'Credentials saved' : 'Needs credentials' }}</span></td>
+                <td>{{ '*' in method.currencies ? 'Any currency' : method.currencies|join(', ') }}</td>
+                <td><span class="status-pill {{ method.configured ? 'healthy' : 'low' }}">{{ method.type == 'offline' ? 'No gateway credentials required' : (method.configured ? 'Credentials saved' : 'Needs credentials') }}</span></td>
                 <td><span class="status-pill {{ method.enabled ? 'healthy' : 'low' }}">{{ method.enabled ? 'Enabled' : 'Disabled' }}</span></td>
                 <td><a class="button small" href="/stockflow/payment-methods/configure?id={{ method.id }}">Configure</a></td>
             </tr>

@@ -11,7 +11,9 @@ With the database configured and the terminal-command plugin available:
 2. Run `./pindro plugin:enable stockflow`.
 3. Run `./pindro db:schema:create` and select **ALL** to create the core and
    enabled-plugin schemas. The Stockflow SQL file contains multiple tables;
-   the schema handler skips tables that already exist.
+   the schema handler skips tables that already exist. Run this again after
+   updating Stockflow so newly added tables such as `api_tokens` and
+   `checkout_idempotency` are created.
 4. Open `/stockflow`. The catalog list is at `/stockflow/products`; use
    **Manage catalog** to open the product-creation wizard, which includes
    category selection or creation and first-variant setup.
@@ -37,9 +39,11 @@ With the database configured and the terminal-command plugin available:
    Admins can create manual orders from `/stockflow/orders/create` through
    customer, cart items, billing, shipping, payment, and review steps. New
    customers entered during this workflow are stored as guest customer profiles.
-   The payment step lists enabled gateways as radio choices and displays the
-   selected gateway's configured payment fields before the final review and
-   submission. Orders can be viewed, edited while pending and unpaid, and
+   The payment step lists enabled gateways and cash, quote, and purchase-order choices as radio
+   options and displays the selected gateway's configured payment fields before
+   the final review and submission. Cash, Quote, and Purchase Order choices
+   create pending orders without charging; admins can confirm receipt from order payment
+   history. Orders can be viewed, edited while pending and unpaid, and
    deleted only while pending and without an unresolved gateway attempt. Editing
    recalculates the order from current product prices and adjusts inventory
    reservations transactionally.
@@ -53,7 +57,37 @@ With the database configured and the terminal-command plugin available:
    read-only except for the explicit reconciliation action, which requires an
    administrator to verify the captured transaction in the provider dashboard.
    Pending manual/offline payment records can be edited or deleted; confirming
-   receipt records the full balance and decrements reserved stock.
+   receipt records the full balance and decrements reserved stock. Admins can
+   email an invoice from an order, using the customer email or an alternate
+   recipient address.
+   The email includes a downloadable PDF invoice attachment. Variant labels
+   contain versioned identifiers: QR codes use a JSON `stockflow.variant`
+   payload with product ID, variant ID, SKU, and barcode; Code 128 barcodes use
+   `SF1:<variant-id>:<sku>`. These codes identify the catalog variant rather
+   than embedding changing stock or price data. Inventory, product, and order
+   lists can be exported to XLSX.
+   Shopkeeper devices use dedicated bearer tokens created and revoked at
+   `/stockflow/api-tokens`. The API provides authenticated endpoints for scan
+   resolution (`POST /api/stockflow/v1/scan`), checkout choices
+   (`GET /api/stockflow/v1/checkout-options`), checkout review
+   (`POST /api/stockflow/v1/checkout/review`), and confirmation
+   (`POST /api/stockflow/v1/checkout/confirm`). The legacy
+   `POST /api/stockflow/v1/checkout` path also returns a review. Scan
+   resolution accepts the new QR JSON
+   and `SF1` barcode payloads, plus legacy SKU/barcode values. Checkout uses
+   catalog pricing and stock validation. Review automatically applies active
+   taxes and eligible discounts for matching product or order-subtotal scopes;
+   the app does not have to submit adjustment IDs. Review returns line items,
+   each applied adjustment and amount, billing/shipping, payment choice, and
+   subtotal/discount/shipping/tax/total, without creating an order or reserving
+   stock. Confirmation recalculates the entire review against current catalog,
+   stock, and adjustment settings before creating the order. In-store Cash
+   confirmation records payment and finalizes stock immediately, while Quote
+   and Purchase Order remain pending for later payment receipt. Pickup is
+   available without a delivery address. Send the generated credential in the HTTP Authorization bearer
+   header, and use `X-Requested-With: XMLHttpRequest` on POST requests. A
+   Postman Collection v2.1 export with ready-to-edit scan and checkout requests
+   is included at `postman/Stockflow-Android-API.postman_collection.json`.
 
 The Stockflow database schema is defined in `mysql/ecommerce-schema.sql`.
 
@@ -123,5 +157,41 @@ Authorize.Net uses its sandbox/production transaction API and opaque payment dat
   payment is confirmed. A failed manual-order charge releases its reservation.
   Payment-link attempts retain reservations after a decline so the customer can
   retry; uncertain or pending attempts require reconciliation.
+- Shopkeeper API tokens are random, shown only at creation, stored as SHA-256
+  hashes, scoped to the issuing account, and rejected when that account is
+  inactive or no longer has Stockflow management permission. Revoke lost device
+  tokens from `/stockflow/api-tokens`.
+- The versioned QR payload is JSON such as
+  `{"schema":"stockflow.variant","version":1,"product_id":12,"variant_id":34,"sku":"MUG-BLUE","barcode":"0123456789"}`.
+  Scan endpoints always reload current product details, price, and available
+  inventory from Stockflow; those changeable values are deliberately not
+  printed into labels.
+- Authenticated app endpoints:
+  - `POST /api/stockflow/v1/scan` with `{"code":"<scanned QR or barcode text>"}` resolves the variant and returns current product details, stock, and currency-formatted price.
+  - `GET /api/stockflow/v1/checkout-options` returns the store currency, available pickup/delivery methods, offline payment methods, and active taxes/discounts.
+  - `POST /api/stockflow/v1/checkout/review` accepts `customer` (`email`, `first_name`, `last_name`, optional `phone`), `items` (`variant_id`, `quantity`), `payment_method`, and `shipping_method`. Use `pickup` without addresses; delivery requires billing details and accepts an optional separate shipping address. The response is a full order review with all applicable discounts and taxes calculated automatically; it does not reserve stock or create customer/order records.
+  - After the customer/shopkeeper accepts the review, send the same request body plus the returned `review_hash` to `POST /api/stockflow/v1/checkout/confirm`, with a unique `Idempotency-Key` header. Keep the same key and body when retrying after a timeout; a completed response is replayed rather than creating another order. Use a new key for each distinct confirmation. Keys are scoped to the API-token owner and retained for 24 hours; reusing a key with a different body returns `409`.
+  - Confirmation revalidates and recalculates everything before creating the order. If any reviewed value changed, the endpoint responds `409` with the updated review and hash instead of creating the order; display that review and ask for confirmation again with a new `Idempotency-Key`.
+
+  Example checkout request:
+  ```json
+  {
+    "customer": {
+      "email": "customer@example.com",
+      "first_name": "Alex",
+      "last_name": "Customer"
+    },
+    "items": [{"variant_id": 34, "quantity": 2}],
+    "payment_method": "cash",
+    "shipping_method": "pickup"
+  }
+  ```
+  Submit this body first to the review endpoint and then, after approval, to the confirmation endpoint.
 - Customer addresses, shipment fulfillment, coupons, reviews, and team
   invitations are not exposed as workflows in this initial module.
+Order creation is implemented by the reusable `stockflow.checkout` service.
+Call its `createOrder($data, $taxRules, $discountRules)` method from another
+checkout surface to run the same stock validation, order calculation, stock
+reservation, and pending-payment creation used by the admin order workflow.
+Gateway submission remains a separate step, so storefront and admin checkout
+surfaces can choose the appropriate payment experience.

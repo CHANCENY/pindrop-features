@@ -81,9 +81,15 @@ final class StockflowService
                 'inventory.quantity_reserved',
                 'inventory.reorder_point',
                 'product_variants.sku',
+                'product_variants.barcode',
                 'product_variants.price',
+                'product_variants.compare_at_price',
+                'product_variants.weight_grams',
                 'product_variants.option_label',
                 'products.name AS product_name',
+                'products.slug',
+                'products.brand',
+                'products.status AS product_status',
                 'categories.name AS category_name',
             ])
             ->join('product_variants', 'product_variants.id', '=', 'inventory.variant_id')
@@ -172,6 +178,8 @@ final class StockflowService
                 'product_variants.option_label',
                 'product_variants.price',
                 'product_variants.cost_price',
+                'product_variants.compare_at_price',
+                'product_variants.weight_grams',
                 'product_variants.status',
                 'inventory.quantity_on_hand',
                 'inventory.reorder_point',
@@ -198,6 +206,8 @@ final class StockflowService
                 'product_variants.option_label',
                 'product_variants.price',
                 'product_variants.cost_price',
+                'product_variants.compare_at_price',
+                'product_variants.weight_grams',
                 'product_variants.status',
                 'inventory.reorder_point',
                 'products.name AS product_name',
@@ -206,6 +216,61 @@ final class StockflowService
             ->leftJoin('inventory', 'inventory.variant_id', '=', 'product_variants.id')
             ->where('product_variants.id', '=', $variantId)
             ->first();
+    }
+
+    public function getVariantForApi(int $variantId): ?array
+    {
+        return $this->variantApiQuery()
+            ->where('product_variants.id', '=', $variantId)
+            ->first();
+    }
+
+    public function getVariantsForApiCode(string $code): array
+    {
+        $bySku = $this->variantApiQuery()
+            ->where('product_variants.sku', '=', $code)
+            ->get();
+        $bySku = array_values(array_filter(
+            $bySku,
+            static fn (array $variant): bool => hash_equals((string) $variant['sku'], $code)
+        ));
+        if ($bySku !== []) {
+            return $bySku;
+        }
+        $byBarcode = $this->variantApiQuery()
+            ->where('product_variants.barcode', '=', $code)
+            ->get();
+        return array_values(array_filter(
+            $byBarcode,
+            static fn (array $variant): bool => hash_equals((string) ($variant['barcode'] ?? ''), $code)
+        ));
+    }
+
+    private function variantApiQuery(): \Simp\Pindrop\Database\QueryBuilder
+    {
+        return $this->database->table('product_variants', 'stockflow')
+            ->select([
+                'product_variants.id',
+                'product_variants.product_id',
+                'product_variants.sku',
+                'product_variants.barcode',
+                'product_variants.option_label',
+                'product_variants.price',
+                'product_variants.compare_at_price',
+                'product_variants.weight_grams',
+                'product_variants.status AS variant_status',
+                'inventory.quantity_on_hand',
+                'inventory.quantity_reserved',
+                'products.name AS product_name',
+                'products.slug AS product_slug',
+                'products.brand',
+                'products.description',
+                'products.status AS product_status',
+                'categories.name AS category_name',
+            ])
+            ->join('products', 'products.id', '=', 'product_variants.product_id')
+            ->leftJoin('inventory', 'inventory.variant_id', '=', 'product_variants.id')
+            ->leftJoin('categories', 'categories.id', '=', 'products.category_id');
     }
 
     public function getCategories(): array
@@ -232,8 +297,11 @@ final class StockflowService
             ->get();
     }
 
-    public function getOrders(array $filters = []): array
+    public function getOrders(array $filters = [], int $limit = 100): array
     {
+        if ($limit < 1 || $limit > 10000) {
+            throw new InvalidArgumentException('Order result limit must be between 1 and 10,000.');
+        }
         $query = $this->database->table('orders', 'stockflow')
             ->select([
                 'id',
@@ -278,7 +346,7 @@ final class StockflowService
             throw new InvalidArgumentException('Start date must not be after end date.');
         }
 
-        $orders = $query->orderBy('placed_at', 'DESC')->limit(100)->get();
+        $orders = $query->orderBy('placed_at', 'DESC')->limit($limit)->get();
         foreach ($orders as &$order) {
             $order['display_total'] = $this->formatOrderTotal($order);
             $payment = $this->database->table('payments', 'stockflow')
@@ -426,6 +494,19 @@ final class StockflowService
                 throw new InvalidArgumentException('Cost price cannot be negative.');
             }
         }
+        $compareAtPrice = null;
+        $compareAtInput = $this->inputString($data['compare_at_price'] ?? '', 'Compare-at price');
+        if ($compareAtInput !== '') {
+            $compareAtPrice = $this->money($compareAtInput, 'Compare-at price');
+            if ($compareAtPrice->isLessThan(0.0)) {
+                throw new InvalidArgumentException('Compare-at price cannot be negative.');
+            }
+        }
+        $weightInput = $this->inputString($data['weight_grams'] ?? '', 'Variant weight');
+        $weightGrams = $weightInput === '' ? null : $this->integer($weightInput, 'Variant weight');
+        if ($weightGrams !== null && $weightGrams < 0) {
+            throw new InvalidArgumentException('Variant weight cannot be negative.');
+        }
 
         $quantity = $this->integer($data['quantity'] ?? '0', 'Starting quantity');
         $reorderPoint = $this->integer($data['reorder_point'] ?? '0', 'Reorder point');
@@ -464,6 +545,8 @@ final class StockflowService
                 $sku,
                 $price,
                 $costPrice,
+                $compareAtPrice,
+                $weightGrams,
                 $quantity,
                 $reorderPoint,
                 &$categoryId,
@@ -498,6 +581,8 @@ final class StockflowService
                     'option_label' => $this->inputString($data['option_label'] ?? '', 'Variant title') ?: null,
                     'price' => $price->getAmount(),
                     'cost_price' => $costPrice?->getAmount(),
+                    'compare_at_price' => $compareAtPrice?->getAmount(),
+                    'weight_grams' => $weightGrams,
                     'status' => 'active',
                 ]);
 
@@ -598,6 +683,19 @@ final class StockflowService
                 throw new InvalidArgumentException('Cost price cannot be negative.');
             }
         }
+        $compareAtPrice = null;
+        $compareAtInput = $this->inputString($data['compare_at_price'] ?? '', 'Compare-at price');
+        if ($compareAtInput !== '') {
+            $compareAtPrice = $this->money($compareAtInput, 'Compare-at price');
+            if ($compareAtPrice->isLessThan(0.0)) {
+                throw new InvalidArgumentException('Compare-at price cannot be negative.');
+            }
+        }
+        $weightInput = $this->inputString($data['weight_grams'] ?? '', 'Variant weight');
+        $weightGrams = $weightInput === '' ? null : $this->integer($weightInput, 'Variant weight');
+        if ($weightGrams !== null && $weightGrams < 0) {
+            throw new InvalidArgumentException('Variant weight cannot be negative.');
+        }
         $reorderPoint = $this->integer($data['reorder_point'] ?? '0', 'Reorder point');
         if ($reorderPoint < 0) {
             throw new InvalidArgumentException('Reorder point cannot be negative.');
@@ -610,7 +708,7 @@ final class StockflowService
             throw new InvalidArgumentException('Another variant already uses this SKU.');
         }
 
-        $this->database->transaction(function () use ($variantId, $data, $price, $costPrice, $reorderPoint, $sku): void {
+        $this->database->transaction(function () use ($variantId, $data, $price, $costPrice, $compareAtPrice, $weightGrams, $reorderPoint, $sku): void {
             $this->database->table('product_variants', 'stockflow')
                 ->where('id', '=', $variantId)
                 ->update([
@@ -619,6 +717,8 @@ final class StockflowService
                     'option_label' => $this->inputString($data['option_label'] ?? '', 'Variant title') ?: null,
                     'price' => $price->getAmount(),
                     'cost_price' => $costPrice?->getAmount(),
+                    'compare_at_price' => $compareAtPrice?->getAmount(),
+                    'weight_grams' => $weightGrams,
                     'status' => $this->choice($data['status'] ?? 'active', ['active', 'archived'], 'Variant status'),
                 ]);
             $this->database->table('inventory', 'stockflow')
@@ -698,6 +798,19 @@ final class StockflowService
                 throw new InvalidArgumentException('Cost price cannot be negative.');
             }
         }
+        $compareAtPrice = null;
+        $compareAtInput = $this->inputString($data['compare_at_price'] ?? '', 'Compare-at price');
+        if ($compareAtInput !== '') {
+            $compareAtPrice = $this->money($compareAtInput, 'Compare-at price');
+            if ($compareAtPrice->isLessThan(0.0)) {
+                throw new InvalidArgumentException('Compare-at price cannot be negative.');
+            }
+        }
+        $weightInput = $this->inputString($data['weight_grams'] ?? '', 'Variant weight');
+        $weightGrams = $weightInput === '' ? null : $this->integer($weightInput, 'Variant weight');
+        if ($weightGrams !== null && $weightGrams < 0) {
+            throw new InvalidArgumentException('Variant weight cannot be negative.');
+        }
 
         $quantity = $this->integer($data['quantity'] ?? '0', 'Starting quantity');
         $reorderPoint = $this->integer($data['reorder_point'] ?? '0', 'Reorder point');
@@ -705,7 +818,7 @@ final class StockflowService
             throw new InvalidArgumentException('Starting quantity and reorder point cannot be negative.');
         }
 
-        return $this->database->transaction(function () use ($data, $productId, $sku, $price, $costPrice, $quantity, $reorderPoint): int {
+        return $this->database->transaction(function () use ($data, $productId, $sku, $price, $costPrice, $compareAtPrice, $weightGrams, $quantity, $reorderPoint): int {
             $variantId = $this->database->table('product_variants', 'stockflow')->insert([
                 'product_id' => $productId,
                 'sku' => $sku,
@@ -713,6 +826,8 @@ final class StockflowService
                 'option_label' => $this->inputString($data['option_label'] ?? '', 'Variant title') ?: null,
                 'price' => $price->getAmount(),
                 'cost_price' => $costPrice?->getAmount(),
+                'compare_at_price' => $compareAtPrice?->getAmount(),
+                'weight_grams' => $weightGrams,
                 'status' => 'active',
             ]);
             $this->database->table('inventory', 'stockflow')->insert([

@@ -2,5 +2,5 @@
 
 {% block content %}
 <div class="heading"><div><div class="eyebrow">Payment management</div><h1>Delete pending offline payment</h1><p class="sub">Provider payments and completed payment records are immutable.</p></div><div class="heading-actions"><a class="button" href="/stockflow/payments">Cancel</a></div></div>
-<section class="panel form-panel" style="margin-top:17px"><p>Delete pending manual payment #{{ payment.id }} for {{ payment.amount|number_format(2) }} {{ payment.currency_code }}?</p>{{ form_html|raw }}</section>
+<section class="panel form-panel" style="margin-top:17px"><p>Delete pending offline payment #{{ payment.id }} for {{ payment.display_amount }} {{ payment.currency_code }}?</p>{{ form_html|raw }}</section>
 {% endblock %}

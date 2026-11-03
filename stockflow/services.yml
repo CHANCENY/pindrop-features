@@ -22,3 +22,19 @@ stockflow.manual_orders:
     - "@database"
     - "@site.settings"
     - "@stockflow.shipping_methods"
+stockflow.checkout:
+  class: Simp\Pindrop\Modules\stockflow\src\Services\ManualOrderService
+  arguments:
+    - "@database"
+    - "@site.settings"
+    - "@stockflow.shipping_methods"
+stockflow.documents:
+  class: Simp\Pindrop\Modules\stockflow\src\Services\StockflowDocumentService
+stockflow.api_tokens:
+  class: Simp\Pindrop\Modules\stockflow\src\Services\StockflowApiTokenService
+  arguments:
+    - "@database"
+stockflow.checkout_idempotency:
+  class: Simp\Pindrop\Modules\stockflow\src\Services\CheckoutIdempotencyService
+  arguments:
+    - "@database"

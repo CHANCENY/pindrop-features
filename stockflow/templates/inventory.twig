@@ -1,7 +1,7 @@
 {% extends '@stockflow/layout.twig' %}
 
 {% block content %}
-<div class="heading"><div><div class="eyebrow">Live inventory</div><h1>Inventory</h1><p class="sub">Review variant quantities and record stock movements.</p></div><div class="heading-actions"><a class="button primary" href="/stockflow/inventory/adjust">＋ Adjust stock</a></div></div>
+<div class="heading"><div><div class="eyebrow">Live inventory</div><h1>Inventory</h1><p class="sub">Review variant quantities and record stock movements.</p></div><div class="heading-actions"><a class="button" href="/stockflow/export?type=inventory">Export XLSX</a><a class="button primary" href="/stockflow/inventory/adjust">＋ Adjust stock</a></div></div>
 <section class="panel" style="margin-top:17px"><div class="panel-head"><div><div class="kicker">Catalog quantity</div><h2>Inventory ledger</h2></div></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>SKU</th><th>Category</th><th>On hand</th><th>Reserved</th><th>Price</th><th>Status</th></tr></thead><tbody>
     {% for item in inventory %}

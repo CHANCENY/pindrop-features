@@ -1,7 +1,7 @@
 {% extends '@stockflow/layout.twig' %}
 
 {% block content %}
-<div class="heading"><div><div class="eyebrow">Payment management</div><h1>Record offline payment</h1><p class="sub">Order {{ order.order_number }} · {{ order.grand_total|number_format(2) }} {{ order.currency_code }}</p></div><div class="heading-actions"><a class="button" href="/stockflow/orders/view?id={{ order.id }}">Cancel</a></div></div>
+<div class="heading"><div><div class="eyebrow">Payment management</div><h1>Record offline payment</h1><p class="sub">Order {{ order.order_number }} · {{ order.display_grand_total }} {{ order.currency_code }}</p></div><div class="heading-actions"><a class="button" href="/stockflow/orders/view?id={{ order.id }}">Cancel</a></div></div>
 <section class="panel form-panel" style="margin-top:17px">
     <p>Adding a payment record does not confirm receipt. Use the next step only after verifying the full amount was received.</p>
     {{ form_html|raw }}

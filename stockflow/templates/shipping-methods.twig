@@ -15,20 +15,20 @@
                 <td><strong>{{ method.name }}</strong></td>
                 <td>{{ method.type|default('flat_rate')|replace({'_':' '})|title }}</td>
                 <td>
-                    {{ method.flat_rate|number_format(2) }} {{ currency }}
+                    {{ method.display_flat_rate }} {{ currency }}
                     {% if method.type|default('flat_rate') == 'weight_based' %}
-                        + {{ method.rate_per_kg|default('0')|number_format(2) }} {{ currency }}/kg
+                        + {{ method.display_rate_per_kg|default('0') }} {{ currency }}/kg
                     {% endif %}
                 </td>
                 <td>
                     {% if method.type|default('flat_rate') == 'price_based' %}
-                        Order total {{ method.minimum_order_total is not empty ? '≥ ' ~ method.minimum_order_total|number_format(2) : '' }}{{ method.minimum_order_total is not empty and method.maximum_order_total is not empty ? ' and ' : '' }}{{ method.maximum_order_total is not empty ? '≤ ' ~ method.maximum_order_total|number_format(2) : '' }} {{ currency }}
+                        Order total {{ method.display_minimum_order_total is not empty ? '≥ ' ~ method.display_minimum_order_total : '' }}{{ method.display_minimum_order_total is not empty and method.display_maximum_order_total is not empty ? ' and ' : '' }}{{ method.display_maximum_order_total is not empty ? '≤ ' ~ method.display_maximum_order_total : '' }} {{ currency }}
                     {% elseif method.type|default('flat_rate') == 'weight_based' %}
                         {{ method.minimum_weight_grams is not empty ? 'From ' ~ method.minimum_weight_grams ~ ' g' : 'Any weight' }}{{ method.maximum_weight_grams is not empty ? ' up to ' ~ method.maximum_weight_grams ~ ' g' : '' }}
                     {% else %}
                         Standard flat rate
                     {% endif %}
-                    {% if method.free_threshold is not empty %}<br>Free above {{ method.free_threshold|number_format(2) }} {{ currency }}{% endif %}
+                    {% if method.display_free_threshold is not empty %}<br>Free above {{ method.display_free_threshold }} {{ currency }}{% endif %}
                 </td>
                 <td><span class="status-pill {{ method.status == 'active' ? 'healthy' : 'low' }}">{{ method.status|title }}</span></td>
                 <td><a class="button small" href="/stockflow/shipping/edit?id={{ method.id }}">Edit</a></td>

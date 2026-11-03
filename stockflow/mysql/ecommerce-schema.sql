@@ -248,3 +248,35 @@ CREATE TABLE audit_logs (
   INDEX idx_audit_entity (entity_type, entity_id), INDEX idx_audit_created (created_at),
   CONSTRAINT fk_audit_actor FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
+CREATE TABLE api_tokens (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  name VARCHAR(80) NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  token_prefix CHAR(16) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_used_at DATETIME NULL,
+  revoked_at DATETIME NULL,
+  INDEX idx_api_tokens_user (user_id),
+  CONSTRAINT fk_api_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE checkout_idempotency (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  key_hash CHAR(64) NOT NULL,
+  claim_token CHAR(64) NOT NULL,
+  request_hash CHAR(64) NOT NULL,
+  status ENUM('processing','completed') NOT NULL DEFAULT 'processing',
+  order_id INT UNSIGNED NULL,
+  response_status SMALLINT UNSIGNED NULL,
+  response_body LONGTEXT NULL,
+  expires_at DATETIME NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_checkout_idempotency_user_key (user_id, key_hash),
+  INDEX idx_checkout_idempotency_expires (expires_at),
+  CONSTRAINT fk_checkout_idempotency_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_checkout_idempotency_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL
+) ENGINE=InnoDB;

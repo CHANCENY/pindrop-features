@@ -15,7 +15,7 @@
         <section class="panel" style="margin-top:17px">
             <h2>Order {{ order.order_number }}</h2>
             <p>{{ order.email }}</p>
-            <p><strong>Total due: {{ order.grand_total|number_format(2) }} {{ order.currency_code }}</strong></p>
+            <p><strong>Total due: {{ order.display_grand_total }} {{ order.currency_code }}</strong></p>
             {% if notice %}<p class="stockflow-message info">{{ notice }}</p>{% endif %}
             {% if form_html %}
                 <p>Choose an enabled payment method. Card details are tokenized directly by Authorize.Net and are not sent to this store.</p>

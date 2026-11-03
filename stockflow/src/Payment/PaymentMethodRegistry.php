@@ -28,8 +28,10 @@ final class PaymentMethodRegistry
             $methods[] = [
                 'id' => $id,
                 'label' => $definition['label'],
-                'enabled' => (bool) ($saved['enabled'] ?? false),
-                'configured' => $this->hasRequiredCredentials($definition, $saved['credentials'] ?? []),
+                'type' => $definition['type'] ?? 'gateway',
+                'enabled' => (bool) ($saved['enabled'] ?? $definition['default_enabled'] ?? false),
+                'configured' => ($definition['type'] ?? '') === 'offline'
+                    || $this->hasRequiredCredentials($definition, $saved['credentials'] ?? []),
                 'currencies' => $definition['currencies'] ?? [],
                 'payment_fields' => $definition['payment_fields'] ?? [],
                 'required_payment_data' => $definition['required_payment_data'] ?? [],
@@ -62,11 +64,29 @@ final class PaymentMethodRegistry
         return [
             'id' => $id,
             'label' => $definition['label'],
-            'enabled' => (bool) ($saved['enabled'] ?? false),
-            'configured' => $this->hasRequiredCredentials($definition, $saved['credentials'] ?? []),
+            'type' => $definition['type'] ?? 'gateway',
+            'enabled' => (bool) ($saved['enabled'] ?? $definition['default_enabled'] ?? false),
+            'configured' => ($definition['type'] ?? '') === 'offline'
+                || $this->hasRequiredCredentials($definition, $saved['credentials'] ?? []),
             'settings' => $definition['settings'] ?? [],
             'values' => $this->publicValues($definition, $saved['values'] ?? []),
         ];
+    }
+
+    public function isOffline(string $id): bool
+    {
+        return ($this->definitions()[$id]['type'] ?? '') === 'offline';
+    }
+
+    public function supportsCurrency(string $id, string $currency): bool
+    {
+        $definition = $this->definitions()[$id] ?? null;
+        if ($definition === null) {
+            return false;
+        }
+        $currencies = $definition['currencies'] ?? [];
+        return in_array('*', $currencies, true)
+            || in_array(strtoupper($currency), $currencies, true);
     }
 
     public function saveMethod(string $id, array $data): void
@@ -113,7 +133,9 @@ final class PaymentMethodRegistry
             $saved['values'][$name] = $value;
         }
         $saved['enabled'] = $enabled === 'enabled';
-        if ($saved['enabled'] && !$this->hasRequiredCredentials($definition, $saved['credentials'] ?? [])) {
+        if ($saved['enabled']
+            && ($definition['type'] ?? '') !== 'offline'
+            && !$this->hasRequiredCredentials($definition, $saved['credentials'] ?? [])) {
             throw new InvalidArgumentException('Configure all required credentials before enabling this payment method.');
         }
         $all[$id] = $saved;
@@ -124,13 +146,16 @@ final class PaymentMethodRegistry
     {
         $this->validateCharge($id, $currency, $paymentData);
         $definition = $this->definitions()[$id] ?? null;
-        $saved = $this->storedMethods()[$id] ?? null;
+        $saved = $this->storedMethods()[$id] ?? [];
         if ($amount->getCurrency()->getCode() !== strtoupper($currency)
             || !is_finite($amount->getAmount())
             || !$amount->isGreaterThan(0.0)) {
             throw new InvalidArgumentException('Payment amount must be positive and use the selected currency.');
         }
         $class = $definition['gateway'] ?? '';
+        if (($definition['type'] ?? '') === 'offline') {
+            throw new InvalidArgumentException('Offline payment methods are collected by an administrator and cannot be charged online.');
+        }
         if (!is_string($class) || !class_exists($class) || !is_subclass_of($class, PaymentGatewayInterface::class)) {
             throw new RuntimeException('Payment method gateway must implement PaymentGatewayInterface.');
         }
@@ -145,15 +170,21 @@ final class PaymentMethodRegistry
     public function validateCharge(string $id, string $currency, array $paymentData): void
     {
         $definition = $this->definitions()[$id] ?? null;
-        $saved = $this->storedMethods()[$id] ?? null;
-        if ($definition === null || $saved === null || empty($saved['enabled'])) {
+        $saved = $this->storedMethods()[$id] ?? [];
+        if (
+            $definition === null
+            || !($saved['enabled'] ?? $definition['default_enabled'] ?? false)
+        ) {
             throw new InvalidArgumentException('Selected payment method is not enabled.');
         }
-        if (!in_array(strtoupper($currency), $definition['currencies'] ?? [], true)) {
+        if (!$this->supportsCurrency($id, $currency)) {
             throw new InvalidArgumentException('Selected payment method does not support this currency.');
         }
         if (!$this->hasRequiredCredentials($definition, $saved['credentials'] ?? [])) {
             throw new InvalidArgumentException('Selected payment method is missing required credentials.');
+        }
+        if (($definition['type'] ?? '') === 'offline') {
+            return;
         }
         $class = $definition['gateway'] ?? '';
         if (!is_string($class) || !class_exists($class) || !is_subclass_of($class, PaymentGatewayInterface::class)) {

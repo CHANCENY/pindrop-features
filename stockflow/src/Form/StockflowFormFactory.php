@@ -131,6 +131,8 @@ final class StockflowFormFactory
             ['name' => 'barcode', 'type' => 'text', 'label' => 'Barcode / UPC'],
             ['name' => 'price', 'type' => 'text', 'label' => 'Price (' . $currency . ')', 'required' => true, 'attributes' => ['inputmode' => 'decimal']],
             ['name' => 'cost_price', 'type' => 'text', 'label' => 'Cost price', 'attributes' => ['inputmode' => 'decimal']],
+            ['name' => 'compare_at_price', 'type' => 'text', 'label' => 'Compare-at price (' . $currency . ')', 'attributes' => ['inputmode' => 'decimal']],
+            ['name' => 'weight_grams', 'type' => 'number', 'label' => 'Weight (grams)', 'attributes' => ['min' => '0']],
             ['name' => 'quantity', 'type' => 'number', 'label' => 'Starting quantity', 'value' => '0'],
             ['name' => 'reorder_point', 'type' => 'number', 'label' => 'Reorder point', 'value' => '0'],
         ], 'post', 'Add variant');
@@ -159,6 +161,8 @@ final class StockflowFormFactory
             ['name' => 'option_label', 'type' => 'text', 'label' => 'Variant title', 'value' => $variant['option_label']],
             ['name' => 'price', 'type' => 'text', 'label' => 'Price (' . $currency . ')', 'required' => true, 'value' => (string) $variant['price'], 'attributes' => ['inputmode' => 'decimal']],
             ['name' => 'cost_price', 'type' => 'text', 'label' => 'Cost price', 'value' => $variant['cost_price'] === null ? '' : (string) $variant['cost_price'], 'attributes' => ['inputmode' => 'decimal']],
+            ['name' => 'compare_at_price', 'type' => 'text', 'label' => 'Compare-at price (' . $currency . ')', 'value' => $variant['compare_at_price'] === null ? '' : (string) $variant['compare_at_price'], 'attributes' => ['inputmode' => 'decimal']],
+            ['name' => 'weight_grams', 'type' => 'number', 'label' => 'Weight (grams)', 'value' => $variant['weight_grams'] === null ? '' : (string) $variant['weight_grams'], 'attributes' => ['min' => '0']],
             ['name' => 'reorder_point', 'type' => 'number', 'label' => 'Reorder point', 'value' => (string) ($variant['reorder_point'] ?? 0)],
             ['name' => 'status', 'type' => 'select', 'label' => 'Status', 'value' => $variant['status'], 'options' => [
                 'active' => 'Active',
@@ -182,6 +186,8 @@ final class StockflowFormFactory
             'review_name' => 'Product name',
             'review_sku' => 'First variant SKU',
             'review_price' => 'Price (' . $currency . ')',
+            'review_compare_at_price' => 'Compare-at price (' . $currency . ')',
+            'review_weight_grams' => 'Weight (grams)',
             'review_quantity' => 'Starting quantity',
         ] as $name => $label) {
             $field = new NamedInputField('text', $name);
@@ -225,6 +231,8 @@ final class StockflowFormFactory
             ['name' => 'barcode', 'type' => 'text', 'label' => 'Barcode / UPC'],
             ['name' => 'price', 'type' => 'text', 'label' => 'Price (' . $currency . ')', 'required' => true, 'attributes' => ['inputmode' => 'decimal']],
             ['name' => 'cost_price', 'type' => 'text', 'label' => 'Cost price', 'attributes' => ['inputmode' => 'decimal']],
+            ['name' => 'compare_at_price', 'type' => 'text', 'label' => 'Compare-at price (' . $currency . ')', 'attributes' => ['inputmode' => 'decimal']],
+            ['name' => 'weight_grams', 'type' => 'number', 'label' => 'Weight (grams)', 'attributes' => ['min' => '0']],
             ['name' => 'quantity', 'type' => 'number', 'label' => 'Starting quantity', 'value' => '0'],
             ['name' => 'reorder_point', 'type' => 'number', 'label' => 'Reorder point', 'value' => '0'],
         ]), '◎');
@@ -300,6 +308,8 @@ final class StockflowFormFactory
             'review_category' => $categoryName,
             'review_sku' => $values['sku'] ?? '',
             'review_price' => $values['price'] ?? '',
+            'review_compare_at_price' => $values['compare_at_price'] ?? '',
+            'review_weight_grams' => $values['weight_grams'] ?? '',
             'review_quantity' => $values['quantity'] ?? '0',
         ];
 
@@ -539,6 +549,19 @@ final class StockflowFormFactory
         return $this->renderer->render($request, '/stockflow/orders/payment-request?id=' . $orderId, [
             ['name' => '_action', 'type' => 'hidden', 'value' => 'send_payment_request'],
         ], 'post', 'Email payment request');
+    }
+
+    public function invoiceRecipient(Request $request, int $orderId, string $customerEmail): string
+    {
+        return $this->renderer->render($request, '/stockflow/orders/invoice?id=' . $orderId, [
+            ['name' => '_action', 'type' => 'hidden', 'value' => 'send_order_invoice'],
+            [
+                'name' => 'recipient_email',
+                'type' => 'email',
+                'label' => 'Invoice recipient (leave blank to use customer email)',
+                'value' => $customerEmail,
+            ],
+        ], 'post', 'Email invoice');
     }
 
     public function orderDelete(Request $request, int $orderId): string

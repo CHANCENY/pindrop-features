@@ -7,7 +7,6 @@ namespace Simp\Pindrop\Modules\stockflow\src\Services;
 use InvalidArgumentException;
 use RuntimeException;
 use Simp\Adjustment\lib\Adjustment;
-use Simp\Adjustment\lib\Adjustments;
 use Simp\Pindrop\Database\DatabaseService;
 use Simp\Pindrop\Settings\Settings;
 use Simp\Price\lib\Currency;
@@ -61,6 +60,17 @@ final class ManualOrderService
         $order['items'] = $this->database->table('order_items', 'stockflow')
             ->where('order_id', '=', $orderId)
             ->get();
+        foreach ($order['items'] as &$item) {
+            $item['display_unit_price'] = $this->formatMoney($item['unit_price'], (string) $order['currency_code']);
+            $item['display_line_total'] = $this->formatMoney($item['line_total'], (string) $order['currency_code']);
+        }
+        unset($item);
+        foreach (['subtotal', 'discount_total', 'shipping_total', 'tax_total', 'grand_total'] as $amountField) {
+            $order['display_' . $amountField] = $this->formatMoney(
+                $order[$amountField],
+                (string) $order['currency_code']
+            );
+        }
         $order['payments'] = $this->getOrderPayments($orderId);
         $order['billing_address'] = $this->addressById($order['billing_address_id'] ?? null);
         $order['shipping_address'] = $this->addressById($order['shipping_address_id'] ?? null);
@@ -78,17 +88,32 @@ final class ManualOrderService
 
     public function getOrderPayments(int $orderId): array
     {
-        return $this->database->table('payments', 'stockflow')
+        $payments = $this->database->table('payments', 'stockflow')
             ->where('order_id', '=', $orderId)
             ->orderBy('created_at', 'DESC')
             ->get();
+        foreach ($payments as &$payment) {
+            $payment['display_amount'] = $this->formatMoney(
+                $payment['amount'],
+                (string) $payment['currency_code']
+            );
+        }
+        unset($payment);
+        return $payments;
     }
 
     public function getPayment(int $paymentId): ?array
     {
-        return $this->database->table('payments', 'stockflow')
+        $payment = $this->database->table('payments', 'stockflow')
             ->where('id', '=', $paymentId)
             ->first();
+        if ($payment !== null) {
+            $payment['display_amount'] = $this->formatMoney(
+                $payment['amount'],
+                (string) $payment['currency_code']
+            );
+        }
+        return $payment;
     }
 
     public function deletePendingOrder(int $orderId): void
@@ -108,7 +133,7 @@ final class ManualOrderService
                 throw new InvalidArgumentException('Only pending orders can be deleted.');
             }
             foreach ($this->getOrderPayments($orderId) as $payment) {
-                if ($payment['provider'] !== 'manual'
+                if (!$this->isOfflinePayment($payment['provider'])
                     || !in_array($payment['status'], ['pending', 'failed'], true)) {
                     throw new InvalidArgumentException('Orders with gateway payment history or completed payments cannot be deleted.');
                 }
@@ -168,6 +193,9 @@ final class ManualOrderService
     public function createGatewayPayment(int $orderId, string $provider): array
     {
         $provider = $this->requiredString($provider, 'Payment method');
+        if ($this->isOfflinePayment($provider)) {
+            throw new InvalidArgumentException('Offline payment methods cannot be submitted through online checkout.');
+        }
         return $this->database->transaction(function () use ($orderId, $provider): array {
             $order = $this->lockPendingOrder($orderId);
             foreach ($this->getOrderPayments($orderId) as $payment) {
@@ -199,7 +227,7 @@ final class ManualOrderService
             throw new InvalidArgumentException('Payment gateway returned an unsupported status.');
         }
         $payment = $this->getPayment($paymentId);
-        if ($payment === null || $payment['status'] !== 'pending' || $payment['provider'] === 'manual') {
+        if ($payment === null || $payment['status'] !== 'pending' || $this->isOfflinePayment($payment['provider'])) {
             throw new InvalidArgumentException('Gateway payment attempt is no longer pending.');
         }
         $providerPaymentId = $result['provider_payment_id'] ?? null;
@@ -227,12 +255,12 @@ final class ManualOrderService
             throw new InvalidArgumentException('Payment reference must be 180 characters or fewer.');
         }
         $payment = $this->getPayment($paymentId);
-        if ($payment === null || $payment['provider'] !== 'manual' || $payment['status'] !== 'pending') {
-            throw new InvalidArgumentException('Only pending manual payments can be edited.');
+        if ($payment === null || !$this->isOfflinePayment($payment['provider']) || $payment['status'] !== 'pending') {
+            throw new InvalidArgumentException('Only pending offline payments can be edited.');
         }
         $this->database->table('payments', 'stockflow')
             ->where('id', '=', $paymentId)
-            ->where('provider', '=', 'manual')
+            ->whereIn('provider', ['manual', 'quote', 'cash', 'purchase_order'])
             ->where('status', '=', 'pending')
             ->update(['provider_payment_id' => $reference !== '' ? $reference : null]);
     }
@@ -240,12 +268,12 @@ final class ManualOrderService
     public function deletePendingManualPayment(int $paymentId): void
     {
         $payment = $this->getPayment($paymentId);
-        if ($payment === null || $payment['provider'] !== 'manual' || $payment['status'] !== 'pending') {
-            throw new InvalidArgumentException('Only pending manual payments can be deleted.');
+        if ($payment === null || !$this->isOfflinePayment($payment['provider']) || $payment['status'] !== 'pending') {
+            throw new InvalidArgumentException('Only pending offline payments can be deleted.');
         }
         $this->database->table('payments', 'stockflow')
             ->where('id', '=', $paymentId)
-            ->where('provider', '=', 'manual')
+            ->whereIn('provider', ['manual', 'quote', 'cash', 'purchase_order'])
             ->where('status', '=', 'pending')
             ->delete();
     }
@@ -253,8 +281,8 @@ final class ManualOrderService
     public function receiveManualPayment(int $paymentId): void
     {
         $payment = $this->getPayment($paymentId);
-        if ($payment === null || $payment['provider'] !== 'manual' || $payment['status'] !== 'pending') {
-            throw new InvalidArgumentException('Only pending manual payments can be received.');
+        if ($payment === null || !$this->isOfflinePayment($payment['provider']) || $payment['status'] !== 'pending') {
+            throw new InvalidArgumentException('Only pending offline payments can be received.');
         }
         $this->finalizePayment($payment, 'paid');
     }
@@ -268,7 +296,7 @@ final class ManualOrderService
         $payment = $this->getPayment($paymentId);
         if (
             $payment === null
-            || $payment['provider'] === 'manual'
+            || $this->isOfflinePayment($payment['provider'])
             || !in_array($payment['status'], ['pending', 'authorized'], true)
         ) {
             throw new InvalidArgumentException('This gateway payment cannot be reconciled.');
@@ -377,6 +405,21 @@ final class ManualOrderService
         return $this->saveOrder($data, $taxRules, $discountRules, null);
     }
 
+    public function createCheckoutOrder(
+        array $data,
+        array $taxRules,
+        array $discountRules,
+        ?\Closure $onCreated = null
+    ): array
+    {
+        return $this->saveOrder($data, $taxRules, $discountRules, null, false, true, $onCreated);
+    }
+
+    public function previewOrder(array $data, array $taxRules, array $discountRules): array
+    {
+        return $this->saveOrder($data, $taxRules, $discountRules, null, true, true);
+    }
+
     public function updatePendingOrder(int $orderId, array $data, array $taxRules, array $discountRules): array
     {
         return $this->saveOrder($data, $taxRules, $discountRules, $orderId);
@@ -386,7 +429,10 @@ final class ManualOrderService
         array $data,
         array $taxRules,
         array $discountRules,
-        ?int $existingOrderId
+        ?int $existingOrderId,
+        bool $preview = false,
+        bool $autoApplyAdjustments = false,
+        ?\Closure $onCreated = null
     ): array
     {
         $currency = $this->currency();
@@ -422,23 +468,16 @@ final class ManualOrderService
         $customerLastName = $this->requiredString($data['customer_last_name'] ?? '', 'Customer last name');
         $customerPhone = $this->scalarString($data['customer_phone'] ?? '', 'Customer phone');
         $paymentMethod = $this->requiredString($data['payment_method'] ?? '', 'Payment method');
-        if (($data['confirm_payment'] ?? '') !== 'yes') {
-            throw new InvalidArgumentException('Confirm that you want to send this payment request.');
-        }
         $paymentData = $this->paymentData($data);
         $itemsInput = $data['items'] ?? null;
         if (!is_array($itemsInput) || $itemsInput === []) {
             throw new InvalidArgumentException('Add at least one order item.');
         }
-        $items = [];
-        $weightGrams = 0;
-        $subtotal = new Price(0.0, $currency);
-        $itemDiscountTotal = new Price(0.0, $currency);
-        $itemTaxTotal = new Price(0.0, $currency);
-        $totalItems = 0;
-        $distinctProductIds = [];
-        $itemRules = $taxRules;
-        $itemDiscountRules = $discountRules;
+        $cartLines = [];
+        $rawSubtotal = new Price(0.0, $currency);
+        $rawTotalItems = 0;
+        $rawProductIds = [];
+        $rawVariantIds = [];
         foreach ($itemsInput as $itemData) {
             if (!is_array($itemData)) {
                 throw new InvalidArgumentException('Order item data is invalid.');
@@ -453,10 +492,13 @@ final class ManualOrderService
             ) {
                 continue;
             }
-            $variantId = $this->integer($itemData['variant_id'] ?? '', 'Product variant');
-            $quantity = $this->integer($itemData['quantity'] ?? '', 'Item quantity');
+            $variantId = $this->integer($variantInput, 'Product variant');
+            $quantity = $this->integer($quantityInput, 'Item quantity');
             if ($quantity < 1) {
                 throw new InvalidArgumentException('Item quantity must be greater than zero.');
+            }
+            if (isset($rawVariantIds[$variantId])) {
+                throw new InvalidArgumentException('Each product variant can appear only once; combine its quantity.');
             }
             $variant = $this->database->table('product_variants', 'stockflow')
                 ->select([
@@ -478,6 +520,46 @@ final class ManualOrderService
             if ($variant === null || $variant['status'] !== 'active' || $variant['product_status'] !== 'active') {
                 throw new InvalidArgumentException('Select an active product variant.');
             }
+            $available = (int) $variant['quantity_on_hand'] - (int) $variant['quantity_reserved'];
+            $available += $existingQuantities[$variantId] ?? 0;
+            if ($available < $quantity) {
+                throw new InvalidArgumentException('Insufficient available stock for ' . $variant['sku'] . '.');
+            }
+            $rawVariantIds[$variantId] = true;
+            $rawTotalItems += $quantity;
+            $rawProductIds[(int) $variant['product_id']] = true;
+            $rawSubtotal->add((new Price((float) $variant['price'], $currency))->multiply($quantity));
+            $cartLines[] = [
+                'input' => $itemData,
+                'variant' => $variant,
+                'quantity' => $quantity,
+            ];
+        }
+        if ($cartLines === []) {
+            throw new InvalidArgumentException('Add at least one order item.');
+        }
+        $eligibleAutomaticDiscountIds = $autoApplyAdjustments
+            ? $this->eligibleAutomaticDiscountIds(
+                $discountRules,
+                $rawSubtotal,
+                $rawTotalItems,
+                count($rawProductIds)
+            )
+            : [];
+        $items = [];
+        $weightGrams = 0;
+        $subtotal = new Price(0.0, $currency);
+        $itemDiscountTotal = new Price(0.0, $currency);
+        $itemTaxTotal = new Price(0.0, $currency);
+        $totalItems = 0;
+        $distinctProductIds = [];
+        $itemRules = $taxRules;
+        $itemDiscountRules = $discountRules;
+        foreach ($cartLines as $cartLine) {
+            $itemData = $cartLine['input'];
+            $variant = $cartLine['variant'];
+            $variantId = (int) $variant['id'];
+            $quantity = $cartLine['quantity'];
             $totalItems += $quantity;
             $distinctProductIds[(int) $variant['product_id']] = true;
             $available = (int) $variant['quantity_on_hand'] - (int) $variant['quantity_reserved'];
@@ -485,16 +567,21 @@ final class ManualOrderService
             if ($available < $quantity) {
                 throw new InvalidArgumentException('Insufficient available stock for ' . $variant['sku'] . '.');
             }
-            foreach ($items as $existingItem) {
-                if ($existingItem['variant_id'] === $variantId) {
-                    throw new InvalidArgumentException('Each product variant can appear only once; combine its quantity.');
-                }
-            }
             $unitPrice = new Price((float) $variant['price'], $currency);
             $lineTotal = (new Price((float) $variant['price'], $currency))->multiply($quantity);
             $subtotal->add($lineTotal);
             $discountIds = $this->selectedRuleIds($itemData['discount_id'] ?? '', 'discounts');
             $taxIds = $this->selectedRuleIds($itemData['tax_ids'] ?? [], 'taxes');
+            if ($autoApplyAdjustments) {
+                $discountIds = array_values(array_unique(array_merge(
+                    $discountIds,
+                    $this->automaticRuleIds($itemDiscountRules, 'product', (int) $variant['product_id'], $eligibleAutomaticDiscountIds)
+                )));
+                $taxIds = array_values(array_unique(array_merge(
+                    $taxIds,
+                    $this->automaticRuleIds($itemRules, 'product', (int) $variant['product_id'])
+                )));
+            }
             $this->assertApplicableRules($discountIds, $itemDiscountRules, 'product', (int) $variant['product_id'], 'discount');
             $this->assertApplicableRules($taxIds, $itemRules, 'product', (int) $variant['product_id'], 'tax');
             $lineDiscounts = $this->applyRules(
@@ -517,6 +604,7 @@ final class ManualOrderService
             $weightGrams += (int) ($variant['weight_grams'] ?? 0) * $quantity;
             $items[] = [
                 'variant_id' => $variantId,
+                'product_id' => (int) $variant['product_id'],
                 'quantity' => $quantity,
                 'product_name' => $variant['product_name'],
                 'sku' => $variant['sku'],
@@ -535,6 +623,16 @@ final class ManualOrderService
         $shipping = $this->shippingMethods->calculate($shippingMethodId, $subtotal, $weightGrams);
         $overallDiscountIds = $this->selectedRuleIds($data['order_discount_id'] ?? '', 'discounts');
         $overallTaxIds = $this->selectedRuleIds($data['order_tax_ids'] ?? [], 'taxes');
+        if ($autoApplyAdjustments) {
+            $overallDiscountIds = array_values(array_unique(array_merge(
+                $overallDiscountIds,
+                $this->automaticRuleIds($itemDiscountRules, 'order_subtotal', null, $eligibleAutomaticDiscountIds)
+            )));
+            $overallTaxIds = array_values(array_unique(array_merge(
+                $overallTaxIds,
+                $this->automaticRuleIds($itemRules, 'order_subtotal')
+            )));
+        }
         $selectedDiscountIds = $overallDiscountIds;
         foreach ($itemsInput as $itemData) {
             if (is_array($itemData)) {
@@ -577,10 +675,18 @@ final class ManualOrderService
             throw new InvalidArgumentException('Order total must be greater than zero.');
         }
 
-        $billingAddress = $this->address($data, 'billing');
-        $shippingAddress = ($data['same_shipping'] ?? '') === 'yes'
-            ? $billingAddress
-            : $this->address($data, 'shipping');
+        $billingAddress = $this->optionalAddress($data, 'billing');
+        if ($shippingMethodId !== 'pickup' && $billingAddress === null) {
+            throw new InvalidArgumentException('Billing address is required for delivery orders.');
+        }
+        $shippingAddress = $shippingMethodId === 'pickup'
+            ? null
+            : (($data['same_shipping'] ?? '') === 'yes'
+                ? $billingAddress
+                : $this->optionalAddress($data, 'shipping'));
+        if ($shippingMethodId !== 'pickup' && $shippingAddress === null) {
+            throw new InvalidArgumentException('Shipping address is required for delivery orders.');
+        }
         $customer = $this->database->table('customers', 'stockflow')
             ->where('email', '=', $email)
             ->first();
@@ -588,6 +694,60 @@ final class ManualOrderService
             throw new InvalidArgumentException('Orders cannot be created for a blocked customer.');
         }
         $orderNumber = $existingOrder['order_number'] ?? ('SF-' . date('ymd') . '-' . strtoupper(bin2hex(random_bytes(4))));
+
+        if ($preview) {
+            $allItemAdjustments = [];
+            foreach ($items as $item) {
+                $allItemAdjustments = array_merge($allItemAdjustments, $item['item_adjustments']);
+            }
+            $itemReviews = array_map(static fn (array $item): array => [
+                'variant_id' => $item['variant_id'],
+                'product_id' => $item['product_id'],
+                'sku' => $item['sku'],
+                'name' => $item['product_name'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'subtotal' => $item['line_total'],
+                'discount' => new Price((float) $item['discount_total'], $currency),
+                'tax' => new Price((float) $item['tax_total'], $currency),
+                'total' => $item['final_total'],
+                'discounts' => array_values(array_filter(
+                    $item['item_adjustments'],
+                    static fn (array $adjustment): bool => ($adjustment['kind'] ?? '') === 'discount'
+                )),
+                'taxes' => array_values(array_filter(
+                    $item['item_adjustments'],
+                    static fn (array $adjustment): bool => ($adjustment['kind'] ?? '') === 'tax'
+                )),
+            ], $items);
+            return [
+                'currency' => $currency,
+                'customer' => [
+                    'email' => $email,
+                    'first_name' => $customerFirstName,
+                    'last_name' => $customerLastName,
+                    'phone' => $customerPhone,
+                ],
+                'billing_address' => $billingAddress,
+                'shipping_address' => $shippingAddress,
+                'payment_method' => $paymentMethod,
+                'shipping_method' => $shippingMethodId,
+                'items' => $itemReviews,
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'shipping' => $shipping,
+                'tax' => $tax,
+                'total' => $grandTotal,
+                'discounts' => array_values(array_filter(
+                    array_merge($allItemAdjustments, $overallDiscounts['snapshots']),
+                    static fn (array $adjustment): bool => ($adjustment['kind'] ?? '') === 'discount'
+                )),
+                'taxes' => array_values(array_filter(
+                    array_merge($allItemAdjustments, $overallTaxes['snapshots']),
+                    static fn (array $adjustment): bool => ($adjustment['kind'] ?? '') === 'tax'
+                )),
+            ];
+        }
 
         $orderId = $this->database->transaction(function () use (
             $items,
@@ -611,7 +771,8 @@ final class ManualOrderService
             $overallTaxes,
             $existingOrderId,
             $existingOrder,
-            $existingQuantities
+            $existingQuantities,
+            $onCreated
         ): int {
             if ($existingOrderId !== null) {
                 $this->lockPendingOrder($existingOrderId);
@@ -637,8 +798,8 @@ final class ManualOrderService
                 'status' => 'guest',
                 'accepts_marketing' => 0,
             ]);
-            $billingAddressId = $this->insertAddress($billingAddress, $customerId);
-            $shippingAddressId = $this->insertAddress($shippingAddress, $customerId);
+            $billingAddressId = $billingAddress === null ? null : $this->insertAddress($billingAddress, $customerId);
+            $shippingAddressId = $shippingAddress === null ? null : $this->insertAddress($shippingAddress, $customerId);
             $orderAdjustments = array_merge($overallDiscounts['snapshots'], $overallTaxes['snapshots']);
             $orderAdjustments[] = [
                 'kind' => 'shipping_method',
@@ -740,6 +901,7 @@ final class ManualOrderService
                     'amount' => $grandTotal->getAmount(),
                     'currency_code' => $currency,
                 ]);
+                $onCreated?->__invoke($orderId);
             }
             return $orderId;
         });
@@ -859,6 +1021,23 @@ final class ManualOrderService
         return $address;
     }
 
+    private function optionalAddress(array $data, string $prefix): ?array
+    {
+        foreach ([
+            'first_name', 'last_name', 'company', 'line1', 'line2', 'city',
+            'state', 'postal_code', 'country_code', 'phone',
+        ] as $field) {
+            $value = $data[$prefix . '_' . $field] ?? '';
+            if (!is_scalar($value) && $value !== null) {
+                throw new InvalidArgumentException(ucfirst($prefix) . ' address fields must be single values.');
+            }
+            if (trim((string) ($value ?? '')) !== '') {
+                return $this->address($data, $prefix);
+            }
+        }
+        return null;
+    }
+
     private function insertAddress(array $address, mixed $customerId): int
     {
         return $this->database->table('addresses', 'stockflow')->insert([
@@ -919,7 +1098,8 @@ final class ManualOrderService
         foreach ($rules as $rule) {
             $byId[(string) ($rule['id'] ?? '')] = $rule;
         }
-        $adjustments = new Adjustments();
+        $currency = $base->getCurrency()->getCode();
+        $adjusted = new Price($base->getAmount(), $currency);
         $snapshots = [];
         foreach ($ids as $id) {
             $rule = $byId[$id] ?? null;
@@ -935,7 +1115,14 @@ final class ManualOrderService
                 $signedAmount,
                 $type
             );
-            $adjustments->add($adjustment);
+            $before = new Price($adjusted->getAmount(), $currency);
+            $adjustment->applyTo($adjusted);
+            if ($adjusted->isLessThan(0.0) || !is_finite($adjusted->getAmount())) {
+                throw new InvalidArgumentException('Applied discounts cannot reduce an amount below zero.');
+            }
+            $appliedAmount = $kind === 'discount'
+                ? (new Price($before->getAmount(), $currency))->subtract($adjusted)
+                : (new Price($adjusted->getAmount(), $currency))->subtract($before);
             $snapshots[] = [
                 'id' => $id,
                 'name' => (string) $rule['name'],
@@ -943,14 +1130,13 @@ final class ManualOrderService
                 'value' => $signedAmount,
                 'type' => $type,
                 'kind' => $kind,
+                'applied_amount' => $appliedAmount->format(false),
+                'currency' => $currency,
                 'apply_to' => $rule['apply_to'] ?? 'legacy',
                 'product_id' => $rule['product_id'] ?? null,
             ];
         }
-        $currency = $base->getCurrency()->getCode();
         $before = new Price($base->getAmount(), $currency);
-        $adjusted = new Price($base->getAmount(), $currency);
-        $adjustments->applyTo($adjusted);
         if ($adjusted->isLessThan(0.0) || !is_finite($adjusted->getAmount())) {
             throw new InvalidArgumentException('Applied discounts cannot reduce an amount below zero.');
         }
@@ -960,6 +1146,65 @@ final class ManualOrderService
             'delta' => $delta,
             'snapshots' => $snapshots,
         ];
+    }
+
+    private function automaticRuleIds(
+        array $rules,
+        string $scope,
+        ?int $productId = null,
+        ?array $eligibleDiscountIds = null
+    ): array {
+        $ids = [];
+        foreach ($rules as $rule) {
+            $id = (string) ($rule['id'] ?? '');
+            if ($id === '') {
+                continue;
+            }
+            $applyTo = (string) ($rule['apply_to'] ?? 'legacy');
+            $applicable = $scope === 'product'
+                ? $applyTo === 'all_products'
+                    || ($applyTo === 'product' && (int) ($rule['product_id'] ?? 0) === $productId)
+                : in_array($applyTo, ['order_subtotal', 'legacy'], true);
+            if (!$applicable) {
+                continue;
+            }
+            if ($eligibleDiscountIds !== null && !in_array($id, $eligibleDiscountIds, true)) {
+                continue;
+            }
+            $ids[] = $id;
+        }
+        return $ids;
+    }
+
+    private function eligibleAutomaticDiscountIds(
+        array $rules,
+        Price $subtotal,
+        int $totalItems,
+        int $distinctProducts
+    ): array {
+        $eligible = [];
+        $currency = $subtotal->getCurrency()->getCode();
+        $today = date('Y-m-d');
+        foreach ($rules as $rule) {
+            $id = (string) ($rule['id'] ?? '');
+            if (
+                $id === ''
+                || (!empty($rule['starts_at']) && $today < $rule['starts_at'])
+                || (!empty($rule['ends_at']) && $today > $rule['ends_at'])
+                || (isset($rule['minimum_order_total'])
+                    && $subtotal->isLessThan(new Price((float) $rule['minimum_order_total'], $currency)))
+                || (isset($rule['maximum_order_total'])
+                    && $subtotal->isGreaterThan(new Price((float) $rule['maximum_order_total'], $currency)))
+                || (isset($rule['minimum_total_items']) && $totalItems < (int) $rule['minimum_total_items'])
+                || (isset($rule['maximum_total_items']) && $totalItems > (int) $rule['maximum_total_items'])
+                || (isset($rule['minimum_distinct_products']) && $distinctProducts < (int) $rule['minimum_distinct_products'])
+                || (isset($rule['maximum_distinct_products']) && $distinctProducts > (int) $rule['maximum_distinct_products'])
+            ) {
+                continue;
+            }
+            $eligible[] = $id;
+        }
+        return $eligible;
     }
 
     private function assertApplicableRules(
@@ -1062,6 +1307,20 @@ final class ManualOrderService
         ));
         new Currency($currency);
         return $currency;
+    }
+
+    private function formatMoney(mixed $amount, string $currency): string
+    {
+        return (new Price((float) $amount, $currency))->format(false);
+    }
+
+    private function isOfflinePayment(mixed $provider): bool
+    {
+        return is_string($provider) && in_array(
+            $provider,
+            ['manual', 'quote', 'cash', 'purchase_order'],
+            true
+        );
     }
 
     private function requiredString(mixed $value, string $label): string

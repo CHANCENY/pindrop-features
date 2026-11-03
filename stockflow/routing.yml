@@ -93,6 +93,62 @@ stockflow.products.variants:
     _permission:
     - can_manage_stockflow
 
+stockflow.products.variant.code:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::variantCode
+  methods:
+  - GET
+  path: /stockflow/products/variant/code
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.api_tokens:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowApiController::tokens
+  methods:
+  - GET
+  - POST
+  path: /stockflow/api-tokens
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.api.scan:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowApiController::scan
+  methods:
+  - POST
+  path: /api/stockflow/v1/scan
+
+stockflow.api.checkout_options:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowApiController::checkoutOptions
+  methods:
+  - GET
+  path: /api/stockflow/v1/checkout-options
+
+stockflow.api.checkout:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowApiController::checkout
+  methods:
+  - POST
+  path: /api/stockflow/v1/checkout/review
+
+stockflow.api.checkout.review_alias:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowApiController::checkout
+  methods:
+  - POST
+  path: /api/stockflow/v1/checkout
+
+stockflow.api.checkout_confirm:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowApiController::checkoutConfirm
+  methods:
+  - POST
+  path: /api/stockflow/v1/checkout/confirm
+
 stockflow.products.variant.add:
   defaults:
     _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::variantAdd
@@ -136,6 +192,16 @@ stockflow.orders:
   requirements:
     _permission:
     - can_access_stockflow
+
+stockflow.export:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::export
+  methods:
+  - GET
+  path: /stockflow/export
+  requirements:
+    _permission:
+    - can_manage_stockflow
 
 stockflow.orders.create:
   defaults:
@@ -186,6 +252,26 @@ stockflow.orders.payment_request:
   methods:
   - POST
   path: /stockflow/orders/payment-request
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.orders.invoice:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::orderInvoice
+  methods:
+  - POST
+  path: /stockflow/orders/invoice
+  requirements:
+    _permission:
+    - can_manage_stockflow
+
+stockflow.orders.invoice_pdf:
+  defaults:
+    _controller: Simp\Pindrop\Modules\stockflow\src\Controller\StockflowController::orderInvoicePdf
+  methods:
+  - GET
+  path: /stockflow/orders/invoice/pdf
   requirements:
     _permission:
     - can_manage_stockflow

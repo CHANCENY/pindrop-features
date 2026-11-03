@@ -48,7 +48,7 @@ final class AuthorizeNetGateway implements PaymentGatewayInterface
                 ],
                 'transactionRequest' => [
                     'transactionType' => 'authCaptureTransaction',
-                    'amount' => number_format($amount->getAmount(), 2, '.', ''),
+                    'amount' => $amount->getAmount(),
                     'currencyCode' => 'USD',
                     'payment' => [
                         'opaqueData' => [

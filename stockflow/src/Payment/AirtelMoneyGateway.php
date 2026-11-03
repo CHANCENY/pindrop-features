@@ -74,7 +74,7 @@ final class AirtelMoneyGateway implements PaymentGatewayInterface
                 'msisdn' => $phone,
             ],
             'transaction' => [
-                'amount' => number_format($amount->getAmount(), 2, '.', ''),
+                'amount' => (string) $amount,
                 'country' => 'MW',
                 'currency' => 'MWK',
                 'id' => $transactionId,

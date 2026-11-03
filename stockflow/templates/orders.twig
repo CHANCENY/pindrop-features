@@ -1,7 +1,7 @@
 {% extends '@stockflow/layout.twig' %}
 
 {% block content %}
-<div class="heading"><div><div class="eyebrow">Fulfillment queue</div><h1>Orders</h1><p class="sub">Search and review commerce orders or create a manual order.</p></div><div class="heading-actions"><a class="button primary" href="/stockflow/orders/create">＋ Create manual order</a></div></div>
+<div class="heading"><div><div class="eyebrow">Fulfillment queue</div><h1>Orders</h1><p class="sub">Search and review commerce orders or create a manual order.</p></div><div class="heading-actions"><a class="button" href="/stockflow/export?type=orders">Export XLSX</a><a class="button primary" href="/stockflow/orders/create">＋ Create manual order</a></div></div>
 <section class="panel stockflow-form-panel"><div class="kicker">Order queue</div><h2>Filter orders</h2>{{ filter_form|raw }}</section>
 <section class="panel" style="margin-top:17px"><div class="panel-head"><div><div class="kicker">Fulfillment queue</div><h2>Orders</h2></div></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>Order</th><th>Customer email</th><th>Date</th><th>Total</th><th>Status</th><th>Payment</th></tr></thead><tbody>

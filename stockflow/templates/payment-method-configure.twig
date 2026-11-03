@@ -2,14 +2,14 @@
 
 {% block content %}
 <div class="heading">
-    <div><div class="eyebrow">Store setup</div><h1>Configure {{ payment_method.label }}</h1><p class="sub">Provider fields are defined in payments.yml. Saved secrets are never displayed back in this form.</p></div>
+    <div><div class="eyebrow">Store setup</div><h1>Configure {{ payment_method.label }}</h1><p class="sub">{{ payment_method.type == 'offline' ? 'Offline methods are marked as paid after an administrator confirms receipt.' : 'Provider fields are defined in payments.yml. Saved secrets are never displayed back in this form.' }}</p></div>
     <div class="heading-actions"><a class="button" href="/stockflow/payment-methods">Back to payment methods</a></div>
 </div>
-{% if not encryption_key_configured %}
+{% if payment_method.type != 'offline' and not encryption_key_configured %}
 <section class="panel" style="margin-top:17px"><div class="kicker">Server setup required</div><p class="sub">Set PAYMENT_CONFIG_ENCRYPTION_KEY in the server environment before saving credentials. Use a high-entropy key and keep a protected backup; changing it makes existing credentials unreadable.</p></section>
 {% endif %}
 <section class="panel form-panel" style="margin-top:17px">
-    <div class="panel-head"><div><div class="kicker">Provider configuration</div><h2>{{ payment_method.label }} settings</h2></div></div>
+    <div class="panel-head"><div><div class="kicker">{{ payment_method.type == 'offline' ? 'Availability' : 'Provider configuration' }}</div><h2>{{ payment_method.label }} settings</h2></div></div>
     {{ form_html|raw }}
 </section>
 {% endblock %}

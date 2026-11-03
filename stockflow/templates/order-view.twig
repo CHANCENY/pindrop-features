@@ -4,6 +4,7 @@
 <div class="heading">
     <div><div class="eyebrow">Fulfillment queue</div><h1>Order {{ order.order_number }}</h1><p class="sub">{{ order.email }} · {{ order.placed_at|default('—') }}</p></div>
     <div class="heading-actions">
+        <a class="button" href="{{ invoice_pdf_url }}">Download invoice PDF</a>
         {% if can_edit %}<a class="button" href="/stockflow/orders/edit?id={{ order.id }}">Edit order</a>{% endif %}
         <a class="button" href="/stockflow/orders">Back to orders</a>
     </div>
@@ -11,18 +12,18 @@
 <section class="panel" style="margin-top:17px">
     <div class="panel-head"><div><div class="kicker">Order summary</div><h2>{{ order.status|replace({'_':' '})|title }}</h2></div></div>
     <div class="table-wrap"><table class="data-table"><tbody>
-        <tr><th>Subtotal</th><td>{{ order.subtotal|number_format(2) }} {{ currency }}</td></tr>
-        <tr><th>Discount</th><td>{{ order.discount_total|number_format(2) }} {{ currency }}</td></tr>
-        <tr><th>Shipping</th><td>{{ order.shipping_total|number_format(2) }} {{ currency }}</td></tr>
-        <tr><th>Tax</th><td>{{ order.tax_total|number_format(2) }} {{ currency }}</td></tr>
-        <tr><th>Total</th><td><strong>{{ order.grand_total|number_format(2) }} {{ currency }}</strong></td></tr>
+        <tr><th>Subtotal</th><td>{{ order.display_subtotal }} {{ currency }}</td></tr>
+        <tr><th>Discount</th><td>{{ order.display_discount_total }} {{ currency }}</td></tr>
+        <tr><th>Shipping</th><td>{{ order.display_shipping_total }} {{ currency }}</td></tr>
+        <tr><th>Tax</th><td>{{ order.display_tax_total }} {{ currency }}</td></tr>
+        <tr><th>Total</th><td><strong>{{ order.display_grand_total }} {{ currency }}</strong></td></tr>
     </tbody></table></div>
 </section>
 <section class="panel" style="margin-top:17px">
     <div class="panel-head"><div><div class="kicker">Items</div><h2>Order lines</h2></div></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>SKU</th><th>Quantity</th><th>Unit price</th><th>Line total</th></tr></thead><tbody>
     {% for item in order.items %}
-        <tr><td>{{ item.product_name }}</td><td>{{ item.sku }}</td><td>{{ item.quantity }}</td><td>{{ item.unit_price|number_format(2) }} {{ currency }}</td><td>{{ item.line_total|number_format(2) }} {{ currency }}</td></tr>
+        <tr><td>{{ item.product_name }}</td><td>{{ item.sku }}</td><td>{{ item.quantity }}</td><td>{{ item.display_unit_price }} {{ currency }}</td><td>{{ item.display_line_total }} {{ currency }}</td></tr>
     {% else %}<tr><td colspan="5">No items.</td></tr>{% endfor %}
     </tbody></table></div>
 </section>
@@ -37,15 +38,20 @@
     <div class="panel-head"><div><div class="kicker">Payment history</div><h2>Payments</h2></div><a class="button" href="/stockflow/payments">Manage payments</a></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>Provider</th><th>Reference</th><th>Amount</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody>
     {% for payment in order.payments %}
-        <tr><td>{{ payment.provider|replace({'_':' '})|title }}</td><td>{{ payment.provider_payment_id|default('—') }}</td><td>{{ payment.amount|number_format(2) }} {{ payment.currency_code }}</td><td>{{ payment.status|title }}</td><td>{{ payment.created_at }}</td><td>
-        {% if payment.provider == 'manual' and payment.status == 'pending' %}
+        <tr><td>{{ payment.provider|replace({'_':' '})|title }}</td><td>{{ payment.provider_payment_id|default('—') }}</td><td>{{ payment.display_amount }} {{ payment.currency_code }}</td><td>{{ payment.status|title }}</td><td>{{ payment.created_at }}</td><td>
+        {% if payment.provider in ['manual', 'quote', 'cash', 'purchase_order'] and payment.status == 'pending' %}
             <a href="/stockflow/payments/edit?id={{ payment.id }}">Edit</a> · <a href="/stockflow/payments/receive?id={{ payment.id }}">Receive</a> · <a href="/stockflow/payments/delete?id={{ payment.id }}">Delete</a>
-        {% elseif payment.provider != 'manual' and payment.status in ['pending','authorized'] %}
+        {% elseif payment.provider not in ['manual', 'quote', 'cash', 'purchase_order'] and payment.status in ['pending','authorized'] %}
             <a href="/stockflow/payments/reconcile?id={{ payment.id }}">Reconcile</a>
         {% else %}Read only{% endif %}
         </td></tr>
     {% else %}<tr><td colspan="6">No payment records.</td></tr>{% endfor %}
     </tbody></table></div>
+</section>
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Invoicing</div><h2>Email invoice</h2></div></div>
+    <p class="sub">Send the order invoice to the customer email or enter another recipient.</p>
+    {{ invoice_form|raw }}
 </section>
 {% if order.status == 'pending' %}
 <section class="panel form-panel" style="margin-top:17px">
@@ -55,7 +61,7 @@
         {{ payment_request_form|raw }}
         <p><a class="button" href="/stockflow/orders/manual-payment?id={{ order.id }}">Record offline payment</a></p>
     {% else %}
-        <p>A payment is pending or already completed. Reconcile it before accepting another payment.</p>
+        <p>A payment is pending or already completed. Receive offline funds or reconcile gateway payments from the payment history above before requesting another payment.</p>
     {% endif %}
 </section>
 {% endif %}

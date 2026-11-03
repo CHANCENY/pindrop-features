@@ -1,5 +1,5 @@
 <h1>Payment request for {{ order.order_number }}</h1>
 <p>Hello {{ order.billing_address.first_name|default('') }},</p>
-<p>{{ store_name }} has requested payment of <strong>{{ order.grand_total|number_format(2) }} {{ order.currency_code }}</strong> for order {{ order.order_number }}.</p>
+<p>{{ store_name }} has requested payment of <strong>{{ order.display_grand_total }} {{ order.currency_code }}</strong> for order {{ order.order_number }}.</p>
 <p><a href="{{ payment_link }}">Review and pay securely</a></p>
 <p>This secure payment link expires in seven days. If you have already paid, please contact the store and do not submit another payment.</p>

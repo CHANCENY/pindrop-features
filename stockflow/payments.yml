@@ -80,3 +80,21 @@ methods:
         type: password
         secret: true
         required: true
+  cash:
+    label: Cash
+    type: offline
+    default_enabled: true
+    currencies:
+      - '*'
+  quote:
+    label: Quote
+    type: offline
+    default_enabled: true
+    currencies:
+      - '*'
+  purchase_order:
+    label: Purchase Order
+    type: offline
+    default_enabled: true
+    currencies:
+      - '*'

@@ -20,7 +20,9 @@ use Simp\Pindrop\Modules\stockflow\src\Services\ManualOrderService;
 use Simp\Pindrop\Modules\stockflow\src\Services\AdjustmentConfigurationService;
 use Simp\Pindrop\Modules\stockflow\src\Services\StockflowService;
 use Simp\Pindrop\Modules\stockflow\src\Services\ShippingMethodService;
+use Simp\Pindrop\Modules\stockflow\src\Services\StockflowDocumentService;
 use Simp\Pindrop\Routing\Url;
+use Simp\Price\lib\Price;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +37,8 @@ final class StockflowController extends ControllerBase
         private readonly ShippingMethodService $shippingMethods,
         private readonly PaymentMethodRegistry $paymentMethods,
         private readonly ManualOrderService $manualOrders,
-        private readonly AdjustmentConfigurationService $adjustments
+        private readonly AdjustmentConfigurationService $adjustments,
+        private readonly StockflowDocumentService $documents
     ) {
         parent::__construct();
     }
@@ -49,7 +52,8 @@ final class StockflowController extends ControllerBase
             $container->get('stockflow.shipping_methods'),
             $container->get('stockflow.payment_methods'),
             $container->get('stockflow.manual_orders'),
-            $container->get('stockflow.adjustments')
+            $container->get('stockflow.adjustments'),
+            $container->get('stockflow.documents')
         );
     }
 
@@ -185,6 +189,35 @@ final class StockflowController extends ControllerBase
             'page_title' => 'Product variants',
             'product' => $product,
             'variants' => $variants,
+        ]);
+    }
+
+    public function variantCode(Request $request, string $route_name, array $options): Response
+    {
+        $variantId = $this->queryId($request, 'id');
+        $kind = $request->query->get('kind');
+        if ($variantId === null || !is_string($kind) || !in_array($kind, ['barcode', 'qr'], true)) {
+            return new Response('A valid variant and code type are required.', 400);
+        }
+        $variant = $this->stockflow->getVariant($variantId);
+        if ($variant === null) {
+            return new Response('Product variant not found.', 404);
+        }
+        $value = $kind === 'barcode'
+            ? $this->documents->variantBarcodePayload($variant)
+            : $this->documents->variantQrPayload($variant);
+        try {
+            $svg = $kind === 'barcode'
+                ? $this->documents->barcodeSvg($value)
+                : $this->documents->qrCodeSvg($value);
+        } catch (\InvalidArgumentException $exception) {
+            return new Response($exception->getMessage(), 422);
+        }
+
+        return new Response($svg, 200, [
+            'Content-Type' => 'image/svg+xml; charset=utf-8',
+            'Cache-Control' => 'private, max-age=3600',
+            'X-Content-Type-Options' => 'nosniff',
         ]);
     }
 
@@ -368,6 +401,7 @@ final class StockflowController extends ControllerBase
             Message::error('Order not found.');
             return new RedirectResponse('/stockflow/orders');
         }
+        
         return $this->page('order-view.twig', [
             'page_title' => 'View order',
             'order' => $order,
@@ -378,12 +412,219 @@ final class StockflowController extends ControllerBase
                 && array_reduce($order['payments'], static fn (bool $ok, array $payment): bool => $ok && $payment['status'] === 'failed', true),
             'can_delete' => $order['status'] === 'pending'
                 && array_reduce($order['payments'], static fn (bool $ok, array $payment): bool => $ok
-                    && $payment['provider'] === 'manual'
+                    && in_array($payment['provider'], ['manual', 'quote', 'cash', 'purchase_order'], true)
                     && !in_array($payment['status'], ['paid', 'authorized'], true), true),
             'payment_request_form' => $this->forms->paymentRequestEmail($request, $orderId),
+            'invoice_form' => $this->forms->invoiceRecipient($request, $orderId, (string) $order['email']),
+            'invoice_pdf_url' => '/stockflow/orders/invoice/pdf?id=' . $orderId,
             'manual_payment_form' => $this->forms->manualPayment($request, $orderId),
             'delete_form' => $this->forms->orderDelete($request, $orderId),
         ]);
+    }
+
+    public function orderInvoice(Request $request, string $route_name, array $options): Response
+    {
+        $orderId = $this->queryId($request, 'id');
+        $order = $orderId === null ? null : $this->manualOrders->getOrder($orderId);
+        if ($order === null) {
+            Message::error('Order not found.');
+            return new RedirectResponse('/stockflow/orders');
+        }
+        if ($request->request->get('_action') !== 'send_order_invoice') {
+            Message::error('Unknown invoice submission.');
+            return new RedirectResponse('/stockflow/orders/view?id=' . $orderId);
+        }
+
+        $recipient = $request->request->get('recipient_email', '');
+        if (!is_string($recipient)) {
+            Message::error('Enter a valid invoice recipient email address.');
+            return new RedirectResponse('/stockflow/orders/view?id=' . $orderId);
+        }
+        $recipient = trim($recipient) !== '' ? trim($recipient) : (string) $order['email'];
+        if (filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
+            Message::error('Enter a valid invoice recipient email address.');
+            return new RedirectResponse('/stockflow/orders/view?id=' . $orderId);
+        }
+
+        try {
+            $content = $this->invoiceHtml($order);
+            $pdf = $this->documents->invoicePdf($content);
+            $temporaryPdf = tempnam(sys_get_temp_dir(), 'stockflow-invoice-');
+            if ($temporaryPdf === false) {
+                throw new \RuntimeException('A temporary invoice attachment could not be created.');
+            }
+            try {
+                if (file_put_contents($temporaryPdf, $pdf) === false) {
+                    throw new \RuntimeException('The invoice attachment could not be written.');
+                }
+                $mailManager = getAppContainer()->get('mail.manager');
+                if (!$mailManager->send(
+                    $recipient,
+                    'Invoice for order ' . $order['order_number'],
+                    $content,
+                    [
+                        'html' => true,
+                        'attachments' => [[
+                            'path' => $temporaryPdf,
+                            'name' => 'invoice-' . $order['order_number'] . '.pdf',
+                            'type' => 'application/pdf',
+                        ]],
+                    ]
+                )) {
+                    throw new \RuntimeException('Mail manager reported that invoice delivery failed.');
+                }
+            } finally {
+                if (is_file($temporaryPdf) && !unlink($temporaryPdf)) {
+                    getAppContainer()->get('logger')->warning('Temporary invoice attachment could not be removed', [
+                        'order_number' => $order['order_number'],
+                    ]);
+                }
+            }
+            Message::info('Invoice emailed to ' . $recipient . '.');
+        } catch (\Throwable $exception) {
+            getAppContainer()->get('logger')->error('Stockflow invoice email failed', [
+                'order_number' => $order['order_number'],
+                'recipient' => $recipient,
+                'exception' => $exception->getMessage(),
+            ]);
+            Message::error('The invoice could not be sent. Check the mail configuration and try again.');
+        }
+
+        return new RedirectResponse('/stockflow/orders/view?id=' . $orderId);
+    }
+
+    public function orderInvoicePdf(Request $request, string $route_name, array $options): Response
+    {
+        $orderId = $this->queryId($request, 'id');
+        $order = $orderId === null ? null : $this->manualOrders->getOrder($orderId);
+        if ($order === null) {
+            Message::error('Order not found.');
+            return new RedirectResponse('/stockflow/orders');
+        }
+        try {
+            $pdf = $this->documents->invoicePdf($this->invoiceHtml($order));
+            return new Response($pdf, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="invoice-' . rawurlencode((string) $order['order_number']) . '.pdf"',
+                'Content-Length' => (string) strlen($pdf),
+                'Cache-Control' => 'private, no-store',
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
+        } catch (\Throwable $exception) {
+            getAppContainer()->get('logger')->error('Stockflow invoice PDF generation failed', [
+                'order_number' => $order['order_number'],
+                'exception' => $exception->getMessage(),
+            ]);
+            Message::error('The invoice PDF could not be generated.');
+            return new RedirectResponse('/stockflow/orders/view?id=' . $orderId);
+        }
+    }
+
+    public function export(Request $request, string $route_name, array $options): Response
+    {
+        $type = $request->query->get('type');
+        if (!is_string($type) || !in_array($type, ['inventory', 'products', 'orders'], true)) {
+            return new Response('Select a supported export type.', 400);
+        }
+
+        $currency = $this->stockflow->getStoreSettings()['currency'];
+        $rows = match ($type) {
+            'inventory' => $this->inventoryExportRows($currency),
+            'products' => $this->productExportRows($currency),
+            'orders' => $this->orderExportRows(),
+        };
+        $workbook = $this->documents->spreadsheet($rows, ucfirst($type));
+        return new Response($workbook, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="stockflow-' . $type . '-' . date('Y-m-d') . '.xlsx"',
+            'Content-Length' => (string) strlen($workbook),
+            'Cache-Control' => 'private, no-store',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
+    private function invoiceHtml(array $order): string
+    {
+        $content = $this->renderTwig('@stockflow/order-invoice-email.twig', [
+            'order' => $order,
+            'store_name' => $this->stockflow->getStoreSettings()['store_name'],
+        ]);
+        return $content->getContent();
+    }
+
+    private function inventoryExportRows(string $currency): array
+    {
+        $rows = [['Product', 'Variant', 'SKU', 'Category', 'On hand', 'Reserved', 'Reorder point', 'Unit price', 'Currency']];
+        foreach ($this->stockflow->getInventory() as $item) {
+            $rows[] = [
+                $this->spreadsheetText($item['product_name']),
+                $this->spreadsheetText($item['option_label'] ?? ''),
+                $this->spreadsheetText($item['sku']),
+                $this->spreadsheetText($item['category_name'] ?? ''),
+                (int) $item['quantity_on_hand'],
+                (int) $item['quantity_reserved'],
+                (int) $item['reorder_point'],
+                (new Price((float) $item['price'], $currency))->format(false),
+                $currency,
+            ];
+        }
+        return $rows;
+    }
+
+    private function productExportRows(string $currency): array
+    {
+        $rows = [['Product', 'Slug', 'Brand', 'Category', 'Status', 'Variant', 'SKU', 'Barcode', 'Weight (g)', 'On hand', 'Reserved', 'Reorder point', 'Price', 'Compare-at price', 'Currency']];
+        foreach ($this->stockflow->getInventory() as $item) {
+            $rows[] = [
+                $this->spreadsheetText($item['product_name']),
+                $this->spreadsheetText($item['slug']),
+                $this->spreadsheetText($item['brand'] ?? ''),
+                $this->spreadsheetText($item['category_name'] ?? ''),
+                $this->spreadsheetText($item['product_status']),
+                $this->spreadsheetText($item['option_label'] ?? ''),
+                $this->spreadsheetText($item['sku']),
+                $this->spreadsheetText($item['barcode'] ?? ''),
+                $item['weight_grams'] === null ? '' : (int) $item['weight_grams'],
+                (int) $item['quantity_on_hand'],
+                (int) $item['quantity_reserved'],
+                (int) $item['reorder_point'],
+                (new Price((float) $item['price'], $currency))->format(false),
+                $item['compare_at_price'] === null
+                    ? ''
+                    : (new Price((float) $item['compare_at_price'], $currency))->format(false),
+                $currency,
+            ];
+        }
+        return $rows;
+    }
+
+    private function orderExportRows(): array
+    {
+        $rows = [['Order', 'Customer email', 'Placed at', 'Status', 'Payment method', 'Payment status', 'Subtotal', 'Discount', 'Shipping', 'Tax', 'Total', 'Currency']];
+        foreach ($this->stockflow->getOrders([], 10000) as $order) {
+            $currency = (string) $order['currency_code'];
+            $rows[] = [
+                $this->spreadsheetText($order['order_number']),
+                $this->spreadsheetText($order['email']),
+                $this->spreadsheetText($order['placed_at'] ?? ''),
+                $this->spreadsheetText($order['status']),
+                $this->spreadsheetText($order['payment_provider'] ?? ''),
+                $this->spreadsheetText($order['payment_status'] ?? ''),
+                (new Price((float) $order['subtotal'], $currency))->format(false),
+                (new Price((float) $order['discount_total'], $currency))->format(false),
+                (new Price((float) $order['shipping_total'], $currency))->format(false),
+                (new Price((float) $order['tax_total'], $currency))->format(false),
+                (new Price((float) $order['grand_total'], $currency))->format(false),
+                $currency,
+            ];
+        }
+        return $rows;
+    }
+
+    private function spreadsheetText(mixed $value): string
+    {
+        $text = (string) $value;
+        return preg_match('/^[\s]*[=+\-@]/u', $text) === 1 ? "'" . $text : $text;
     }
 
     public function orderEdit(Request $request, string $route_name, array $options): Response
@@ -414,7 +655,7 @@ final class StockflowController extends ControllerBase
             }
         }
         $shippingMethods = array_values(array_filter(
-            $this->shippingMethods->getMethods(),
+            $this->shippingMethods->getCheckoutMethods(),
             static fn (array $method): bool => ($method['status'] ?? '') === 'active'
         ));
         return $this->page('order-edit.twig', [
@@ -563,6 +804,13 @@ final class StockflowController extends ControllerBase
             ->orderBy('payments.created_at', 'DESC')
             ->limit(200)
             ->get();
+        foreach ($payments as &$payment) {
+            $payment['display_amount'] = (new Price(
+                (float) $payment['amount'],
+                (string) $payment['currency_code']
+            ))->format(false);
+        }
+        unset($payment);
         return $this->page('payments.twig', [
             'page_title' => 'Payments',
             'payments' => $payments,
@@ -757,6 +1005,7 @@ final class StockflowController extends ControllerBase
             $this->paymentMethods->getMethods(),
             static fn (array $method): bool => $method['enabled']
                 && $method['configured']
+                && ($method['type'] ?? 'gateway') !== 'offline'
                 && in_array($currency, $method['currencies'], true)
         ));
         $authorizeClient = null;
@@ -777,6 +1026,9 @@ final class StockflowController extends ControllerBase
                 $notice = 'Select a payment method and provide its required details.';
             } else {
                 try {
+                    if ($this->paymentMethods->isOffline($provider)) {
+                        throw new InvalidArgumentException('Selected payment method is not available for online checkout.');
+                    }
                     if ($provider === 'airtel_money') {
                         $paymentData['transaction_id'] = $order['order_number'] . '-' . bin2hex(random_bytes(5));
                     }
@@ -875,13 +1127,20 @@ final class StockflowController extends ControllerBase
                         return $this->manualOrderForm($request);
                     }
                     $data = $wizard['values'];
+                    if (($data['confirm_payment'] ?? '') !== 'yes') {
+                        throw new InvalidArgumentException('Confirm that you want to create this order.');
+                    }
                     //dump($data, $wizard);
                     $paymentData = $data['payment_data'] ?? [];
                     if (!is_array($paymentData)) {
                         throw new InvalidArgumentException('Payment details must be valid.');
                     }
+                    $selectedPaymentMethod = $data['payment_method'] ?? null;
+                    if (!is_string($selectedPaymentMethod) || trim($selectedPaymentMethod) === '') {
+                        throw new InvalidArgumentException('Select a valid payment method.');
+                    }
                     $this->paymentMethods->validateCharge(
-                        (string) ($data['payment_method'] ?? ''),
+                        $selectedPaymentMethod,
                         $context['currency'],
                         $paymentData
                     );
@@ -906,6 +1165,13 @@ final class StockflowController extends ControllerBase
                 }
 
                 $this->forms->clearManualOrderWizard();
+                if ($this->paymentMethods->isOffline($order['payment_method'])) {
+                    Message::info(
+                        'Order ' . $order['order_number']
+                        . ' was created with payment due. Receive the payment after funds are collected.'
+                    );
+                    return new RedirectResponse('/stockflow/orders');
+                }
                 try {
                     $paymentResult = $this->paymentMethods->charge(
                         $order['payment_method'],
@@ -986,14 +1252,14 @@ final class StockflowController extends ControllerBase
     {
         $currency = $this->stockflow->getStoreSettings()['currency'];
         $shippingMethods = array_values(array_filter(
-            $this->shippingMethods->getMethods(),
+            $this->shippingMethods->getCheckoutMethods(),
             static fn (array $method): bool => ($method['status'] ?? '') === 'active'
         ));
         $paymentMethods = array_values(array_filter(
             $this->paymentMethods->getMethods(),
             fn (array $method): bool => $method['enabled']
                 && $method['configured']
-                && in_array($currency, $method['currencies'], true)
+                && $this->paymentMethods->supportsCurrency((string) $method['id'], $currency)
         ));
         foreach ($paymentMethods as &$paymentMethod) {
             if ($paymentMethod['id'] === 'authorize_net') {
@@ -1442,10 +1708,21 @@ final class StockflowController extends ControllerBase
 
     public function shippingMethods(Request $request, string $route_name, array $options): Response
     {
+        $currency = $this->stockflow->getStoreSettings()['currency'];
+        $methods = $this->shippingMethods->getMethods();
+        foreach ($methods as &$method) {
+            foreach (['flat_rate', 'rate_per_kg', 'minimum_order_total', 'maximum_order_total', 'free_threshold'] as $field) {
+                $value = $method[$field] ?? null;
+                $method['display_' . $field] = $value === null || $value === ''
+                    ? ''
+                    : (new Price((float) $value, $currency))->format(false);
+            }
+        }
+        unset($method);
         return $this->page('shipping-methods.twig', [
             'page_title' => 'Shipping methods',
-            'shipping_methods' => $this->shippingMethods->getMethods(),
-            'currency' => $this->stockflow->getStoreSettings()['currency'],
+            'shipping_methods' => $methods,
+            'currency' => $currency,
         ]);
     }
 

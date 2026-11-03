@@ -25,6 +25,8 @@ db.stockflow.read:
     coupon_redemptions: [select]
     reviews: [select]
     audit_logs: [select]
+    api_tokens: [select]
+    checkout_idempotency: [select]
 
 db.stockflow.write:
   description: 'Create and update Stockflow commerce data.'
@@ -53,6 +55,8 @@ db.stockflow.write:
     coupon_redemptions: [insert, update]
     reviews: [insert, update]
     audit_logs: [insert]
+    api_tokens: [insert, update]
+    checkout_idempotency: [insert, update, delete]
 
 admin:
   db.stockflow.read:

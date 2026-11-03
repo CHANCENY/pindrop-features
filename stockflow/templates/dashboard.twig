@@ -7,7 +7,7 @@
 </div>
 <div class="status"><span><span class="status-dot"></span>Commerce data connected</span><span class="status-meta">Currency: <strong>{{ dashboard.currency }}</strong></span></div>
 <section class="metrics">
-    <article class="metric"><div class="metric-top"><span class="metric-label">Units on hand</span><span class="metric-icon teal">•</span></div><div class="metric-value">{{ dashboard.units_on_hand|number_format }}</div><div class="metric-footer">Current stock across variants</div></article>
+    <article class="metric"><div class="metric-top"><span class="metric-label">Units on hand</span><span class="metric-icon teal">•</span></div><div class="metric-value">{{ dashboard.units_on_hand }}</div><div class="metric-footer">Current stock across variants</div></article>
     <article class="metric"><div class="metric-top"><span class="metric-label">Low stock items</span><span class="metric-icon amber">•</span></div><div class="metric-value">{{ dashboard.low_stock_count }}</div><div class="metric-footer">At or below reorder point</div></article>
     <article class="metric"><div class="metric-top"><span class="metric-label">Open orders</span><span class="metric-icon plum">•</span></div><div class="metric-value">{{ dashboard.open_orders }}</div><div class="metric-footer">Pending through shipped</div></article>
     <article class="metric"><div class="metric-top"><span class="metric-label">Inventory value</span><span class="metric-icon blue">•</span></div><div class="metric-value">{{ dashboard.inventory_value }}</div><div class="metric-footer">Based on variant price × on-hand units</div></article>

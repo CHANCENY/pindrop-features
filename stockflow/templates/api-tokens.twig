@@ -1,0 +1,54 @@
+{% extends '@stockflow/layout.twig' %}
+
+{% block content %}
+<div class="heading">
+    <div><div class="eyebrow">Android app access</div><h1>API tokens</h1><p class="sub">Create and revoke bearer tokens for shopkeeper devices. Tokens have the same Stockflow management access as your account.</p></div>
+</div>
+{% if error %}<div class="stockflow-message error">{{ error }}</div>{% endif %}
+{% if issued_token %}
+    <section class="panel" style="margin-top:17px">
+        <div class="kicker">Copy this token now</div>
+        <h2>Token created</h2>
+        <p class="sub">This secret is shown only once. Store it securely in the Android app; it cannot be retrieved later.</p>
+        <pre style="overflow-wrap:anywhere;white-space:pre-wrap;padding:14px;background:#f3f5f8">{{ issued_token }}</pre>
+    </section>
+{% endif %}
+<section class="panel form-panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">New device credential</div><h2>Create API token</h2></div></div>
+    <form method="post" action="/stockflow/api-tokens" class="stockflow-form">
+        {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+        <input type="hidden" name="_action" value="issue_token">
+        <div class="form-field"><label for="api-token-name">Token name</label><input id="api-token-name" type="text" name="name" maxlength="80" required placeholder="Shop counter tablet"></div>
+        <button class="button primary" type="submit">Create token</button>
+    </form>
+</section>
+<section class="panel" style="margin-top:17px">
+    <div class="panel-head"><div><div class="kicker">Issued credentials</div><h2>Tokens for your account</h2></div></div>
+    <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Name</th><th>Token prefix</th><th>Created</th><th>Last used</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for token in tokens %}
+            <tr>
+                <td>{{ token.name }}</td>
+                <td><span class="mono">{{ token.token_prefix }}…</span></td>
+                <td>{{ token.created_at }}</td>
+                <td>{{ token.last_used_at|default('Never') }}</td>
+                <td>{{ token.revoked_at ? 'Revoked' : 'Active' }}</td>
+                <td>
+                    {% if not token.revoked_at %}
+                        <form method="post" action="/stockflow/api-tokens">
+                            {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+                            <input type="hidden" name="_action" value="revoke_token">
+                            <input type="hidden" name="token_id" value="{{ token.id }}">
+                            <button class="button small" type="submit">Revoke</button>
+                        </form>
+                    {% else %}—{% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6">No API tokens have been issued.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+</section>
+{% endblock %}

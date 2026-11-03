@@ -8,7 +8,7 @@
 <section class="panel" style="margin-top:17px">
     <div class="panel-head"><div><div class="kicker">Catalog options</div><h2>{{ product.name }} variants</h2></div></div>
     <div class="table-wrap"><table class="data-table">
-        <thead><tr><th>Variant</th><th>SKU</th><th>Barcode</th><th>On hand</th><th>Reorder point</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Variant</th><th>SKU</th><th>Barcode</th><th>On hand</th><th>Reorder point</th><th>Price</th><th>Code labels</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody>
         {% for variant in variants %}
             <tr>
@@ -18,6 +18,10 @@
                 <td>{{ variant.quantity_on_hand|default(0) }}</td>
                 <td>{{ variant.reorder_point|default(0) }}</td>
                 <td><b>{{ variant.display_price }}</b></td>
+                <td>
+                    <img src="/stockflow/products/variant/code?id={{ variant.id }}&amp;kind=barcode" alt="Barcode for {{ variant.sku }}" style="max-width:180px;height:40px">
+                    <img src="/stockflow/products/variant/code?id={{ variant.id }}&amp;kind=qr" alt="QR code for {{ variant.sku }}" style="width:48px;height:48px">
+                </td>
                 <td><span class="status-pill {{ variant.status == 'active' ? 'healthy' : 'low' }}">{{ variant.status|title }}</span></td>
                 <td class="table-actions">
                     <a class="button small" href="/stockflow/products/variant/edit?id={{ variant.id }}">Edit</a>
@@ -25,7 +29,7 @@
                 </td>
             </tr>
         {% else %}
-            <tr><td colspan="8">No variants are registered for this product.</td></tr>
+            <tr><td colspan="9">No variants are registered for this product.</td></tr>
         {% endfor %}
         </tbody>
     </table></div>

@@ -23,8 +23,31 @@ final class ShippingMethodService
         return is_array($methods) ? array_values($methods) : [];
     }
 
+    public function getCheckoutMethods(): array
+    {
+        return [
+            [
+                'id' => 'pickup',
+                'name' => 'In-store pickup',
+                'type' => 'pickup',
+                'flat_rate' => '0.00',
+                'status' => 'active',
+            ],
+            ...$this->getMethods(),
+        ];
+    }
+
     public function getMethod(string $id): ?array
     {
+        if ($id === 'pickup') {
+            return [
+                'id' => 'pickup',
+                'name' => 'In-store pickup',
+                'type' => 'pickup',
+                'flat_rate' => '0.00',
+                'status' => 'active',
+            ];
+        }
         foreach ($this->getMethods() as $method) {
             if (($method['id'] ?? '') === $id) {
                 return $method;
@@ -152,10 +175,6 @@ final class ShippingMethodService
 
     public function calculate(string $id, Price $subtotal, int $totalWeightGrams = 0): Price
     {
-        $method = $this->getMethod($id);
-        if ($method === null || ($method['status'] ?? '') !== 'active') {
-            throw new InvalidArgumentException('Selected shipping method is unavailable.');
-        }
         $currency = strtoupper((string) (
             $this->settings->getSetting('stockflow.settings')?->get('currency')
             ?? getenv('STOCKFLOW_CURRENCY')
@@ -163,6 +182,13 @@ final class ShippingMethodService
         ));
         if ($subtotal->getCurrency()->getCode() !== $currency || !is_finite($subtotal->getAmount())) {
             throw new InvalidArgumentException('Shipping subtotal currency does not match the store currency.');
+        }
+        if ($id === 'pickup') {
+            return new Price(0.0, $currency);
+        }
+        $method = $this->getMethod($id);
+        if ($method === null || ($method['status'] ?? '') !== 'active') {
+            throw new InvalidArgumentException('Selected shipping method is unavailable.');
         }
         $minimumOrderTotal = $method['minimum_order_total'] ?? null;
         $maximumOrderTotal = $method['maximum_order_total'] ?? null;
