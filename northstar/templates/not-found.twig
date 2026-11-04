@@ -1,0 +1,10 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Product not found' %}
+{% block content %}
+    <section class="container empty-state not-found">
+        <div class="eyebrow">The collection</div>
+        <h1>We couldn't find that product.</h1>
+        <p>It may have moved or sold out. Browse the current collection to see what's available.</p>
+        <a class="button dark" href="/shop/all">Shop all products</a>
+    </section>
+{% endblock %}

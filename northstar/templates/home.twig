@@ -1,0 +1,39 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Objects for everyday' %}
+{% block content %}
+    <section class="container">
+        <div class="hero">
+            <div class="hero-copy">
+                <div class="eyebrow">The daily edit · 01</div>
+                <h1>Objects for a slower kind of everyday.</h1>
+                <p>Thoughtful essentials for home, travel, and the spaces in between. Made to be used often and kept for a long time.</p>
+                <a class="button dark" href="/shop/all">Shop the collection →</a>
+            </div>
+            <div class="hero-art" aria-hidden="true"><div class="art-shape"></div></div>
+        </div>
+    </section>
+    <section class="container section">
+        <div class="section-head">
+            <div><div class="section-label">Curated for now</div><h2>In the collection</h2></div>
+            <a class="link-arrow" href="/shop/all">View all products →</a>
+        </div>
+        {% if products %}
+            <div class="products">
+                {% for product in products %}
+                    {% include '@northstar/_product-card.twig' with {product: product} %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">New arrivals are on their way. Please check back soon.</p>
+        {% endif %}
+    </section>
+    <section class="container story" id="story">
+        <div class="story-image" aria-hidden="true"><div class="art-shape"></div></div>
+        <div class="story-copy">
+            <div class="section-label">Our point of view</div>
+            <h2>Less, but better. Always.</h2>
+            <p>Northstar is a small collection of useful things, designed with restraint and made with intention. We look for honest materials, quiet details, and the kind of quality that gets better with use.</p>
+            <a class="link-arrow" href="/shop/all">Meet the collection →</a>
+        </div>
+    </section>
+{% endblock %}

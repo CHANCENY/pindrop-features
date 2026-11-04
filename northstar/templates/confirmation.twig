@@ -1,0 +1,16 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Order received' %}
+{% block content %}
+    <section class="container">
+        <div class="confirmation">
+            <div class="check" aria-hidden="true">✓</div>
+            <div class="eyebrow" style="margin-top:24px">Order {{ confirmation.payment_status == 'failed' ? 'needs attention' : 'received' }}</div>
+            <h1>Thank you.</h1>
+            <p>{{ confirmation.message }}</p>
+            <p>Order <strong>#{{ confirmation.order_number }}</strong><br>
+                Confirmation details will be sent to {{ confirmation.email }}.</p>
+            <p class="confirmed-total">Order total · {{ confirmation.total }} {{ confirmation.currency }}</p>
+            <a class="button dark" href="/shop/all" style="margin-top:25px">Keep browsing</a>
+        </div>
+    </section>
+{% endblock %}

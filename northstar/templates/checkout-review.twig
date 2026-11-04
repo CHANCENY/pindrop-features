@@ -1,0 +1,41 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Review your order' %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">One last look</div>
+        <h1>Review your order</h1>
+        <p>Confirm the details and total before your order is placed.</p>
+    </section>
+    <section class="container checkout-review">
+        {% if notice %}<p class="northstar-message info" role="status">{{ notice }}</p>{% endif %}
+        <div class="summary">
+            <h2>Items</h2>
+            {% for item in review.items %}
+                <div class="summary-line"><span>{{ item.name }} × {{ item.quantity }}</span><b>{{ item.total }} {{ review.currency }}</b></div>
+            {% endfor %}
+            <div class="summary-line"><span>Subtotal</span><b>{{ review.subtotal }} {{ review.currency }}</b></div>
+            {% if review.discount != '0.00' %}<div class="summary-line"><span>Discount</span><b>−{{ review.discount }} {{ review.currency }}</b></div>{% endif %}
+            <div class="summary-line"><span>Shipping</span><b>{{ review.shipping }} {{ review.currency }}</b></div>
+            <div class="summary-line"><span>Tax</span><b>{{ review.tax }} {{ review.currency }}</b></div>
+            <div class="summary-line total"><span>Total</span><b>{{ review.total }} {{ review.currency }}</b></div>
+        </div>
+        <div class="summary">
+            <h2>Delivery & payment</h2>
+            <p>{{ review.customer.first_name }} {{ review.customer.last_name }}<br>{{ review.customer.email }}</p>
+            <p>{{ review.shipping_method|replace({'_':' '})|title }}</p>
+            {% if review.shipping_address %}
+                <p>{{ review.shipping_address.line1 }}<br>{{ review.shipping_address.city }}, {{ review.shipping_address.state }} {{ review.shipping_address.postal_code }}<br>{{ review.shipping_address.country_code }}</p>
+            {% endif %}
+            {% for method in payment_methods %}
+                {% if method.id == review.payment_method %}<p>Payment: {{ method.label }}</p>{% endif %}
+            {% endfor %}
+        </div>
+        <form action="/checkout" method="post" class="review-actions">
+            {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+            <input type="hidden" name="_action" value="confirm">
+            <input type="hidden" name="review_hash" value="{{ review_hash }}">
+            <button class="button clay" type="submit">Place order · {{ review.total }} {{ review.currency }}</button>
+            <a class="button light" href="/checkout">Edit details</a>
+        </form>
+    </section>
+{% endblock %}

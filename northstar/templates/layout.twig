@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ page_description|default('Thoughtful essentials for home, travel, and everyday life.') }}">
+    <title>{{ page_title|default('Northstar Goods') }} · Northstar Goods</title>
+    <link rel="stylesheet" href="/modules/northstar/storefront-static/storefront.css">
+    <link rel="stylesheet" href="/modules/northstar/assets/northstar.css">
+</head>
+<body>
+<div class="announcement">FREE SHIPPING ON ORDERS OVER $75 · EASY 30-DAY RETURNS</div>
+<header class="site-header">
+    <a class="wordmark" href="/shop">northstar</a>
+    <nav class="main-nav" aria-label="Main navigation">
+        <a href="/shop/all">Shop</a>
+        <a href="/shop/all?sort=new">New arrivals</a>
+        <a href="/shop#story">About</a>
+    </nav>
+    <div class="header-actions">
+        <a class="header-action" href="/account"><span>Account</span></a>
+        <a class="header-action" href="/cart"><span>Cart</span><b class="cart-count">{{ cart_count }}</b></a>
+    </div>
+</header>
+<main>
+    {% for message in messages|default([]) %}
+        <div class="container northstar-message {{ message.type }}">{{ message.text }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div><div class="footer-wordmark">northstar</div><p>Everyday objects, considered well.</p></div>
+        <div><h3>Shop</h3><a href="/shop/all">All products</a><a href="/shop/all?sort=new">New arrivals</a></div>
+        <div><h3>Support</h3><a href="/shop#story">Our story</a><a href="/account">Your account</a><a href="/cart">Shopping cart</a></div>
+        <div><h3>Northstar Goods</h3><p>Thoughtful essentials, made to be kept.</p></div>
+    </div>
+    <div class="footer-bottom">© {{ "now"|date("Y") }} Northstar Goods · Everyday objects, considered well.</div>
+</footer>
+</body>
+</html>

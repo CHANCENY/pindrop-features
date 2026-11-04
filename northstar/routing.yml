@@ -1,0 +1,57 @@
+northstar.home:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::home
+  methods:
+  - GET
+  path: /shop
+  requirements: {}
+
+northstar.catalog:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::catalog
+  methods:
+  - GET
+  path: /shop/all
+  requirements: {}
+
+northstar.product:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::product
+  methods:
+  - GET
+  path: /shop/product/[slug:string]
+  requirements: {}
+
+northstar.cart:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::cart
+  methods:
+  - GET
+  - POST
+  path: /cart
+  requirements: {}
+
+northstar.checkout:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::checkout
+  methods:
+  - GET
+  - POST
+  path: /checkout
+  requirements: {}
+
+northstar.confirmation:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::confirmation
+  methods:
+  - GET
+  path: /checkout/confirmation
+  requirements: {}
+
+northstar.account:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::account
+  methods:
+  - GET
+  path: /account
+  requirements: {}

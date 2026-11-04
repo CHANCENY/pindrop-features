@@ -1,0 +1,31 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Your account' %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">Your Northstar</div>
+        <h1>Account</h1>
+        <p>{% if user_name %}Welcome back, {{ user_name }}.{% else %}Your orders and account details.{% endif %}</p>
+    </section>
+    <section class="container account-layout">
+        <aside class="account-menu">
+            <a class="active" href="/account">Order history</a>
+            <a href="/user/logout">Sign out</a>
+        </aside>
+        <section class="account-content">
+            <div class="section-label">Recent orders</div>
+            <h2>Order history</h2>
+            {% if orders %}
+                {% for order in orders %}
+                    <div class="order-card">
+                        <div><b>#{{ order.order_number }}</b><span>{{ order.placed_at|date('F j, Y') }}</span></div>
+                        <strong>{{ order.display_total }}</strong>
+                        <span class="status-pill healthy">{{ order.status|title }}</span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="empty-state">No orders are linked to this account yet. Guest checkout orders may not appear here.</p>
+            {% endif %}
+            <a class="button light" href="/shop/all" style="margin-top:25px">Shop the collection</a>
+        </section>
+    </section>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Shopping cart' %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">Your edit</div>
+        <h1>Shopping cart</h1>
+        <p>Thoughtful things, ready when you are.</p>
+    </section>
+    <section class="container cart-layout">
+        <div>
+            {% if error %}<p class="northstar-message error" role="alert">{{ error }}</p>{% endif %}
+            {% if cart %}
+                <div class="cart-list">
+                    {% for line in cart %}
+                        <div class="cart-row">
+                            <a class="cart-thumb" href="/shop/product/{{ line.product.slug|url_encode }}">
+                                {% if line.product.image_url %}
+                                    <img src="{{ line.product.image_url }}" alt="{{ line.product.image_alt }}" loading="lazy">
+                                {% else %}
+                                    <div class="product-object"></div>
+                                {% endif %}
+                            </a>
+                            <div>
+                                <strong><a href="/shop/product/{{ line.product.slug|url_encode }}">{{ line.product.name }}</a></strong>
+                                <span>{{ line.variant.option_label|default('Standard') }}</span>
+                                <span>{{ line.variant.display_price }} each</span>
+                                {% if not line.stock_ok %}<span class="stock-note">Only {{ line.variant.available_quantity }} available. Update quantity to continue.</span>{% endif %}
+                            </div>
+                            <form action="/cart" method="post" class="quantity northstar-quantity">
+                                {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+                                <input type="hidden" name="_action" value="update">
+                                <input type="hidden" name="variant_id" value="{{ line.variant.id }}">
+                                <label class="visually-hidden" for="quantity-{{ line.variant.id }}">Quantity for {{ line.product.name }}</label>
+                                <input id="quantity-{{ line.variant.id }}" type="number" name="quantity" min="1" max="99" value="{{ line.quantity }}">
+                                <button class="button light small" type="submit">Update</button>
+                            </form>
+                            <form action="/cart" method="post">
+                                {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+                                <input type="hidden" name="_action" value="remove">
+                                <input type="hidden" name="variant_id" value="{{ line.variant.id }}">
+                                <button class="remove northstar-remove" type="submit">Remove</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h2>Your cart is waiting.</h2>
+                    <p>Find something useful for your everyday.</p>
+                    <a class="button dark" href="/shop/all">Browse the collection</a>
+                </div>
+            {% endif %}
+        </div>
+        {% if cart %}
+            <aside class="summary">
+                <h2>Summary</h2>
+                <div class="summary-line"><span>Subtotal</span><b>{{ subtotal }}</b></div>
+                <div class="summary-line"><span>Shipping</span><span>Calculated at checkout</span></div>
+                <div class="summary-line total"><span>Estimated total</span><b>{{ subtotal }}</b></div>
+                {% if cart_has_stock %}
+                    <a class="button dark" href="/checkout">Continue to checkout</a>
+                {% else %}
+                    <p class="stock-note">Update unavailable quantities before checkout.</p>
+                {% endif %}
+                <a class="button light" href="/shop/all">Continue shopping</a>
+            </aside>
+        {% endif %}
+    </section>
+{% endblock %}

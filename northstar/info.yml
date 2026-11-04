@@ -1,0 +1,8 @@
+name: "Northstar"
+description: "A customer-facing storefront with catalog, cart, and checkout"
+version: 1.0.0
+author: "Pin drop Team"
+website: "https://pindrop.dev"
+license: "MIT"
+dependencies:
+  - stockflow

@@ -1,0 +1,41 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Shop all' %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">The collection</div>
+        <h1>Shop all</h1>
+        <p>Useful things for every corner of your everyday.</p>
+    </section>
+    <section class="container shop-layout">
+        <aside class="filters">
+            <h3>Browse by</h3>
+            <a class="{{ selected_category == '' ? 'active' : '' }}" href="/shop/all">All products</a>
+            {% for category in categories %}
+                <a class="{{ selected_category == category.id ? 'active' : '' }}" href="/shop/all?category={{ category.id }}">{{ category.name }}</a>
+            {% endfor %}
+            <h3 class="filter-sort-label">Sort by</h3>
+            <a class="{{ sort == '' ? 'active' : '' }}" href="/shop/all">Featured</a>
+            <a class="{{ sort == 'new' ? 'active' : '' }}" href="/shop/all?sort=new">Newest</a>
+            <a class="{{ sort == 'price_asc' ? 'active' : '' }}" href="/shop/all?sort=price_asc">Price: low to high</a>
+            <a class="{{ sort == 'price_desc' ? 'active' : '' }}" href="/shop/all?sort=price_desc">Price: high to low</a>
+        </aside>
+        <div>
+            <form class="northstar-search" action="/shop/all" method="get" role="search">
+                <label class="visually-hidden" for="northstar-search">Search products</label>
+                <input id="northstar-search" type="search" name="q" value="{{ search_query }}" placeholder="Search products…" maxlength="120">
+                {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                <button class="button dark" type="submit">Search</button>
+            </form>
+            {% if products %}
+                <div class="shop-grid">
+                    {% for product in products %}
+                        {% include '@northstar/_product-card.twig' with {product: product} %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">No products match your search yet.</p>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

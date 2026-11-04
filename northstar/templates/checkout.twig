@@ -1,0 +1,169 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Checkout' %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">Almost yours</div>
+        <h1>Checkout</h1>
+        <p>Complete your details. You can review your total before placing the order.</p>
+    </section>
+    <section class="container form-page checkout-grid northstar-checkout-grid">
+        <form class="form-card northstar-checkout-form" action="/checkout" method="post">
+            {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+            <input type="hidden" name="_action" value="review">
+            {% if error %}<p class="northstar-message error" role="alert">{{ error }}</p>{% endif %}
+            <h2>Delivery details</h2>
+            <fieldset>
+                <legend>Contact information</legend>
+                <div class="form-grid">
+                    <label class="full">Email address<input type="email" name="email" value="{{ values.email|default('') }}" autocomplete="email" required></label>
+                    <label>First name<input name="first_name" value="{{ values.customer_first_name|default(values.first_name|default('')) }}" autocomplete="given-name" required></label>
+                    <label>Last name<input name="last_name" value="{{ values.customer_last_name|default(values.last_name|default('')) }}" autocomplete="family-name" required></label>
+                    <label class="full">Phone <span class="field-optional">(optional)</span><input type="tel" name="phone" value="{{ values.customer_phone|default(values.phone|default('')) }}" autocomplete="tel"></label>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Shipping method</legend>
+                <label class="full">Choose delivery
+                    <select name="shipping_method" required>
+                        {% for method in shipping_methods %}
+                            <option value="{{ method.id }}" {% if values.shipping_method|default('pickup') == method.id %}selected{% endif %}>{{ method.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <div class="form-grid address-fields">
+                    <label>Address<input name="address_line1" value="{{ values.billing_line1|default(values.address_line1|default('')) }}" autocomplete="address-line1"></label>
+                    <label>Address line 2<input name="address_line2" value="{{ values.billing_line2|default(values.address_line2|default('')) }}" autocomplete="address-line2"></label>
+                    <label>City<input name="address_city" value="{{ values.billing_city|default(values.address_city|default('')) }}" autocomplete="address-level2"></label>
+                    <label>State / region<input name="address_state" value="{{ values.billing_state|default(values.address_state|default('')) }}" autocomplete="address-level1"></label>
+                    <label>Postal code<input name="address_postal_code" value="{{ values.billing_postal_code|default(values.address_postal_code|default('')) }}" autocomplete="postal-code"></label>
+                    <label>Country code<input name="address_country_code" value="{{ values.billing_country_code|default(values.address_country_code|default('')) }}" maxlength="2" autocomplete="country" placeholder="US"></label>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Payment</legend>
+                {% if payment_methods %}
+                    <div class="northstar-payment-options">
+                        {% for method in payment_methods %}
+                            <label class="northstar-payment-option">
+                                <input type="radio" name="payment_method" value="{{ method.id }}" {% if values.payment_method|default(payment_methods[0].id) == method.id %}checked{% endif %} required>
+                                <span>{{ method.label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% for method in payment_methods %}
+                        {% if method.id == 'authorize_net' %}
+                            <input type="hidden" name="payment_data[opaque_data_descriptor]" value="{{ values.payment_data.opaque_data_descriptor|default('') }}">
+                            <input type="hidden" name="payment_data[opaque_data_value]" value="{{ values.payment_data.opaque_data_value|default('') }}">
+                        {% else %}
+                            {% for field in method.payment_fields %}
+                                {% if field.type != 'hidden' %}
+                                    <label class="northstar-payment-field" data-payment-provider="{{ method.id }}">
+                                        {{ field.label }}
+                                        <input type="{{ field.type == 'tel' ? 'tel' : (field.type == 'email' ? 'email' : 'text') }}" name="payment_data[{{ field.name }}]" value="{{ values.payment_data[field.name]|default('') }}" {% if field.required %}required{% endif %}>
+                                    </label>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    <script>
+                    (() => {
+                        const method = document.querySelector('[name="shipping_method"]');
+                        const fields = document.querySelector('.address-fields');
+                        const required = ['address_line1', 'address_city', 'address_postal_code', 'address_country_code'];
+                        const refreshAddress = () => {
+                            if (!method || !fields) return;
+                            const delivery = method.value !== 'pickup';
+                            fields.hidden = !delivery;
+                            fields.querySelectorAll('input').forEach(input => {
+                                input.required = delivery && required.includes(input.name);
+                            });
+                        };
+                        method?.addEventListener('change', refreshAddress);
+                        refreshAddress();
+                    })();
+                    </script>
+                    {% if authorize_client %}
+                        <fieldset class="authorize-card-fields" data-payment-provider="authorize_net" data-api-login-id="{{ authorize_client.api_login_id|e('html_attr') }}" data-client-key="{{ authorize_client.client_key|e('html_attr') }}" hidden>
+                            <legend>Secure card payment</legend>
+                            <p>Card details are tokenized directly by Authorize.Net and are not sent to this store.</p>
+                            <label>Card number<input type="text" inputmode="numeric" autocomplete="cc-number" data-card-number></label>
+                            <div class="authorize-card-grid">
+                                <label>Expiry month<input type="text" inputmode="numeric" autocomplete="cc-exp-month" maxlength="2" data-card-month></label>
+                                <label>Expiry year<input type="text" inputmode="numeric" autocomplete="cc-exp-year" maxlength="4" data-card-year></label>
+                            </div>
+                            <label>Security code<input type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" data-card-code></label>
+                            <p class="authorize-card-error" role="alert" data-card-error hidden></p>
+                        </fieldset>
+                    {% endif %}
+                {% else %}
+                    <p class="empty-state">Online checkout is not available yet. Please contact the store to place an order.</p>
+                {% endif %}
+            </fieldset>
+            {% if payment_methods %}
+                <button class="button clay" type="submit">Review order</button>
+            {% endif %}
+        </form>
+        <aside class="summary">
+            <h2>Your order</h2>
+            {% for line in cart %}
+                <div class="summary-line"><span>{{ line.product.name }} × {{ line.quantity }}</span><b>{{ line.line_total }}</b></div>
+            {% endfor %}
+            <div class="summary-line total"><span>Subtotal</span><b>{{ subtotal }}</b></div>
+            <p class="checkout-note">Shipping, taxes, and eligible discounts are calculated before you confirm.</p>
+            <a class="button light" href="/cart">Return to cart</a>
+        </aside>
+    </section>
+    {% if authorize_client %}
+        <script src="{{ authorize_client.environment == 'production' ? 'https://js.authorize.net/v1/Accept.js' : 'https://jstest.authorize.net/v1/Accept.js' }}"></script>
+        <script>
+        (() => {
+            const form = document.querySelector('.northstar-checkout-form');
+            const provider = () => form?.querySelector('[name="payment_method"]:checked')?.value;
+            const card = document.querySelector('.authorize-card-fields');
+            const refresh = () => {
+                document.querySelectorAll('.northstar-payment-field').forEach(field => {
+                    field.hidden = field.dataset.paymentProvider !== provider();
+                });
+                if (card) card.hidden = provider() !== 'authorize_net';
+            };
+            form?.querySelectorAll('[name="payment_method"]').forEach(input => input.addEventListener('change', refresh));
+            refresh();
+            form?.addEventListener('submit', event => {
+                if (provider() !== 'authorize_net') return;
+                const descriptor = form.querySelector('[name="payment_data[opaque_data_descriptor]"]');
+                const value = form.querySelector('[name="payment_data[opaque_data_value]"]');
+                if (descriptor?.value && value?.value) return;
+                event.preventDefault();
+                const error = card?.querySelector('[data-card-error]');
+                if (!window.Accept || !card?.dataset.apiLoginId || !card?.dataset.clientKey) {
+                    if (error) { error.textContent = 'Card tokenization is unavailable. Contact the store.'; error.hidden = false; }
+                    return;
+                }
+                window.Accept.dispatchData({
+                    authData: {apiLoginID: card.dataset.apiLoginId, clientKey: card.dataset.clientKey},
+                    cardData: {
+                        cardNumber: card.querySelector('[data-card-number]').value.replace(/\s+/g, ''),
+                        month: card.querySelector('[data-card-month]').value,
+                        year: card.querySelector('[data-card-year]').value,
+                        cardCode: card.querySelector('[data-card-code]').value
+                    }
+                }, response => {
+                    if (response.messages?.resultCode !== 'Ok' || !response.opaqueData?.dataDescriptor || !response.opaqueData?.dataValue) {
+                        if (error) {
+                            error.textContent = (response.messages?.message || []).map(message => message.text).filter(Boolean).join(' ')
+                                || 'Card tokenization failed. Check the card details and retry.';
+                            error.hidden = false;
+                        }
+                        return;
+                    }
+                    descriptor.value = response.opaqueData.dataDescriptor;
+                    value.value = response.opaqueData.dataValue;
+                    card.querySelectorAll('[data-card-number], [data-card-month], [data-card-year], [data-card-code]')
+                        .forEach(input => { input.value = ''; });
+                    form.submit();
+                });
+            });
+        })();
+        </script>
+    {% endif %}
+{% endblock %}
