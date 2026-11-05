@@ -15,6 +15,9 @@ admin:
     description: 'Create, update, and manage Stockflow commerce records.'
 
 customer:
+  db.stockflow.storefront:
+    title: 'Use Stockflow storefront'
+    description: 'Browse products and place storefront orders.'
   can_view_public_content:
     title: 'Can view public content'
     description: 'Allow customer accounts to browse public pages and published products.'
@@ -39,3 +42,8 @@ customer:
   can_use_two_factor:
     title: 'Can use two-factor authentication'
     description: 'Allow customer accounts to enable and manage two-factor authentication.'
+
+user:
+  db.stockflow.storefront:
+    title: 'Use Stockflow storefront'
+    description: 'Browse products and place storefront orders.'

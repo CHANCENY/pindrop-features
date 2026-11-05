@@ -58,6 +58,22 @@ db.stockflow.write:
     api_tokens: [insert, update]
     checkout_idempotency: [insert, update, delete]
 
+db.stockflow.storefront:
+  description: 'Browse the storefront and submit customer checkout orders.'
+  owned_by: stockflow
+  tables:
+    categories: [select]
+    products: [select]
+    product_variants: [select]
+    product_images: [select]
+    inventory: [select, update]
+    customers: [select, insert, update]
+    addresses: [select, insert]
+    orders: [select, insert, update]
+    order_items: [select, insert]
+    payments: [select, insert, update]
+    inventory_movements: [insert]
+
 admin:
   db.stockflow.read:
     title: 'Read Stockflow records'

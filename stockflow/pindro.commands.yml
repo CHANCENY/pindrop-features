@@ -1,0 +1,4 @@
+stockflow.cli:
+  name: "Stockflow CLI commands"
+  script: "modules/stockflow/cli/default.php"
+  status: true

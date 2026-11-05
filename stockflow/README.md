@@ -95,6 +95,28 @@ With the database configured and the terminal-command plugin available:
 
 The Stockflow database schema is defined in `mysql/ecommerce-schema.sql`.
 
+## Create sample catalog data
+
+The `stockflow:products:dummyjson` CLI command fetches products from
+`https://dummyjson.com/products`, uses Faker to generate variant SKUs,
+barcodes, option labels, prices, costs, weights, and starting inventory, and
+creates a generated placeholder image URL for each product using DummyJSON's
+image endpoint. DummyJSON's numeric sample prices are interpreted in the
+Stockflow store's configured currency; no currency conversion is performed.
+
+The command is a dry run unless `--commit` is supplied:
+
+```sh
+./pindro stockflow:products:dummyjson --count 5 --variants 3 --seed 42
+./pindro stockflow:products:dummyjson --count 5 --variants 3 --seed 42 --commit
+```
+
+Options are `--count`/`-n` (1-100 products), `--variants`/`-v` (1-8 per
+product), `--skip` (DummyJSON pagination offset), and `--seed` (reproducible
+Faker variant data). Existing products created from the same DummyJSON source
+ID are skipped. The importer requires an enabled Stockflow plugin, an existing
+Stockflow schema, outbound HTTPS access to DummyJSON, and PHP cURL.
+
 ## Implementation notes
 
 - Form definitions are separated into `src/Form/StockflowFormFactory.php` and

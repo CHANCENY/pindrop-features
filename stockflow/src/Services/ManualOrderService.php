@@ -467,6 +467,17 @@ final class ManualOrderService
         $customerFirstName = $this->requiredString($data['customer_first_name'] ?? '', 'Customer first name');
         $customerLastName = $this->requiredString($data['customer_last_name'] ?? '', 'Customer last name');
         $customerPhone = $this->scalarString($data['customer_phone'] ?? '', 'Customer phone');
+        $requestedBillingAddressId = null;
+        if (array_key_exists('billing_address_id', $data) && $data['billing_address_id'] !== null && $data['billing_address_id'] !== '') {
+            $requestedBillingAddressId = filter_var($data['billing_address_id'], FILTER_VALIDATE_INT);
+            if ($requestedBillingAddressId === false || $requestedBillingAddressId < 1) {
+                throw new InvalidArgumentException('Select a valid saved billing address.');
+            }
+        }
+        $customerUserId = $data['customer_user_id'] ?? null;
+        if ($customerUserId !== null && (!is_int($customerUserId) || $customerUserId < 1)) {
+            throw new InvalidArgumentException('Customer account is invalid.');
+        }
         $paymentMethod = $this->requiredString($data['payment_method'] ?? '', 'Payment method');
         $paymentData = $this->paymentData($data);
         $itemsInput = $data['items'] ?? null;
@@ -684,6 +695,7 @@ final class ManualOrderService
             : (($data['same_shipping'] ?? '') === 'yes'
                 ? $billingAddress
                 : $this->optionalAddress($data, 'shipping'));
+        $sameShipping = ($data['same_shipping'] ?? '') === 'yes';
         if ($shippingMethodId !== 'pickup' && $shippingAddress === null) {
             throw new InvalidArgumentException('Shipping address is required for delivery orders.');
         }
@@ -692,6 +704,33 @@ final class ManualOrderService
             ->first();
         if ($customer !== null && $customer['status'] === 'blocked') {
             throw new InvalidArgumentException('Orders cannot be created for a blocked customer.');
+        }
+        if (
+            $customerUserId !== null
+            && $customer !== null
+            && $customer['user_id'] !== null
+            && (int) $customer['user_id'] !== $customerUserId
+        ) {
+            throw new InvalidArgumentException('This customer email is linked to a different account. Use the email address for your account.');
+        }
+        if ($requestedBillingAddressId !== null) {
+            $savedAddress = $customer === null
+                ? null
+                : $this->database->table('addresses', 'stockflow')
+                    ->select(['id'])
+                    ->where('id', '=', (int) $requestedBillingAddressId)
+                    ->where('customer_id', '=', (int) $customer['id'])
+                    ->first();
+            if ($savedAddress === null && $customerUserId !== null) {
+                $savedAddress = $this->database->table('addresses', 'stockflow')
+                    ->select(['id'])
+                    ->where('id', '=', (int) $requestedBillingAddressId)
+                    ->where('user_id', '=', $customerUserId)
+                    ->first();
+            }
+            if ($savedAddress === null) {
+                throw new InvalidArgumentException('The selected address does not belong to this customer.');
+            }
         }
         $orderNumber = $existingOrder['order_number'] ?? ('SF-' . date('ymd') . '-' . strtoupper(bin2hex(random_bytes(4))));
 
@@ -756,6 +795,9 @@ final class ManualOrderService
             $customerFirstName,
             $customerLastName,
             $customerPhone,
+            $customerUserId,
+            $requestedBillingAddressId,
+            $sameShipping,
             $customer,
             $billingAddress,
             $shippingAddress,
@@ -790,16 +832,57 @@ final class ManualOrderService
                         + (int) $existingItem['quantity'];
                 }
             }
-            $customerId = $customer['id'] ?? $this->database->table('customers', 'stockflow')->insert([
-                'email' => $email,
-                'first_name' => $customerFirstName,
-                'last_name' => $customerLastName,
-                'phone' => $customerPhone !== '' ? $customerPhone : null,
-                'status' => 'guest',
-                'accepts_marketing' => 0,
-            ]);
-            $billingAddressId = $billingAddress === null ? null : $this->insertAddress($billingAddress, $customerId);
-            $shippingAddressId = $shippingAddress === null ? null : $this->insertAddress($shippingAddress, $customerId);
+            if ($customer === null) {
+                $customerId = $this->database->table('customers', 'stockflow')->insert([
+                    'user_id' => $customerUserId,
+                    'email' => $email,
+                    'first_name' => $customerFirstName,
+                    'last_name' => $customerLastName,
+                    'phone' => $customerPhone !== '' ? $customerPhone : null,
+                    'status' => 'guest',
+                    'accepts_marketing' => 0,
+                ]);
+            } else {
+                $customerId = $customer['id'];
+                if ($customerUserId !== null && $customer['user_id'] === null) {
+                    $linked = $this->database->table('customers', 'stockflow')
+                        ->where('id', '=', (int) $customerId)
+                        ->where('user_id', 'IS NULL')
+                        ->update(['user_id' => $customerUserId]);
+                    if ($linked !== 1) {
+                        throw new InvalidArgumentException('The customer record could not be linked to your account. Please try again.');
+                    }
+                }
+            }
+            if ($billingAddress === null) {
+                $billingAddressId = null;
+            } elseif ($requestedBillingAddressId !== null) {
+                $savedAddress = $this->database->table('addresses', 'stockflow')
+                    ->select(['id'])
+                    ->where('id', '=', (int) $requestedBillingAddressId)
+                    ->where('customer_id', '=', (int) $customerId)
+                    ->first();
+                if ($savedAddress === null && $customerUserId !== null) {
+                    $savedAddress = $this->database->table('addresses', 'stockflow')
+                        ->select(['id'])
+                        ->where('id', '=', (int) $requestedBillingAddressId)
+                        ->where('user_id', '=', $customerUserId)
+                        ->first();
+                }
+                if ($savedAddress === null) {
+                    throw new InvalidArgumentException('The selected address does not belong to this customer.');
+                }
+                $billingAddressId = (int) $savedAddress['id'];
+            } else {
+                $billingAddressId = $this->insertAddress($billingAddress, $customerId);
+            }
+            if ($shippingAddress === null) {
+                $shippingAddressId = null;
+            } elseif ($sameShipping) {
+                $shippingAddressId = $billingAddressId;
+            } else {
+                $shippingAddressId = $this->insertAddress($shippingAddress, $customerId);
+            }
             $orderAdjustments = array_merge($overallDiscounts['snapshots'], $overallTaxes['snapshots']);
             $orderAdjustments[] = [
                 'kind' => 'shipping_method',
@@ -1003,9 +1086,17 @@ final class ManualOrderService
 
     private function address(array $data, string $prefix): array
     {
+        $firstName = $this->scalarString($data[$prefix . '_first_name'] ?? '', ucfirst($prefix) . ' first name');
+        $lastName = $this->scalarString($data[$prefix . '_last_name'] ?? '', ucfirst($prefix) . ' last name');
+        if ($firstName === '') {
+            $firstName = $this->requiredString($data['customer_first_name'] ?? '', 'Customer first name');
+        }
+        if ($lastName === '') {
+            $lastName = $this->requiredString($data['customer_last_name'] ?? '', 'Customer last name');
+        }
         $address = [
-            'first_name' => $this->requiredString($data[$prefix . '_first_name'] ?? '', ucfirst($prefix) . ' first name'),
-            'last_name' => $this->requiredString($data[$prefix . '_last_name'] ?? '', ucfirst($prefix) . ' last name'),
+            'first_name' => $firstName,
+            'last_name' => $lastName,
             'company' => $this->scalarString($data[$prefix . '_company'] ?? '', ucfirst($prefix) . ' company'),
             'line1' => $this->requiredString($data[$prefix . '_line1'] ?? '', ucfirst($prefix) . ' address line 1'),
             'line2' => $this->scalarString($data[$prefix . '_line2'] ?? '', ucfirst($prefix) . ' address line 2'),
@@ -1025,7 +1116,7 @@ final class ManualOrderService
     {
         foreach ([
             'first_name', 'last_name', 'company', 'line1', 'line2', 'city',
-            'state', 'postal_code', 'country_code', 'phone',
+            'state', 'postal_code', 'country_code',
         ] as $field) {
             $value = $data[$prefix . '_' . $field] ?? '';
             if (!is_scalar($value) && $value !== null) {
