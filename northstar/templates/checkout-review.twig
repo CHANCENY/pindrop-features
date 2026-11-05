@@ -2,9 +2,14 @@
 {% set page_title = 'Review your order' %}
 {% block content %}
     <section class="container page-title">
-        <div class="eyebrow">One last look</div>
+        <div class="eyebrow">Step 3 of 3</div>
         <h1>Review your order</h1>
         <p>Confirm the details and total before your order is placed.</p>
+    </section>
+    <section class="container northstar-checkout-progress" aria-label="Checkout progress">
+        <span class="complete"><b>✓</b> Delivery</span>
+        <span class="complete"><b>✓</b> Payment</span>
+        <span class="active"><b>3</b> Review</span>
     </section>
     <section class="container checkout-review">
         {% if notice %}<p class="northstar-message info" role="status">{{ notice }}</p>{% endif %}
@@ -35,7 +40,11 @@
             <input type="hidden" name="_action" value="confirm">
             <input type="hidden" name="review_hash" value="{{ review_hash }}">
             <button class="button clay" type="submit">Place order · {{ review.total }} {{ review.currency }}</button>
-            <a class="button light" href="/checkout">Edit details</a>
+        </form>
+        <form action="/checkout" method="post" class="review-back">
+            {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+            <input type="hidden" name="_action" value="edit_details">
+            <button class="button light" type="submit">Edit details</button>
         </form>
     </section>
 {% endblock %}

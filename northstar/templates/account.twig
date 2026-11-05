@@ -12,6 +12,7 @@
             <a href="/user/logout">Sign out</a>
         </aside>
         <section class="account-content">
+            {% if payment_message %}<p class="northstar-message info" role="status">{{ payment_message }}</p>{% endif %}
             <div class="section-label">Recent orders</div>
             <h2>Order history</h2>
             {% if orders %}
@@ -20,12 +21,41 @@
                         <div><b>#{{ order.order_number }}</b><span>{{ order.placed_at|date('F j, Y') }}</span></div>
                         <strong>{{ order.display_total }}</strong>
                         <span class="status-pill healthy">{{ order.status|title }}</span>
+                        {% if order.payment_status == 'pending' %}<span class="account-payment-status">Payment pending</span>{% endif %}
+                        <a class="button light account-order-button" href="/account/orders/view?id={{ order.id }}">View order</a>
+                        {% if order.can_pay %}
+                            <a class="button clay account-pay-button" href="/account/orders/pay?id={{ order.id }}">Pay now with Authorize.Net</a>
+                        {% elseif order.payment_due %}
+                            {% if payment_contact_email %}
+                                <a class="button light account-pay-button" href="mailto:{{ payment_contact_email|e('html_attr') }}?subject={{ ('Payment assistance for order ' ~ order.order_number)|url_encode|e('html_attr') }}&amp;body={{ ('Hello,' ~ "\n\n" ~ 'I would like help completing payment for order ' ~ order.order_number ~ '.' ~ "\n\n" ~ 'Please let me know how to proceed.')|url_encode|e('html_attr') }}">Email us to complete payment</a>
+                            {% else %}
+                                <span class="account-payment-contact-note">Contact the store to complete payment.</span>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="empty-state">No orders are linked to this account yet. Guest checkout orders may not appear here.</p>
+                <p class="empty-state">No orders are linked to this account yet. Orders placed after you sign in will appear here.</p>
             {% endif %}
             <a class="button light" href="/shop/all" style="margin-top:25px">Shop the collection</a>
+            <section class="account-addresses" aria-labelledby="account-addresses-heading">
+                <div class="section-label">Saved for later</div>
+                <h2 id="account-addresses-heading">Your addresses</h2>
+                {% if addresses %}
+                    <div class="account-address-list">
+                        {% for address in addresses %}
+                            <article class="account-address-card">
+                                <h3>{{ address.label|default('Saved address') }}{% if address.is_default %}<span>Default</span>{% endif %}</h3>
+                                <p>{{ address.first_name }} {{ address.last_name }}{% if address.company %}<br>{{ address.company }}{% endif %}<br>{{ address.line1 }}{% if address.line2 %}<br>{{ address.line2 }}{% endif %}<br>{{ address.city }}{% if address.state %}, {{ address.state }}{% endif %} {{ address.postal_code }}<br>{{ address.country_code }}</p>
+                                {% if address.phone %}<p>{{ address.phone }}</p>{% endif %}
+                            </article>
+                        {% endfor %}
+                    </div>
+                    <p class="checkout-note">Addresses are shown for reference and can be selected during checkout.</p>
+                {% else %}
+                    <p class="empty-state">Addresses saved with your orders will appear here.</p>
+                {% endif %}
+            </section>
         </section>
     </section>
 {% endblock %}

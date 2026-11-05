@@ -55,3 +55,38 @@ northstar.account:
   - GET
   path: /account
   requirements: {}
+
+northstar.account_order:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::accountOrder
+  methods:
+  - GET
+  path: /account/orders/view
+  requirements: {}
+
+northstar.account_order_payment:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::accountOrderPayment
+  methods:
+  - GET
+  - POST
+  path: /account/orders/pay
+  requirements: {}
+
+northstar.account_login:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::login
+  methods:
+  - GET
+  - POST
+  path: /account/login
+  requirements: {}
+
+northstar.account_register:
+  defaults:
+    _controller: Simp\Pindrop\Modules\northstar\src\Controller\NorthstarController::register
+  methods:
+  - GET
+  - POST
+  path: /account/register
+  requirements: {}

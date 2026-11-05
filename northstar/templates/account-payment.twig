@@ -1,0 +1,78 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Pay for order ' ~ order.order_number %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">Secure checkout</div>
+        <h1>Complete your payment</h1>
+        <p>Order #{{ order.order_number }}</p>
+    </section>
+    <section class="container form-page checkout-grid northstar-checkout-grid northstar-account-payment">
+        <form class="form-card northstar-checkout-form" action="/account/orders/pay?id={{ order.id }}" method="post">
+            {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+            {% if error %}<p class="northstar-message error" role="alert">{{ error }}</p>{% endif %}
+            <h2>Pay with credit card</h2>
+            <fieldset class="authorize-card-fields" data-payment-provider="authorize_net" data-api-login-id="{{ authorize_client.api_login_id|e('html_attr') }}" data-client-key="{{ authorize_client.client_key|e('html_attr') }}" data-environment="{{ authorize_client.environment|e('html_attr') }}">
+                <legend>Secure card payment</legend>
+                <p>Card details are tokenized directly by Authorize.Net and are not sent to this store.</p>
+                <label>Card number<input type="text" inputmode="numeric" autocomplete="cc-number" data-card-number required></label>
+                <div class="authorize-card-grid">
+                    <label>Expiry month<input type="text" inputmode="numeric" autocomplete="cc-exp-month" maxlength="2" data-card-month required></label>
+                    <label>Expiry year<input type="text" inputmode="numeric" autocomplete="cc-exp-year" maxlength="4" data-card-year required></label>
+                </div>
+                <label>Security code<input type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" data-card-code required></label>
+                <p class="authorize-card-error" role="alert" data-card-error hidden></p>
+            </fieldset>
+            <input type="hidden" name="payment_data[opaque_data_descriptor]" value="">
+            <input type="hidden" name="payment_data[opaque_data_value]" value="">
+            <button class="button clay" type="submit">Pay {{ order.display_grand_total }}</button>
+            <a class="button light" href="/account">Back to account</a>
+        </form>
+        <aside class="summary">
+            <h2>Order summary</h2>
+            {% for item in order.items %}
+                <div class="summary-line"><span>{{ item.product_name|default(item.name|default('Item')) }} × {{ item.quantity }}</span><b>{{ item.display_line_total }}</b></div>
+            {% endfor %}
+            <div class="summary-line total"><span>Amount due</span><b>{{ order.display_grand_total }}</b></div>
+            <p class="checkout-note">Payments for this order are handled only by Authorize.Net.</p>
+        </aside>
+    </section>
+    <script src="{{ authorize_client.environment == 'production' ? 'https://js.authorize.net/v1/Accept.js' : 'https://jstest.authorize.net/v1/Accept.js' }}"></script>
+    <script>
+    (() => {
+        const form = document.querySelector('.northstar-account-payment .northstar-checkout-form');
+        const card = document.querySelector('.authorize-card-fields');
+        form?.addEventListener('submit', event => {
+            const descriptor = form.querySelector('[name="payment_data[opaque_data_descriptor]"]');
+            const value = form.querySelector('[name="payment_data[opaque_data_value]"]');
+            if (descriptor?.value && value?.value) return;
+            event.preventDefault();
+            const error = card?.querySelector('[data-card-error]');
+            if (!window.Accept || !card?.dataset.apiLoginId || !card?.dataset.clientKey) {
+                if (error) { error.textContent = 'Card tokenization is unavailable. Contact the store.'; error.hidden = false; }
+                return;
+            }
+            window.Accept.dispatchData({
+                authData: {apiLoginID: card.dataset.apiLoginId, clientKey: card.dataset.clientKey},
+                cardData: {
+                    cardNumber: card.querySelector('[data-card-number]').value.replace(/\s+/g, ''),
+                    month: card.querySelector('[data-card-month]').value,
+                    year: card.querySelector('[data-card-year]').value,
+                    cardCode: card.querySelector('[data-card-code]').value
+                }
+            }, response => {
+                if (response.messages?.resultCode !== 'Ok' || !response.opaqueData?.dataDescriptor || !response.opaqueData?.dataValue) {
+                    if (error) {
+                        error.textContent = (response.messages?.message || []).map(message => message.text).filter(Boolean).join(' ')
+                            || 'Card tokenization failed. Check the card details and retry.';
+                        error.hidden = false;
+                    }
+                    return;
+                }
+                descriptor.value = response.opaqueData.dataDescriptor;
+                value.value = response.opaqueData.dataValue;
+                form.requestSubmit();
+            });
+        });
+    })();
+    </script>
+{% endblock %}

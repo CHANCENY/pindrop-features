@@ -1,0 +1,52 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Order ' ~ order.order_number %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">Your order</div>
+        <h1>Order #{{ order.order_number }}</h1>
+        <p>Placed {{ order.placed_at|date('F j, Y') }} · {{ order.status|title }}</p>
+    </section>
+    <section class="container account-order-page">
+        <div class="account-order-items summary">
+            <h2>Items</h2>
+            {% for item in order.items %}
+                <div class="summary-line">
+                    <span>{{ item.product_name }} × {{ item.quantity }}</span>
+                    <b>{{ item.display_line_total }}</b>
+                </div>
+            {% endfor %}
+            <div class="summary-line"><span>Subtotal</span><b>{{ order.display_subtotal }}</b></div>
+            {% if order.discount_total > 0 %}<div class="summary-line"><span>Discount</span><b>−{{ order.display_discount_total }}</b></div>{% endif %}
+            <div class="summary-line"><span>Shipping</span><b>{{ order.display_shipping_total }}</b></div>
+            <div class="summary-line"><span>Tax</span><b>{{ order.display_tax_total }}</b></div>
+            <div class="summary-line total"><span>Total</span><b>{{ order.display_grand_total }}</b></div>
+        </div>
+        <aside class="account-order-info">
+            <section class="summary">
+                <h2>Payment</h2>
+                <p>Order status: <strong>{{ order.status|title }}</strong></p>
+                <p>Payment status: <strong>{{ order.payment_status|default('Not available')|title }}</strong></p>
+                {% if order.payment_due %}
+                    {% if order.can_pay %}
+                        <a class="button clay" href="/account/orders/pay?id={{ order.id }}">Pay now with Card</a>
+                    {% elseif payment_contact_email %}
+                        <p>Online payment is unavailable right now. Email us and we’ll help you complete payment.</p>
+                        <a class="button light" href="mailto:{{ payment_contact_email|e('html_attr') }}?subject={{ ('Payment assistance for order ' ~ order.order_number)|url_encode|e('html_attr') }}&amp;body={{ ('Hello,' ~ "\n\n" ~ 'I would like help completing payment for order ' ~ order.order_number ~ '.' ~ "\n\n" ~ 'Please let me know how to proceed.')|url_encode|e('html_attr') }}">Email us to complete payment</a>
+                    {% else %}
+                        <p>Online payment is unavailable right now. Please contact the store to complete payment.</p>
+                    {% endif %}
+                {% endif %}
+            </section>
+            {% if order.shipping_address %}
+                <section class="summary">
+                    <h2>Delivery address</h2>
+                    <p>{{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
+                        {{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %}<br>{{ order.shipping_address.line2 }}{% endif %}<br>
+                        {{ order.shipping_address.city }}{% if order.shipping_address.state %}, {{ order.shipping_address.state }}{% endif %} {{ order.shipping_address.postal_code }}<br>
+                        {{ order.shipping_address.country_code }}</p>
+                </section>
+            {% endif %}
+        </aside>
+        <a class="button light account-order-back" href="/account">Back to order history</a>
+    </section>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Sign in' %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">Welcome back</div>
+        <h1>Sign in</h1>
+        <p>Sign in to see your Northstar orders and continue checkout.</p>
+    </section>
+    <section class="container northstar-auth">
+        <form class="form-card northstar-auth-form" action="/account/login?destination={{ destination|url_encode }}" method="post">
+            {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+            {% if error %}<p class="northstar-message error" role="alert">{{ error }}</p>{% endif %}
+            {% if message == 'registration_success' %}
+                <p class="northstar-message info" role="status">Your account is ready. Check your email for a verification link.</p>
+            {% endif %}
+            <label>Email address<input type="email" name="email" value="{{ values.email|default('') }}" autocomplete="email" required></label>
+            <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+            <button class="button clay" type="submit">Sign in</button>
+            <p class="northstar-auth-help"><a href="/user/forgot-password">Forgot your password?</a></p>
+            <p class="northstar-auth-switch">New to Northstar? <a href="/account/register?destination={{ destination|url_encode }}">Create an account</a></p>
+        </form>
+    </section>
+{% endblock %}

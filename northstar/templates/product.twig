@@ -19,17 +19,34 @@
                 <form action="/cart" method="post" class="northstar-form">
                     {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
                     <input type="hidden" name="_action" value="add">
-                    <label class="option-label" for="variant">Choose an option</label>
-                    <select id="variant" name="variant_id" required>
+                    <fieldset class="northstar-variant-options">
+                        <legend class="option-label">Choose an option</legend>
+                        <div class="northstar-variant-cards">
                         {% for variant in product.variants %}
-                            <option value="{{ variant.id }}" {% if variant.available_quantity < 1 %}disabled{% endif %}>
-                                {{ variant.option_label|default('Standard') }} · {{ variant.display_price }}
-                                {% if variant.available_quantity < 1 %}· Sold out{% endif %}
-                            </option>
+                            <label class="northstar-variant-card {{ variant.available_quantity < 1 ? 'unavailable' : '' }}">
+                                <input
+                                    type="radio"
+                                    name="variant_id"
+                                    value="{{ variant.id }}"
+                                    {% if variant.id == selected_variant_id %}checked{% endif %}
+                                    {% if variant.available_quantity < 1 %}disabled{% else %}required{% endif %}
+                                >
+                                <span class="northstar-variant-card-copy">
+                                    <strong>{{ variant.option_label|default('Standard') }}</strong>
+                                    <span>{{ variant.display_price }}</span>
+                                    {% if variant.available_quantity < 1 %}<small>Sold out</small>{% endif %}
+                                </span>
+                            </label>
                         {% endfor %}
-                    </select>
-                    <label class="option-label" for="quantity">Quantity</label>
-                    <input id="quantity" type="number" name="quantity" value="1" min="1" max="99" required>
+                        </div>
+                    </fieldset>
+                    <span class="option-label">Quantity</span>
+                    <div class="northstar-product-quantity" data-quantity-stepper>
+                        <button class="quantity-step" type="button" data-quantity-decrement aria-label="Decrease quantity">−</button>
+                        <label class="visually-hidden" for="quantity">Quantity</label>
+                        <input id="quantity" type="number" name="quantity" value="1" min="1" max="99" required>
+                        <button class="quantity-step" type="button" data-quantity-increment aria-label="Increase quantity">+</button>
+                    </div>
                     <button class="button clay add-button" type="submit">Add to cart</button>
                 </form>
             {% else %}
@@ -38,4 +55,33 @@
             <div class="detail-note">Free shipping over $75 · 30-day easy returns · Ships in 1–2 business days</div>
         </div>
     </section>
+    <script>
+    (() => {
+        document.querySelectorAll('[data-quantity-stepper]').forEach(stepper => {
+            const input = stepper.querySelector('input[type="number"]');
+            const decrement = stepper.querySelector('[data-quantity-decrement]');
+            const increment = stepper.querySelector('[data-quantity-increment]');
+            if (!input || !decrement || !increment) return;
+
+            const updateButtons = () => {
+                const quantity = Number(input.value);
+                decrement.disabled = quantity <= Number(input.min);
+                increment.disabled = quantity >= Number(input.max);
+            };
+            const changeQuantity = amount => {
+                const min = Number(input.min);
+                const max = Number(input.max);
+                const quantity = Number(input.value) || min;
+                input.value = String(Math.min(max, Math.max(min, quantity + amount)));
+                input.dispatchEvent(new Event('input', {bubbles: true}));
+                updateButtons();
+            };
+
+            decrement.addEventListener('click', () => changeQuantity(-1));
+            increment.addEventListener('click', () => changeQuantity(1));
+            input.addEventListener('input', updateButtons);
+            updateButtons();
+        });
+    })();
+    </script>
 {% endblock %}

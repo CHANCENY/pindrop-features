@@ -1,0 +1,25 @@
+{% extends '@northstar/layout.twig' %}
+{% set page_title = 'Create account' %}
+{% block content %}
+    <section class="container page-title">
+        <div class="eyebrow">Make it yours</div>
+        <h1>Create your account</h1>
+        <p>Keep your orders together and make checkout simple.</p>
+    </section>
+    <section class="container northstar-auth">
+        <form class="form-card northstar-auth-form" action="/account/register?destination={{ destination|url_encode }}" method="post">
+            {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
+            {% if error %}<p class="northstar-message error" role="alert">{{ error }}</p>{% endif %}
+            <div class="northstar-auth-fields">
+                <label>First name<input name="first_name" value="{{ values.first_name|default('') }}" autocomplete="given-name" required></label>
+                <label>Last name<input name="last_name" value="{{ values.last_name|default('') }}" autocomplete="family-name" required></label>
+                <label class="full">Username<input name="username" value="{{ values.username|default('') }}" autocomplete="username" minlength="3" maxlength="50" pattern="[A-Za-z0-9_]{3,50}" required><small>3–50 letters, numbers, or underscores.</small></label>
+                <label class="full">Email address<input type="email" name="email" value="{{ values.email|default('') }}" autocomplete="email" required><small>We’ll send a verification link to this address.</small></label>
+                <label>Password<input type="password" name="password" autocomplete="new-password" minlength="8" required><small>At least 8 characters.</small></label>
+                <label>Confirm password<input type="password" name="password_confirm" autocomplete="new-password" minlength="8" required></label>
+            </div>
+            <button class="button clay" type="submit">Create account</button>
+            <p class="northstar-auth-switch">Already have an account? <a href="/account/login?destination={{ destination|url_encode }}">Sign in</a></p>
+        </form>
+    </section>
+{% endblock %}

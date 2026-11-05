@@ -26,12 +26,14 @@
                                 <span>{{ line.variant.display_price }} each</span>
                                 {% if not line.stock_ok %}<span class="stock-note">Only {{ line.variant.available_quantity }} available. Update quantity to continue.</span>{% endif %}
                             </div>
-                            <form action="/cart" method="post" class="quantity northstar-quantity">
+                            <form action="/cart" method="post" class="northstar-quantity" data-quantity-stepper>
                                 {% if csrf_token %}<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">{% endif %}
                                 <input type="hidden" name="_action" value="update">
                                 <input type="hidden" name="variant_id" value="{{ line.variant.id }}">
                                 <label class="visually-hidden" for="quantity-{{ line.variant.id }}">Quantity for {{ line.product.name }}</label>
+                                <button class="quantity-step" type="button" data-quantity-decrement aria-label="Decrease quantity">−</button>
                                 <input id="quantity-{{ line.variant.id }}" type="number" name="quantity" min="1" max="99" value="{{ line.quantity }}">
+                                <button class="quantity-step" type="button" data-quantity-increment aria-label="Increase quantity">+</button>
                                 <button class="button light small" type="submit">Update</button>
                             </form>
                             <form action="/cart" method="post">
@@ -66,4 +68,33 @@
             </aside>
         {% endif %}
     </section>
+    <script>
+    (() => {
+        document.querySelectorAll('[data-quantity-stepper]').forEach(stepper => {
+            const input = stepper.querySelector('input[type="number"]');
+            const decrement = stepper.querySelector('[data-quantity-decrement]');
+            const increment = stepper.querySelector('[data-quantity-increment]');
+            if (!input || !decrement || !increment) return;
+
+            const updateButtons = () => {
+                const quantity = Number(input.value);
+                decrement.disabled = quantity <= Number(input.min);
+                increment.disabled = quantity >= Number(input.max);
+            };
+            const changeQuantity = amount => {
+                const min = Number(input.min);
+                const max = Number(input.max);
+                const quantity = Number(input.value) || min;
+                input.value = String(Math.min(max, Math.max(min, quantity + amount)));
+                input.dispatchEvent(new Event('input', {bubbles: true}));
+                updateButtons();
+            };
+
+            decrement.addEventListener('click', () => changeQuantity(-1));
+            increment.addEventListener('click', () => changeQuantity(1));
+            input.addEventListener('input', updateButtons);
+            updateButtons();
+        });
+    })();
+    </script>
 {% endblock %}
