@@ -46,10 +46,26 @@
 .button.small{height:34px;padding:0 10px}
 .northstar-remove{border:0;background:transparent;cursor:pointer}
 .northstar-checkout-grid{align-items:start}
-.order-card{flex-wrap:wrap;align-items:center}
-.account-pay-button{flex:0 0 auto;align-self:center;white-space:nowrap}
-.account-order-button{flex:0 0 auto;align-self:center;white-space:nowrap}
-.account-payment-status{color:#8f5a20;font-size:10px;font-weight:700}
+.order-history-list{display:grid;gap:12px}
+.order-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 24px;padding:20px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 4px 16px rgba(42,35,27,.035);font-size:12px;transition:border-color .15s,box-shadow .15s}
+.order-card:hover{border-color:#d4ddd4;box-shadow:0 8px 24px rgba(42,35,27,.07)}
+.order-card-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.order-card-heading>div,.order-card-details>div{display:grid;gap:5px}
+.order-card-heading>div>b{font-size:14px;letter-spacing:.015em}
+.order-card-label{color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.order-card-details{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:14px 0;border-top:1px solid #efede8;border-bottom:1px solid #efede8}
+.order-card-details strong{font-size:11px}
+.order-card-details .order-card-total{font-size:14px}
+.order-status-pending{color:#8f5a20;background:#fbefd9}
+.order-status-confirmed,.order-status-processing,.order-status-shipped,.order-status-delivered{color:#287565;background:var(--sage)}
+.order-status-cancelled,.order-status-refunded{color:#8d4941;background:#f8e9e5}
+.order-payment-pending{display:inline-flex;align-items:center;gap:6px;color:#8f5a20}
+.order-payment-pending>span{width:7px;height:7px;border-radius:50%;background:#d59b54}
+.order-payment-complete{color:#287565}
+.order-payment-unknown{color:var(--muted)}
+.order-card-actions{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:9px}
+.order-card-actions .button{display:inline-flex;min-height:36px;align-items:center;justify-content:center;padding:0 13px;border-radius:5px;font-size:10px;font-weight:700}
+.account-pay-button,.account-order-button{white-space:nowrap}
 .account-payment-contact-note{color:var(--muted);font-size:10px;line-height:1.5}
 .account-order-page{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.8fr);align-items:start;gap:18px;padding-bottom:70px}
 .account-order-items,.account-order-info>.summary{min-width:0}
@@ -142,4 +158,4 @@
 .not-found{margin:50px auto 70px}
 .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .northstar-checkout-form input:focus,.northstar-checkout-form select:focus,.northstar-search input:focus,.northstar-form input:focus,.northstar-form select:focus{outline:2px solid var(--forest);outline-offset:2px}
-@media(max-width:760px){.northstar-checkout-grid,.checkout-review{grid-template-columns:1fr}.checkout-review .review-actions,.checkout-review .review-back{grid-column:auto}.northstar-checkout-form .form-grid{grid-template-columns:1fr}.northstar-checkout-form .form-grid .full{grid-column:auto}.northstar-auth-fields,.account-address-list{grid-template-columns:1fr}.northstar-auth-fields .full{grid-column:auto}.northstar-checkout-progress{gap:7px}.northstar-checkout-progress span{gap:5px;font-size:10px}.cart-row{grid-template-columns:64px minmax(0,1fr);gap:10px 12px;padding:16px}.cart-thumb{width:64px;height:64px}.cart-row>div:nth-child(2){min-width:0}.cart-row>div:nth-child(2) strong{overflow-wrap:anywhere}.cart-row .northstar-quantity{grid-column:2;grid-template-columns:32px 42px 32px auto;justify-self:start}.cart-row .northstar-quantity .button.small{margin-left:9px}.cart-row>form:last-child{grid-column:2;justify-self:start}.review-actions .button,.review-back .button{width:100%}}
+@media(max-width:760px){.northstar-checkout-grid,.checkout-review{grid-template-columns:1fr}.checkout-review .review-actions,.checkout-review .review-back{grid-column:auto}.account-layout{grid-template-columns:1fr;gap:18px}.account-menu{display:flex;gap:18px}.account-menu a{padding:8px 0}.order-card{grid-template-columns:minmax(0,1fr);gap:14px;padding:16px}.order-card-details,.order-card-actions{grid-column:auto}.order-card-details{gap:10px}.order-card-actions{justify-content:flex-start}.northstar-checkout-form .form-grid{grid-template-columns:1fr}.northstar-checkout-form .form-grid .full{grid-column:auto}.northstar-auth-fields,.account-address-list{grid-template-columns:1fr}.northstar-auth-fields .full{grid-column:auto}.northstar-checkout-progress{gap:7px}.northstar-checkout-progress span{gap:5px;font-size:10px}.cart-row{grid-template-columns:64px minmax(0,1fr);gap:10px 12px;padding:16px}.cart-thumb{width:64px;height:64px}.cart-row>div:nth-child(2){min-width:0}.cart-row>div:nth-child(2) strong{overflow-wrap:anywhere}.cart-row .northstar-quantity{grid-column:2;grid-template-columns:32px 42px 32px auto;justify-self:start}.cart-row .northstar-quantity .button.small{margin-left:9px}.cart-row>form:last-child{grid-column:2;justify-self:start}.review-actions .button,.review-back .button{width:100%}}

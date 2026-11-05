@@ -16,24 +16,45 @@
             <div class="section-label">Recent orders</div>
             <h2>Order history</h2>
             {% if orders %}
+                <div class="order-history-list">
                 {% for order in orders %}
                     <div class="order-card">
-                        <div><b>#{{ order.order_number }}</b><span>{{ order.placed_at|date('F j, Y') }}</span></div>
-                        <strong>{{ order.display_total }}</strong>
-                        <span class="status-pill healthy">{{ order.status|title }}</span>
-                        {% if order.payment_status == 'pending' %}<span class="account-payment-status">Payment pending</span>{% endif %}
-                        <a class="button light account-order-button" href="/account/orders/view?id={{ order.id }}">View order</a>
-                        {% if order.can_pay %}
-                            <a class="button clay account-pay-button" href="/account/orders/pay?id={{ order.id }}">Pay now with Authorize.Net</a>
-                        {% elseif order.payment_due %}
-                            {% if payment_contact_email %}
-                                <a class="button light account-pay-button" href="mailto:{{ payment_contact_email|e('html_attr') }}?subject={{ ('Payment assistance for order ' ~ order.order_number)|url_encode|e('html_attr') }}&amp;body={{ ('Hello,' ~ "\n\n" ~ 'I would like help completing payment for order ' ~ order.order_number ~ '.' ~ "\n\n" ~ 'Please let me know how to proceed.')|url_encode|e('html_attr') }}">Email us to complete payment</a>
-                            {% else %}
-                                <span class="account-payment-contact-note">Contact the store to complete payment.</span>
+                        <div class="order-card-heading">
+                            <div>
+                                <span class="order-card-label">Order</span>
+                                <b>#{{ order.order_number }}</b>
+                            </div>
+                            <span class="status-pill order-status-{{ order.status|lower|replace({' ':'-'}) }}">{{ order.status|title }}</span>
+                        </div>
+                        <div class="order-card-details">
+                            <div><span class="order-card-label">Placed</span><strong>{{ order.placed_at|date('F j, Y') }}</strong></div>
+                            <div><span class="order-card-label">Total</span><strong class="order-card-total">{{ order.display_total }}</strong></div>
+                            <div>
+                                <span class="order-card-label">Payment</span>
+                                {% if order.payment_status == 'pending' %}
+                                    <strong class="order-payment-pending"><span aria-hidden="true"></span>Payment pending</strong>
+                                {% elseif order.payment_status %}
+                                    <strong class="order-payment-complete">{{ order.payment_status|replace({'_':' '})|title }}</strong>
+                                {% else %}
+                                    <strong class="order-payment-unknown">Not available</strong>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="order-card-actions">
+                            <a class="button light account-order-button" href="/account/orders/view?id={{ order.id }}">View order</a>
+                            {% if order.can_pay %}
+                                <a class="button clay account-pay-button" href="/account/orders/pay?id={{ order.id }}">Pay now with Authorize.Net</a>
+                            {% elseif order.payment_due %}
+                                {% if payment_contact_email %}
+                                    <a class="button light account-pay-button" href="mailto:{{ payment_contact_email|e('html_attr') }}?subject={{ ('Payment assistance for order ' ~ order.order_number)|url_encode|e('html_attr') }}&amp;body={{ ('Hello,' ~ "\n\n" ~ 'I would like help completing payment for order ' ~ order.order_number ~ '.' ~ "\n\n" ~ 'Please let me know how to proceed.')|url_encode|e('html_attr') }}">Email us to complete payment</a>
+                                {% else %}
+                                    <span class="account-payment-contact-note">Contact the store to complete payment.</span>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
+                        </div>
                     </div>
                 {% endfor %}
+                </div>
             {% else %}
                 <p class="empty-state">No orders are linked to this account yet. Orders placed after you sign in will appear here.</p>
             {% endif %}
