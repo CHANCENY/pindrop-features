@@ -321,6 +321,8 @@ function downloadPlugin(CLIPrinter $printer, ...$values): void
             $command = "{$gitBinary} clone -b {$plugin_id} --single-branch https://github.com/CHANCENY/pindrop-features.git {$downloadDir}";
             $finished = exec($command, $output, $exitCode);
 
+            sleep(5);
+
             if ($exitCode === 0) {
                 $pluginsPath = $_ENV['PLUGIN_ROOT'];
                 if (!is_dir($pluginsPath)) {
@@ -474,11 +476,96 @@ function createPlugin(CLIPrinter $printer, ...$values): void
         $files[] = $pluginPath . DIRECTORY_SEPARATOR . "services.yml";
         $files[] = $pluginPath . DIRECTORY_SEPARATOR . "settings.config.yml";
         $files[] = $pluginPath . DIRECTORY_SEPARATOR . "pindro.commands.yml";
+        $files[] = $pluginPath . DIRECTORY_SEPARATOR . "composer.json";
 
         foreach ($files as $file) {
             touch($file);
         }
+
         $printer->printLine("Finished creating plugin.", GREEN);
+
+        $composer_json_content = [
+            "name" => "simp/".createPluginId($pluginName),
+            "description" => $description,
+            "type" => "library",
+            "license" => $license,
+            "require" => []
+        ];
+
+        $author_name = $printer->ask("Enter author name for composer.json", $author);
+        $author_email = $printer->ask("Enter author email for composer.json", "");
+        if (!empty($author_name) && !empty($author_email)) {
+            $composer_json_content['authors'] = [
+                [
+                    "name" => $author_name,
+                    "email" => $author_email
+                ]
+            ];
+        }
+
+        $required_packages = [];
+        $printer->printLine("To add package enter like this symfony/var-dumper: ^8.0", GREEN);
+        repeat:
+        $to_add_package = $printer->ask("Enter a package to require (or leave empty to finish)", "");
+        if (!empty($to_add_package)) {
+            $processed_package = explode(":", $to_add_package);
+            if (count($processed_package) !== 2) {
+                $printer->printLine("Invalid package format. Please use the format 'vendor/package:version'.", RED);
+                goto repeat;
+            }   
+            $required_packages[$processed_package[0]] = trim($processed_package[1]);
+            goto repeat;
+        }
+
+        if (!empty($required_packages)) {
+            $composer_json_content['require'] = $required_packages;
+        }
+
+        $dev_packages = [];
+        $printer->printLine('To add dev package enter like this symfony/var-dumper: ^8.0', GREEN);
+        repeat1:
+        $to_add_dev_package = $printer->ask("Enter a dev package to require (or leave empty to finish)", "");
+        if (!empty($to_add_dev_package)) {
+            $processed_package = explode(":", $to_add_dev_package);
+            if (count($processed_package) !== 2) {
+                $printer->printLine("Invalid package format. Please use the format 'vendor/package:version'.", RED);
+                goto repeat1;
+            }
+            $dev_packages[$processed_package[0]] = trim($processed_package[1]);
+            goto repeat1;
+        }
+
+        if (!empty($dev_packages)) {
+            $composer_json_content['require-dev'] = $dev_packages;
+        }
+
+        $composer_json_content = json_encode($composer_json_content, JSON_PRETTY_PRINT);
+        $composer_json_content = str_replace('\/','/', $composer_json_content);
+
+        file_put_contents($pluginPath . DIRECTORY_SEPARATOR . "composer.json", $composer_json_content);
+
+        // Run composer install on root of project to install dependencies
+        $printer->printLine("Running composer install...", GREEN);
+
+        $root = $_ENV["ROOT"];
+        if (!empty($required_packages) || !empty($dev_packages)) {
+            $command = "cd {$root} && composer install --ignore-platform-reqs";
+            // delete composer.lock file if it exists
+            $lockFile = $root . DIRECTORY_SEPARATOR . "composer.lock";
+            if (file_exists($lockFile)) {
+                unlink($lockFile);
+            }
+            
+            exec($command, $output, $exitCode);
+            if ($exitCode === 0) {
+                $printer->printLine("Composer install completed.", GREEN);
+            } else {
+                $printer->printLine("Composer install failed.", RED);
+            }
+        } else
+        {
+            $printer->printLine("No packages to install.", GREEN);
+        }
     }
 
 }
