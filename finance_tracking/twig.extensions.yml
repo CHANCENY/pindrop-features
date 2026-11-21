@@ -1,0 +1,2 @@
+finance_tracking.twig:
+  class: Simp\Pindrop\Modules\finance_tracking\src\Plugin\Twig\TwigExtension

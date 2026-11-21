@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ledgerly — Create account</title>
+    <link rel="stylesheet" href="/modules/finance_tracking/assets/styles.css">
+    <style>
+        .form-page{
+            max-width: none;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="form-page auth-page">
+        <div class="auth-shell"><a class="auth-brand" href="/finances"><span
+                    class="mark"><i></i><i></i><i></i></span><span>ledgerly</span></a>
+            <section class="auth-card">
+                <header class="auth-heading">
+                    <p class="eyebrow">A calmer money workspace</p>
+                    <h1>Create your account</h1>
+                    <p>Start with a secure home for all your finance accounts.</p>
+                </header>
+                <form class="auth-form" method="post">
+                    <div class="field"><label for="register-name">Full name</label><input id="register-name" name="name"
+                            type="text" autocomplete="name" placeholder="Jamie Morgan" required></div>
+                    <div class="field">
+                        <label for="register-email">Email address</label>
+                        <input id="register-email" name="email" type="email" autocomplete="email" 
+                        placeholder="you@example.com" required>
+                    </div>
+                    <fieldset>
+                <legend>Account type</legend>
+                <div class="choice-row">
+                    {% for index,role in roles %}
+                    <div><input id="{{index}}" name="role" type="radio" value="{{index}}" checked><label
+                            for="{{index}}"><strong>{{role.label}}</strong><small>{{role.description}}</small></label></div>
+                    {% endfor %}            
+                   
+                </div>
+            </fieldset>
+                    <div class="field"><label for="register-password">Create password</label>
+                        <div class="password-wrap"><input id="register-password" name="password" type="password"
+                                autocomplete="new-password" placeholder="At least 8 characters" minlength="8"
+                                required><button type="button">Show</button></div>
+                    </div><button class="button primary auth-submit" type="submit"><b>✓</b> Create
+                        account</button>
+                </form>
+                
+                <p class="auth-footer">Already have an account? <a href="/login">Log in</a></p>
+                <p class="auth-legal">Your account will start with a private workspace. You can create multiple finance
+                    accounts after registration.</p>
+            </section><a class="auth-back" href="/finances">← Back to Ledgerly preview</a>
+        </div>
+    </main>
+</body>
+
+</html>

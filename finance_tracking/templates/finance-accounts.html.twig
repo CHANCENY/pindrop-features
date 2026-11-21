@@ -1,0 +1,53 @@
+{% extends "@finance_tracking/partials/html.html.twig" %}
+
+
+{% block content %}
+
+ <div class="content">
+                <section class="page-title">
+                    <p class="eyebrow">Workspace</p>
+                    <h1>Select an account to manage</h1>
+                    <p>Choose a finance account to open its transactions, budgets, connected accounts, and insights.</p>
+                </section>
+                <section class="panel account-selector-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Your finance accounts</h2>
+                            <p>Click any card to make that account your active workspace1.</p>
+                        </div><a class="button primary" href="/finances/create-finance-account"><b>＋</b> Create account</a>
+                    </div>
+                    <div class="account-list">
+                        {% for account in accounts %}
+                        <a class="finance-account-card account-card-detailed {% if account.isAccountActiveSelectedSession() %} active {% endif %}"
+                            href="{{ url('FinanceController._financeAccountSelection', {id: account.id() })}}">
+                            <div class="account-card-top"><span class="account-symbol">P</span>
+                                <div>
+                                    <h3>{{ account.getDisplayName }}</h3>
+                                    <p>{{ account.getAccountType }} · Last opened today</p>
+                                </div>
+                                {% if account.isAccountActiveSelectedSession() %}
+                                <span class="selected-badge">Selected</span>
+                                {% else %}
+                                 <span class="open-badge">Open</span>
+                                {% endif %}
+                            </div>
+                            <div class="account-card-details">
+                                <div><span>Current balance</span><strong>{{ account.getAccountBalance().format() }}</strong></div>
+                                <div><span>Currency</span><strong>{{ account.getAccountCurrency() }}</strong></div>
+                                <div><span>Connected budgets</span><strong>{{ account.countBudgets() }} budgets</strong></div>
+                                <div><span>Budget status</span><strong class="good">On track</strong></div>
+                            </div>
+                            <div class="account-card-footer"><span>Updated today · 8 transactions</span><b>Manage
+                                    account ↗</b></div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <div class="scope-note"><b>Account scope</b><span>When you select an account, all pages use that
+                            workspace context. Transactions, budgets, connected bank accounts, bills, and insights stay
+                            separated between finance accounts.</span></div>
+                </section>
+                <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+                        2024</span></footer>
+            </div>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends '@finance_tracking/partials/html.html.twig' %}
+
+
+{% block content %}
+
+<div class="content">
+                <section class="intro">
+                    <div>
+                        <p class="eyebrow">Your financial picture</p>
+                        <h1>Accounts</h1>
+                        <p>All your balances, neatly in one place.</p>
+                    </div><a class="button primary" href="/finances/create-finance-account"><b>＋</b> Connect account</a>
+                </section>
+                {# <section class="grid summary">
+                    <article class="card balance">
+                        <div class="card-head"><span>Net worth</span><span class="dots">•••</span></div>
+                        <div class="amount">$24,680<small>.42</small></div>
+                        <div class="meta"><span class="trend">↗ 4.8%</span>vs. last month</div>
+                        <div class="spark"><svg viewBox="0 0 340 56" preserveAspectRatio="none">
+                                <path
+                                    d="M2 48C24 51 35 36 57 39S90 33 111 35S143 18 164 28S192 10 214 19S250 13 268 17S300 5 338 8"
+                                    fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="338" cy="8" r="4" fill="currentColor" />
+                            </svg></div>
+                    </article>
+                    <article class="card">
+                        <div class="card-head"><span>Cash accounts</span><span class="metric-icon green">$</span></div>
+                        <div class="metric">$19,380<small>.42</small></div>
+                        <div class="meta">2 connected accounts</div>
+                    </article>
+                    <article class="card">
+                        <div class="card-head"><span>Credit available</span><span class="metric-icon"
+                                style="background:#eef1eb;color:#6d7971">▣</span></div>
+                        <div class="metric">$5,300<small>.00</small></div>
+                        <div class="meta">76% of total limit</div>
+                    </article>
+                </section> #}
+                <section class="grid one-col">
+                    <article class="panel">
+                        <div class="panel-head">
+                            <div>
+                                <h2>Connected accounts</h2>
+                                <p>Last synced a few seconds ago</p>
+                            </div><a class="text-link" href="/finances/select-account">Manage ↗</a>
+                        </div>
+                        {% for account in accounts %}
+                        <a href="{{ url('FinanceController._financeAccountSelection', {id: account.id() })}}" class="budget-row">
+                            <span class="mini-icon"
+                                style="background:#e5f2e8;color:#5a9d73">▰</span>
+                            <div class="row-info">
+                                <div class="row-top">
+
+                                    <strong>{{ account.getDisplayName() }} {{ account.getAccountType() }}</strong>
+                                    <span>{{ account.getAccountBalance().format()}}</span></div>
+                                <small>{{ account.getAccountType() }} · •• {{ account.id() }}</small>
+                                
+                            </div><span class="status">Synced</span>
+                        </a>
+                        {% endfor %}
+                    
+                    </article>
+                </section>
+                <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+                        2024</span></footer>
+            </div>
+
+{% endblock %}

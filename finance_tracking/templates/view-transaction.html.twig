@@ -1,0 +1,60 @@
+{% extends '@finance_tracking/partials/html.html.twig' %}
+
+
+{% block content %}
+
+<div class="content form-page">
+    <section class="page-title">
+        <p class="eyebrow">Personal finances · Transactions</p>
+        <h1>Transaction details</h1>
+        <p>Review this record before making changes.</p>
+    </section>
+    <section class="detail-grid">
+        <article class="panel">
+            <div class="detail-header"><span class="detail-icon">↗</span>
+                <div>
+                    <h2>{{ transaction.merchant }}</h2>
+                    <p>{{transaction.transaction_type }} · {{ account.getAccountType }}</p>
+                </div>
+            </div>
+            <div class="detail-amount">{{ transaction.transaction_type == 'income' ? '+' :
+                '-'}}{{transaction.amount.format }}</div>
+            <div class="detail-list">
+                <div class="detail-item"><span>Date</span><strong>{{ transaction.transaction_date|date('F d, Y')
+                        }}</strong></div>
+                <div class="detail-item"><span>Category</span><strong>{{ transaction.transaction_type }}</strong></div>
+                <div class="detail-item"><span>Account</span><strong>{{ account.getAccountType }} account</strong></div>
+                <div class="detail-item"><span>Created</span><strong>October 15, 2024 at 9:42 AM</strong>
+                </div>
+            </div>
+            <div class="detail-note"><strong>Notes</strong>No note has been added to this transaction.</div>
+            <div class="action-row">
+                <a class="danger-link"
+                    href="{{ url('FinanceController._transactionDelete', {id: transaction.id }) }}">Delete
+                    transaction</a>
+            </div>
+        </article>
+        <aside class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Related activity</h2>
+                    <p>Other recent {{ transaction.transaction_type }} activity</p>
+                </div><a class="text-link" href="/finances/transactions">View all ↗</a>
+            </div>
+            <div class="related-list">
+                {% for tran in transactions %}
+                <div class="related-row"><span class="mini-icon food">✿</span>
+                    <div><strong>{{ tran.merchant }}</strong><small>{{ tran.transaction_date|date('M d')}}</small></div>
+                    <em class="out">{{ tran.transaction_type == 'income' ? '+' : '-'}}{{tran.amount.format }}</em>
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="scope-note"><b>Scoped to</b><span>Personal finances. Switching finance accounts
+                    changes which transaction history you see.</span></div>
+        </aside>
+    </section>
+    <footer class="footer"><a class="back-link" href="/finances/transactions">← Back to
+            transactions</a><span>Sample data · 2024</span></footer>
+</div>
+{% endblock %}

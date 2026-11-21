@@ -1,0 +1,54 @@
+{% extends '@finance_tracking/partials/html.html.twig' %}
+
+
+{% block content %}
+
+ <div class="content">
+                <section class="intro">
+                    <div>
+                        <p class="eyebrow">October 2024</p>
+                        <h1>Budget progress</h1>
+                        <p>Small guardrails for bigger plans.</p>
+                    </div><a class="button primary" href="/finances/new-budget"><b>＋</b> New budget</a>
+                </section>
+                <section class="grid one-col">
+                    <article class="panel">
+                        <div class="panel-head">
+                            <div>
+                                <h2>Monthly budgets</h2>
+                                <p>Your guardrails by category</p>
+                            </div><a class="text-link" href="#edit">Edit limits ↗</a>
+                        </div>
+                        {% for budget in budgets %}
+                        <div class="budget-row"><span class="mini-icon home">⌂</span>
+                            <div class="row-info">
+                                <div class="row-top"><strong>{{ budget.getName() }}</strong>
+                                    <span>{{ budget.getUsedAmount.format() }} / {{ budget.getBudgetAmount.format() }}</span></div>
+                                
+                                {% if budget.getUsedAmount.isLessThan(budget.getBudgetAmount) %}    
+                                <div class="track">
+                                    <i style="width:{{ budget.getUsedPercentage() }}%;background:#77ad83"></i>
+                                </div>
+                                <small>{{ budget.getBudgetAmount.subtract(budget.getUsedAmount).format }} remaining · {{ budget.getUsedPercentage() }}% used</small>
+                                {% else %}
+                                   <div class="track">
+                                    <i style="width:{{ budget.getUsedPercentage() }}%;background:#e99079"></i>
+                                </div>
+                                <small style="color:#d17b67">
+                                    {{ budget.getBudgetAmount.subtract(budget.getUsedAmount).format }} over budget</small>
+                                {% endif %}
+                            </div>
+                            {% if budget.getUsedAmount.isLessThan(budget.getBudgetAmount) %}  
+                            <span class="status">On track</span>
+                            {% else %}
+                               <span class="status over">Over budget</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </article>
+                </section>
+                <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+                        2024</span></footer>
+            </div>
+
+{% endblock %}

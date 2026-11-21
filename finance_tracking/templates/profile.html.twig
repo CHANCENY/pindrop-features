@@ -1,0 +1,47 @@
+{% extends "@finance_tracking/partials/html.html.twig" %}
+
+
+{% block content %}
+
+<div class="content">
+    <section class="page-title">
+        <p class="eyebrow">Your workspace</p>
+        <h1>Profile</h1>
+        <p>Keep Ledgerly feeling like yours.</p>
+    </section>
+    <form method="post" class="grid one-col" enctype="multipart/form-data">
+        <article class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Profile details</h2>
+                    <p>How you appear across Ledgerly</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="field"><label>First name</label><input name="first_name"
+                        value="{{ profile.getFirstName() }}"></div>
+                <div class="field"><label>Last name</label><input name="last_name" value="{{ profile.getLastName() }}">
+                </div>
+                <div class="field full"><label>Email address</label><input name="email"
+                        value="{{ profile.getEmail() }}">
+                </div>
+                <div class="field">
+                    <label>Profile</label>
+                    <input name="profile" type="file">
+                </div>
+            </div>
+
+            <details class="m" style="margin-top: 20px;" open>
+                <summary>Visibility Settings</summary>
+                <div class="form-grid">
+                    <label for="visibility">Allow accounts owners to see your profile.</label>
+                    <input type="checkbox" name="visibility" class="c" {% if profile.getProfileVisibility() == 'public' %}checked {% endif %}>
+                </div>
+            </details>
+
+            <button class="button primary" type="submit" style="margin-top:22px">Save changes</button>
+        </article>
+        </section>
+
+</div>
+{% endblock %}

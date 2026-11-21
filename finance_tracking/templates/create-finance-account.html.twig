@@ -1,0 +1,76 @@
+{% extends '@finance_tracking/partials/html.html.twig' %}
+
+
+{% block content %}
+
+<div class="content form-page">
+    <section class="page-title">
+        <p class="eyebrow">New workspace</p>
+        <h1>Create a finance account</h1>
+        <p>Start a focused space for one financial picture. You can connect accounts and add budgets next.
+        </p>
+    </section>
+    <section class="panel form-card">
+        <form method="POST">
+            <fieldset>
+                <legend>Finance account identity</legend>
+                <div class="form-grid">
+                    <div class="field full"><label for="finance-name">Name</label><input id="finance-name" name="name"
+                            placeholder="e.g. Personal finances, Family household, Brightside Studio" required></div>
+                    <div class="field"><label for="currency">Base currency</label><select id="currency" name="currency">
+                            {% for index, currency in currencies %}
+
+                            <optgroup label="{{index}}">
+
+                                {% for curr in currency %}
+                                <option value="{{curr.code }}">{{ curr.currency }} - {{ curr.country }}</option>
+                                {% endfor %}
+
+                            </optgroup>
+
+                            {% endfor %}
+                        </select></div>
+                    <div class="field"><label for="purpose">Purpose</label><select id="purpose" name="purpose">
+                            {% for account_type in account_types %}
+                            <option>{{ account_type }}</option>
+                            {% endfor %}
+                        </select></div>
+                </div>
+            </fieldset>
+            <details open>
+                <summary>Optional workspace details</summary>
+                <div class="form-grid">
+                    <div class="field"><label>Institutional Name</label>
+                        <input type="text" value="NBS Bank" name="inst_name"></div>
+
+                </div>
+            </details>
+            <details open>
+                <summary>Profile details</summary>
+                <div class="form-grid">
+                    <div class="field"><label>First name</label><input type="text" value="Jamie" name="first_name">
+                    </div>
+                    <div class="field"><label>Last name</label><input type="text" value="Miller" name="last_name"></div>
+                    <div class="field"><label>Phone</label><input type="tel" value="" name="phone"></div>
+                    <div class="field"><label for="timezone">Timezone</label><select id="timezone" name="timezone">
+                            {% for timezone in timezones %}
+                            <option>{{ timezone }}</option>
+                            {% endfor %}
+                        </select></div>
+                    <div class="field full"><label>Email address</label><input value="jamie.miller@example.com"
+                            name="email">
+                    </div>
+
+            </details>
+            <div class="scope-note"><b>What happens next</b><span>This finance account becomes the active
+                    workspace. Transactions, budgets, connected accounts, bills, and insights created
+                    afterward will belong to it.</span></div>
+            <div class="form-actions"><button class="button primary" type="submit"><b>✓</b> Create finance
+                    account</button><a class="cancel-link" href="/finances/select-account">Cancel and
+                    return</a></div>
+        </form>
+    </section>
+    <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+            2024</span></footer>
+</div>
+{% endblock %}

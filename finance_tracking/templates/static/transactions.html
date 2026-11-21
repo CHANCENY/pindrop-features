@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ledgerly — Transactions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="shell">
+        <aside class="sidebar"><a class="brand" href="index.html"><span
+                    class="mark"><i></i><i></i><i></i></span><span>ledgerly</span></a>
+            <div class="finance-context"><span class="finance-context-label">Active finance account</span><a
+                    href="finance-accounts.html">Personal finances</a><small>USD · 3 connected sources</small></div>
+            <p class="nav-label">Workspace</p>
+            <nav class="nav"><a href="index.html"><span class="nav-icon">◈</span>Overview</a><a class="active"
+                    href="transactions.html"><span class="nav-icon">↔</span>Transactions <span
+                        class="count">12</span></a><a href="budgets.html"><span class="nav-icon">◫</span>Budgets</a><a
+                    href="accounts.html"><span class="nav-icon">◎</span>Connected accounts</a></nav>
+            <p class="nav-label manage">Manage</p>
+            <nav class="nav"><a href="index.html#insights"><span class="nav-icon">✦</span>Insights <span
+                        class="pill">New</span></a><a href="settings.html"><span class="nav-icon">⚙</span>Settings</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="promo"><b>✦</b><strong>Make your money<br>work harder.</strong><small>Get smart insights
+                        with Ledgerly Plus.</small><a href="settings.html">Explore Plus ↗</a></div>
+                <div class="help"><span>?</span>Help center</div>
+                <div class="user"><span class="avatar">JM</span>
+                    <div><strong>Jamie Miller</strong><small>Personal account</small></div><em>•••</em>
+                </div>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="crumb"><span>Workspace</span><span>/</span><strong>Transactions</strong></div>
+                <div class="mobile-brand"><span class="mark"><i></i><i></i><i></i></span>ledgerly</div>
+                <div class="top-actions"><a class="workspace-switcher" href="finance-accounts.html"><i
+                            class="switcher-dot"></i>
+                        <div><strong>Personal finances</strong><small>Active workspace</small></div>
+                    </a><label class="search"><span>⌕</span><input placeholder="Search transactions"><kbd>⌘
+                            K</kbd></label><a class="bell" href="#notifications">♢</a><a class="avatar top-avatar"
+                        href="settings.html">JM</a></div>
+            </header>
+            <div class="content">
+                <section class="page-title">
+                    <p class="eyebrow">Money movements</p>
+                    <h1>Transactions</h1>
+                    <p>Everything in one clear, searchable ledger.</p>
+                </section>
+                <section class="grid summary">
+                    <article class="card">
+                        <div class="card-head"><span>This month</span><span class="metric-icon green">↗</span></div>
+                        <div class="metric">$3,184<small>.27</small></div>
+                        <div class="meta"><span class="trend">↘ 2.1%</span>spending vs. last month</div>
+                    </article>
+                    <article class="card">
+                        <div class="card-head"><span>Income received</span><span class="metric-icon green">↗</span>
+                        </div>
+                        <div class="metric">$8,420<small>.00</small></div>
+                        <div class="meta"><span class="trend">↗ 12.4%</span>vs. last month</div>
+                    </article>
+                    <article class="card">
+                        <div class="card-head"><span>Transactions</span><span class="metric-icon"
+                                style="background:#eef1eb;color:#6d7971">↔</span></div>
+                        <div class="metric">48</div>
+                        <div class="meta">12 pending categorization</div>
+                    </article>
+                </section>
+                <section class="panel transactions" style="margin-top:15px">
+                    <div class="panel-head">
+                        <div>
+                            <h2>All transactions</h2>
+                            <p>October 2024 · 48 total</p>
+                        </div>
+                        <div class="actions"><a class="filter" href="#filter">Filter⌄</a><a class="button primary"
+                                href="add-transaction.html"><b>＋</b>Add transaction</a></div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Account</th>
+                                    <th class="right">Amount</th>
+                                    <th class="right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="merchant"><span class="merchant-logo whole">W</span>
+                                            <div><strong>Whole Foods Market</strong><small>Groceries</small></div>
+                                        </div>
+                                    </td>
+                                    <td><span class="tag green-tag">Groceries</span></td>
+                                    <td>Oct 16, 2024</td>
+                                    <td>•• 4821</td>
+                                    <td class="right amount-out">−$86.42</td>
+                                    <td class="transaction-actions-cell"><a class="row-action"
+                                            href="view-transaction-whole-foods.html">View</a><a
+                                            class="row-action delete" href="delete-transaction.html">Delete</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="merchant"><span class="merchant-logo payroll">↗</span>
+                                            <div><strong>Acme Corporation</strong><small>Salary</small></div>
+                                        </div>
+                                    </td>
+                                    <td><span class="tag green-tag">Income</span></td>
+                                    <td>Oct 15, 2024</td>
+                                    <td>Checking</td>
+                                    <td class="right amount-in">+$4,200.00</td>
+                                    <td class="transaction-actions-cell"><a class="row-action"
+                                            href="view-transaction-acme-corporation.html">View</a><a
+                                            class="row-action delete" href="delete-transaction.html">Delete</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="merchant"><span class="merchant-logo coffee">☕</span>
+                                            <div><strong>Little Wolf Coffee</strong><small>Dining</small></div>
+                                        </div>
+                                    </td>
+                                    <td><span class="tag orange-tag">Dining</span></td>
+                                    <td>Oct 15, 2024</td>
+                                    <td>•• 4821</td>
+                                    <td class="right amount-out">−$6.80</td>
+                                    <td class="transaction-actions-cell"><a class="row-action"
+                                            href="view-transaction-little-wolf-coffee.html">View</a><a
+                                            class="row-action delete" href="delete-transaction.html">Delete</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="merchant"><span class="merchant-logo uber">◆</span>
+                                            <div><strong>Uber</strong><small>Transport</small></div>
+                                        </div>
+                                    </td>
+                                    <td><span class="tag blue-tag">Transport</span></td>
+                                    <td>Oct 14, 2024</td>
+                                    <td>•• 4821</td>
+                                    <td class="right amount-out">−$18.50</td>
+                                    <td class="transaction-actions-cell"><a class="row-action"
+                                            href="view-transaction-uber.html">View</a><a class="row-action delete"
+                                            href="delete-transaction.html">Delete</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="merchant"><span class="merchant-logo gym">+</span>
+                                            <div><strong>Forme Fitness</strong><small>Health</small></div>
+                                        </div>
+                                    </td>
+                                    <td><span class="tag orange-tag">Health</span></td>
+                                    <td>Oct 13, 2024</td>
+                                    <td>•• 4821</td>
+                                    <td class="right amount-out">−$45.00</td>
+                                    <td class="transaction-actions-cell"><a class="row-action"
+                                            href="view-transaction-forme-fitness.html">View</a><a
+                                            class="row-action delete" href="delete-transaction.html">Delete</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="merchant"><span class="merchant-logo internet">⌁</span>
+                                            <div><strong>Northstar Internet</strong><small>Utilities</small></div>
+                                        </div>
+                                    </td>
+                                    <td><span class="tag blue-tag">Utilities</span></td>
+                                    <td>Oct 12, 2024</td>
+                                    <td>Checking</td>
+                                    <td class="right amount-out">−$64.00</td>
+                                    <td class="transaction-actions-cell"><a class="row-action"
+                                            href="view-transaction-northstar-internet.html">View</a><a
+                                            class="row-action delete" href="delete-transaction.html">Delete</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+                        2024</span></footer>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

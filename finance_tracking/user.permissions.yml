@@ -1,0 +1,61 @@
+finance_accounts_owner:
+  db_access_finance_tracking:
+    title: 'Access Finance tracking'
+    description: 'Full access to db tables of finance tracking.'
+  can_manage_own_finance_accounts:
+    title: 'Manage own finance account'
+    description: 'Create, update, and manage finance accounts.'
+  can_manage_own_budgets:
+    title: 'Manage own finance budget'
+    description: 'Create, update, and manage finance budgets.'
+  can_manage_own_transactions:
+    title: 'Manage finance transactions'
+    description: 'Create, update, and manage finance transaction records.'
+  can_access_overview:
+    title: 'Access to overview'
+    description: 'Give the access to overview dashboard'
+  can_manage_preferences:
+    title: 'Manage own preferences'
+    description: 'Full access to own preference settings'
+  can_manage_own_association:
+    title: 'Manage association connected to own account'
+    description: 'Full access to own associations'
+  can_manage_own_profile:
+    title: 'Manage the user profile'
+    description: 'Manage own user profile'
+  can_create_signal_connections:
+    title: 'Can create finance tracking signals'
+    description: 'Full able to create signals of finance tracking'
+  db_finance_system_read:
+    title: 'Access core assets data'
+    description: 'Full access to core important table "theme_library_assets"'
+
+finance_manager:
+  can_manage_other_budgets:
+    title: 'Manage other finance budget'
+    description: 'Create, update, and manage finance budgets.'
+  can_manage_other_transactions:
+    title: 'Manage finance transactions'
+    description: 'Create, update, and manage finance transaction records.'
+  db_access_designated_data:
+    title: 'Access budgets related data'
+    description: 'Read, create,update finance budgets and its related data'
+  can_manage_other_finance_accounts:
+    title: 'Manage others finance account'
+    description: 'Read, and manage finance accounts.'
+  can_access_overview:
+    title: 'Access to overview'
+    description: 'Give the access to overview dashboard'
+  can_manage_budgets_by_association:
+    title: 'Manage budgets by association connected'
+    description: 'Full access to budgets associations'
+  can_manage_own_profile:
+    title: 'Manage the user profile'
+    description: 'Manage own user profile'
+  can_create_signal_connections:
+    title: 'Can create finance tracking signals'
+    description: 'Full able to create signals of finance tracking'
+  db_finance_system_read:
+    title: 'Access core assets data'
+    description: 'Full access to core important table "theme_library_assets"'
+    

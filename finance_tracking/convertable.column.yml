@@ -1,0 +1,16 @@
+# This the file to add table columns that constain amounts that need to be cconverted on currency change.
+
+finance__account:
+  primary: id
+  columns:
+    - account_balance
+finance__budget:
+  primary: id
+  columns:
+    - budget_amount
+    - used_amount
+    - monthly_limit
+finance__transaction:
+  primary: id
+  columns:
+    - amount

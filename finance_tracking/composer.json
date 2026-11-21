@@ -1,0 +1,17 @@
+{
+    "name": "simp/finance_tracking",
+    "description": "Plugin to track personal finances",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "simp/price": "^1.0",
+        "simp/translate": "^1.0",
+        "simp/php-toolkit": "^1.0"
+    },
+    "authors": [
+        {
+            "name": "CHANCENY",
+            "email": "nyasuluchance6@gmail.com"
+        }
+    ]
+}

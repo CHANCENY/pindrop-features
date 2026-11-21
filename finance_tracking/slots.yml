@@ -1,0 +1,43 @@
+# =============================================================================
+# FINAANCE TRACKING SLOTS
+# =============================================================================
+# Every class listed here implements SlotInterface and is ready to be
+# connected to any signal via the Signals & Slots admin UI.
+#
+# Payload requirements are noted per slot — slots are defensive and
+# will do nothing (or log a warning) when required keys are missing.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Logging
+# -----------------------------------------------------------------------------
+
+finance_tracking.slot.currency_conversion:
+  name: "Conversion of currencies"
+  description: "Will carry out the changing of figures from their original currency to new currency"
+  class: Simp\Pindrop\Modules\finance_tracking\src\Slot\CurrencyConversion
+  plugin: finance_tracking
+  payload_required:
+    - base_currency
+    - new_currency
+finance_tracking.slot.transaction_occured:
+  name: "Process transaction"
+  description: "Will process transaction for either to add income to account or add used amount to budget etc"
+  class: Simp\Pindrop\Modules\finance_tracking\src\Slot\TransactionOccured
+  plugin: finance_tracking
+  payload_required:
+    - transaction_id
+finance_tracking.slot.budget_created:
+  name: "Budget funds allocation"
+  class: Simp\Pindrop\Modules\finance_tracking\src\Slot\BudgetCreation
+  description: "This slot for determining the availability of funds. delete budget if funds not enough"
+  plugin: finance_tracking
+  payload_required:
+    - budget_id
+finance_tracking.slot.transaction_deleted:
+  name: "Transaction deleted funds process"
+  class: Simp\Pindrop\Modules\finance_tracking\src\Slot\TransactionDeleted
+  description: "This slot for determining what to do with funds transaction presented"
+  plugin: finance_tracking
+  payload_required:
+    - transaction

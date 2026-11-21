@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ledgerly — Select account to manage</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="shell">
+        <aside class="sidebar"><a class="brand" href="index.html"><span
+                    class="mark"><i></i><i></i><i></i></span><span>ledgerly</span></a>
+            <div class="finance-context"><span class="finance-context-label">Account selector</span><a
+                    href="finance-accounts.html">Choose account</a><small>Select a workspace to manage</small></div>
+            <p class="nav-label">Workspace</p>
+            <nav class="nav"><a href="index.html"><span class="nav-icon">◈</span>Overview</a><a
+                    href="transactions.html"><span class="nav-icon">↔</span>Transactions</a><a href="budgets.html"><span
+                        class="nav-icon">◫</span>Budgets</a><a href="accounts.html"><span
+                        class="nav-icon">◎</span>Connected accounts</a></nav>
+            <p class="nav-label manage">Manage</p>
+            <nav class="nav"><a class="active" href="finance-accounts.html"><span class="nav-icon">▦</span>Finance
+                    accounts</a><a href="settings.html"><span class="nav-icon">⚙</span>Settings</a></nav>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="crumb"><span>Workspace</span><span>/</span><strong>Select account</strong></div>
+                <div class="mobile-brand"><span class="mark"><i></i><i></i><i></i></span>ledgerly</div>
+                <div class="top-actions"><a class="bell" href="#notifications">♢</a><a class="avatar top-avatar"
+                        href="settings.html">JM</a></div>
+            </header>
+            <div class="content">
+                <section class="page-title">
+                    <p class="eyebrow">Workspace</p>
+                    <h1>Select an account to manage</h1>
+                    <p>Choose a finance account to open its transactions, budgets, connected accounts, and insights.</p>
+                </section>
+                <section class="panel account-selector-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Your finance accounts</h2>
+                            <p>Click any card to make that account your active workspace.</p>
+                        </div><a class="button primary" href="create-finance-account.html"><b>＋</b> Create account</a>
+                    </div>
+                    <div class="account-list"><a class="finance-account-card account-card-detailed active"
+                            href="index.html">
+                            <div class="account-card-top"><span class="account-symbol">P</span>
+                                <div>
+                                    <h3>Personal finances</h3>
+                                    <p>Personal · Last opened today</p>
+                                </div><span class="selected-badge">Selected</span>
+                            </div>
+                            <div class="account-card-details">
+                                <div><span>Current balance</span><strong>$24,680.42</strong></div>
+                                <div><span>Currency</span><strong>USD</strong></div>
+                                <div><span>Connected sources</span><strong>3 accounts</strong></div>
+                                <div><span>Budget status</span><strong class="good">On track</strong></div>
+                            </div>
+                            <div class="account-card-footer"><span>Updated today · 8 transactions</span><b>Manage
+                                    account ↗</b></div>
+                        </a><a class="finance-account-card account-card-detailed" href="index.html">
+                            <div class="account-card-top"><span class="account-symbol"
+                                    style="background:#8eb8d1;color:#173340">F</span>
+                                <div>
+                                    <h3>Family household</h3>
+                                    <p>Family / household · Last opened Oct 12</p>
+                                </div><span class="open-badge">Open</span>
+                            </div>
+                            <div class="account-card-details">
+                                <div><span>Current balance</span><strong>$8,420.00</strong></div>
+                                <div><span>Currency</span><strong>USD</strong></div>
+                                <div><span>Connected sources</span><strong>5 accounts</strong></div>
+                                <div><span>Budget status</span><strong class="good">On track</strong></div>
+                            </div>
+                            <div class="account-card-footer"><span>Updated Oct 12 · 21 transactions</span><b>Manage
+                                    account ↗</b></div>
+                        </a><a class="finance-account-card account-card-detailed" href="index.html">
+                            <div class="account-card-top"><span class="account-symbol"
+                                    style="background:#a8a3ce;color:#292542">B</span>
+                                <div>
+                                    <h3>Brightside Studio</h3>
+                                    <p>Business · Last opened Sep 28</p>
+                                </div><span class="open-badge">Open</span>
+                            </div>
+                            <div class="account-card-details">
+                                <div><span>Current balance</span><strong>$12,084.18</strong></div>
+                                <div><span>Currency</span><strong>USD</strong></div>
+                                <div><span>Connected sources</span><strong>2 accounts</strong></div>
+                                <div><span>Budget status</span><strong class="watch">Review needed</strong></div>
+                            </div>
+                            <div class="account-card-footer"><span>Updated Sep 28 · 14 transactions</span><b>Manage
+                                    account ↗</b></div>
+                        </a></div>
+                    <div class="scope-note"><b>Account scope</b><span>When you select an account, all pages use that
+                            workspace context. Transactions, budgets, connected bank accounts, bills, and insights stay
+                            separated between finance accounts.</span></div>
+                </section>
+                <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+                        2024</span></footer>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

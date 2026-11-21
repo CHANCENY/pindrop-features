@@ -1,0 +1,8 @@
+finance_accounts_owner:
+  label: 'Personal Finance'
+  description: 'A finance profile'
+  parent: 'user'
+finance_manager:
+  label: 'Finance Manager'
+  description: 'A finance manager profile'
+  parent: 'user'

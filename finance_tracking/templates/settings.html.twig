@@ -1,0 +1,67 @@
+{% extends "@finance_tracking/partials/html.html.twig" %}
+
+
+{% block content %}
+
+<div class="content">
+    <section class="page-title">
+        <p class="eyebrow">Your workspace</p>
+        <h1>Settings</h1>
+        <p>Keep Ledgerly feeling like yours.</p>
+    </section>
+    <form method="post" class="grid two-col">
+        <article class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Profile details</h2>
+                    <p>How you appear across Ledgerly</p>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="field"><label>First name</label><input name="first_name"
+                        value="{{ account.getFirstName() }}"></div>
+                <div class="field"><label>Last name</label><input name="last_name" value="{{ account.getFirstName() }}">
+                </div>
+                <div class="field full"><label>Email address</label><input name="email"
+                        value="{{ account.getAccountEmail() }}">
+                </div>
+                <div class="field"><label>Currency</label><select name="currency">
+
+                        {% for index, currency in currencies %}
+                           <optgroup label="{{ index }}">
+                            {% for curr in currency %}
+                              <option value="{{curr.code }}" {% if curr.code == account.getAccountCurrency() %} selected {% endif %}>{{ curr.currency }} - {{ curr.country }}</option>
+                            {% endfor %}
+                           </optgroup>
+                        {% endfor %}
+                        
+                    </select></div>
+                <div class="field"><label>Timezone</label><select name="timezone">
+                        {% for timezone in timezones %}
+                            <option {% if timezone == account.getAccountTimezone() %} selected {% endif %}>{{ timezone }}</option>
+                            {% endfor %}
+                    </select></div>
+            </div><button class="button primary" type="submit" style="margin-top:22px">Save changes</button>
+        </article>
+        <article class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Preferences</h2>
+                    <p>Choose how Ledgerly works for you</p>
+                </div>
+            </div>
+
+            {% for preference in preferences_list %}
+            <div class="setting-row">
+                <div>
+                    <strong>{{ preference }}</strong>
+                </div>
+                <input type="checkbox" name="preferences[]" value="{{ preference }}" {% if preference|is_prefered(preferences) %} checked {% endif %}>
+            </div>
+            {% endfor %}
+        </article>
+        </section>
+        <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+                2024</span></footer>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Ledgerly finance tracker overview">
+    <title>Ledgerly — Overview</title>
+    <link rel="stylesheet" href="/modules/finance_tracking/assets/styles.css">
+    <script src="/modules/finance_tracking/assets/chart.umd.min.js" defer></script>
+</head>
+
+<body>
+    <div class="shell">
+       <aside class="sidebar"><a class="brand" href="index.html"><span
+                    class="mark"><i></i><i></i><i></i></span><span>ledgerly</span></a>
+
+            {% if is_account_selected() %} 
+            {% set account = session_acount() %}
+                
+            <div class="finance-context"><span class="finance-context-label">Active finance account</span><a
+                    href="/finances/select-account">{{ account.getDisplayName() }}</a><small>
+                        {{ account.getAccountCurrency() }} · {{ account.countBudgets() }} connected bugets</small></div>
+            {% endif %}        
+            <p class="nav-label">Workspace</p>
+            <nav class="nav">
+                <a class="active" href="/finances"><span class="nav-icon">◈</span>Overview</a>
+                <a href="/finances/transactions"><span class="nav-icon">↔</span>Transactions <span
+                        class="count">{{ transaction_count() }}</span></a>
+                        <a href="/finances/budgets">
+                            <span class="nav-icon">◫</span>Budgets</a>
+                            <a href="/finances/accounts"><span class="nav-icon">◎</span>Connected accounts</a>
+                            <a href="/finances/associations"><span class="nav-icon">◎</span>Associations</a>
+
+
+                </nav>
+            <p class="nav-label manage">Manage</p>
+            <nav class="nav"><a href="#insights"><span class="nav-icon">✦</span>Insights <span
+                        class="pill">New</span></a><a href="/finances/settings"><span class="nav-icon">⚙</span>Settings</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="promo"><b>✦</b><strong>Make your money<br>work harder.</strong><small>Get smart insights
+                        with Ledgerly Plus.</small><a href="/finances/settings">Explore Plus ↗</a></div>
+                <div class="help"><span>?</span>Help center</div>
+                <a href="/finances/profile" class="user"><span class="avatar">JM</span>
+                    <div><strong>Jamie Miller</strong><small>Personal account</small></div><em>•••</em>
+                </a>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="crumb"><span>Workspace</span><span>/</span><strong>{{ nav.title }}</strong></div>
+                <div class="mobile-brand"><span class="mark"><i></i><i></i><i></i></span>ledgerly</div>
+                <div class="top-actions">
+
+                    {% if is_account_selected() %} 
+                      {% set account = session_acount() %}
+                    <a class="workspace-switcher" href="/finances/select-account"><i
+                            class="switcher-dot"></i>
+                        <div><strong>{{ account.getDisplayName() }}</strong><small>Active workspace</small></div>
+                    </a>
+                    {% endif %}
+                    <label class="search"><span>⌕</span><input placeholder="Search anything"><kbd>⌘
+                            K</kbd></label><a class="bell" href="#notifications">♢</a><a class="avatar top-avatar"
+                        href="/finances/settings">JM</a></div>
+            </header>
+            {% block content %}{% endblock %}
+    </div>
+    </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartFont = { family: 'DM Sans', size: 10 };
+            new Chart(document.getElementById('spendingChart'), { type: 'line', data: { labels: ['Oct 1', '', 'Oct 8', '', 'Oct 15', '', 'Oct 22', '', 'Oct 31'], datasets: [{ data: [340, 390, 365, 480, 410, 520, 470, 620, 680], borderColor: '#b6bdc1', borderDash: [7, 7], borderWidth: 2, pointRadius: 0, tension: .45 }, { data: [280, 330, 315, 370, 345, 470, 430, 575, 640], borderColor: '#18231f', borderWidth: 3, pointRadius: 0, tension: .45 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } } });
+            new Chart(document.getElementById('balanceChart'), { type: 'line', data: { labels: ['', '', '', '', '', '', '', '', ''], datasets: [{ data: [42, 45, 44, 47, 49, 55, 52, 58, 60], borderColor: '#d8f36d', borderWidth: 2.5, pointRadius: 0, tension: .45, fill: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } } });
+        });
+    </script>
+</body>
+
+</html>

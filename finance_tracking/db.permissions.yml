@@ -1,0 +1,81 @@
+db_access_finance_tracking:
+  description: 'Full access finance_tracking data.'
+  owned_by: finance_tracking
+  tables:
+    finance__account: [select,insert,update,delete]
+    finance__account_session: [select,insert,update,delete]
+    finance__budget: [select,insert,update,delete]
+    finance__preference: [select,insert,update,delete]
+db_access_designated_data:
+  description: 'Gives access to read, create, update the data of finances'
+  owned_by: finance_tracking
+  tables:
+    finance__account: [select]
+    finance__account_session: [select, insert, update,delete]
+    finance__budget: [select,insert,update]
+can_access_overview:
+  description: 'Access finance_tracking data.'
+  owned_by: finance_tracking
+  tables:
+    finance__account: [select]
+    finance__account_session: [select]
+    finance__budget: [select]
+    finance__preference: [select]
+can_manage_other_finance_accounts:
+  description: 'Access finance_tracking data.'
+  owned_by: finance_tracking
+  tables:
+    finance__account: [select]
+    finance__account_session: [select,insert,delete]
+can_manage_preferences:
+  description: 'Access to own preference settings data'
+  owned_by: finance_tracking
+  tables:
+    finance__preference: [select,insert,update,delete]
+can_manage_other_budgets:
+  description: 'Access others budgets'
+  owned_by: finance_tracking
+  tables:
+    finance__budget: [select]
+can_manage_own_budgets:
+  description: 'Access own budgets'
+  owned_by: finance_tracking
+  tables:
+    finance__budget: [select, insert, update, delete]
+can_manage_own_association:
+  description: 'Access account own association'
+  owned_by: finance_tracking
+  tables:
+    finance__association: [insert,update,select,delete]
+    users: [select]
+can_manage_budgets_by_association:
+  description: 'Access budgets by associations'
+  owned_by: finance_tracking
+  tables:
+    finance__association: [select]
+can_manage_other_transactions:
+  decription: 'Manager can access the transaction of clients'
+  owned_by: finance_tracking
+  tables:
+   finance__transaction: [select]
+can_manage_own_profile:
+  description: 'Manage the access o own user profile'
+  owned_by: finance_tracking
+  tables:
+    users: [select,update]
+can_manage_own_transactions:
+  description: 'Manage own the transactions'
+  owned_by: finance_tracking
+  tables:
+    finance__transaction: [select,update,delete,insert]
+can_create_signal_connections:
+  description: 'Trigger signal connection'
+  owned_by: finance_tracking
+  tables:
+    signal_connections: [select,create]
+    signal_queue: [select,create]
+db_finance_system_read:
+  description: 'Core table "theme_library_assets"'
+  owned_by: finance_tracking
+  tables:
+    theme_library_assets: [select]

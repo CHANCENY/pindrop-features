@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ledgerly — Create finance account</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="shell">
+        <aside class="sidebar"><a class="brand" href="index.html"><span
+                    class="mark"><i></i><i></i><i></i></span><span>ledgerly</span></a>
+            <div class="finance-context"><span class="finance-context-label">Finance account setup</span><a
+                    href="finance-accounts.html">Choose workspace</a><small>Everything will be scoped here</small></div>
+            <p class="nav-label">Workspace</p>
+            <nav class="nav"><a href="index.html"><span class="nav-icon">◈</span>Overview</a><a
+                    href="transactions.html"><span class="nav-icon">↔</span>Transactions</a><a href="budgets.html"><span
+                        class="nav-icon">◫</span>Budgets</a><a href="accounts.html"><span
+                        class="nav-icon">◎</span>Connected accounts</a></nav>
+            <p class="nav-label manage">Manage</p>
+            <nav class="nav"><a class="active" href="finance-accounts.html"><span class="nav-icon">▦</span>Finance
+                    accounts</a><a href="settings.html"><span class="nav-icon">⚙</span>Settings</a></nav>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="crumb"><span>Workspace</span><span>/</span><strong>Create finance account</strong></div>
+                <div class="mobile-brand"><span class="mark"><i></i><i></i><i></i></span>ledgerly</div>
+                <div class="top-actions"><a class="bell" href="#notifications">♢</a><a class="avatar top-avatar"
+                        href="settings.html">JM</a></div>
+            </header>
+            <div class="content form-page">
+                <section class="page-title">
+                    <p class="eyebrow">New workspace</p>
+                    <h1>Create a finance account</h1>
+                    <p>Start a focused space for one financial picture. You can connect accounts and add budgets next.
+                    </p>
+                </section>
+                <section class="panel form-card">
+                    <form action="finance-accounts.html" method="get">
+                        <fieldset>
+                            <legend>Finance account identity</legend>
+                            <div class="form-grid">
+                                <div class="field full"><label for="finance-name">Name</label><input id="finance-name"
+                                        name="name"
+                                        placeholder="e.g. Personal finances, Family household, Brightside Studio"
+                                        required></div>
+                                <div class="field"><label for="currency">Base currency</label><select id="currency"
+                                        name="currency">
+                                        <option>USD — US Dollar</option>
+                                        <option>EUR — Euro</option>
+                                        <option>GBP — British Pound</option>
+                                        <option>CAD — Canadian Dollar</option>
+                                    </select></div>
+                                <div class="field"><label for="purpose">Purpose</label><select id="purpose"
+                                        name="purpose">
+                                        <option>Personal</option>
+                                        <option>Family / household</option>
+                                        <option>Business</option>
+                                        <option>Other</option>
+                                    </select></div>
+                            </div>
+                        </fieldset>
+                        <details open>
+                            <summary>Optional workspace details</summary>
+                            <div class="form-grid">
+                                <div class="field"><label for="description">Description</label><textarea
+                                        id="description" name="description"
+                                        placeholder="What will this finance account help you understand?"></textarea>
+                                </div>
+                                <div class="field"><label for="timezone">Timezone</label><select id="timezone"
+                                        name="timezone">
+                                        <option>Eastern Time</option>
+                                        <option>Central Time</option>
+                                        <option>Mountain Time</option>
+                                        <option>Pacific Time</option>
+                                    </select></div>
+                            </div>
+                        </details>
+                        <div class="scope-note"><b>What happens next</b><span>This finance account becomes the active
+                                workspace. Transactions, budgets, connected accounts, bills, and insights created
+                                afterward will belong to it.</span></div>
+                        <div class="form-actions"><button class="button primary" type="submit"><b>✓</b> Create finance
+                                account</button><a class="cancel-link" href="finance-accounts.html">Cancel and
+                                return</a></div>
+                    </form>
+                </section>
+                <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+                        2024</span></footer>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

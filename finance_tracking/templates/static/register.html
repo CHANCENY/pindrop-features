@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ledgerly — Create account</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <main class="auth-page">
+        <div class="auth-shell"><a class="auth-brand" href="index.html"><span
+                    class="mark"><i></i><i></i><i></i></span><span>ledgerly</span></a>
+            <section class="auth-card">
+                <header class="auth-heading">
+                    <p class="eyebrow">A calmer money workspace</p>
+                    <h1>Create your account</h1>
+                    <p>Start with a secure home for all your finance accounts.</p>
+                </header>
+                <form class="auth-form" action="create-finance-account.html" method="get">
+                    <div class="field"><label for="register-name">Full name</label><input id="register-name" name="name"
+                            type="text" autocomplete="name" placeholder="Jamie Morgan" required></div>
+                    <div class="field"><label for="register-email">Email address</label><input id="register-email"
+                            name="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+                    <div class="field"><label for="register-password">Create password</label>
+                        <div class="password-wrap"><input id="register-password" name="password" type="password"
+                                autocomplete="new-password" placeholder="At least 8 characters" minlength="8"
+                                required><button type="button">Show</button></div>
+                    </div><label class="check-label"><input type="checkbox" name="terms" required> I agree to the <a
+                            class="auth-link" href="#terms">Terms</a> and <a class="auth-link" href="#privacy">Privacy
+                            Policy</a></label><button class="button primary auth-submit" type="submit"><b>✓</b> Create
+                        account</button>
+                </form>
+                <div class="auth-divider">or</div><a class="auth-secondary" href="#google-signup">Continue with
+                    Google</a>
+                <p class="auth-footer">Already have an account? <a href="login.html">Log in</a></p>
+                <p class="auth-legal">Your account will start with a private workspace. You can create multiple finance
+                    accounts after registration.</p>
+            </section><a class="auth-back" href="index.html">← Back to Ledgerly preview</a>
+        </div>
+    </main>
+</body>
+
+</html>

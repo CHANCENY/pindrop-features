@@ -1,0 +1,29 @@
+# =============================================================================
+# FINANCE TRACKING SIGNALS
+# =============================================================================
+
+finance_tracking.currency.changed:
+  name: "Account Currency Changed ACC"
+  description: "Emitted after a user successfully changed the account currency to carry out conversion."
+  plugin: finance_tracking
+  payload:
+    base_currency: "string — Original currency changed from"
+    new_currency: "New currency to change to"
+finance_tracking.transaction.occured:
+  name: "Transaction Occurred"
+  description: "Transaction of either income or expense has been added"
+  plugin: finance_tracking
+  paload:
+    transaction_id: "The id of transaction that was added"
+finance_tracking.budget.created:
+  name: "Budget Created"
+  description: "New budget was created for account"
+  plugin: finance_tracking
+  paload:
+    budget_id: "Id of budget just created for account"
+finance_tracking.transaction.deleted:
+  name: "Transaction Deleted"
+  description: "Transaction was deleted for account"
+  plugin: finance_tracking
+  paload:
+    transaction: "Transaction object"

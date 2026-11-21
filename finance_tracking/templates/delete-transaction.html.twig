@@ -1,0 +1,23 @@
+{% extends '@finance_tracking/partials/html.html.twig' %}
+
+
+{% block content %}
+
+
+<section class="auth-card delete-card">
+    <header class="auth-heading">
+        <p class="eyebrow">Personal finances · Transactions</p>
+        <h1>Delete transaction?</h1>
+        <p>This action will remove the transaction from this finance account.</p>
+    </header>
+    <div class="delete-summary">
+        <strong>{{ transaction.merchant }}</strong>
+        <span>{{ transaction.category }} · {{ transaction.transaction_date|date("F d, Y") }}</span>
+        <b>{{ transaction.transaction_type == 'income' ? '+' : '-' }}{{ transaction.amount.format }}</b>
+    </div>
+    <div class="action-row delete-actions"><a class="button primary" href="{{ url('FinanceController._transactionView', {id: transaction.id}) }}">Keep
+            transaction</a><a class="danger-link" href="?a=yes">Delete transaction</a></div><a
+        class="auth-back" href="/finances/transactions">← Back to transactions</a>
+</section>
+
+{% endblock %}

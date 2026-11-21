@@ -1,0 +1,105 @@
+{% extends '@finance_tracking/partials/html.html.twig' %}
+
+{% block content %}
+<div class="content">
+    <section class="intro">
+        <div>
+            <p class="eyebrow">Sharing &amp; access</p>
+            <h1>Associations</h1>
+            <p>Choose which finance managers can work with <strong>{{ account.getDisplayName() }}</strong>.</p>
+        </div>
+    </section>
+
+    {% if message == 'granted' %}
+        <div class="scope-note"><b>Access granted</b><span>The manager can now view and help manage this account.</span></div>
+    {% elseif message == 'revoked' %}
+        <div class="scope-note"><b>Access removed</b><span>The manager no longer has access to this account.</span></div>
+    {% elseif message == 'error' %}
+        <div class="scope-note"><b>Something went wrong</b><span>We could not update that association. Please try again.</span></div>
+    {% endif %}
+
+    <section class="grid summary">
+        <article class="card">
+            <div class="card-head"><span>Connected managers</span><span class="metric-icon green">✓</span></div>
+            <div class="metric">{{ connected_managers|length }}</div>
+            <div class="meta">with access to this account</div>
+        </article>
+        <article class="card">
+            <div class="card-head"><span>Available managers</span><span class="metric-icon" style="background:#eef1eb;color:#6d7971">◎</span></div>
+            <div class="metric">{{ available_managers|length }}</div>
+            <div class="meta">public, verified profiles</div>
+        </article>
+    </section>
+
+    <section class="grid one-col" style="margin-top:15px">
+        <article class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Connected managers</h2>
+                    <p>People who can currently access {{ account.getDisplayName() }}</p>
+                </div>
+            </div>
+            <div class="manager-grid">
+            {% for manager in connected_managers %}
+            <article class="manager-card connected">
+                <div class="manager-avatar">
+                    {% if manager.getAvatarUrl is defined and manager.getAvatarUrl() %}
+                        <img src="{{ manager.getAvatarUrl()|create_uri }}" alt="{{ manager.getFirstName() }} {{ manager.getLastName() }}">
+                    {% else %}
+                        {{ manager.getFirstName()|first|upper }}{{ manager.getLastName()|first|upper }}
+                    {% endif %}
+                </div>
+                <h3>{{ manager.getFirstName() }} {{ manager.getLastName() }}</h3>
+                <span class="manager-email">{{ manager.getEmail() }}</span>
+                <div class="manager-meta"><span class="tag blue-tag">Finance manager</span><span class="status">Connected</span></div>
+                <form method="post">
+                    <input type="hidden" name="action" value="revoke">
+                    <input type="hidden" name="manager_id" value="{{ manager.getId() }}">
+                    <button class="row-action delete" type="submit"
+                        onclick="return confirm('Remove this manager’s access to {{ account.getDisplayName()|e('js') }}?')">Revoke access</button>
+                </form>
+            </article>
+            {% else %}
+            <p style="padding:18px 4px;color:#6d7971">No managers are connected to this account yet.</p>
+            {% endfor %}
+            </div>
+        </article>
+
+        <article class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Available managers</h2>
+                    <p>Finance managers who have made their profile public</p>
+                </div>
+            </div>
+            <div class="manager-grid">
+            {% for manager in available_managers %}
+            <article class="manager-card">
+                <div class="manager-avatar">
+                    {% if manager.getAvatarUrl is defined and manager.getAvatarUrl() %}
+                        <img src="{{ manager.getAvatarUrl()|create_uri }}" alt="{{ manager.getFirstName() }} {{ manager.getLastName() }}">
+                    {% else %}
+                        {{ manager.getFirstName()|first|upper }}{{ manager.getLastName()|first|upper }}
+                    {% endif %}
+                </div>
+                <h3>{{ manager.getFirstName() }} {{ manager.getLastName() }}</h3>
+                <span class="manager-email">{{ manager.getEmail() }}</span>
+                <div class="manager-meta"><span class="tag blue-tag">Finance manager</span><span class="tag green-tag">Verified</span></div>
+                <form method="post">
+                    <input type="hidden" name="action" value="grant">
+                    <input type="hidden" name="manager_id" value="{{ manager.getId() }}">
+                    <button class="button primary" type="submit">Grant access</button>
+                </form>
+            </article>
+            {% else %}
+            <p style="padding:18px 4px;color:#6d7971">No other managers are available right now.</p>
+            {% endfor %}
+            </div>
+        </article>
+    </section>
+
+    <div class="scope-note"><b>What managers can do</b><span>Connected managers can open this account, view its transactions and budgets, and help manage them. You can revoke access at any time.</span></div>
+
+    <footer class="footer"><span>Ledgerly for thoughtful money management.</span></footer>
+</div>
+{% endblock %}

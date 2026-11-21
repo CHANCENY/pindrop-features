@@ -1,0 +1,79 @@
+{% extends '@finance_tracking/partials/html.html.twig' %}
+
+
+{% block content %}
+<div class="content">
+    <section class="page-title">
+        <p class="eyebrow">Money movements</p>
+        <h1>Transactions</h1>
+        <p>Everything in one clear, searchable ledger.</p>
+    </section>
+    <section class="grid summary">
+        <article class="card">
+            <div class="card-head"><span>This month expense</span><span class="metric-icon green">↗</span></div>
+            <div class="metric">{{ stats.expenses.this_month|price }}</div>
+            {# <div class="meta"><span class="trend">↘ 2.1%</span>spending vs. last month</div> #}
+        </article>
+        <article class="card">
+            <div class="card-head"><span>This month income</span><span class="metric-icon green">↗</span>
+            </div>
+            <div class="metric">{{ stats.income.this_month|price }}</div>
+            {# <div class="meta"><span class="trend">↗ 12.4%</span>vs. last month</div> #}
+        </article>
+        <article class="card">
+            <div class="card-head"><span>This month transactions</span><span class="metric-icon"
+                    style="background:#eef1eb;color:#6d7971">↔</span></div>
+            <div class="metric">{{ stats.transactions.this_month }}</div>
+            {# <div class="meta">12 pending categorization</div> #}
+        </article>
+    </section>
+    <section class="panel transactions" style="margin-top:15px">
+        <div class="panel-head">
+            <div>
+                <h2>All transactions</h2>
+                <p>October 2024 · 48 total</p>
+            </div>
+            <div class="actions"><a class="filter" href="#filter">Filter⌄</a><a class="button primary"
+                    href="/finances/transactions/add-transaction"><b>＋</b>Add transaction</a></div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Account</th>
+                        <th class="right">Amount</th>
+                        <th class="right">Status</th>
+                        <th class="right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>
+                            <div class="merchant"><span class="merchant-logo whole">W</span>
+                                <div><strong>{{ transaction.merchant }}</strong><small>{{ transaction.category }}</small></div>
+                            </div>
+                        </td>
+                        <td><span class="tag {{ transaction.category }}-tag">{{ transaction.category }}</span></td>
+                        <td>{{ transaction.transaction_date|date("d, F Y") }}</td>
+                        <td>{{ transaction.account.getDisplayName }} •• {{ transaction.account.getAccountType }}</td>
+                        <td class="right amount-{{ transaction.transaction_type == 'income' ? 'in' : 'out' }}">{{ transaction.transaction_type == 'income' ? '+' : '-' }}{{ transaction.amount.format }}</td>
+                        <td class="right">{{transaction.status|upper }}</td>
+                        <td class="transaction-actions-cell"><a class="row-action"
+                                href="{{ url('FinanceController._transactionView', {id: transaction.id}) }}">View</a><a class="row-action delete"
+                                href="{{ url('FinanceController._transactionDelete', {id: transaction.id }) }}">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <footer class="footer"><span>Ledgerly for thoughtful money management.</span><span>Sample data ·
+            2024</span></footer>
+</div>
+
+
+{% endblock %}

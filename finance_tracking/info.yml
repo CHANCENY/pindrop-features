@@ -1,0 +1,9 @@
+name: 'Finance Tracking'
+description: 'Plugin to track personal finances'
+version: 1.0.0
+author: CHANCENY
+website: 'https://pindrop.dev'
+license: MIT
+dependencies:
+  - cron
+  - signals_slots
