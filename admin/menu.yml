@@ -28,3 +28,10 @@ groups:
       route: admin.users
       title: Users
       weight: 3
+    local_mails:
+      icon: fa fa-inbox
+      permissions:
+        - can_administer_menus
+      route: AdminAttributeRouteController.localMailsListing
+      title: Local Mails
+      weight: 4

@@ -1,0 +1,231 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Local mails{% endblock %}
+
+{% block content %}
+
+<style>
+    /* .lm { max-width: 1100px; margin: 0 auto; padding: 1rem; } */
+    .lm h1 { margin: 0 0 .25rem; }
+    .lm-sub { margin: 0 0 1.25rem; opacity: .7; }
+    .lm-alert { padding: .75rem 1rem; border-radius: 6px; margin-bottom: 1rem; border: 1px solid; }
+    .lm-ok  { border-color: #2e7d32; background: rgba(46, 125, 50, .12); }
+    .lm-err { border-color: #c62828; background: rgba(198, 40, 40, .12); }
+    .lm-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .lm-toolbar form { display: flex; gap: .5rem; align-items: center; margin: 0; }
+    .lm-table-wrap { overflow-x: auto; border: 1px solid rgba(128, 128, 128, .35); border-radius: 6px; }
+    .lm-table { width: 100%; border-collapse: collapse; }
+    .lm-table th, .lm-table td { padding: .6rem .75rem; text-align: left; vertical-align: top; border-bottom: 1px solid rgba(128, 128, 128, .25); }
+    .lm-table tr:last-child td { border-bottom: 0; }
+    .lm-table th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; opacity: .7; white-space: nowrap; }
+    .lm-muted { opacity: .65; }
+    .lm-badge { display: inline-block; padding: .1rem .5rem; border-radius: 999px; font-size: .75rem; border: 1px solid rgba(128, 128, 128, .5); }
+    .lm-actions { display: flex; gap: .5rem; align-items: center; white-space: nowrap; }
+    .lm-actions form { margin: 0; }
+    .lm-btn { display: inline-block; padding: .35rem .75rem; border-radius: 6px; border: 1px solid rgba(128, 128, 128, .6); background: transparent; color: inherit; font: inherit; font-size: .9rem; cursor: pointer; text-decoration: none; }
+    .lm-btn:hover { background: rgba(128, 128, 128, .15); }
+    .lm-btn-danger { border-color: #c62828; color: #c62828; }
+    .lm-btn-danger:hover { background: rgba(198, 40, 40, .12); }
+    .lm-btn[aria-disabled="true"] { opacity: .4; pointer-events: none; }
+    .lm-pager { display: flex; gap: .75rem; align-items: center; justify-content: center; margin-top: 1rem; }
+    .lm-empty { padding: 2rem 1rem; text-align: center; border: 1px dashed rgba(128, 128, 128, .5); border-radius: 6px; }
+    .lm-detail-head { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .lm-meta { display: grid; grid-template-columns: max-content 1fr; gap: .4rem 1rem; margin: 0 0 1.25rem; }
+    .lm-meta dt { font-weight: 600; opacity: .7; }
+    .lm-meta dd { margin: 0; word-break: break-word; }
+    .lm-body { white-space: pre-wrap; word-break: break-word; padding: 1rem; border: 1px solid rgba(128, 128, 128, .35); border-radius: 6px; margin: 0; font-family: inherit; }
+    .lm-frame { width: 100%; height: 420px; border: 1px solid rgba(128, 128, 128, .35); border-radius: 6px; background: #fff; resize: vertical; }
+    .lm-source { margin-top: 1rem; }
+    .lm-source pre { white-space: pre-wrap; word-break: break-word; padding: 1rem; border: 1px solid rgba(128, 128, 128, .35); border-radius: 6px; }
+</style>
+
+<div class="lm">
+
+    <h1>Local mails</h1>
+    <p class="lm-sub">Copies of outgoing mail saved by the local mail server (<code>EMAIL_KEEP_COPY</code> / <code>EMAIL_ONLY_LOCAL</code>).</p>
+
+    {% if status_message %}
+        <div class="lm-alert lm-ok" role="status">{{ status_message }}</div>
+    {% endif %}
+    {% if error %}
+        <div class="lm-alert lm-err" role="alert">{{ error }}</div>
+    {% endif %}
+
+    {% if mail %}
+
+        {# ── Single mail view ───────────────────────────────────────────── #}
+        <div class="lm-detail-head">
+            <a class="lm-btn" href="{{ list_url }}">&larr; Back to list</a>
+
+            <form method="post" action="{{ base_url }}" onsubmit="return confirm('Delete this mail permanently?');">
+                <input type="hidden" name="_token" value="{{ csrf_token }}">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="id" value="{{ mail.id }}">
+                <input type="hidden" name="limit" value="{{ limit }}">
+                <input type="hidden" name="page" value="{{ page }}">
+                <button type="submit" class="lm-btn lm-btn-danger">Delete</button>
+            </form>
+        </div>
+
+        <h2>{{ mail.subject is not empty ? mail.subject : '(no subject)' }}</h2>
+
+        <dl class="lm-meta">
+            <dt>ID</dt>
+            <dd>#{{ mail.id }}</dd>
+
+            <dt>Date</dt>
+            <dd>{{ mail.created_at }}</dd>
+
+            <dt>To</dt>
+            <dd>{{ mail.to }}</dd>
+
+            {% if mail.cc %}
+                <dt>CC</dt>
+                <dd>{{ mail.cc|join(', ') }}</dd>
+            {% endif %}
+
+            {% if mail.bcc %}
+                <dt>BCC</dt>
+                <dd>{{ mail.bcc|join(', ') }}</dd>
+            {% endif %}
+
+            {% if mail.reply_to %}
+                <dt>Reply-To</dt>
+                <dd>{{ mail.reply_to }}</dd>
+            {% endif %}
+
+            <dt>Format</dt>
+            <dd><span class="lm-badge">{{ mail.is_html ? 'HTML' : 'Plain text' }}</span></dd>
+
+            {% if mail.attachments %}
+                <dt>Attachments</dt>
+                <dd>
+                    {% for attachment in mail.attachments %}
+                        {% if attachment is iterable %}
+                            {{ attachment.name|default((attachment.path|default(''))|split('/')|last) }}{{ not loop.last ? ', ' : '' }}
+                        {% else %}
+                            {{ attachment|split('/')|last }}{{ not loop.last ? ', ' : '' }}
+                        {% endif %}
+                    {% endfor %}
+                    <span class="lm-muted">(file names only, contents are not stored)</span>
+                </dd>
+            {% endif %}
+        </dl>
+
+        {% if mail.is_html %}
+            {# Rendered in a locked-down iframe: no scripts, no remote resources, no navigation of this page. #}
+            <iframe class="lm-frame"
+                    title="Mail body preview"
+                    sandbox=""
+                    referrerpolicy="no-referrer"
+                    csp="default-src 'none'; img-src data:; style-src 'unsafe-inline'"
+                    srcdoc="{{ mail.body|e('html_attr') }}"></iframe>
+
+            <details class="lm-source">
+                <summary>View HTML source</summary>
+                <pre>{{ mail.body }}</pre>
+            </details>
+        {% else %}
+            <pre class="lm-body">{{ mail.body }}</pre>
+        {% endif %}
+
+    {% else %}
+
+        {# ── Listing ────────────────────────────────────────────────────── #}
+        <div class="lm-toolbar">
+            <div>
+                <strong>{{ total }}</strong> {{ total == 1 ? 'mail' : 'mails' }} stored
+            </div>
+
+            <form method="get" action="{{ base_url }}">
+                <label for="lm-limit">Per page</label>
+                <select id="lm-limit" name="limit">
+                    {% for option in limits %}
+                        <option value="{{ option }}"{{ option == limit ? ' selected' : '' }}>{{ option }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="lm-btn">Apply</button>
+            </form>
+        </div>
+
+        {% if mails is empty %}
+            <div class="lm-empty">
+                <p><strong>No local mails yet.</strong></p>
+                <p class="lm-muted">
+                    Set <code>EMAIL_KEEP_COPY=true</code> to keep a copy of every outgoing mail,
+                    or <code>EMAIL_ONLY_LOCAL=true</code> to store mail here instead of sending it.
+                </p>
+            </div>
+        {% else %}
+            <div class="lm-table-wrap">
+                <table class="lm-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">To</th>
+                            <th scope="col">Subject</th>
+                            <th scope="col">Format</th>
+                            <th scope="col">Files</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in mails %}
+                            <tr>
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.created_at }}</td>
+                                <td>{{ item.to }}</td>
+                                <td>
+                                    <a href="{{ base_url }}?id={{ item.id }}&amp;limit={{ limit }}&amp;page={{ page }}">
+                                        {% if item.subject is empty %}
+                                            <span class="lm-muted">(no subject)</span>
+                                        {% else %}
+                                            {{ item.subject|length > 80 ? item.subject|slice(0, 80) ~ '…' : item.subject }}
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                <td><span class="lm-badge">{{ item.is_html ? 'HTML' : 'Text' }}</span></td>
+                                <td>{{ item.attachments|length }}</td>
+                                <td>
+                                    <div class="lm-actions">
+                                        <a class="lm-btn" href="{{ base_url }}?id={{ item.id }}&amp;limit={{ limit }}&amp;page={{ page }}">View</a>
+
+                                        <form method="post" action="{{ base_url }}" onsubmit="return confirm('Delete this mail permanently?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token }}">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="{{ item.id }}">
+                                            <input type="hidden" name="limit" value="{{ limit }}">
+                                            <input type="hidden" name="page" value="{{ page }}">
+                                            <button type="submit" class="lm-btn lm-btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <nav class="lm-pager" aria-label="Pagination">
+                {% if page > 1 %}
+                    <a class="lm-btn" href="{{ base_url }}?limit={{ limit }}&amp;page={{ page - 1 }}" rel="prev">&larr; Previous</a>
+                {% else %}
+                    <span class="lm-btn" aria-disabled="true">&larr; Previous</span>
+                {% endif %}
+
+                <span>Page {{ page }} of {{ pages }}</span>
+
+                {% if page < pages %}
+                    <a class="lm-btn" href="{{ base_url }}?limit={{ limit }}&amp;page={{ page + 1 }}" rel="next">Next &rarr;</a>
+                {% else %}
+                    <span class="lm-btn" aria-disabled="true">Next &rarr;</span>
+                {% endif %}
+            </nav>
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

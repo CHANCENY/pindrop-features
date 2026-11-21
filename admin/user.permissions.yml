@@ -21,6 +21,9 @@ super_admin:
   can_view_system_logs:
     title: 'Can view system logs'
     description: 'View and download system error and access logs.'
+  can_manage_local_mails:
+    title: 'Can manage local mails'
+    decription: "Full access to mail save locally"
 
 admin:
   db.accounts.full:

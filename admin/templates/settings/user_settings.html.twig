@@ -1,0 +1,77 @@
+<div class="admin-form-group">
+    <label for="login_page" class="admin-form-label">Login Page</label>
+    <input type="text" id="login_page" name="login_page" value="{{ login_page }}" class="admin-form-input">
+    <p class="admin-form-help">Provide the route whose controller can override login</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="register_page" class="admin-form-label">Register Page</label>
+    <input type="text" id="register_page" name="register_page" value="{{ register_page }}" class="admin-form-input">
+    <p class="admin-form-help">Provide the route whose controller can override register</p>
+</div>
+
+<div class="admin-form-group">
+    <label for="forgot_password" class="admin-form-label">Forgot Password Page</label>
+    <input type="text" id="forgot_password" name="forgot_password" value="{{ forgot_password }}" class="admin-form-input">
+    <p class="admin-form-help">Provide the route whose controller can override forgot password</p>
+</div>
+
+<noscript autocomplete='true' style="display:none;">
+{
+  "fieldId": "login_page",
+  "source": "autocomplete.route.search",
+  "placeholder": "Search route..",
+  "minQueryLength": 2,
+  "limit": 10,
+  "displayField": "label",
+  "valueField": "value",
+  "searchFields": [
+    "title",
+    "id"
+  ],
+  "noResultsText": "No routes found",
+  "loadingText": "Searching...",
+  "name": "login_page",
+  "onSelect": null
+}
+</noscript>
+
+<noscript autocomplete='true' style="display:none;">
+{
+  "fieldId": "register_page",
+  "source": "autocomplete.route.search",
+  "placeholder": "Search route..",
+  "minQueryLength": 2,
+  "limit": 10,
+  "displayField": "label",
+  "valueField": "value",
+  "searchFields": [
+    "title",
+    "id"
+  ],
+  "noResultsText": "No routes found",
+  "loadingText": "Searching...",
+  "name": "register_page",
+  "onSelect": null
+}
+</noscript>
+
+<noscript autocomplete='true' style="display:none;">
+{
+  "fieldId": "forgot_password",
+  "source": "autocomplete.route.search",
+  "placeholder": "Search route..",
+  "minQueryLength": 2,
+  "limit": 10,
+  "displayField": "label",
+  "valueField": "value",
+  "searchFields": [
+    "title",
+    "id"
+  ],
+  "noResultsText": "No routes found",
+  "loadingText": "Searching...",
+  "name": "forgot_password",
+  "onSelect": null
+}
+</noscript>

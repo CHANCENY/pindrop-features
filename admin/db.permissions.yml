@@ -59,4 +59,8 @@ db.system.read:
       - select
     logs:
       - select
-
+can_manage_local_mails:
+  description: "Read/write the local_mails"
+  owned_by: admin
+  tables:
+    local_mails: [select,update,insert,delete]

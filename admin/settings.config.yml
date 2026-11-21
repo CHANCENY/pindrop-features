@@ -4,3 +4,6 @@ settings:
 two_factor:
   name: Two Factor Settings
   class: Simp\Pindrop\Modules\admin\src\Plugin\TwoFactorSettings
+user_admin_setting:
+  name: "Account Login/Register/Forgot Password Overriding"
+  class: Simp\Pindrop\Modules\admin\src\Plugin\Events\UserSettings

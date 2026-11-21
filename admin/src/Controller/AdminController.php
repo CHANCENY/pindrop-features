@@ -896,9 +896,11 @@ Generated: " . date('Y-m-d H:i:s') . "
             $valid = false;
         }
 
-        // Validate role
-        $validRoles = ['user', 'moderator', 'admin', 'super_admin'];
-        if (!empty($userData['role']) && !in_array($userData['role'], $validRoles)) {
+        // Validate against core and plugin-defined roles.
+        /** @var PluginManager $pluginManager */
+        $pluginManager = getAppContainer()->get('plugin.manager');
+        $validRoles = array_keys($pluginManager->getAllRoles());
+        if (!empty($userData['role']) && !in_array($userData['role'], $validRoles, true)) {
             $errors[] = "Row {$rowNumber}: Invalid role '{$userData['role']}'. Valid roles: " . implode(', ', $validRoles);
             $valid = false;
         }
@@ -1098,6 +1100,29 @@ Generated: " . date('Y-m-d H:i:s') . "
      */
     public function register(Request $request, string $route_name, array $options): Response
     {
+
+        // Lets attempt to look for override in settings.
+        $loginRoute = \getAppContainer()->get('site.settings')->getSetting('user.admin.settings')?->get('register_page') ?? "";
+        
+        if ($loginRoute) {
+
+            $loginRoute = substr($loginRoute, strrpos($loginRoute, '(',)+1, strlen($loginRoute));
+            $loginRoute = trim($loginRoute, ")");
+
+            
+            /**@var RouteManager $routeProvider**/
+            $loginRouteArray = RouteManager::getRoute($loginRoute);
+            if (!empty($loginRouteArray)) {
+                $controller = $loginRouteArray['controller'];
+                $method = $loginRouteArray['options']['controller_method'] ?? null;
+
+                if (!empty($method) && !empty($controller)) {
+                    return buildControllerResponse($controller, $method, $request, $route_name, $options);
+                }
+            }
+
+        }
+
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
 
@@ -1206,6 +1231,24 @@ Generated: " . date('Y-m-d H:i:s') . "
      */
     public function login(Request $request, string $route_name, array $options): Response|RedirectResponse
     {
+
+        // Lets attempt to look for override in settings.
+        $loginRoute = \getAppContainer()->get('site.settings')->getSetting('user.admin.settings')?->get('login_page') ?? "";
+        if ($loginRoute) {
+            $loginRoute = substr($loginRoute, strrpos($loginRoute, '(',)+1, strlen($loginRoute));
+            $loginRoute = trim($loginRoute, ")");
+            /**@var RouteManager $routeProvider**/
+            $loginRouteArray = RouteManager::getRoute($loginRoute);
+            if (!empty($loginRouteArray)) {
+                $controller = $loginRouteArray['controller'];
+                $method = $loginRouteArray['options']['controller_method'] ?? null;
+
+                if (!empty($method) && !empty($controller)) {
+                    return buildControllerResponse($controller, $method, $request, $route_name, $options);
+                }
+            }
+        }
+
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
 
@@ -1279,11 +1322,11 @@ Generated: " . date('Y-m-d H:i:s') . "
 
                     if ($settingsAdmin?->get('login_redirect')) {
                         $url = $settingsAdmin->get('login_redirect');
-                        $url = substr($url, 0,strrpos($url, '('));
+                        $url = substr($url, 0, strrpos($url, '('));
                         $url = trim($url);
                     }
-                   
-                    $response = new RedirectResponse(!empty($url)? $url : '/');
+
+                    $response = new RedirectResponse(!empty($url) ? $url : '/');
                     $response->headers->setCookie(
                         new Cookie(
                             'session_id',
@@ -1369,6 +1412,24 @@ Generated: " . date('Y-m-d H:i:s') . "
      */
     public function forgotPassword(Request $request, string $route_name, array $options): Response
     {
+
+        // Lets attempt to look for override in settings.
+        $loginRoute = \getAppContainer()->get('site.settings')->getSetting('user.admin.settings')?->get('forgot_password') ?? "";
+        if ($loginRoute) {
+            $loginRoute = substr($loginRoute, strrpos($loginRoute, '(',)+1, strlen($loginRoute));
+            $loginRoute = trim($loginRoute, ")");
+            /**@var RouteManager $routeProvider**/
+            $loginRouteArray = RouteManager::getRoute($loginRoute);
+            if (!empty($loginRouteArray)) {
+                $controller = $loginRouteArray['controller'];
+                $method = $loginRouteArray['options']['controller_method'] ?? null;
+
+                if (!empty($method) && !empty($controller)) {
+                    return buildControllerResponse($controller, $method, $request, $route_name, $options);
+                }
+            }
+        }
+
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
 
@@ -1784,6 +1845,7 @@ Generated: " . date('Y-m-d H:i:s') . "
             ]);
 
         } catch (\Exception $e) {
+            dd($e);
             // Log error and show user-friendly message
             if ($container->has('logger')) {
                 $container->get('logger')->error('Error managing user permissions: ' . $e->getMessage());

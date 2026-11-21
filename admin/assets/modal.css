@@ -51,3 +51,11 @@
   padding: 15px;
   overflow-y: auto;
 }
+
+.settings-grid {
+  .node-section {
+    div {
+      max-width: 90%;
+    }
+  }
+}
