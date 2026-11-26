@@ -8,11 +8,11 @@ namespace Simp\Pindrop\Modules\finance_tracking\src\Routes;
 use DateTime;
 use DI\Container;
 use Simp\Pindrop\Controller\ControllerBase;
-use Simp\Pindrop\Modules\finance_tracking\src\Constant\AccountType;
 use Simp\Pindrop\Modules\finance_tracking\src\Constant\Category;
 use Simp\Pindrop\Modules\finance_tracking\src\Constant\Preference;
 use Simp\Pindrop\Modules\finance_tracking\src\Constant\TimezoneHelper;
 use Simp\Pindrop\Modules\finance_tracking\src\Constant\TransactionCategory;
+use Simp\Pindrop\Modules\finance_tracking\src\Plugin\Events\Events;
 use Simp\Pindrop\Modules\finance_tracking\src\Service\Account;
 use Simp\Pindrop\Modules\finance_tracking\src\Service\Budgets;
 use Simp\Pindrop\Modules\finance_tracking\src\Service\Transactions;
@@ -58,6 +58,7 @@ class FinanceController extends ControllerBase
     #[AttributeRoute('/finances', ['GET', 'POST'], permission: ['can_access_overview'])]
     public function _financeIndex(Request $request, string $route_name, array $options)
     {
+        appEvents()->invokeEvents(Events::ACCOUNT_NOT_SELECTED);
         return $this->renderTwig("@finance_tracking/index.html.twig",[
             'nav' => self::nav('Overview')
         ]);
@@ -99,6 +100,7 @@ class FinanceController extends ControllerBase
     #[AttributeRoute('finances/settings', ['GET', 'POST'], permission: ['can_manage_preferences'])]
     public function _setting(Request $request, string $route_name, array $options)
     {
+        appEvents()->invokeEvents(Events::ACCOUNT_NOT_SELECTED);
         $account = $this->account->loadActiveAccount();
         $preferences = $account?->getPreferences();
         $preferencesList = Preference::all();
@@ -132,6 +134,7 @@ class FinanceController extends ControllerBase
     #[AttributeRoute('finances/budgets',['GET'], permission: ['can_manage_own_budgets','can_manage_other_budgets'])]
     public function _budgets(Request $request, string $route_name, array $options)
     {
+        appEvents()->invokeEvents(Events::ACCOUNT_NOT_SELECTED);
         $account = $this->account->loadActiveAccount();
         $budgets = $account?->getBudgets();
         return $this->renderTwig("@finance_tracking/budgets.html.twig",[
@@ -144,6 +147,7 @@ class FinanceController extends ControllerBase
     #[AttributeRoute('/finances/new-budget',['GET', 'POST'], permission: ['can_manage_own_budgets'])]
     public function _budgetCreate(Request $request, string $route_name, array $options)
     {
+        appEvents()->invokeEvents(Events::ACCOUNT_NOT_SELECTED);
         $categories = Category::all();
         $account = $this->account->loadActiveAccount();
 
@@ -170,6 +174,7 @@ class FinanceController extends ControllerBase
     #[AttributeRoute('/finances/transactions',['GET'], permission: ['can_manage_other_transactions','can_manage_own_transactions'])]
     public function _transactions(Request $request, string $route_name, array $options)
     {
+        appEvents()->invokeEvents(Events::ACCOUNT_NOT_SELECTED);
         $transactions = $this->transactions->getTransactions();
         $stats = $this->transactions->getStatistics();
        
@@ -182,7 +187,7 @@ class FinanceController extends ControllerBase
      #[AttributeRoute('/finances/transactions/add-transaction',['GET', 'POST'], permission: ['can_manage_other_transactions','can_manage_own_transactions'])]
     public function _transactionsAddNew(Request $request, string $route_name, array $options)
     {
-        
+        appEvents()->invokeEvents(Events::ACCOUNT_NOT_SELECTED);   
         $categories = TransactionCategory::all();
         $budgets    = $this->budgets->getAccountBudgets($this->account->loadActiveAccount());
 
@@ -212,6 +217,7 @@ class FinanceController extends ControllerBase
     #[AttributeRoute('/finances/transaction/[id:int]', ['GET', 'POST'], permission: ['can_manage_other_transactions','can_manage_own_transactions'])]
     public function _transactionView(Request $request, string $route_name, array $options)
     {
+        appEvents()->invokeEvents(Events::ACCOUNT_NOT_SELECTED);
         $id = $request->query->getInt('id');
         if (!$id) {
             return $this->redirect('/finances/transactions');
@@ -229,6 +235,7 @@ class FinanceController extends ControllerBase
     #[AttributeRoute('/finances/transaction/[id:int]/delete', ['GET', 'POST'], permission: ['can_manage_other_transactions','can_manage_own_transactions'])]
     public function _transactionDelete(Request $request, string $route_name, array $options)
     {
+        appEvents()->invokeEvents(Events::ACCOUNT_NOT_SELECTED);
         $id = $request->query->getInt('id');
         if (!$id) {
             return $this->redirect('/finances/transactions');

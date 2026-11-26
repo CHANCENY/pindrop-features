@@ -71,7 +71,10 @@ class TwigExtension extends AbstractExtension
 
     public function price(float|int|string $amount): string
     {
-        return (new Price((float) $amount, $this->account->loadActiveAccount()->getAccountCurrency()))->format();
+        $currency = !empty($this->account->loadActiveAccount()?->getAccountCurrency()) ?  $this->account->loadActiveAccount()->getAccountCurrency()
+        : 'USD';
+        return (new Price((float) $amount, 
+        $currency))->format();
     }
 
     public function transactionCount(): int
